@@ -10,7 +10,7 @@ struct Ball {
     double x, y, vx, vy, r0, r1, life, delay, max;
 };
 struct SpeedLine {
-    double angle, radius, delay;
+    double angle, radius, delay, sine;
 };
 struct PoofEmission {
     ParticleKind kind;
@@ -46,7 +46,7 @@ struct Poof final : Kernel {
         for (auto& b : balls) b.max = b.life;
         for (size_t i = 0; i < lines.size(); ++i) {
             const double a = (double(i) / 12) * TAU + R.range(-.12, .12) + .13, sa = std::sin(a);
-            lines[i] = {a, std::min(R.range(24, 34), sa > .1 ? (-2 - CY) / sa : 99), R.range(0, .04)};
+            lines[i] = {a, std::min(R.range(24, 34), sa > .1 ? (-2 - CY) / sa : 99), R.range(0, .04), sa};
         }
         for (int i = 0; i < 7; ++i) {
             const double a = R.range(-PI, .3), sp = R.range(70, 125);
@@ -134,7 +134,10 @@ struct Poof final : Kernel {
             const double u = (t - l.delay) / .2;
             if (u <= 0 || u >= 1) continue;
             const double head = 8 + (l.radius - 8) * ease::outExpo(clamp(u / .6)),
-                         tail = 8 + (l.radius - 8) * ease::inCubic(u), ca = std::cos(l.angle), sa = std::sin(l.angle);
+                         tail = 8 + (l.radius - 8) * ease::inCubic(u), ca = std::cos(l.angle), sa = l.sine;
+            // Use the same sine that defined the radius cap. A recomputed
+            // sin/cos pair may use a different libm entry point on Darwin and
+            // move the floor endpoint across an integer raster boundary.
             p.lineFn(
                 ca * tail, CY + sa * tail, ca * head, CY + sa * head, [&](double v) { return v > .6 ? WHITE : C[4]; },
                 1.);

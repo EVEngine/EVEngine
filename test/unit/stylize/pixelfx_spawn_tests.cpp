@@ -1613,6 +1613,34 @@ TEST_CASE("stylize.pixelfx.spawn.poofPinnedSourcePhasesAndTail") {
         REQUIRE(checksum(fx.light()) == f.light);
     }
 }
+TEST_CASE("stylize.pixelfx.spawn.poofFloorCappedSpeedLinesKeepPinnedRows") {
+    // Both seeds retain the pinned source raster, including its integer-edge
+    // rounding. Clamping every capped endpoint to y=-2 breaks the second seed.
+    struct Frame {
+        uint32_t seed;
+        int      tick;
+        uint32_t color, light;
+    };
+    constexpr Frame frames[] = {
+        {21u, 18, 1641151512u, 1502400848u},         {21u, 20, 1564883395u, 328017757u},
+        {21u, 24, 1572127728u, 2777439414u},         {21u, 27, 4107430111u, 3164630115u},
+        {4294967295u, 18, 121390512u, 1538666981u},  {4294967295u, 20, 1498679400u, 2749778024u},
+        {4294967295u, 24, 3650712216u, 3947870759u}, {4294967295u, 27, 4213950346u, 513095321u}};
+    for (const auto& frame : frames) {
+        PixelFx fx(PixelFxKind::Poof);
+        auto    settings = fx.settings();
+        settings.seed    = frame.seed;
+        auto config      = PixelFx::prepareConfiguration(PixelFxKind::Poof, settings);
+        REQUIRE(config);
+        REQUIRE(fx.commitConfiguration(std::move(config).takeValue()));
+        auto seek = fx.prepareSeek(frame.tick / 120.);
+        REQUIRE(seek);
+        REQUIRE(fx.commitSeek(std::move(seek).takeValue()));
+        fx.draw();
+        REQUIRE(checksum(fx.color()) == frame.color);
+        REQUIRE(checksum(fx.light()) == frame.light);
+    }
+}
 TEST_CASE("stylize.pixelfx.spawn.poofPinnedSeedAndMaterialProfiles") {
     struct Frame {
         double   time;

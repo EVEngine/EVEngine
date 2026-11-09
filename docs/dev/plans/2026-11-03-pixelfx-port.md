@@ -61,6 +61,17 @@ changed the strict `-2.375` vertex to `-2.3749999999999929`. Enabling contractio
 reproduced151 failures,150 overlapping the160 macOS failures, including identical FireballThrow
 hashes. This is a compilation-contract repair, not a new numerical tolerance or oracle change.
 
+The remaining macOS Poof failure was captured losslessly at tick24: four color pixels differed
+in position/alpha while the entire light plane matched. Moving only the floor-capped speed-line
+endpoint across `y=-2` in the pristine upstream painter reproduced the complete macOS color
+plane byte-for-byte. Darwin-target Clang output combines adjacent sin/cos calls into
+`__sincos_stret`, whereas the radius constructor calls sin alone. Poof now retains and reuses
+the exact sine that defined that immutable line's radius; it does not clamp coordinates or
+relax alpha/geometry assertions. Local reference comparison covers every tick0..32 for seeds21,
+0,123 and4294967295: all132 color/light frame pairs match exactly. The regression also pins
+eight full-frame color/light pairs, including seed4294967295 whose source raster would be
+changed by simply clamping the endpoint to the floor. Hosted macOS verification remains required.
+
 On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
 then separately approved the additional BlizzardVortex frame exposed by completing the suite.
 Each boundary is confined to its frame and the exact pixels/channels below. The pinned upstream
