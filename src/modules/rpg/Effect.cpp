@@ -23,6 +23,23 @@ std::unordered_map<std::string, EffectDefinition> &EffectRegistry::table() {
     return t;
 }
 
+void swap(EffectDefinition &left, EffectDefinition &right) noexcept {
+    static_assert(std::is_nothrow_swappable_v<decltype(EffectDefinition::id)>);
+    static_assert(std::is_nothrow_swappable_v<decltype(EffectDefinition::modifiers)>);
+    static_assert(std::is_nothrow_swappable_v<decltype(EffectDefinition::tags)>);
+    static_assert(std::is_nothrow_swappable_v<decltype(EffectDefinition::extra)>);
+    using std::swap;
+    swap(left.id, right.id);
+    swap(left.durationPolicy, right.durationPolicy);
+    swap(left.duration, right.duration);
+    swap(left.period, right.period);
+    swap(left.stackPolicy, right.stackPolicy);
+    swap(left.maxStacks, right.maxStacks);
+    swap(left.modifiers, right.modifiers);
+    swap(left.tags, right.tags);
+    swap(left.extra, right.extra);
+}
+
 void EffectRegistry::registerEffect(const EffectDefinition &def) {
     if (def.id.empty()) return;
     static_assert(std::is_nothrow_swappable_v<EffectDefinition>);
@@ -32,7 +49,7 @@ void EffectRegistry::registerEffect(const EffectDefinition &def) {
     if (found == definitions.end())
         definitions.emplace(def.id, std::move(candidate));
     else
-        std::swap(found->second, candidate);
+        swap(found->second, candidate);
 }
 
 const EffectDefinition *EffectRegistry::find(const std::string &id) {

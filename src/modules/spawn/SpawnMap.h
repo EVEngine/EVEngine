@@ -60,6 +60,21 @@ public:
     /** @brief Return an owning revision or a structured missing/stale definition error. */
     [[nodiscard]] virtual Result<CompiledTemplate> resolve(const DefinitionRef& reference) const = 0;
 };
+class EVENGINE_API_FOUNDATION CompiledMap;
+
+/**
+ * @brief Compile map sidecar instances, constrained overrides and shared budgets atomically.
+ * @param source Borrowed untrusted owning tree; copied values are independent of source lifetime.
+ * @param templates Borrowed immutable template source, called synchronously without locks.
+ * @param units Borrowed validator for overridden template recompilation.
+ * @return Owning validated map or a field-path diagnostic; never publishes partial map state.
+ * @cost Linear in map data plus per-instance template validation, amortized per asset revision.
+ * @thread Content owner thread; no mutable shared state; provider callbacks must not mutate input.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CompiledMap> compileMap(const Value&                   source,
+                                                                     const ITemplateResolver&       templates,
+                                                                     const IUnitDefinitionResolver& units);
+
 /** @brief Owning validated map data; only the map compiler can create it. */
 class EVENGINE_API_FOUNDATION CompiledMap {
 public:
@@ -85,16 +100,5 @@ private:
     std::vector<InstanceDefinition> instances_;
     std::string                     canonicalJson_;
 };
-/**
- * @brief Compile map sidecar instances, constrained overrides and shared budgets atomically.
- * @param source Borrowed untrusted owning tree; copied values are independent of source lifetime.
- * @param templates Borrowed immutable template source, called synchronously without locks.
- * @param units Borrowed validator for overridden template recompilation.
- * @return Owning validated map or a field-path diagnostic; never publishes partial map state.
- * @cost Linear in map data plus per-instance template validation, amortized per asset revision.
- * @thread Content owner thread; no mutable shared state; provider callbacks must not mutate input.
- */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<CompiledMap> compileMap(const Value&                   source,
-                                                                     const ITemplateResolver&       templates,
-                                                                     const IUnitDefinitionResolver& units);
+
 }  // namespace eve::spawn

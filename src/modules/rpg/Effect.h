@@ -64,6 +64,15 @@ struct EVENGINE_API_PLATFORM EffectDefinition {
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
+/**
+ * @brief Exchange every effect definition field without allocating or throwing.
+ * @param left First exclusively borrowed definition; owns the right-hand facts after the call.
+ * @param right Second exclusively borrowed definition; owns the left-hand facts after the call.
+ * @thread Call on the owning registry/content thread with exclusive access to both definitions.
+ * @reentrancy Synchronous field exchange; invokes no callbacks or registry operations.
+ */
+EVENGINE_API_PLATFORM void swap(EffectDefinition &left, EffectDefinition &right) noexcept;
+
 /** @brief 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
 class EVENGINE_API_PLATFORM EffectRegistry {
 public:

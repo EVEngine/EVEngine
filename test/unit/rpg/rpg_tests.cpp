@@ -43,6 +43,7 @@ namespace {
 #include <cmath>
 #include <limits>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 #include "PrivateTestScope.h"
@@ -1064,6 +1065,43 @@ TEST_CASE("Settlement stages execute by priority and cancellation prevents later
     CHECK(context.cancelled);
     CHECK_EQ(order.size(), 2u);
     SettlementPipeline::clearPipeline(pipeline);
+}
+
+TEST_CASE("RPG effect replacement uses a complete no-throw field exchange") {
+    static_assert(std::is_nothrow_swappable_v<EffectDefinition>);
+    EffectDefinition left;
+    left.id             = "effect.swap.left";
+    left.durationPolicy = "duration";
+    left.duration       = 3.0f;
+    left.period         = 0.5f;
+    left.stackPolicy    = "stack";
+    left.maxStacks      = 4;
+    left.modifiers.push_back({"health", "add", 7.0, 2});
+    left.tags  = {"old", "periodic"};
+    left.extra = {{"icon", std::string(256, 'a')}};
+    EffectDefinition right;
+    right.id = "effect.swap.right";
+    right.modifiers.push_back({"attack", "add", -3.0, -1});
+    right.tags  = {"new"};
+    right.extra = {{"sound", std::string(256, 'b')}};
+    auto bytes  = [](const EffectDefinition& value) {
+        return encodeEffectDefinition(value).expect("effect encoding").toJson().expect("effect text");
+    };
+    const auto beforeLeft  = bytes(left);
+    const auto beforeRight = bytes(right);
+    using std::swap;
+    swap(left, right);
+    CHECK_EQ(bytes(left), beforeRight);
+    CHECK_EQ(bytes(right), beforeLeft);
+    swap(left, left);
+    CHECK_EQ(bytes(left), beforeRight);
+    right.id = left.id;
+    EffectRegistry::registerEffect(left);
+    EffectRegistry::registerEffect(right);
+    const auto* replacement = EffectRegistry::find(left.id);
+    REQUIRE(replacement != nullptr);
+    CHECK_EQ(bytes(*replacement), bytes(right));
+    REQUIRE(EffectRegistry::remove(left.id));
 }
 
 TEST_CASE("RPG effect codec round trips detached facts without consulting custom runtime implementations") {

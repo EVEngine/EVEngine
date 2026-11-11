@@ -14,6 +14,7 @@
 #include "map/rpg_spawn/RPGMapCheckpoint.h"
 #include "map/rpg_spawn/RPGMapSession.h"
 #include "map/spawn/MapSpawnLoad.h"
+#include "rpg/VitalsSystem.h"
 #include "rpg/spawn/RPGSpawnCapture.h"
 #include "rpg/spawn/RPGSpawnFactory.h"
 #include "rpg/spawn/RPGSpawnJointRestore.h"

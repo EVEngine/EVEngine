@@ -4025,3 +4025,12 @@ Crowd::Snapshot 增加 crowd.snapshot v1 encodeState/prepareState，完整覆盖
 - 合并验证中发现 dev 的 audit_cpp_calls 将已 resolve 的告警路径与未 resolve 的根目录比较，macOS /var→/private/var 临时路径导致已有测试丢诊断。canonical 审计入口改为比较双方 resolve 路径；原 8 项回归已通过，完整源码门禁与原生 RTS 测试仍在执行。此前平台全量通过结果保持其版本范围，不充当合并后结果。
 
 - 合并后的最终 `make check` 已通过（base=origin/dev），日志 `/tmp/spawn-pr-merged-final-check.log`；RTS 工厂实际消费者重编成功，82/82 项组合契约通过，包括两项新 Match portable 往返/legacy 迁移，日志 `/tmp/spawn-pr-merged-rts-contracts-final.log`。首次新增用例因默认空投射物快照无效而被正确拒绝，已将夹具改为真实 RTSProjectileSystem 默认快照后重跑全部 82 项，未放宽生产校验。保存了初次失败日志，不将其隐藏或误计通过。适用唯一 codec、显式迁移、原子发布、依赖源码所有权与实际消费者验证规范，无例外。
+
+### 2026-11-11：PR #793 原生 CI 编译失败修复
+
+- 重新读取 head 2e0a067ef 的真实 CI/Release 日志：普通 CI run 43001291797 Windows job 130460900763 的 C2375 指向 compileTemplate/compileMap 首次 friend 声明没有 DLL 标注；Release run 43001292173 的 Windows/ARM64 SDK jobs 130461575000/130461575372 均在 Effect.cpp:28 触发 no-throw swap 静态断言。Windows OBJECT profile evidence 缺文件是前置编译失败导致，原上传门禁保持。
+- Android job 130460900657 的连接器读取失败后，通过官方 gh API 获取原始日志；128183 行为 libc++ span 对不完整 VitalsEvent 的指针算术，实际触发点 RPGMapSession.cpp:33 的 collectLifecycle(events)，并非下载/网络故障。所属 .cpp 显式包含 rpg/VitalsSystem.h，公共头继续使用前向声明。
+- 编译函数的带 DLL 标注命名空间声明移到 friend 之前，CompiledTemplate/CompiledMap 的前向声明也使用所属组导出宏；没有改变编译权限或可构造性。EffectDefinition 增加所属模块的 ADL field swap，注册表用预先复制的候选做无抛交换；原 is_nothrow_swappable 静态断言完整保留，另断言各容器交换保证。MSVC unordered_map 移动构造不声明 noexcept 而其专用 swap 按成员条件声明 noexcept，依据 Microsoft/STL 的 canonical unordered_map 实现（https://github.com/microsoft/STL/blob/main/stl/inc/unordered_map）；不修改或替换依赖源码。
+- 新增所属 RPG 用例覆盖所有效果字段双向交换、自交换及同 ID 注册替换；本机完成类型的地图会话消费者语法检查已通过。纯 RPG 原生消费者及源码门禁正在执行，Windows Debug、Windows/ARM64 SDK、Android 与完整 CI/Release 仍需最新提交的实际结果，不将本机检查当作这些平台通过。无断言、测试或产物检查削弱。
+
+- 本批本机验证已终态通过：`make check`（origin/dev）、真实纯 RPG 目标重编及 224/224 项测试，新增完整 no-throw 交换/注册替换用例通过；日志 `/tmp/spawn-ci-fix-source-check.log`、`/tmp/spawn-ci-fix-rpg-build.log`、`/tmp/spawn-ci-fix-rpg-tests.log`。Android 所属会话 .cpp 的本机语法检查通过，不将其等同于 NDK 原生验证。后续由新提交的 CI/Release 验证实际 Windows/ARM64/Android；未改动任何工作流门禁或静态断言要求。

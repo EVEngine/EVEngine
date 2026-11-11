@@ -99,6 +99,19 @@ public:
     [[nodiscard]] virtual Result<void> validate(const DefinitionRef& reference) const = 0;
 };
 
+class EVENGINE_API_FOUNDATION CompiledTemplate;
+
+/**
+ * @brief Validate a complete template, resolve every unit and produce an owning revision.
+ * @param source Borrowed untrusted data, never retained or changed.
+ * @param resolver Borrowed synchronous domain validator, never retained.
+ * @return Validated revision or diagnostic with source field path; no state is published on failure.
+ * @cost Linear in asset fields and members plus provider validation, amortized once per revision.
+ * @thread Content owner thread; invokes resolver without locks; compiler is reentrant.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CompiledTemplate> compileTemplate(const Value&                   source,
+                                                                               const IUnitDefinitionResolver& resolver);
+
 /**
  * @brief Validated owning immutable revision; cannot be constructed from unchecked data.
  * @remarks Source values and resolver may be destroyed after compilation.
@@ -117,16 +130,5 @@ private:
     TemplateDefinition definition_;
     std::string        canonicalJson_;
 };
-
-/**
- * @brief Validate a complete template, resolve every unit and produce an owning revision.
- * @param source Borrowed untrusted data, never retained or changed.
- * @param resolver Borrowed synchronous domain validator, never retained.
- * @return Validated revision or diagnostic with source field path; no state is published on failure.
- * @cost Linear in asset fields and members plus provider validation, amortized once per revision.
- * @thread Content owner thread; invokes resolver without locks; compiler is reentrant.
- */
-[[nodiscard]] EVENGINE_API_FOUNDATION Result<CompiledTemplate> compileTemplate(const Value&                   source,
-                                                                               const IUnitDefinitionResolver& resolver);
 
 }  // namespace eve::spawn
