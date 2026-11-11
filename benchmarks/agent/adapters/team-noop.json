@@ -1,0 +1,12 @@
+{
+  "schema": "eve.agent-benchmark-adapter/v1",
+  "id": "team-noop",
+  "calibrationOnly": true,
+  "command": [
+    "{python}",
+    "{benchmark}/adapters/team_calibration.py",
+    "noop",
+    "{request}",
+    "{result}"
+  ]
+}

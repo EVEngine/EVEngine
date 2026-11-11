@@ -1,0 +1,16 @@
+{
+  "schema": "eve.agent-benchmark-adapter/v1",
+  "id": "codex",
+  "model": "cli-default-unresolved",
+  "tools": "CLI filesystem and shell; no configured MCP",
+  "command": [
+    "{python}",
+    "{benchmark}/adapters/cli.py",
+    "--backend",
+    "codex",
+    "--request",
+    "{request}",
+    "--result",
+    "{result}"
+  ]
+}

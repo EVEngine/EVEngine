@@ -1,0 +1,12 @@
+{
+  "schema": "eve.agent-benchmark-adapter/v1",
+  "id": "team-no-merge",
+  "calibrationOnly": true,
+  "command": [
+    "{python}",
+    "{benchmark}/adapters/team_calibration.py",
+    "no-merge",
+    "{request}",
+    "{result}"
+  ]
+}
