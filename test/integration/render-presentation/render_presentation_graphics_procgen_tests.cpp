@@ -1912,7 +1912,14 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
             REQUIRE(!absent.ok());
             REQUIRE(absent.status().code() == eve::StatusCode::Unsupported);
         } else {
+            // Forward+ does not seed scene depth from the G-buffer. Request the
+            // actual deferred prepass before testing equal-depth replacement.
+            auto* control = gfx->getRenderControl();
+            REQUIRE(control != nullptr);
+            REQUIRE(control->setLightingMode(LightingMode::Hybrid).ok());
             const WaterLumaGrid defaultRaster = capture(0.2f, 0.8f);
+            REQUIRE(control->getEffectiveLightingMode() == LightingMode::Hybrid);
+            REQUIRE(control->hasPass("deferredLighting"));
             REQUIRE(gfx->configureMeshShaderRaster(*wf->getShader(), strict).ok());
             const WaterLumaGrid rejected = capture(0.2f, 0.8f);
             REQUIRE(waterDiff(defaultRaster, rejected) > 0.5f);
@@ -1920,6 +1927,8 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
             REQUIRE(gfx->configureMeshShaderRaster(*wf->getShader(), strict).ok());
             const WaterLumaGrid restored = capture(0.2f, 0.8f);
             REQUIRE(waterDiff(restored, rejected) > 0.5f);
+            std::printf("waterfall prepass: defaultStrictDiff=%.2f restoredStrictDiff=%.2f\n",
+                        waterDiff(defaultRaster, rejected), waterDiff(restored, rejected));
         }
     };
 
