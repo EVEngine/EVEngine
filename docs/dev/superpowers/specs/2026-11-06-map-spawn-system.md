@@ -4060,3 +4060,9 @@ Linux 尚未进入编译：apt 更新在三轮 120 秒内未完成，之后 scca
 本轮 make check（origin/dev）与 YAML/bash 语法检查已通过，原始日志 `/tmp/spawn-ci-499-fix-check.log`；实际编辑器消费者及契约仍在验证，最新原生 CI/Release 结果待后续修复提交确认。无检查削弱或架构例外。
 
 本轮终态：原生编辑器目标重编成功，27/27 项所属契约通过（含导出准备/失败重试、stale/retired 控制与宿主生命周期），日志 `/tmp/spawn-ci-499-editor-{build,tests}.log`；完整源码门禁和 YAML/bash 语法检查通过。未将本机 NDK26 未能完成的尝试计为 Android27 通过；后续新 head 的原生 CI/Release 仍需实际结果。
+
+### 2026-11-11：head 499c15ef7 的 iOS 构建预算
+
+读取 CI job 130538794694 的完整原始日志（`/tmp/spawn-499-ios-tail-130538794694.log`，40122360 字节、280219 行）。唯一失败为 `Build ios debug` 50 分钟超时；取消前两秒仍在编译 ActionTimeline/ActionScriptBindings 等源文件，无编译器或链接器错误。日志含 2368 个 CompileC 操作，冷依赖构建后仍有引擎编译工作，不能归为 Android RAII 链接故障或依赖下载失败。仅将 iOS 步骤预算调整为 90 分钟、对应 job 为 120 分钟，仍有限时且保留全部构建、签名条件分支、依赖缓存验证和上传路径；不更改源代码语义、编译选项、测试或包安全校验。预算修复后的实际 iOS CI 仍需新 head 结果，不以配置通过代替原生通过。
+
+该 iOS 预算修改的完整 `make check`（origin/dev）已通过，日志 `/tmp/spawn-ci-ios-budget-check.log`；YAML 解析通过。未执行或声称本机 iOS 完整构建通过，仍等待修复后 CI 的真实原生结果。

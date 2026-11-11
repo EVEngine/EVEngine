@@ -707,7 +707,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -758,9 +758,10 @@ jobs:
           toolchain: ${{ steps.third-party-toolchain.outputs.id }}
 
       - name: Build ios debug
-        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
-        # jitter can push xcodebuild past 40 without a compile error.
-        timeout-minutes: 50
+        # Run 43024609662 was still compiling Action sources at the 50m limit
+        # after a cold dependency build; no compiler/linker error was reported.
+        # Keep the full build and give cold engine compilation bounded headroom.
+        timeout-minutes: 90
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
