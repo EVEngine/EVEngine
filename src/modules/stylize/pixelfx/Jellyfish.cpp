@@ -202,9 +202,11 @@ struct Jellyfish final : AnalyticKernel {
         const auto                    B = bell(t);
         const std::array<uint32_t, 4> bubbles{G[3], G[3], G[2], G[1]};
         cycle(t, D, 16, o.seed * 5u + 1u, D, [&](double age, double life, Rng& r, int) {
-            const double x = r.range(-42, 42) + std::sin(age * .8 + r.next() * 6) * 3,
-                         y = r.range(-34, 66) + age * r.range(1, 4), tw = std::sin(age * 2.2 + r.next() * 6),
-                         a = std::min({1., age * 2, (life - age) * 2}) * (.35 + .35 * tw);
+            // Stateful draws follow JavaScript's left-to-right operand evaluation explicitly.
+            const double x0 = r.range(-42, 42), phase = r.next(), x = x0 + std::sin(age * .8 + phase * 6) * 3,
+                         y0 = r.range(-34, 66), speed = r.range(1, 4), y = y0 + age * speed,
+                         tw = std::sin(age * 2.2 + r.next() * 6),
+                         a  = std::min({1., age * 2, (life - age) * 2}) * (.35 + .35 * tw);
             p.dot(x, y, tw > .8 ? G[2] : C[3], a);
         });
         std::array<Strand, 13> paths;
@@ -230,8 +232,9 @@ struct Jellyfish final : AnalyticKernel {
                 Rng          r(hash({o.seed, b, i, 13}));
                 const double life = r.range(1.4, 2.2), ag = wrap(t - b * BEAT - .08 - i * .04, D);
                 if (ag > life) continue;
-                const double rad = r.range(.6, 1.5), sx = r.sign(),
-                             x = B0.x + sx * (B0.W * .4 + r.range(0, 4) + ag * r.range(4, 10)),
+                // Keep offset and speed draws sequenced across Debug/Release optimization.
+                const double rad = r.range(.6, 1.5), sx = r.sign(), offset = r.range(0, 4), speed = r.range(4, 10),
+                             x = B0.x + sx * (B0.W * .4 + offset + ag * speed),
                              y = B0.y + 2 - (14 + 10 * rad) * ag + 6 * std::exp(-ag * 4);
                 if (y < -33) continue;
                 critter::bubbleLook(p, x + std::sin(ag * 5 + i) * .8, y, rad, bubbles,

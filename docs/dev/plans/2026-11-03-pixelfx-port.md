@@ -164,6 +164,22 @@ C4244 errors under the unchanged strict warning policy. Animation now inherits t
 selected install prefix from `eve_engine_includes`; its source-only Assimp bridge roots
 are enabled only for source dependencies. No dependency sources or warning gates change.
 
+### Jellyfish Release random-draw sequencing
+
+Hosted Windows x64 and ARM64 Release at633d27d82e each failed the original Jellyfish
+tick29 frame (color2359401437 instead of151853085). The original-host MSVC Release
+CPU probe reproduced that exact hash. Full-frame comparison found displaced bubble
+pixels, alpha and light differences, so this is outside every approved RGB boundary.
+
+The jet-bubble x expression contained both `r.range(0,4)` and `r.range(4,10)` as
+unsequenced arithmetic operands. JavaScript consumes these draws left-to-right; C++
+does not specify that operand order. Storing offset and speed in separate initializers
+restored all25 existing strict phase frames, including the failing hash, without
+changing references. The two analogous ambient-particle expressions in the same kernel
+also store their draws in source order. RNG implementation, seed, stream count,
+parameters and all reference assertions remain unchanged. No optimization flag,
+dependency implementation or additional tolerance is changed.
+
 ## Validation and review gates
 
 Run against the final PR base/head:
