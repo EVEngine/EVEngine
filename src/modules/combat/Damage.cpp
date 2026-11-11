@@ -252,7 +252,7 @@ Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequ
         return pipeline.settle(settlementRequest, adapter, events ? &events->get() : nullptr);
     }();
     if (!settled) return Result<DamageOutcome>::failure(settled.status());
-    const auto          settlementResult = std::move(settled).takeValue();
+    auto                settlementResult = std::move(settled).takeValue();
     const DamageAmounts amounts          = adapter.amounts();
     const double        appliedHealth    = before.health - target.health;
     const double        appliedPoise     = before.poise - target.poise;

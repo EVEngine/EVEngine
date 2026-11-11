@@ -203,6 +203,85 @@ TEST_CASE("card.presentation.layoutRayMappingAndParallelMiss") {
     CHECK(!mapper.mapRay(0.f, 10.f, 0.f, 1.f, 0.f, 0.f));
 }
 
+TEST_CASE("card.presentation.flipPoseSwapsFaceAtEdgeOn") {
+    const CardFlipPose up = evaluateCardFlip(0.f, 28.f);
+    REQUIRE(up.showingFront);
+    CHECK_EQ(up.axisScale, 1.f);
+    CHECK_EQ(up.lift, 0.f);
+
+    const CardFlipPose edge = evaluateCardFlip(0.5f, 28.f);
+    REQUIRE(!edge.showingFront);
+    REQUIRE(edge.axisScale < 0.001f);
+    CHECK_LT(std::fabs(edge.lift - 28.f), 0.001f);
+
+    const CardFlipPose down = evaluateCardFlip(1.f, 28.f);
+    REQUIRE(!down.showingFront);
+    CHECK_LT(std::fabs(down.axisScale - 1.f), 0.001f);
+    CHECK_LT(std::fabs(down.angleDegrees - 180.f), 0.001f);
+}
+
+TEST_CASE("card.presentation.flipAnimatesTowardFaceDownAndSnaps") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto& card = newCard(module, "flame");
+    CHECK_EQ(card.visual()->flip, 0.f);
+    card.visual()->faceUp = false;
+    for (int i = 0; i < 120; ++i) module.update(1.f / 60.f, 0.f, 0.f, false);
+    CHECK_LT(std::fabs(card.visual()->flip - 1.f), 0.001f);
+    CHECK(!evaluateCardFlip(card.visual()->flip, 0.f).showingFront);
+
+    card.visual()->faceUp = true;
+    card.visual()->flip   = 0.f;
+    CHECK(evaluateCardFlip(card.visual()->flip, 0.f).showingFront);
+}
+
+TEST_CASE("card.presentation.faceDownHandSnapsFlipAndPeekReveals") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    LayoutConfig* cfg      = module.newConfig();
+    cfg->flipSpeed         = 1.f;
+    Hand* hand             = module.newHand(cfg);
+    hand->meta()->faceDown = true;
+    auto& card             = newCard(module, "flame");
+    hand->addCard(&card);
+    CHECK_LT(std::fabs(card.visual()->flip - 1.f), 0.001f);
+    CHECK_EQ(module.capturePresentation(), 1);
+    auto* snap = module.getPresentation(0);
+    REQUIRE(snap != nullptr);
+    CHECK(!snap->faceUp);
+    CHECK(!snap->showingFront);
+    CHECK_EQ(snap->flip, 1.f);
+
+    hand->meta()->peek = true;
+    for (int i = 0; i < 120; ++i) module.update(1.f / 60.f, 0.f, 0.f, false);
+    CHECK_LT(std::fabs(card.visual()->flip), 0.001f);
+    CHECK_EQ(module.capturePresentation(), 1);
+    snap = module.getPresentation(0);
+    REQUIRE(snap != nullptr);
+    CHECK(snap->faceUp);
+    CHECK(snap->showingFront);
+}
+
+TEST_CASE("card.presentation.mapCardPoseFlipBasisAndLift") {
+    CardPlaneMapper mapper;
+    mapper.setLogicalRect(0.f, 0.f, 100.f, 100.f);
+    mapper.setPlane(0.f, 0.f, 0.f, 10.f, 0.f, 0.f, 0.f, 0.f, -10.f);
+    REQUIRE(mapper.mapCardPose(50.f, 50.f, 0.f, 0.f, 4.f, 0).ok());
+    CHECK_LT(std::fabs(mapper.getWorldX() - 5.f), 0.001f);
+    CHECK_LT(std::fabs(mapper.getWorldY()), 0.001f);
+    CHECK_LT(std::fabs(mapper.getWorldZ() + 5.f), 0.001f);
+    CHECK(mapper.isShowingFront());
+    CHECK_LT(std::fabs(mapper.getBasisNX()), 0.001f);
+    CHECK_LT(std::fabs(mapper.getBasisNY() - 1.f), 0.001f);
+
+    REQUIRE(mapper.mapCardPose(50.f, 50.f, 0.f, 0.5f, 4.f, 0).ok());
+    CHECK(!mapper.isShowingFront());
+    CHECK_LT(std::fabs(mapper.getWorldY() - 4.f), 0.001f);
+    CHECK_LT(std::fabs(mapper.getBasisUX()), 0.001f);
+    CHECK_LT(std::fabs(mapper.getBasisUY() - 1.f), 0.001f);
+    CHECK_LT(std::fabs(mapper.getBasisUZ()), 0.001f);
+}
+
 TEST_CASE("card.instance.hitBoundsScaleAndZeroWidth") {
     Card module;
     REQUIRE(module.registerCardsFromJson(definitions) == 2);

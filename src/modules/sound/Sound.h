@@ -24,7 +24,14 @@ public:
     /** @brief Sound. */
     ~Sound() override;
 
-    /** @brief Creates a streaming decoder over raw encoded data. */
+    /**
+     * @brief Creates a streaming decoder over raw encoded data.
+     * @ownership Caller owns the returned decoder; its encoded data is retained after this call.
+     * @lifetime Independent of the input Data object; valid until caller deletes it.
+     * @thread Browser calls must run on the main thread. @reentrancy Does not invoke application callbacks.
+     * @throws eve::Exception for invalid data, unsupported browser codecs, or decode timeout.
+     * @cost Browser builds decode the entire clip once into PCM before returning; reuse the decoder or SoundData.
+     */
     Decoder *newDecoder(Data *data, int bufferSize = 16384);
     /** @brief Fully decodes data into a SoundData buffer. */
     SoundData *newSoundData(Data *data);

@@ -1,4 +1,5 @@
 #include "camera/CameraController.h"
+#include "camera/CinemaDirector.h"
 #include "camera/PcgCarCameraSetup.h"
 #include "camera/PcgFreeCamera.h"
 
@@ -205,12 +206,19 @@ float CameraController::getSecondaryTargetY() const { return secondaryTarget_.y;
 float CameraController::getSecondaryTargetZ() const { return secondaryTarget_.z; }
 
 bool CameraController::validMode(const std::string& mode) {
-    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "firstperson" || mode == "cinematic" ||
-           mode == "lockon";
+    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "ortho" || mode == "firstperson" ||
+           mode == "cinematic" || mode == "lockon";
 }
 
 void CameraController::setMode(const std::string& mode) {
-    if (validMode(mode)) mode_ = mode;
+    if (!validMode(mode)) return;
+    if (mode_ == "ortho" && mode != "ortho" && cam_) cam_->setPerspective();
+    mode_ = mode;
+}
+
+void CameraController::setOrthoHeight(float height) {
+    if (!std::isfinite(height) || height <= 0.f) return;
+    orthoHeight_ = height;
 }
 
 std::string CameraController::getMode() const { return mode_; }
@@ -383,6 +391,130 @@ void CameraController::addView(const std::string& name, float ex, float ey, floa
     v.fov    = fovDeg_;
     views_.push_back(v);
 }
+
+Result<void> CameraController::setView(const std::string& name, float ex, float ey, float ez, float tx, float ty,
+                                       float tz, float fov) {
+    if (name.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "view name is required", "camera.setView"));
+    if (!std::isfinite(ex) || !std::isfinite(ey) || !std::isfinite(ez) || !std::isfinite(tx) || !std::isfinite(ty) ||
+        !std::isfinite(tz) || !std::isfinite(fov))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "view pose must be finite", "camera.setView"));
+    if (fov <= 0.f || fov >= 180.f)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "view fov must be in (0,180)", "camera.setView"));
+    for (auto& view : views_) {
+        if (view.name == name) {
+            view.eye    = glm::vec3(ex, ey, ez);
+            view.target = glm::vec3(tx, ty, tz);
+            view.fov    = fov;
+            return Result<void>::success();
+        }
+    }
+    View v;
+    v.name   = name;
+    v.eye    = glm::vec3(ex, ey, ez);
+    v.target = glm::vec3(tx, ty, tz);
+    v.fov    = fov;
+    views_.push_back(v);
+    return Result<void>::success();
+}
+
+CameraFramingSnapshot CameraController::captureFraming() const {
+    CameraFramingSnapshot snap;
+    snap.mode             = mode_;
+    snap.activeRig        = activeRig_;
+    snap.targetX          = target_.x;
+    snap.targetY          = target_.y;
+    snap.targetZ          = target_.z;
+    snap.offsetX          = offset_.x;
+    snap.offsetY          = offset_.y;
+    snap.offsetZ          = offset_.z;
+    snap.lookAheadX       = lookAhead_.x;
+    snap.lookAheadY       = lookAhead_.y;
+    snap.lookAheadZ       = lookAhead_.z;
+    snap.radius           = radius_;
+    snap.azimuth          = azimuthDeg_;
+    snap.elevation        = elevationDeg_;
+    snap.yaw              = yawDeg_;
+    snap.pitch            = pitchDeg_;
+    snap.fov              = fovDeg_;
+    snap.smooth           = smooth_;
+    snap.positionSmooth   = positionSmooth_;
+    snap.targetSmooth     = targetSmooth_;
+    snap.maxSpeed         = maxSpeed_;
+    snap.eyeX             = cur_.eye.x;
+    snap.eyeY             = cur_.eye.y;
+    snap.eyeZ             = cur_.eye.z;
+    snap.lookX            = cur_.target.x;
+    snap.lookY            = cur_.target.y;
+    snap.lookZ            = cur_.target.z;
+    snap.directorEnabled  = directorEnabled_;
+    snap.timelinePlaying  = timelinePlaying_;
+    return snap;
+}
+
+Result<void> CameraController::restoreFraming(const CameraFramingSnapshot& snapshot, float blendTime) {
+    if (!validMode(snapshot.mode))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot mode is unsupported", "camera.restoreFraming"));
+    if (!std::isfinite(blendTime) || blendTime < 0.f)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "blendTime must be finite and >= 0",
+                              "camera.restoreFraming"));
+    if (!std::isfinite(snapshot.targetX) || !std::isfinite(snapshot.targetY) || !std::isfinite(snapshot.targetZ) ||
+        !std::isfinite(snapshot.offsetX) || !std::isfinite(snapshot.offsetY) || !std::isfinite(snapshot.offsetZ) ||
+        !std::isfinite(snapshot.lookAheadX) || !std::isfinite(snapshot.lookAheadY) ||
+        !std::isfinite(snapshot.lookAheadZ) || !std::isfinite(snapshot.radius) || !std::isfinite(snapshot.azimuth) ||
+        !std::isfinite(snapshot.elevation) || !std::isfinite(snapshot.yaw) || !std::isfinite(snapshot.pitch) ||
+        !std::isfinite(snapshot.fov) || !std::isfinite(snapshot.smooth) || !std::isfinite(snapshot.positionSmooth) ||
+        !std::isfinite(snapshot.targetSmooth) || !std::isfinite(snapshot.maxSpeed) || !std::isfinite(snapshot.eyeX) ||
+        !std::isfinite(snapshot.eyeY) || !std::isfinite(snapshot.eyeZ) || !std::isfinite(snapshot.lookX) ||
+        !std::isfinite(snapshot.lookY) || !std::isfinite(snapshot.lookZ))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot framing must be finite",
+                              "camera.restoreFraming"));
+
+    const View from = initialized_ ? cur_ : desired();
+    stopSequence();
+    mode_           = snapshot.mode;
+    activeRig_      = snapshot.activeRig;
+    target_         = glm::vec3(snapshot.targetX, snapshot.targetY, snapshot.targetZ);
+    offset_         = glm::vec3(snapshot.offsetX, snapshot.offsetY, snapshot.offsetZ);
+    lookAhead_      = glm::vec3(snapshot.lookAheadX, snapshot.lookAheadY, snapshot.lookAheadZ);
+    radius_         = snapshot.radius;
+    azimuthDeg_     = snapshot.azimuth;
+    elevationDeg_   = snapshot.elevation;
+    yawDeg_         = snapshot.yaw;
+    pitchDeg_       = snapshot.pitch;
+    setFov(snapshot.fov);
+    setSmooth(snapshot.smooth);
+    positionSmooth_ = std::max(0.f, snapshot.positionSmooth);
+    targetSmooth_   = std::max(0.f, snapshot.targetSmooth);
+    maxSpeed_        = std::max(0.f, snapshot.maxSpeed);
+    directorEnabled_ = snapshot.directorEnabled;
+    timelinePlaying_ = snapshot.timelinePlaying;
+
+    View to = desired();
+    if (blendTime > 0.f) {
+        blendFrom_ = initialized_ ? from
+                                  : View{"", glm::vec3(snapshot.eyeX, snapshot.eyeY, snapshot.eyeZ),
+                                         glm::vec3(snapshot.lookX, snapshot.lookY, snapshot.lookZ), snapshot.fov};
+        blendTo_   = to;
+        blendDur_  = blendTime;
+        blendT_    = 0.f;
+        blending_  = true;
+    } else {
+        blending_    = false;
+        cur_         = to;
+        initialized_ = true;
+        applyView(cur_);
+    }
+    return Result<void>::success();
+}
+
+void CameraController::setDirectorEnabled(bool enabled) { directorEnabled_ = enabled; }
 
 bool CameraController::switchTo(const std::string& name, float blendTime) {
     int idx = -1;
@@ -813,7 +945,7 @@ CameraController::View CameraController::desired() const {
         glm::vec3   dir(std::cos(el) * std::sin(az), std::sin(el), std::cos(el) * std::cos(az));
         v.eye    = target_ + dir * radius_;
         v.target = target_;
-    } else if (mode_ == "topdown") {
+    } else if (mode_ == "topdown" || mode_ == "ortho") {
         v.eye    = target_ + glm::vec3(0.f, radius_, 0.f);
         v.target = target_;
     } else if (mode_ == "firstperson") {
@@ -878,7 +1010,10 @@ void CameraController::applyView(const View& v) {
     const float roll=glm::radians(cameraRollDeg_);
     up=up*std::cos(roll)+right*std::sin(roll);
     cam_->setUp(up.x, up.y, up.z);
-    cam_->setFov(v.fov);
+    if (mode_ == "ortho")
+        cam_->setOrthographic(orthoHeight_);
+    else
+        cam_->setFov(v.fov);
 }
 
 void CameraController::easeToward(const View& v, float dt) {
@@ -992,6 +1127,8 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("setAzimuth", &CameraController::setAzimuth);
     cc.addFunc("setElevation", &CameraController::setElevation);
     cc.addFunc("setOrbitSpeed", &CameraController::setOrbitSpeed);
+    cc.addFunc("setOrthoHeight", &CameraController::setOrthoHeight);
+    cc.addFunc("getOrthoHeight", &CameraController::getOrthoHeight);
 
     cc.addFunc("setYaw", &CameraController::setYaw);
     cc.addFunc("setPitch", &CameraController::setPitch);
@@ -1028,10 +1165,16 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("clearImpulses", &CameraController::clearImpulses);
 
     cc.addFunc("addView", &CameraController::addView);
+    cc.addFunc("setView", [vm = table.getHandle()](CameraController* self, const std::string& name, float ex, float ey,
+                                                   float ez, float tx, float ty, float tz, float fov) {
+        return eve::script::projectResult(vm, self->setView(name, ex, ey, ez, tx, ty, tz, fov));
+    });
     cc.addFunc("switchTo", &CameraController::switchTo);
     cc.addFunc("playSequence", &CameraController::playSequence);
     cc.addFunc("stopSequence", &CameraController::stopSequence);
     cc.addFunc("isPlaying", &CameraController::isPlaying);
+    cc.addFunc("setDirectorEnabled", &CameraController::setDirectorEnabled);
+    cc.addFunc("getDirectorEnabled", [](const CameraController* self) { return self->getDirectorEnabled(); });
 
     cc.addFunc("clearTimeline", &CameraController::clearTimeline);
     cc.addFunc("addTimelineCut", &CameraController::addTimelineCut);
@@ -1053,6 +1196,7 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("deserializeAsset", &CameraController::deserializeAsset);
 
     cc.addFunc("update", &CameraController::update);
+    exposeCinemaDirectorBindings(table);
     exposePcgFreeCameraBindings(table);
     exposePcgCarCameraSetupBindings(table);
 }

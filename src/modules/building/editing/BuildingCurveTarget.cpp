@@ -93,6 +93,7 @@ BuildingEdgeCurvePreview BuildingPlacementTarget::previewEdgeCubicBezier(
         return result;
     }
     std::vector<building::PlacementSystem::EdgeCurvePoint> controls;
+    controls.reserve(controlPoints.size());
     for (const BuildingEdgeCurvePoint& point : controlPoints)
         controls.push_back({static_cast<float>(point.x), static_cast<float>(point.y)});
     auto sampled = building::PlacementSystem::sampleEdgeCubicBezier(controls, subdivisions);
@@ -259,6 +260,7 @@ Result<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
     desired.value().group.id = currentGroup.value().id;
     if (!currentGroup.value().surfaceProviderName.empty()) {
         std::vector<building::PlacementSystem::EdgeCurvePoint> runtimeControls;
+        runtimeControls.reserve(controlPoints.size());
         for (const BuildingEdgeCurvePoint& point : controlPoints)
             runtimeControls.push_back({static_cast<float>(point.x), static_cast<float>(point.y)});
         auto surface = building::PlacementSystem::sampleEdgeCurveSurface(

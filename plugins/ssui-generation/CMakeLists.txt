@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.21)
+project(eve_ssui_generation VERSION 0.1.0 LANGUAGES C CXX)
+option(SSUI_BUILD_PLUGIN "Build the SDK plugin and bundled editor" ON)
+find_package(Poco REQUIRED COMPONENTS Net JSON Foundation)
+find_package(Threads REQUIRED)
+if(SSUI_BUILD_PLUGIN)
+    find_package(EVEngine REQUIRED)
+    add_eve_plugin(ssui_generation SOURCES plugin.cpp GenerationClient.cpp
+        LIBRARIES Poco::Net Poco::JSON Poco::Foundation Threads::Threads)
+    # Static Poco archives otherwise export/coalesce their RTTI and weak symbols
+    # with the host, mixing JSON implementation state across library generations.
+    if(APPLE)
+        target_link_options(ssui_generation PRIVATE "LINKER:-exported_symbol,_eve_plugin_init")
+        # Match prebuilt Poco's default-visible RTTI when compiling its templates.
+        # Mach-O hidden RTTI uses a different identity; ParseHandler otherwise
+        # silently drops object fields. The export allowlist isolates the result.
+        set_source_files_properties(GenerationClient.cpp PROPERTIES
+            COMPILE_OPTIONS "-fvisibility=default;-fno-visibility-inlines-hidden")
+    elseif(UNIX)
+        target_link_options(ssui_generation PRIVATE "LINKER:--exclude-libs,ALL")
+    endif()
+    if(APPLE)
+        set(SSUI_UI_SCALE 0.5)
+        set(SSUI_PANEL_WIDTH 195)
+        set(SSUI_PANEL_HEIGHT 325)
+    else()
+        set(SSUI_UI_SCALE 1.0)
+        set(SSUI_PANEL_WIDTH 390)
+        set(SSUI_PANEL_HEIGHT 650)
+    endif()
+    configure_file(editor/ssui.editor.json.in ${CMAKE_CURRENT_BINARY_DIR}/ssui.editor.json @ONLY)
+    configure_file(editor/ssui.vm.nut.in ${CMAKE_CURRENT_BINARY_DIR}/ssui.vm.nut @ONLY)
+    install(TARGETS ssui_generation LIBRARY DESTINATION . RUNTIME DESTINATION .)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ssui.editor.json ${CMAKE_CURRENT_BINARY_DIR}/ssui.vm.nut DESTINATION editors)
+    install(FILES README.md DESTINATION .)
+endif()
+include(CTest)
+if(BUILD_TESTING)
+    # Contract tests use the repository's canonical Result implementation, never a test substitute.
+    get_filename_component(EVE_SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+    set(USE_MOLD OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${EVE_SOURCE_ROOT}/external/zeroerr" zeroerr EXCLUDE_FROM_ALL)
+    add_executable(ssui_client_test tests/client_test.cpp GenerationClient.cpp
+        "${EVE_SOURCE_ROOT}/src/engine/common/Diagnostic.cpp"
+        "${EVE_SOURCE_ROOT}/src/engine/common/Status.cpp"
+        "${EVE_SOURCE_ROOT}/src/engine/common/Result.cpp")
+    target_compile_features(ssui_client_test PRIVATE cxx_std_20)
+    target_include_directories(ssui_client_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} "${EVE_SOURCE_ROOT}/src/engine")
+    target_link_libraries(ssui_client_test PRIVATE Poco::Net Poco::JSON Poco::Foundation Threads::Threads zeroerr)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    foreach(mode success hash missing failed absent cancel destroy)
+        add_test(NAME ssui.protocol.${mode} COMMAND ${Python3_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/protocol_test.py --client $<TARGET_FILE:ssui_client_test> --mode ${mode})
+        set_tests_properties(ssui.protocol.${mode} PROPERTIES TIMEOUT 30)
+    endforeach()
+    foreach(case validation migration atomic_restore persistence_failure revision cancellation)
+        add_test(NAME ssui.${case} COMMAND ssui_client_test --testcase=^ssui.${case}$)
+        set_tests_properties(ssui.${case} PROPERTIES TIMEOUT 30)
+    endforeach()
+endif()
+set(CPACK_PACKAGE_NAME eve-ssui-generation)
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_FILE_NAME "eve-ssui-generation-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_BUILD_TYPE}")
+set(CPACK_GENERATOR ZIP)
+include(CPack)

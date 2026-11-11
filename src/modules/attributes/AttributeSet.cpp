@@ -14,7 +14,7 @@ namespace eve::attributes {
 namespace {
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
 }
 
 }  // namespace

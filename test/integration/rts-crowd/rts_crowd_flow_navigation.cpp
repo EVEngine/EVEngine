@@ -740,14 +740,16 @@ TEST_CASE("rts.crowd.groupProjectionRejectsDuplicatesAtomicallyAndOldRouteEpoch"
     groupSurface(crowd);
     eve::rts::CrowdFlowNavigation             navigation({1000, 1});
     eve::rts::CrowdFlowNavigation::GroupInput group;
-    group.members = {{ecs::handle_of(unit), "slot-order"}};
+    const std::string                         orderId = std::string(96, 'k') + "slot-order";
+    group.members                                     = {{ecs::handle_of(unit), orderId}};
     group.targets = {{0.5f, 1.5f}, {6.5f, 1.5f}};
     REQUIRE(navigation.replaceGroups(crowd, {group}).ok());
+    group.members.front().orderId = "changed-after-publication";
+    group.targets                 = {{6.5f, 1.5f}};
     REQUIRE(!navigation.replaceGroups(crowd, {group, group}).ok());
     const eve::SimulationStep step{eve::SimulationTick(1), eve::Duration::fromNanoseconds(10000000)};
     REQUIRE(navigation.begin(crowd, step).ok());
-    auto route =
-        navigation.requestRoute(crowd, ecs::handle_of(unit), "slot-order", {1.5f, 1.5f}, {6.5f, 1.5f}, step.tick);
+    auto route = navigation.requestRoute(crowd, ecs::handle_of(unit), orderId, {1.5f, 1.5f}, {6.5f, 1.5f}, step.tick);
     REQUIRE(route.ok());
     REQUIRE(navigation.pump(crowd, step).ok());
     eve::crowd::AgentUpdate update;

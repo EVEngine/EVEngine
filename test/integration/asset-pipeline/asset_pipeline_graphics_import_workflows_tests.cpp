@@ -2187,6 +2187,16 @@ Material:
     REQUIRE(batch.value().manifest.entrypoints.contains("oak#converted-mesh"));
     REQUIRE(batch.value().manifest.entrypoints.contains("pine"));
     REQUIRE(batch.value().manifest.entrypoints.contains("pine#converted-mesh"));
+    std::string previousPath;
+    for (const auto& entry : batch.value().entries) {
+        if (entry.path == "reports/import.json") continue;
+        CHECK(previousPath < entry.path);
+        previousPath = entry.path;
+    }
+    auto batchArchive = asset::buildEvaArchive(batch.value().manifest, batch.value().entries);
+    REQUIRE(batchArchive.ok());
+    auto parsedBatch = asset::parseEvaArchive(batchArchive.value());
+    REQUIRE(parsedBatch.ok());
     REQUIRE(std::count_if(batch.value().entries.begin(), batch.value().entries.end(),
                           [](const auto& entry) { return entry.path == "reports/import.json"; }) == 1);
     batchRequest.objects[1].outputKey = "oak";
@@ -3265,18 +3275,24 @@ asset::CanonicalMeshData mesh(const PreparedAssetImport& prepared, std::string_v
     REQUIRE(decoded.ok());
     return std::move(decoded).takeValue();
 }
-ScadImportRequest stl() {
-    ScadImportRequest request{
-        package(), "triangle.scad", {'c', 'u', 'b', 'e', '(', '1', ')', ';'}, std::vector<std::uint8_t>(84, 0)};
-    request.binaryStl[80] = 1;
-    auto put              = [&](float value) {
+std::vector<std::uint8_t> binaryTriangleStl() {
+    std::vector<std::uint8_t> bytes(84, 0);
+    bytes[80] = 1;
+    auto put  = [&](float value) {
         auto bits = std::bit_cast<std::uint32_t>(value);
-        for (unsigned i = 0; i < 4; ++i) request.binaryStl.push_back(std::uint8_t(bits >> (i * 8)));
+        for (unsigned i = 0; i < 4; ++i) bytes.push_back(std::uint8_t(bits >> (i * 8)));
     };
     for (float value : {0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1000.f, 0.f, 0.f, 0.f, 1000.f, 0.f}) put(value);
-    request.binaryStl.push_back(0);
-    request.binaryStl.push_back(0);
+    bytes.push_back(0);
+    bytes.push_back(0);
+    return bytes;
+}
+ScadImportRequest stl() {
+    ScadImportRequest request{package(), "triangle.scad", {'c', 'u', 'b', 'e', '(', '1', ')', ';'}, binaryTriangleStl()};
     return request;
+}
+std::vector<std::uint8_t> scadRigBytes(std::string_view body) {
+    return {body.begin(), body.end()};
 }
 
 void verifyComposition(const PreparedAssetImport& prepared, std::size_t expectedParts) {
@@ -3474,6 +3490,64 @@ TEST_CASE("asset.import.structuredModelsScadCompilerAbsent") {
     request.timeoutSeconds = 0;
     auto timeout           = prepareScadFileImport(request);
     REQUIRE(!timeout.ok());
+}
+TEST_CASE("asset.import.structuredModelsScadMultiPartRigComposition") {
+    ScadImportRequest request = stl();
+    request.binaryStl.clear();
+    request.partStls.emplace("base", binaryTriangleStl());
+    request.partStls.emplace("arm", binaryTriangleStl());
+    request.rigBytes = scadRigBytes(R"json({
+      "schema":"eve.scad-rig","schemaVersion":1,"unknownFields":"reject",
+      "coordinateSystem":"openscad-mm-z-up",
+      "joints":[
+        {"name":"base","parent":null,"pivot":[0,0,0],"axis":[0,0,1],"limits":[0,0]},
+        {"name":"arm","parent":"base","pivot":[0,0,100],"axis":[1,0,0],"limits":[-90,90]}
+      ],
+      "parts":[{"name":"base","joint":"base"},{"name":"arm","joint":"arm"}]
+    })json");
+    auto prepared = prepareScadImport(request);
+    REQUIRE(prepared.ok());
+    REQUIRE(prepared.value().manifest.entrypoints.count("rig") == 1);
+    REQUIRE(prepared.value().manifest.entrypoints.count("mesh:base") == 1);
+    REQUIRE(prepared.value().manifest.entrypoints.count("mesh:arm") == 1);
+    bool foundRig = false;
+    for (const auto& asset : prepared.value().manifest.assets)
+        if (asset.type == "eve.scad-rig") {
+            foundRig = true;
+            CHECK_EQ(asset.schemaVersion.value(), 1u);
+        }
+    CHECK(foundRig);
+    bool translated = false;
+    for (const auto& finding : prepared.value().findings)
+        if (finding.feature == "SCAD.rig") {
+            translated = true;
+            CHECK_EQ(static_cast<int>(finding.disposition), static_cast<int>(ImportDisposition::Translated));
+        }
+    CHECK(translated);
+    verifyComposition(prepared.value(), 2);
+}
+TEST_CASE("asset.import.structuredModelsScadRigValidation") {
+    ScadImportRequest request = stl();
+    request.binaryStl.clear();
+    request.partStls.emplace("base", binaryTriangleStl());
+    request.partStls.emplace("arm", binaryTriangleStl());
+    request.rigBytes = scadRigBytes(R"json({
+      "schema":"eve.scad-rig","schemaVersion":1,"unknownFields":"reject",
+      "joints":[{"name":"base","parent":null,"pivot":[0,0,0],"axis":[0,0,1]}],
+      "parts":[{"name":"base","joint":"base"},{"name":"missing","joint":"base"}]
+    })json");
+    auto mismatched = prepareScadImport(request);
+    REQUIRE(!mismatched.ok());
+    request.rigBytes = scadRigBytes(R"json({
+      "schema":"eve.scad-rig","schemaVersion":1,"unknownFields":"reject",
+      "joints":[
+        {"name":"a","parent":"b","pivot":[0,0,0],"axis":[0,0,1]},
+        {"name":"b","parent":"a","pivot":[0,0,0],"axis":[0,0,1]}
+      ],
+      "parts":[{"name":"base","joint":"a"},{"name":"arm","joint":"b"}]
+    })json");
+    auto cyclic = prepareScadImport(request);
+    REQUIRE(!cyclic.ok());
 }
 
 #if defined(EVE_SCAD_TEST_COMPILER)

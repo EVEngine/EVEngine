@@ -49,16 +49,16 @@ void AvatarDocumentEditor::seedPreviewDocument() {
     layers.push_back(layerValue("eyes", "eyes", "asset://preview/eyes.png", 1, true, 62.0f, 78.0f, 52.0f, 22.0f, 0.95f,
                                 0.92f, 0.88f, 1.0f));
     avatar_editing::EditorValue::Array parameters;
-    parameters.push_back(avatar_editing::EditorValue::Object{{"id", std::string("smile")},
-                                                             {"name", std::string("smile")},
-                                                             {"default", 0.35},
-                                                             {"minimum", 0.0},
-                                                             {"maximum", 1.0},
-                                                             {"value", 0.35}});
+    parameters.emplace_back(avatar_editing::EditorValue::Object{{"id", std::string("smile")},
+                                                                {"name", std::string("smile")},
+                                                                {"default", 0.35},
+                                                                {"minimum", 0.0},
+                                                                {"maximum", 1.0},
+                                                                {"value", 0.35}});
     avatar_editing::EditorValue::Object channels;
     channels["smile"] = 1.0;
     avatar_editing::EditorValue::Array expressions;
-    expressions.push_back(avatar_editing::EditorValue::Object{
+    expressions.emplace_back(avatar_editing::EditorValue::Object{
         {"id", std::string("happy")}, {"name", std::string("happy")}, {"channels", std::move(channels)}});
     avatar_editing::EditorValue::Object content;
     content["kind"]        = std::string("image");

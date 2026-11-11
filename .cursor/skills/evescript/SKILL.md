@@ -7,13 +7,14 @@ description: Write EveScript (.nut) for EVEngine. Use when editing game scripts,
 
 Do not invent Unity C#, Godot GDScript, Lua, or JavaScript APIs. EVEngine games are `.nut` (EveScript = Squirrel + compile-time extensions). There is no second runtime language.
 
-Lookup before writing (do not guess Unity/Godot names):
+## Entry rules
 
-1. Live MCP: `eve_api_search` / `eve_api_get` on `bin/eve run --debug --mcp-port=7529 …`
-2. **SDK zip** (no engine source): `share/eve/ai/eve-api.json` (same catalog as this `eve` binary)
-3. Engine git tree only: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
+1. Module docs (`docs/usr/modules/<name>.md`) open with **这篇解决什么** — problems, preferred entry, do-not. Read that block first; do not skim past it into low-level APIs.
+2. Lookup by problem, then use the documented entry. Signatures: MCP `eve_api_search` / `eve_api_get`, or SDK `share/eve/ai/eve-api.json`, or `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`.
+3. Never rebuild a documented higher-level feature from primitives (example: do not iterate every enemy unit to find in-range targets when `sensing` query / `circle` exists).
+4. Suspect cost → profile at scale (`profiler.hotspots(limit, minSelfMs)`, MCP `eve_profiler_hotspots`). Small scenes do not prove the path is fine. See `docs/dev/API成本与Profiler约定.md`.
 
-Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`.
+Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`. Template problem headers: `docs/usr/modules/sensing.md`, `docs/usr/modules/spatial.md`. Mature game paradigms (agent loop, game scaffold, ARPG/RPG/RTS, 2D action guide): [`.cursor/skills/README.md`](../README.md).
 
 ## Language (differences from JS/C#)
 
@@ -23,7 +24,8 @@ Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human
 - Modules: `config.nut` lists `modules` / `optionalModules` by **root slot** (`gfx`, not CMake `graphics`).
 - Do not use `"Graphics" in eve` — `in` does not trigger lazy binding. Use `eve.moduleList` / `has_module("gfx")` / `ensure_module("audio")`.
 - `switch` is a Squirrel keyword. UI factory: `ui["switch"]`.
-- Import: `import { x } from "./scripts/foo.nut"` then `export function`.
+- Import: `import { x } from "./scripts/foo.nut"` then `export function`. Prefer import modules over `dofile` / `loadfile`.
+- Agent-oriented projects may set `config.allowGlobals = []` (or only list needed loaders among `dofile` / `loadfile` / `compilestring`) so unlisted loaders throw after bootstrap; keep `main.nut` as an orchestration layer.
 - Types are gradual (`float`, `int`, `->`). They erase at runtime; they help the compiler/LSP.
 
 Minimal game:
@@ -68,6 +70,13 @@ eve_render <- function() {
 
 - SDK and tree: `share/eve/examples/basic/main.nut` or `examples/basic/main.nut` — persist, physics, particles, lifecycle
 - Engine tree only: `examples/ecs/main.nut` (Component / Entity / System), `examples/primitive-drawing/main.nut` (Result tables)
+
+## Generating art assets
+
+Before inventing image sizes for cards or visual novels, read an **asset kit**:
+MCP `eve_asset_kit_list` / `get` / `resolve`, CLI `python3 scripts/asset_kits.py`, or SDK
+`share/eve/ai/asset-kits/` (see `INTEGRATION.md`). Kits name `pixelSize`, aspect ratio,
+alpha rules, `pathPattern`, and multi-system `bindings`. Do not guess Unity/Godot sizes.
 
 ## Runtime agents
 

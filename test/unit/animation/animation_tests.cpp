@@ -1985,6 +1985,31 @@ TEST_CASE("animation.rootMotion.translationBakeKeepsBindRootAcrossLoop") {
     CHECK(player.getRootMotionZ() > .3f);
 }
 
+TEST_CASE("animation.rootMotion.selectedChildMatchesFullPoseAcrossMultipleLoopsAndMissingTracks") {
+    auto       source = skeleton();
+    auto       clip   = walk(3.f, 1.f);
+    AnimPlayer player(source.get());
+    player.setRootMotionBone(1);
+    player.play(clip.get());
+    std::uint64_t tick = 0;
+    for (float dt : {.125f, .875f, 2.25f, .125f}) {
+        REQUIRE(player.advance({eve::SimulationTick{++tick}, eve::Duration::fromSeconds(dt).expect("test dt")}).ok());
+        close(player.getRootMotionZ(), 3.f * dt);
+        AnimPose expected;
+        clip->sample(player.getTime(), &expected, source.get());
+        for (int bone = 0; bone < source->getBoneCount(); ++bone) {
+            CHECK_EQ(player.getPose()->getLocalPositionY(bone), expected.getLocalPositionY(bone));
+            CHECK_EQ(player.getPose()->getLocalPositionZ(bone), expected.getLocalPositionZ(bone));
+        }
+    }
+    AnimClip missing("bind-fallback");
+    missing.setDuration(1.f);
+    player.play(&missing);
+    REQUIRE(player.advance({eve::SimulationTick{++tick}, eve::Duration::fromSeconds(2.25).expect("test dt")}).ok());
+    close(player.getRootMotionZ(), 0.f);
+    close(player.getPose()->getLocalPositionY(1), 1.f);
+}
+
 TEST_CASE("animation.rootMotion.rotationBakeRestoresBindRotation") {
     auto     source = skeleton();
     AnimClip spin("spin");
@@ -2061,10 +2086,26 @@ TEST_CASE("animation.rootMotion.parseNamesAndRejectNonfiniteYaw") {
 #include <array>
 #include <cmath>
 
+#include <utility>
+
 namespace test_animation_skinned {
 using namespace eve::animation;
 
 TEST_CASE("animation.skin.identityTrsMatrixPreservesPointCoordinates") {
+    constexpr auto constantMatrix = [] {
+        auto transform = TransformTRS::identity();
+        transform.px   = 3.f;
+        transform.sx   = 2.f;
+        return Mat4::fromTRS(transform);
+    }();
+    static_assert(Mat4::identity().m[15] == 1.f);
+    static_assert(constantMatrix.m[0] == 2.f && constantMatrix.m[12] == 3.f);
+    static_assert(Mat4::mul(constantMatrix, constantMatrix).m[12] == 9.f);
+    static_assert(clampf(3.f, 0.f, 2.f) == 2.f && lerpf(0.f, 4.f, .5f) == 2.f);
+    static_assert(noexcept(Mat4::mul(constantMatrix, constantMatrix)));
+    static_assert(noexcept(std::declval<const AnimPose&>().getBoneCount()));
+    static_assert(!noexcept(std::declval<const AnimPose&>().getLocalPositionX(0)));
+    static_assert(noexcept(std::declval<const eve::graphics::Mesh&>().getSkinPaletteCount()));
     const TransformTRS identity = TransformTRS::identity();
     const Mat4         matrix   = Mat4::fromTRS(identity);
     for (int index : {0, 5, 10, 15}) REQUIRE(std::abs(matrix.m[index] - 1.f) < 1e-5f);

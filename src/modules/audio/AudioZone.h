@@ -1,7 +1,6 @@
 #pragma once
 #include "common/Export.h"
 
-
 #include "common/Result.h"
 
 #include <cstdint>
@@ -11,17 +10,20 @@ namespace eve::audio {
 class Source;
 
 /** @brief One Pcg audio-zone track timing and gain profile. */
-struct AudioZoneItem { float volume=1.f, fadeInTime=5.f, fadeOutTime=5.f, duration=0.f; };
+struct AudioZoneItem {
+    float volume = 1.f, fadeInTime = 5.f, fadeOutTime = 5.f, duration = 0.f;
+};
 /** @brief AudioZonePhase public API. */
 enum class AudioZonePhase : std::uint8_t { Active, BecomingInactive, Inactive };
 /** @brief Caller-owned Pcg audio-zone configuration and track list. */
 class EVENGINE_API_BACKENDS AudioZoneProfile {
 public:
-    float x=0.f,y=0.f,z=0.f,radius=30.f,minimumBreakTime=5.f,maximumBreakTime=10.f,deactivationTime=10.f;
-    bool global=false;
+    float x = 0.f, y = 0.f, z = 0.f, radius = 30.f, minimumBreakTime = 5.f, maximumBreakTime = 10.f,
+          deactivationTime = 10.f;
+    bool  global           = false;
     /** @brief Add one validated track profile. */
     [[nodiscard]] Result<int> addItem(const AudioZoneItem& item);
-    int itemCount() const noexcept { return static_cast<int>(items_.size()); }
+    int                       itemCount() const noexcept { return static_cast<int>(items_.size()); }
     /**
      * @brief Borrow track data.
      * @return Non-owning pointer, or null for an invalid index.
@@ -29,18 +31,26 @@ public:
      * @lifetime Valid until this profile is destroyed or its next addItem call.
      */
     const AudioZoneItem* itemAt(int index) const noexcept;
+
 private:
     std::vector<AudioZoneItem> items_;
 };
 /** @brief Persistent playback state owned by the caller. */
 struct AudioZoneState {
-    AudioZonePhase phase=AudioZonePhase::Inactive;
-    int selectedTrack=-1;
-    bool playing=false;
-    float trackStarted=0.f,fadeInEnds=0.f,fadeOutBegins=0.f,fadeOutEnds=0.f,nextTrackStarts=0.f,deactivateAt=0.f;
+    AudioZonePhase phase         = AudioZonePhase::Inactive;
+    int            selectedTrack = -1;
+    bool           playing       = false;
+    float          trackStarted = 0.f, fadeInEnds = 0.f, fadeOutBegins = 0.f, fadeOutEnds = 0.f, nextTrackStarts = 0.f,
+                   deactivateAt = 0.f;
+    /** @brief Audible volume sampled when entering BecomingInactive (exit fade start). */
+    float exitFadeFrom = 0.f;
 };
 /** @brief Commands to apply to a caller-owned audio Source. */
-struct AudioZoneOutput { bool play=false,stop=false; int trackIndex=-1; float volume=0.f; };
+struct AudioZoneOutput {
+    bool  play = false, stop = false;
+    int   trackIndex = -1;
+    float volume     = 0.f;
+};
 /**
  * @brief Evaluate PcgAudioManager/PcgAudioZone for one explicit time and player observation.
  * @param profile Immutable zone configuration.
@@ -59,4 +69,4 @@ struct AudioZoneOutput { bool play=false,stop=false; int trackIndex=-1; float vo
                                                                               std::uint32_t seed);
 /** @brief Apply one evaluated command to the caller-selected track Source without retaining it. */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyAudioZoneOutput(Source* source, const AudioZoneOutput& output);
-}
+}  // namespace eve::audio

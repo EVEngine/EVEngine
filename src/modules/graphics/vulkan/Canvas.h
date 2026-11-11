@@ -58,6 +58,8 @@ public:
     bool takePendingClear();
     /** @brief True when hdr. */
     bool isHDR() const { return hdr; }
+    /** @brief Borrow the creating Graphics; valid only while this canvas is alive. */
+    Graphics *owningGraphics() const { return owner; }
 
     /** @brief Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
     void ensure3D();

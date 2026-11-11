@@ -91,6 +91,9 @@ TEST_CASE("sensing.query.filtersShapeTagsFactionVisibilityAndSelf") {
     REQUIRE(withoutScout.ok());
     REQUIRE_EQ(withoutScout.value().size(), std::size_t{1});
     CHECK_EQ(withoutScout.value().ranked()[0].id, std::string("edge"));
+    CHECK_EQ(world.resultAt(0)->get().id, std::string("edge"));
+    CHECK_EQ(result.value().ranked()[0].id, std::string("near"));
+    CHECK(world.debugLastQueryJson().find("\"accepted\":1") != std::string::npos);
 }
 
 TEST_CASE("sensing.query.boxConeAndDistanceTieHaveExactOutputs") {

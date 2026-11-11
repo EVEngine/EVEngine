@@ -20,6 +20,11 @@ struct QuestObjective {
     std::string topic;
     std::string target;
     int count = 1;  ///< <=0 按 1 处理
+    /**
+     * @brief 可选目标：计入进度与 UI，但不参与完成判定（objectivePolicy=all/ordered）。
+     * @remarks objectivePolicy=any 时，可选目标也不算作「任一完成」的候选；仅非 optional 计入。
+     */
+    bool optional = false;
 };
 
 /** @brief 奖励规格（定义侧数据）。引擎不发奖，仅提供查询。 */
@@ -43,6 +48,13 @@ struct QuestRuntime {
     /** @brief locked | inactive | active | ready | completed | failed */
     std::string state;
     std::vector<ObjectiveRuntime> objectives;
+    /**
+     * @brief 绝对截止时刻（与 Tracker::applyClock 使用同一时间轴）；0 表示未武装或无限时。
+     * @remarks 进入 active 后由 applyClock 按定义 timeLimitSeconds 武装；过期 fail 的 reason 为 expired。
+     */
+    double deadlineAt = 0.0;
+    /** @brief 最近一次 refreshByKey 写入的 stamp；与定义 refreshKey 配对做日刷/赛季刷。 */
+    std::string refreshStamp;
 };
 
 /**

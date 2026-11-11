@@ -141,10 +141,11 @@ std::vector<Match> resolve(Object::Ptr declaration, const std::vector<Match>& ob
     return matches;
 }
 }  // namespace
-Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId) {
+Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId, std::string projectDir) {
     Snapshot out;
     out.files                = std::move(files);
     out.stats                = stats;
+    out.projectDir           = std::move(projectDir);
     const auto  manifestFile = out.files.find("game.semantic.json");
     Object::Ptr manifest;
     if (manifestFile == out.files.end()) {

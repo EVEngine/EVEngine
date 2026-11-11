@@ -1,5 +1,7 @@
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 
+#include <utility>
+
 #if defined(__EMSCRIPTEN__)
 
 namespace eve::pixelworld {
@@ -46,8 +48,7 @@ using Array = Poco::JSON::Array;
 
 eve::Result<MaterialCatalog> malformed(std::string message, std::string path = "document") {
     return eve::Result<MaterialCatalog>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, message, path, {},
-        "pixelworld.catalog-codec"));
+        eve::DiagnosticCode::SerializationError, std::move(message), std::move(path), {}, "pixelworld.catalog-codec"));
 }
 
 bool exactFields(const Object& object, std::initializer_list<std::string_view> allowed) {

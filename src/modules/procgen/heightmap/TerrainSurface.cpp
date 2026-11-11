@@ -842,7 +842,7 @@ Result<int> removeTerrainTerraces(Heightmap &target, const Heightmap &source, co
         return invalid(
             "terrain.terraceRemoval.apply: matching finite rasters, distinct class output and valid settings required");
     const int                  width = source.getWidth(), height = source.getHeight();
-    const auto                 original = source.data();
+    const auto&                original = source.data();
     auto                       index    = [width](int x, int y) { return size_t(y) * width + x; };
     std::vector<unsigned char> mask(original.size(), 0);
     for (int y = 1; y < height - 1; ++y)

@@ -28,7 +28,7 @@ std::vector<AnimStateMachine *> &machines() {
 double stateNumber(const StateValue &v) { return v.isInt() ? static_cast<double>(v.asInt()) : v.asDouble(); }
 
 /** @brief IStateProvider over every live AnimStateMachine (module registry). */
-class AnimStateProvider : public eve::caps::IStateProvider {
+class AnimStateProvider final : public eve::caps::IStateProvider {
 public:
     const char *stateKind() const override { return "anim"; }
 

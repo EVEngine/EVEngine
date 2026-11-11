@@ -1,0 +1,84 @@
+name: Install Vulkan SDK (with retries)
+description: >
+  Wrap jakoch/install-vulkan-sdk-action with transient-network retries.
+  Install Windows SwiftShader from a pinned, digest-verified release without
+  querying mutable rasterizer versions.json metadata.
+inputs:
+  vulkan_version:
+    description: Vulkan SDK version
+    required: true
+  install_runtime:
+    description: Windows — install vulkan-1.dll runtime
+    required: false
+    default: "false"
+  install_swiftshader:
+    description: Windows — install SwiftShader
+    required: false
+    default: "false"
+  cache:
+    description: Cache the SDK install folder
+    required: false
+    default: "false"
+  cache_save_if:
+    description: Whether to save the cache
+    required: false
+    default: "true"
+  github_token:
+    description: Token for GitHub API rate limits
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Install Vulkan SDK (attempt 1/3)
+      id: attempt1
+      continue-on-error: true
+      uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+      with:
+        vulkan_version: ${{ inputs.vulkan_version }}
+        install_runtime: ${{ inputs.install_runtime }}
+        install_swiftshader: false
+        cache: ${{ inputs.cache }}
+        cache_save_if: ${{ inputs.cache_save_if }}
+        github_token: ${{ inputs.github_token }}
+
+    - name: Wait before Vulkan SDK retry 2
+      if: steps.attempt1.outcome == 'failure'
+      shell: bash
+      run: sleep 15
+
+    - name: Install Vulkan SDK (attempt 2/3)
+      id: attempt2
+      if: steps.attempt1.outcome == 'failure'
+      continue-on-error: true
+      uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+      with:
+        vulkan_version: ${{ inputs.vulkan_version }}
+        install_runtime: ${{ inputs.install_runtime }}
+        install_swiftshader: false
+        cache: ${{ inputs.cache }}
+        cache_save_if: ${{ inputs.cache_save_if }}
+        github_token: ${{ inputs.github_token }}
+
+    - name: Wait before Vulkan SDK retry 3
+      if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
+      shell: bash
+      run: sleep 30
+
+    - name: Install Vulkan SDK (attempt 3/3)
+      if: steps.attempt1.outcome == 'failure' && steps.attempt2.outcome == 'failure'
+      uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+      with:
+        vulkan_version: ${{ inputs.vulkan_version }}
+        install_runtime: ${{ inputs.install_runtime }}
+        install_swiftshader: false
+        cache: ${{ inputs.cache }}
+        cache_save_if: ${{ inputs.cache_save_if }}
+        github_token: ${{ inputs.github_token }}
+
+    - name: Install pinned SwiftShader with SHA-256 verification
+      if: runner.os == 'Windows' && inputs.install_swiftshader == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: python3 scripts/install_swiftshader.py --destination C:/SwiftShader --register-driver

@@ -3,6 +3,7 @@
 #include "dnut_interpreter/DnutLexer.h"
 
 #include <cstdlib>
+#include <map>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -20,7 +21,7 @@ struct ParseAbort {};
 struct CompiledOption;
 
 struct CompiledStatement {
-    enum class Kind { Step, If, Choice };
+    enum class Kind { Step, If, Choice, Loop, Parallel, Break, Continue, Label, Jump };
 
     Kind        kind = Kind::Step;
     std::string nodeId;
@@ -31,6 +32,12 @@ struct CompiledStatement {
     std::vector<CompiledStatement> thenBody;
     std::vector<CompiledStatement> elseBody;
     std::vector<CompiledOption>    options;
+    /** @brief Parallel lane bodies (`parallel { lane {…} lane {…} }`). */
+    std::vector<std::vector<CompiledStatement>> lanes;
+    /** @brief Label / jump name, or loop mode (`forever` / `while` / `times`). */
+    std::string name;
+    int         sourceLine   = 0;
+    int         sourceColumn = 0;
 };
 
 /** @brief One `option` arm of a `choice` statement. */
@@ -39,6 +46,12 @@ struct CompiledOption {
     eve::Value                     condition;
     std::vector<CompiledStatement> body;
     std::string                    nodeId;
+};
+
+/** @brief Open loop while emitting, so `break` / `continue` can resolve targets. */
+struct LoopEmitFrame {
+    std::string loopNodeId;
+    std::string afterNodeId;
 };
 
 eve::Value numberValue(const std::string& raw) {
@@ -67,7 +80,7 @@ public:
 
     void run() {
         while (!atEnd()) {
-            if (isIdentifier("story")) {
+            if (isIdentifier("story") || isIdentifier("common")) {
                 try {
                     parseStory();
                 } catch (const ParseAbort&) {
@@ -141,7 +154,7 @@ private:
     void skipForeignBlock() {
         int depth = 0;
         while (!atEnd()) {
-            if (depth == 0 && isIdentifier("story")) return;
+            if (depth == 0 && (isIdentifier("story") || isIdentifier("common"))) return;
             if (isPunct("{")) {
                 ++depth;
             } else if (isPunct("}")) {
@@ -152,10 +165,11 @@ private:
     }
 
     void parseStory() {
-        advance();  // 'story'
+        const bool isCommon = isIdentifier("common");
+        advance();  // 'story' | 'common'
         invalidStep_ = false;
-        const std::string id = expectIdentifier("a story id");
-        bool              repeatable = false;
+        const std::string id = expectIdentifier(isCommon ? "a common-event id" : "a story id");
+        bool              repeatable = isCommon;  // common events are reusable by default
         int               version    = 1;
         while (cur().kind == DnutTokenKind::Identifier) {
             const std::string modifier = cur().text;
@@ -172,7 +186,7 @@ private:
                 if (version < 1) errorHere("version must be positive");
                 continue;
             }
-            errorHere("unknown story modifier '" + modifier + "'");
+            errorHere(std::string("unknown ") + (isCommon ? "common" : "story") + " modifier '" + modifier + "'");
         }
 
         std::vector<CompiledStatement> body;
@@ -186,9 +200,13 @@ private:
         SequenceNode      endNode;
         endNode.id   = endId;
         endNode.type = "end";
+        loopStack_.clear();
+        pendingJumps_.clear();
+        labels_.clear();
         const std::string entry = emitBlock(body, endId, asset);
         asset.entry             = entry.empty() ? endId : entry;
         asset.nodes.push_back(std::move(endNode));
+        resolveJumps(asset);
 
         bool publishable = !invalidStep_;
         if (auto validated = asset.validate(); !validated.ok()) {
@@ -199,7 +217,8 @@ private:
         }
         if (!publishedIds_.insert(asset.id).second) {
             output_.diagnostics.push_back(
-                {DnutSeverity::Error, path_, 0, 0, "duplicate story id '" + asset.id + "'"});
+                {DnutSeverity::Error, path_, 0, 0,
+                 std::string("duplicate ") + (isCommon ? "common" : "story") + " id '" + asset.id + "'"});
             publishable = false;
         }
         if (publishable) output_.assets.push_back(std::move(asset));
@@ -227,7 +246,13 @@ private:
         if (keyword == "if") return parseIf();
         if (keyword == "choice") return parseChoice();
         if (keyword == "wait") return parseWait();
-        if (keyword == "call") return parseCall();
+        if (keyword == "call" || keyword == "common") return parseCall();
+        if (keyword == "loop") return parseLoop();
+        if (keyword == "break") return parseBreakOrContinue(true);
+        if (keyword == "continue") return parseBreakOrContinue(false);
+        if (keyword == "label") return parseLabel();
+        if (keyword == "jump") return parseJump();
+        if (keyword == "parallel") return parseParallel();
         if (keyword == "end") {
             advance();
             CompiledStatement statement;
@@ -285,11 +310,95 @@ private:
     }
 
     CompiledStatement parseCall() {
-        advance();  // 'call'
+        advance();  // 'call' | 'common' (CallCommonEvent)
         CompiledStatement statement;
         statement.type   = "call";
         statement.nodeId = nextNodeId();
-        statement.payload.set("target", eve::Value::string(expectIdentifier("a called story id")));
+        statement.payload.set("target", eve::Value::string(expectIdentifier("a called sequence id")));
+        return statement;
+    }
+
+    CompiledStatement parseLoop() {
+        const DnutToken start = cur();
+        advance();  // 'loop'
+        CompiledStatement statement;
+        statement.kind         = CompiledStatement::Kind::Loop;
+        statement.nodeId       = nextNodeId();
+        statement.sourceLine   = start.line;
+        statement.sourceColumn = start.column;
+        statement.name         = "forever";
+        if (isIdentifier("while")) {
+            advance();
+            statement.name      = "while";
+            statement.condition = parseCondition();
+        } else if (isIdentifier("times")) {
+            advance();
+            expectPunct("=");
+            statement.name = "times";
+            statement.payload.set("count", parseValue());
+        }
+        parseBlockBody(statement.thenBody);
+        return statement;
+    }
+
+    CompiledStatement parseBreakOrContinue(bool isBreak) {
+        const DnutToken start = cur();
+        advance();
+        CompiledStatement statement;
+        statement.kind         = isBreak ? CompiledStatement::Kind::Break : CompiledStatement::Kind::Continue;
+        statement.type         = isBreak ? "break" : "continue";
+        statement.nodeId       = nextNodeId();
+        statement.sourceLine   = start.line;
+        statement.sourceColumn = start.column;
+        return statement;
+    }
+
+    CompiledStatement parseLabel() {
+        const DnutToken start = cur();
+        advance();  // 'label'
+        CompiledStatement statement;
+        statement.kind         = CompiledStatement::Kind::Label;
+        statement.type         = "label";
+        statement.nodeId       = nextNodeId();
+        statement.name         = expectIdentifier("a label name");
+        statement.sourceLine   = start.line;
+        statement.sourceColumn = start.column;
+        return statement;
+    }
+
+    CompiledStatement parseJump() {
+        const DnutToken start = cur();
+        advance();  // 'jump'
+        CompiledStatement statement;
+        statement.kind         = CompiledStatement::Kind::Jump;
+        statement.type         = "jump";
+        statement.nodeId       = nextNodeId();
+        statement.name         = expectIdentifier("a label name");
+        statement.sourceLine   = start.line;
+        statement.sourceColumn = start.column;
+        return statement;
+    }
+
+    CompiledStatement parseParallel() {
+        const DnutToken start = cur();
+        advance();  // 'parallel'
+        CompiledStatement statement;
+        statement.kind         = CompiledStatement::Kind::Parallel;
+        statement.type         = "parallel";
+        statement.nodeId       = nextNodeId();
+        statement.sourceLine   = start.line;
+        statement.sourceColumn = start.column;
+        expectPunct("{");
+        while (!isPunct("}")) {
+            if (atEnd()) errorHere("unterminated parallel block");
+            if (!isIdentifier("lane")) errorHere("parallel accepts only lane blocks");
+            advance();
+            std::vector<CompiledStatement> lane;
+            parseBlockBody(lane);
+            statement.lanes.push_back(std::move(lane));
+        }
+        advance();  // '}'
+        if (statement.lanes.size() < 2) errorHere("parallel requires at least two lanes");
         return statement;
     }
 
@@ -344,8 +453,13 @@ private:
                 object != nullptr && object->contains("any") && object->at("any").isArray()) {
                 object->at("any").pushBack(std::move(right));
             } else {
-                left = eve::Value(eve::Value::Object{
-                    {"any", eve::Value(eve::Value::Array{std::move(left), std::move(right)})}});
+                eve::Value::Array operands;
+                operands.reserve(2);
+                operands.emplace_back(std::move(left));
+                operands.emplace_back(std::move(right));
+                eve::Value::Object combined;
+                combined.emplace("any", std::move(operands));
+                left = eve::Value(std::move(combined));
             }
         }
         return left;
@@ -360,8 +474,13 @@ private:
                 object != nullptr && object->contains("all") && object->at("all").isArray()) {
                 object->at("all").pushBack(std::move(right));
             } else {
-                left = eve::Value(eve::Value::Object{
-                    {"all", eve::Value(eve::Value::Array{std::move(left), std::move(right)})}});
+                eve::Value::Array operands;
+                operands.reserve(2);
+                operands.emplace_back(std::move(left));
+                operands.emplace_back(std::move(right));
+                eve::Value::Object combined;
+                combined.emplace("all", std::move(operands));
+                left = eve::Value(std::move(combined));
             }
         }
         return left;
@@ -450,20 +569,136 @@ private:
             asset.nodes.push_back(std::move(node));
             return statement.nodeId;
         }
-        SequenceNode node;
-        node.id   = statement.nodeId;
-        node.type = "choice";
-        node.next = next;
-        for (const auto& option : statement.options) {
-            SequenceRoute route;
-            route.label     = option.label;
-            route.condition = option.condition;
-            route.target    = emitBlock(option.body, next, asset);
-            node.routes.push_back(std::move(route));
+        if (statement.kind == CompiledStatement::Kind::Choice) {
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = "choice";
+            node.next = next;
+            for (const auto& option : statement.options) {
+                SequenceRoute route;
+                route.label     = option.label;
+                route.condition = option.condition;
+                route.target    = emitBlock(option.body, next, asset);
+                node.routes.push_back(std::move(route));
+            }
+            asset.nodes.push_back(std::move(node));
+            return statement.nodeId;
         }
-        asset.nodes.push_back(std::move(node));
-        return statement.nodeId;
+        if (statement.kind == CompiledStatement::Kind::Loop) {
+            loopStack_.push_back({statement.nodeId, next});
+            const std::string bodyEntry = emitBlock(statement.thenBody, statement.nodeId, asset);
+            loopStack_.pop_back();
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = "loop";
+            node.next = next;
+            node.payload.set("mode", eve::Value::string(statement.name));
+            if (statement.name == "times") {
+                if (const eve::Value* count = statement.payload.find("count")) node.payload.set("count", *count);
+            }
+            SequenceRoute route;
+            if (statement.name == "while") route.condition = statement.condition;
+            route.target = bodyEntry;
+            node.routes.push_back(std::move(route));
+            asset.nodes.push_back(std::move(node));
+            return statement.nodeId;
+        }
+        if (statement.kind == CompiledStatement::Kind::Break ||
+            statement.kind == CompiledStatement::Kind::Continue) {
+            if (loopStack_.empty()) {
+                output_.diagnostics.push_back({DnutSeverity::Error, path_, statement.sourceLine,
+                                               statement.sourceColumn,
+                                               statement.type + " is not inside a loop"});
+                invalidStep_ = true;
+            }
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = statement.type;
+            node.next = loopStack_.empty()
+                            ? next
+                            : (statement.kind == CompiledStatement::Kind::Break ? loopStack_.back().afterNodeId
+                                                                                : loopStack_.back().loopNodeId);
+            asset.nodes.push_back(std::move(node));
+            return statement.nodeId;
+        }
+        if (statement.kind == CompiledStatement::Kind::Label) {
+            if (!labels_.emplace(statement.name, statement.nodeId).second) {
+                output_.diagnostics.push_back({DnutSeverity::Error, path_, statement.sourceLine,
+                                               statement.sourceColumn, "duplicate label '" + statement.name + "'"});
+                invalidStep_ = true;
+            }
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = "label";
+            node.next = next;
+            node.payload.set("name", eve::Value::string(statement.name));
+            asset.nodes.push_back(std::move(node));
+            return statement.nodeId;
+        }
+        if (statement.kind == CompiledStatement::Kind::Jump) {
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = "jump";
+            node.next = next;
+            node.payload.set("name", eve::Value::string(statement.name));
+            asset.nodes.push_back(std::move(node));
+            pendingJumps_.push_back({statement.nodeId, statement.name, statement.sourceLine, statement.sourceColumn});
+            return statement.nodeId;
+        }
+        if (statement.kind == CompiledStatement::Kind::Parallel) {
+            const std::string joinId = nextNodeId();
+            SequenceNode      join;
+            join.id   = joinId;
+            join.type = "join";
+            asset.nodes.push_back(std::move(join));
+
+            SequenceNode node;
+            node.id   = statement.nodeId;
+            node.type = "parallel";
+            node.next = next;
+            node.payload.set("join", eve::Value::string(joinId));
+            for (const auto& lane : statement.lanes) {
+                SequenceRoute route;
+                route.target = emitBlock(lane, joinId, asset);
+                node.routes.push_back(std::move(route));
+            }
+            asset.nodes.push_back(std::move(node));
+            return statement.nodeId;
+        }
+        output_.diagnostics.push_back(
+            {DnutSeverity::Error, path_, 0, 0, "internal: unhandled compiled statement kind"});
+        invalidStep_ = true;
+        return next;
     }
+
+    void resolveJumps(SequenceAsset& asset) {
+        for (const auto& jump : pendingJumps_) {
+            auto found = labels_.find(jump.name);
+            if (found == labels_.end()) {
+                output_.diagnostics.push_back({DnutSeverity::Error, path_, jump.line, jump.column,
+                                               "jump targets unknown label '" + jump.name + "'"});
+                invalidStep_ = true;
+                continue;
+            }
+            SequenceNode* node = nullptr;
+            for (auto& candidate : asset.nodes) {
+                if (candidate.id == jump.nodeId) {
+                    node = &candidate;
+                    break;
+                }
+            }
+            if (!node) continue;
+            node->payload.set("target", eve::Value::string(found->second));
+            node->next = found->second;
+        }
+    }
+
+    struct PendingJump {
+        std::string nodeId;
+        std::string name;
+        int         line   = 0;
+        int         column = 0;
+    };
 
     std::vector<DnutToken>   tokens_;
     std::size_t              index_ = 0;
@@ -475,6 +710,12 @@ private:
     /** @brief Set when a step statement failed vocabulary validation. */
     bool                     invalidStep_ = false;
     std::unordered_set<std::string> publishedIds_;
+    std::vector<LoopEmitFrame>      loopStack_;
+    // Prefer std::map over unordered_map<string,string>: that specialization is
+    // exported from EVFoundation on Windows SHARED and collides (LNK2005/LNK1169)
+    // when instantiated again in the Platform group (see windows-ccache-hardlinks.md).
+    std::map<std::string, std::string> labels_;
+    std::vector<PendingJump>           pendingJumps_;
 };
 
 }  // namespace

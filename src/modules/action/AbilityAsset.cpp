@@ -1,6 +1,8 @@
 #include "action/AbilityAsset.h"
 #include "action/ActionTargetingCodecInternal.h"
 
+#include <utility>
+
 #include "common/ConditionCodec.h"
 
 #include <algorithm>
@@ -14,8 +16,7 @@ namespace {
 
 template <typename T>
 Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
+    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 const Value* field(const Value& value, std::string_view name) {

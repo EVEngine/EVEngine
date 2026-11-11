@@ -11,7 +11,8 @@
     "combat_locomotion.cpp",
     "combat_carrier.cpp",
     "combat_melee_hit.cpp",
-    "combat_motion_warp.cpp"
+    "combat_motion_warp.cpp",
+    "combat_fps_gait.cpp"
   ]
 }
 */
@@ -618,4 +619,87 @@ TEST_CASE("combat.damageCapture.rejectsExternalRuleWithoutCallingItAndRejectsInv
     REQUIRE(!invalid.capture().ok());
 }
 }  // namespace test_damage_capture
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_fps_gait)
+#include "combat/FpsGait.h"
+
+#include <cmath>
+
+namespace test_combat_fps_gait_contract {
+
+TEST_CASE("combat.FpsGait.evaluate: crouch beats sprint and latches when cannot stand") {
+    eve::combat::FpsGait gait;
+    REQUIRE(gait.setProfile({}).ok());
+
+    SUB_CASE("sprint while grounded selects sprint pose") {
+        auto pose = gait.evaluate({true, false, true, true});
+        REQUIRE(pose.ok());
+        CHECK(pose.value().mode == eve::combat::FpsGaitMode::Sprint);
+        CHECK_EQ(pose.value().moveSpeed, gait.profile().sprintSpeed);
+        CHECK_EQ(pose.value().capsuleHeight, gait.profile().standHeight);
+    };
+
+    SUB_CASE("crouch overrides sprint") {
+        auto pose = gait.evaluate({true, true, true, true});
+        REQUIRE(pose.ok());
+        CHECK(pose.value().mode == eve::combat::FpsGaitMode::Crouch);
+        CHECK_EQ(pose.value().eyeHeight, gait.profile().crouchEyeHeight);
+    };
+
+    SUB_CASE("cannot stand keeps crouch after release") {
+        REQUIRE(gait.evaluate({false, true, true, true}).ok());
+        auto latched = gait.evaluate({false, false, true, false});
+        REQUIRE(latched.ok());
+        CHECK(latched.value().mode == eve::combat::FpsGaitMode::Crouch);
+        auto risen = gait.evaluate({false, false, true, true});
+        REQUIRE(risen.ok());
+        CHECK(risen.value().mode == eve::combat::FpsGaitMode::Walk);
+    };
+
+    SUB_CASE("airborne sprint request falls back to walk") {
+        auto pose = gait.evaluate({true, false, false, true});
+        REQUIRE(pose.ok());
+        CHECK(pose.value().mode == eve::combat::FpsGaitMode::Walk);
+    };
+}
+
+TEST_CASE("combat.FpsGait.setProfile: invalid heights are rejected") {
+    eve::combat::FpsGait    gait;
+    eve::combat::FpsGaitProfile bad = {};
+    bad.crouchHeight                = 2.5;
+    bad.standHeight                 = 1.8;
+    REQUIRE(!gait.setProfile(bad).ok());
+}
+
+TEST_CASE("combat.FpsHeadBob.solve: scales with speed and respects disable/airborne") {
+    eve::combat::FpsHeadBobRequest request;
+    request.stridePhase    = 1.5707963267948966;  // pi/2
+    request.moveSpeed      = 5.5;
+    request.referenceSpeed = 5.5;
+    request.amplitude      = 0.04;
+    request.grounded       = true;
+    request.enabled        = true;
+
+    SUB_CASE("full speed at peak phase reaches amplitude") {
+        auto offset = eve::combat::FpsHeadBob::solve(request);
+        REQUIRE(offset.ok());
+        CHECK_LT(std::fabs(offset.value().eyeY - 0.04), 1e-9);
+    };
+
+    SUB_CASE("disabled or airborne yields only land dip") {
+        request.landDip = -0.02;
+        request.enabled = false;
+        auto off        = eve::combat::FpsHeadBob::solve(request);
+        REQUIRE(off.ok());
+        CHECK_EQ(off.value().eyeY, -0.02);
+        request.enabled  = true;
+        request.grounded = false;
+        off              = eve::combat::FpsHeadBob::solve(request);
+        REQUIRE(off.ok());
+        CHECK_EQ(off.value().eyeY, -0.02);
+    };
+}
+
+}  // namespace test_combat_fps_gait_contract
 #endif

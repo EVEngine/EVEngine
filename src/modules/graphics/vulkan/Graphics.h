@@ -264,7 +264,7 @@ struct Mesh3DClusteredUBO {
 struct GpuTexture {
     vkb::TextureImage2D image;
     vkb::GenericImage arrayImage;
-    vkb::TextureImageCube cubeImage;
+    vkb::GenericImage   cubeImage;
     /** @brief HDR probe cube (attachment + storage + transfer); empty when unused. */
     vkb::CubemapRenderTarget hdrCube;
     bool isCube = false;
@@ -279,6 +279,8 @@ struct GpuTexture {
     int height = 0;
     uint32_t mipLevels = 1;
     TextureSampler samplerState{};
+    /** @brief Globally unique identity of the last completed owned RGBA8 upload; zero is unavailable. */
+    uint64_t contentIdentity = 0;
     /** @brief Bindless texture-array slot (stage 0 GPU-driven path). */
     uint32_t bindlessIndex2D = kInvalidBindlessSlot;
     uint32_t bindlessIndexCube = kInvalidBindlessSlot;
@@ -343,6 +345,8 @@ struct GpuShader {
     vk::Pipeline       mesh3dHdrOffscreenPipeline;
     vk::PipelineLayout pipelineLayout;
     vk::DescriptorSet                                                resourceSet;
+    // Borrowed from resources; identical compact frame ABI for all resource programs.
+    vk::DescriptorSetLayout                                          resourceFrameLayout;
     std::unique_ptr<MeshShaderResources, MeshShaderResourcesDeleter> resources;
     bool isMesh3D = false;
     bool isHair3D = false;
@@ -753,6 +757,14 @@ public:
                                    const uint32_t *indices, int indexCount) override;
     /** @brief Return layout facts from the owned Vulkan mesh upload. */
     [[nodiscard]] eve::Result<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh* mesh) const override;
+    /** @brief Return the current content identity of an owned, realized RGBA8 2D texture.
+     * @param texture Borrowed live facade; ownership is checked before inspecting its GPU handle.
+     * @return Globally unique value stable until a successful pixel write, or a structured error.
+     * @ownership No pointer is retained; releasing/replacing a texture never reuses its identity.
+     * @thread Render thread only; no callbacks or reentrancy. Does not realize deferred uploads.
+     * @cost Linear scan of owned texture registries; no GPU synchronization or pixel transfer.
+     */
+    [[nodiscard]] eve::Result<uint64_t> textureContentIdentity(const Texture *texture) const;
     bool bakeMeshMorph(Mesh *mesh) override;
     /** @brief Updates mesh vertices. */
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -1046,6 +1058,26 @@ public:
      * the same frame stream.
      */
     bool canRecordPostSceneGpuWork() const { return bool(presentRecording) && !sceneColorPassOpen; }
+    /** @brief True while the present frame command buffer is being recorded, including its render passes. */
+    bool hasOpenPresentFrame() const { return bool(presentRecording); }
+    /** @brief Actual swapchain present mode; render-thread query, valid after window initialization. */
+    vk::PresentModeKHR currentPresentMode() const { return swapchain.present_mode; }
+    /** @brief End the scene render pass before path commands; render thread, no submission or wait. */
+    void beginPathSceneOutput();
+    /** @brief Use borrowed path output for this frame's HDR resolve; valid through frame submission. */
+    void resolvePathSceneOutput(Texture *texture);
+    /** @brief Invalidate cached bindings before retiring completed path output; render thread only. */
+    void retirePathSceneOutput();
+    /** @brief Current recording identity, or zero outside a present recording.
+     * @lifetime Identities are monotonic for this Graphics lifetime; frame slots are not identities.
+     * @thread Render thread only; does not wait or submit work.
+     */
+    uint64_t recordingPresentSequence() const { return presentRecording ? presentSequence_ : 0; }
+    /** @brief Most recent successfully submitted present identity; zero before the first submission.
+     * @details Submission is not GPU completion. An abandoned recording never advances this value.
+     * @thread Render thread only; does not wait for the GPU.
+     */
+    uint64_t submittedPresentSequence() const { return submittedPresentSequence_; }
     /**
      * @brief Borrow the open present command buffer for post-scene recording.
      * @pre canRecordPostSceneGpuWork() is true.
@@ -1297,10 +1329,10 @@ private:
     /** @brief Release the readback staging ring (callers hold waitIdle). */
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
-    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                               GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
-                               GpuTexture *decalAlbedo, GpuTexture *decalNormal,
-                               GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
+                               GpuTexture *depthTex, GpuTexture *sceneColorTex, GpuTexture *decalAlbedo,
+                               GpuTexture *decalNormal, GpuTexture *decalParams, Mesh3dFrameSlots &fslots,
+                               vk::DescriptorSetLayout resourceLayout);
     void          ensureDefaultEnvCubemap();
     void          ensureFlatNormalTexture3D();
     void          ensureFlatHeightTexture3D();
@@ -1498,24 +1530,25 @@ private:
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
         size_t      paletteSlot      = 0;
+        bool        resourceProgram  = false;
         /** @brief Operator ==. */
         bool operator==(const Mesh3dSetKey &o) const {
             return albedo == o.albedo && normal == o.normal && env == o.env && reflectionProbe0 == o.reflectionProbe0 &&
                    reflectionProbe1 == o.reflectionProbe1 && height == o.height && depth == o.depth &&
                    sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo && decalNormal == o.decalNormal &&
-                   decalParams == o.decalParams && paletteSlot == o.paletteSlot;
+                   decalParams == o.decalParams && paletteSlot == o.paletteSlot && resourceProgram == o.resourceProgram;
         }
     };
     struct Mesh3dSetKeyHash {
         /** @brief Operator . */
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture*>()(k.albedo) ^ (std::hash<GpuTexture*>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture*>()(k.env) << 2) ^ (std::hash<GpuTexture*>()(k.height) << 3) ^
-                   (std::hash<GpuTexture*>()(k.reflectionProbe0) << 8) ^
-                   (std::hash<GpuTexture*>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture*>()(k.depth) << 4) ^
-                   (std::hash<GpuTexture*>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture*>()(k.decalAlbedo) << 5) ^
-                   (std::hash<GpuTexture*>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture*>()(k.decalParams) << 7) ^
-                   k.paletteSlot;
+            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
+                   (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
+                   (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture *>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture *>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture *>()(k.decalParams) << 7) ^
+                   k.paletteSlot ^ (size_t(k.resourceProgram) << 11);
         }
     };
     // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame
@@ -1988,8 +2021,8 @@ private:
     glm::mat4 decalViewProj{1.f};
     float decalNear = 0.1f;
     float decalFar = 100.f;
-    // One FrameGraph per in-flight slot for the deferred passes: the 3 CSM
-    // shadow cascades + the G-buffer fill are declarative passes in one layer,
+    // Two lazily-created FrameGraphs per in-flight slot: G-buffer-only (0),
+    // or all shadow layers plus G-buffer (1), with passes in one layer,
     // recorded concurrently on JobSystem workers. Each graph's command buffer
     // is only reused two frames later — by then the present slot fence (waited
     // in Present::begin) guarantees the previous graph submit has completed
@@ -1997,7 +2030,7 @@ private:
     // import the engine-owned shadow array + ColorTarget images; the engine
     // keeps ownership so readback / entity-ID rendering / postFX wrappers keep
     // working unchanged.
-    std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> deferredFrameGraphs_;
+    std::array<std::array<std::unique_ptr<vkb::FrameGraph>, 2>, kAsyncResourceCopies> deferredFrameGraphs_;
     FrameGraphRecordingState                                           deferredRecordingState_;
     // Only fully overwritten pipeline intermediates are frame-local. User canvases
     // and temporal histories retain their persistent-image semantics.
@@ -2008,7 +2041,7 @@ private:
     /** @brief True once this frame slot's deferred graph was recorded+submitted. */
     bool deferredGraphRecorded_ = false;
     size_t deferredGraphRecordedSlot_ = 0;
-    /** @brief (Re)build one deferred FrameGraph per slot from current targets. */
+    /** @brief Build the selected deferred plan per slot from current targets. */
     void buildDeferredFrameGraphs();
     /** @brief On the render thread, wait for submitted work and release graph
      * borrowers before replacing their
@@ -2100,6 +2133,8 @@ private:
 
     vkb::Present presentModel;
     vkb::RecordingCmd presentRecording;
+    uint64_t               presentSequence_          = 0;
+    uint64_t               submittedPresentSequence_ = 0;
     vkb::InRenderPass swapchainPass;
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
@@ -2304,6 +2339,11 @@ private:
     std::shared_ptr<InspectionService> inspectionService_;
     void                               pollEntityInspection();
     void                               destroyEntityInspection();
+    // Guide-capture service: offscreen silhouette/depth(/bone) AOVs from GuidePack cameras.
+    struct GuideCaptureService;
+    std::shared_ptr<GuideCaptureService> guideCaptureService_;
+    void                                 pollGuideCapture();
+    void                                 destroyGuideCapture();
 };
 
 }  // namespace eve::graphics::vulkan

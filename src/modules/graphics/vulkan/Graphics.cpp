@@ -1096,7 +1096,10 @@ bool Graphics::beginPresentCommandBuffer() {
             const bool newFrame = !presentRecording;
             presentRecording    = presentModel.begin();
             // A slot can recur after empty frames. Its number is not a frame identity.
-            if (presentRecording && newFrame) deferredGraphRecorded_ = false;
+            if (presentRecording && newFrame) {
+                ++presentSequence_;
+                deferredGraphRecorded_ = false;
+            }
         }
         if (presentRecording) {
             pollFrameCapture();

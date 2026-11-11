@@ -108,6 +108,7 @@ Result<Report> BalanceSearch::run(IEvaluator& evaluator) {
     report.problem        = *problem_;
     const auto&         p = report.problem;
     std::vector<double> initial;
+    initial.reserve(p.parameters.size());
     for (const auto& x : p.parameters) initial.push_back(x.initial);
     report.parameters = initial;
     auto baseline     = assess(p, initial, p.trainingSeeds, evaluator, report.evaluations);

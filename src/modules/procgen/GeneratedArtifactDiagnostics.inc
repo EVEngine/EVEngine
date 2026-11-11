@@ -1,8 +1,10 @@
 // Private pure diagnostic builders shared by store and recipe projections.
 eve::Result<GeneratedArtifact> rejectedArtifact(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<GeneratedArtifact>::failure(eve::Diagnostic::error(code, message, "generatedArtifact"));
+    return eve::Result<GeneratedArtifact>::failure(
+        eve::Diagnostic::error(code, std::move(message), "generatedArtifact"));
 }
 
 eve::Result<ArtifactPart> rejectedPart(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<ArtifactPart>::failure(eve::Diagnostic::error(code, message, "generatedArtifact.part"));
+    return eve::Result<ArtifactPart>::failure(
+        eve::Diagnostic::error(code, std::move(message), "generatedArtifact.part"));
 }

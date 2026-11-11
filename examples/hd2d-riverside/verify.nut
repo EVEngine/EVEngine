@@ -3,10 +3,8 @@ function verifyRiverside() {
     local checks = 0;
     function requireScene(condition, message) { if (!condition) throw message; }
     requireScene(actors.len() == 3, "expected three actors");
-    requireScene(houseModel.getMeshCount() == 10, "cottage material groups missing");
-    local textured=0;
-    foreach (part in houseParts) if (part.getMaterial().getAlbedoTexture()!=null) ++textured;
-    requireScene(textured == 4, "OBJ external material textures did not resolve");
+    requireScene(activeNativeHouse>=0 && nativeHouses.len()==4, "native house presets missing");
+    requireScene(nativeHouses[activeNativeHouse].appearance.counts.doors==1, "native entrance missing");
     checks+=2;
     foreach (a in actors) {
         local savedX=a.x, savedZ=a.z, savedDirection=a.direction;

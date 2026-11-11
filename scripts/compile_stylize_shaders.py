@@ -33,6 +33,14 @@ FRAGS = [
     "vignette_post.frag",
     "chromatic_post.frag",
     "grain_post.frag",
+    "glitch_analog_post.frag",
+    "glitch_block_post.frag",
+    "glitch_wave_post.frag",
+    "kuwahara_post.frag",
+    "kuwahara_aniso_post.frag",
+    "dog_post.frag",
+    "sharpen_post.frag",
+    "neon_edge_post.frag",
 ]
 
 # Dedicated vertex sources owned by the stylize module. Materials that reuse

@@ -1,5 +1,7 @@
 #include "procgen/heightmap/TerrainFile.h"
 
+#include <utility>
+
 #include "common/Capability.h"
 #include "common/ServiceInterfaces.h"
 #include "procgen/heightmap/TerrainAsset.h"
@@ -22,7 +24,7 @@ constexpr std::uint32_t kMaximumDimension = 32768;
 eve::Result<DecodedTerrainFile> terrainFileFailure(eve::DiagnosticCode code, std::string message,
                                                    std::string path) {
     return eve::Result<DecodedTerrainFile>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "procgen.terrain-file"));
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.terrain-file"));
 }
 
 std::uint32_t littleU32(const std::uint8_t *bytes) {

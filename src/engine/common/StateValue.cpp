@@ -71,7 +71,7 @@ StateValue toLegacyStateValue(const Value& value) {
         }
         case Value::Type::Object: {
             StateValue object = StateValue::object();
-            for (const auto& key : value.keys()) object.set(key, toLegacyStateValue(*value.find(key)));
+            for (const auto& [key, member] : *value.getIf<Value::Object>()) object.set(key, toLegacyStateValue(member));
             return object;
         }
     }

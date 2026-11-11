@@ -1,0 +1,62 @@
+{
+  "schema": "eve.action.guide-pack",
+  "schemaVersion": 1,
+  "revision": 1,
+  "subject": {
+    "domain": "animation.preview",
+    "id": 1,
+    "generation": 1
+  },
+  "skeletonRef": "assets/guides/hero.skeleton",
+  "clipRef": "assets/guides/hero_attack.clip",
+  "rootMode": "inPlace",
+  "canvas": {
+    "width": 256,
+    "height": 256,
+    "pixelsPerUnit": 64.0,
+    "backgroundRgba": [0.0, 0.0, 0.0, 0.0],
+    "transparent": true
+  },
+  "camera": {
+    "projection": "orthographic",
+    "fovYDegrees": 45.0,
+    "orthoSize": 1.25,
+    "nearPlane": 0.1,
+    "farPlane": 50.0,
+    "eye": [0.0, 1.0, 4.0],
+    "target": [0.0, 1.0, 0.0],
+    "up": [0.0, 1.0, 0.0]
+  },
+  "shots": [
+    {
+      "shotId": "attack.light.s00",
+      "timeSeconds": 0.0,
+      "view": "front",
+      "aovs": ["silhouette", "depth", "bone"],
+      "tags": ["windup"]
+    },
+    {
+      "shotId": "attack.light.s01",
+      "timeSeconds": 0.0833333333,
+      "sampleIndex": 1,
+      "view": "front",
+      "aovs": ["silhouette", "depth", "bone"],
+      "tags": ["active"]
+    }
+  ],
+  "actionBinding": {
+    "abilityId": "ability:hero.attack.light",
+    "clipName": "attack.light",
+    "fps": 12.0,
+    "loop": false,
+    "phaseMarks": [
+      { "name": "active.start", "timeSeconds": 0.0833333333 },
+      { "name": "recover.start", "timeSeconds": 0.25 }
+    ]
+  },
+  "qc": {
+    "minSilhouetteIoU": 0.85,
+    "maxJointErrorPx": 8.0,
+    "maxRetries": 3
+  }
+}

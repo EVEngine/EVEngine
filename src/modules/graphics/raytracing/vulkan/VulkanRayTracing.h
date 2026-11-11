@@ -8,8 +8,10 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
+#include <array>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <vector>
 
 namespace eve::graphics {
@@ -19,7 +21,15 @@ class Mesh;
 class Texture;
 }  // namespace eve::graphics
 
+namespace eve::graphics::vulkan {
+class Graphics;
+}
+
 namespace eve::graphics::raytracing {
+
+namespace path {
+struct Constants;
+}
 
 /**
  * @brief Device-local buffer with shader device address (for AS builds / SBT).
@@ -56,11 +66,27 @@ struct DeviceAddressBuffer {
     /** @brief Steal. */
     void steal(DeviceAddressBuffer& o) noexcept;
 
-    /** @brief Allocate a buffer usage that includes SHADER_DEVICE_ADDRESS. */
+    /** @brief Ensure buffer capacity with usage including SHADER_DEVICE_ADDRESS.
+     * @ownership Reuses compatible storage; caller must retire prior GPU accesses before writing or reallocating.
+     */
     [[nodiscard]] Result<void> allocate(vkb::Device& dev, vk::DeviceSize bytes, vk::BufferUsageFlags usage);
 
     /** @brief Upload host bytes via a staging buffer (stalls the queue). */
     [[nodiscard]] Result<void> upload(vk::CommandPool pool, vk::Queue queue, const void* data, vk::DeviceSize bytes);
+
+    /** @brief Allocate coherent host-visible storage and initialize it without a transfer submission.
+     * @ownership Copies borrowed bytes during the call; owns the resulting buffer and memory.
+     * Caller must retire prior GPU accesses before replacing these bytes.
+     * @cost Host copy per snapshot; GPU allocation only when capacity or memory requirements change.
+     */
+    [[nodiscard]] Result<void> initializeHostVisible(vkb::Device& dev, const void* data, vk::DeviceSize bytes,
+                                                     vk::BufferUsageFlags usage);
+
+private:
+    vk::BufferUsageFlags       usage_{};
+    vk::MemoryPropertyFlags    properties_{};
+    [[nodiscard]] Result<void> allocateWithProperties(vkb::Device& dev, vk::DeviceSize bytes,
+                                                      vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties);
 };
 
 /**
@@ -125,6 +151,32 @@ public:
     /** @brief Caps. */
     RayTracingCaps caps() const override;
 
+    /** @brief Prepare and publish a path-tracing scene.
+     * @ownership Inputs are borrowed for this call; GPU snapshot is backend-owned.
+     * @thread Render thread, outside frame recording; no reentrancy.
+     * @cost GPU uploads/builds proportional to geometry, amortized across frames.
+     */
+    [[nodiscard]] Result<PathSceneToken> preparePathScene(Graphics* gfx, const PathSceneDescription& scene) override;
+    /** @brief Replace instances while retaining prepared geometry.
+     * @ownership Input is borrowed for the call; the provider retains geometry resources.
+     * @thread Render thread, outside frame recording; no reentrancy.
+     * @cost Rebuilds the instance hierarchy and emitter data per changed instance set, reusing BLAS.
+     */
+    [[nodiscard]] Result<PathSceneToken> updatePathInstances(PathSceneToken                token,
+                                                             std::span<const PathInstance> instances) override;
+    /** @brief Render a prepared sample batch.
+     * @ownership Destination is borrowed for the call; history is backend-owned.
+     * @thread Render thread, outside frame recording; no reentrancy.
+     * @cost GPU work proportional to pixels, samples and bounces; waits once per batch.
+     */
+    [[nodiscard]] Result<void> renderPaths(PathSceneToken token, Canvas* dest, const PathTraceView& view) override;
+    /** @brief Prepare owned normal-frame output. @copydetails IRayTracing::preparePathFrame */
+    [[nodiscard]] Result<PathFrameToken> preparePathFrame(PathSceneToken scene, uint32_t width,
+                                                          uint32_t height) override;
+    /** @brief Record normal-frame tracing. @copydetails IRayTracing::recordPathFrame */
+    [[nodiscard]] Result<Texture*> recordPathFrame(PathSceneToken scene, PathFrameToken output,
+                                                   const PathTraceView& view) override;
+
     /** @brief Applies reflections. */
     [[nodiscard]] Result<void> applyReflections(Graphics* gfx, Texture* sceneColor, Texture* hwDepth,
                                                 Texture* worldNormal, Canvas* dest, const glm::mat4& invViewProj,
@@ -166,6 +218,94 @@ public:
     [[nodiscard]] Result<void> ensureAttached();
 
 private:
+    struct PathEmitter {
+        glm::vec3 a, b, c, emission;
+        uint32_t  primitive = 0;
+    };
+    struct PathGeometryRecord {
+        uint32_t                 firstTriangle = 0;
+        uint32_t                 firstVertex   = 0;
+        bool                     alphaCoverage = false;
+        std::vector<PathEmitter> emitters;
+    };
+    struct TlasWorkspace {
+        DeviceAddressBuffer instances;
+        DeviceAddressBuffer scratch;
+    };
+    struct PathScene {
+        std::vector<PathLight>                           lights;
+        std::vector<PathGeometryRecord>                  geometry;
+        std::vector<std::unique_ptr<TriangleMeshRecord>> meshes;
+        AccelerationStructure                            tlas;
+        TlasWorkspace                                    workspace;
+        std::array<DeviceAddressBuffer, 7>               buffers;
+        uint32_t                                         lightCount = 0;
+        uint64_t                                         generation = 0;
+    };
+    [[nodiscard]] Result<PathSceneToken> updatePathInstancesPrepared(std::span<const PathInstance> instances,
+                                                                     std::vector<uint32_t>         instanceWords);
+    [[nodiscard]] Result<void> buildPathInstances(std::span<const PathInstance> instances, const PathScene& geometry,
+                                                  PathScene& destination);
+    std::unique_ptr<PathScene> pathScene_;
+    // Exact value keys, not hashes or retained caller pointers. Published only
+    // with successful scene/instance transactions and cleared on device detach.
+    std::vector<uint32_t> pathSceneWords_, pathInstanceWords_, pathMeshSceneWords_;
+    // Borrowed from the prepared scene's device owner, cleared before detach.
+    eve::graphics::vulkan::Graphics* pathGraphics_ = nullptr;
+    // Retired snapshot storage: never written while it is the published scene.
+    std::unique_ptr<PathScene> pathSpareScene_;
+    uint64_t                   pathGeneration_     = 0;
+    uint32_t                   pathHistorySamples_ = 0;
+    PathTraceView              pathPreviousView_;
+    // Published only after pipeline creation and SBT upload both succeed.
+    struct PathPipeline {
+        vkb::Device*                                     device = nullptr;
+        vk::DescriptorSetLayout                          setLayout{};
+        vk::PipelineLayout                               layout{};
+        vk::Pipeline                                     pipeline{};
+        vk::Pipeline                                     denoisePipeline{};
+        vk::ShaderModule                                 denoiseModule{};
+        vk::Pipeline                                     temporalPipeline{};
+        vk::ShaderModule                                 temporalModule{};
+        std::array<vk::ShaderModule, 4>                  modules{};
+        DeviceAddressBuffer                              sbt;
+        std::array<vk::StridedDeviceAddressRegionKHR, 4> regions{};
+
+        ~PathPipeline();
+    };
+    [[nodiscard]] Result<void>    ensurePathPipeline();
+    std::unique_ptr<PathPipeline> pathPipeline_;
+
+    struct PathImage : vkb::GenericImage {
+        using vkb::GenericImage::create;
+    };
+    struct PathFrame {
+        struct OutputTextures;
+        std::unique_ptr<OutputTextures>         output;
+        vkb::Device*                            device = nullptr;
+        std::array<PathImage, 10>               images;
+        vk::DescriptorPool                      pool{};
+        std::array<vk::DescriptorSet, 2>        sets{};
+        uint32_t                                nextTemporalSlot = 0;
+        vk::AccelerationStructureKHR            scene{};
+        std::array<vk::DescriptorBufferInfo, 7> buffers{};
+        uint32_t                                width         = 0;
+        uint32_t                                height        = 0;
+        bool                                    initialized   = false;
+        bool                                    sampledOutput = false;
+        ~PathFrame();
+    };
+    std::unique_ptr<PathFrame> pathFrame_;
+    uint64_t                   pathFrameGeneration_  = 0;
+    uint64_t                   pathRecordedSequence_ = 0;
+    void                       reconcilePathRecording();
+    [[nodiscard]] Result<void> validatePathView(const PathTraceView& view) const;
+    [[nodiscard]] Result<void> ensurePathFrame(uint32_t width, uint32_t height);
+    [[nodiscard]] Result<void> recordPathDispatch(vk::CommandBuffer command, vk::AccelerationStructureKHR scene,
+                                                  const std::array<vk::DescriptorBufferInfo, 7>& buffers,
+                                                  const path::Constants& constants, const PathTraceView& view,
+                                                  uint32_t width, uint32_t height);
+
     [[nodiscard]] Result<void> ensurePipeline();
     [[nodiscard]] Result<void> ensureSampler();
     [[nodiscard]] Result<void> ensureOutputImage(uint32_t width, uint32_t height);
@@ -173,6 +313,10 @@ private:
                                                     vk::ImageView depthView, vk::ImageView normalView);
     [[nodiscard]] Result<void> buildBlas(TriangleMeshRecord& mesh);
     [[nodiscard]] Result<void> buildTlas();
+    [[nodiscard]] Result<void> buildTlas(std::span<const vk::AccelerationStructureInstanceKHR> instances,
+                                         AccelerationStructure& target, TlasWorkspace& workspace);
+    [[nodiscard]] Result<void> buildTlas(std::span<const vk::AccelerationStructureInstanceKHR> instances,
+                                         AccelerationStructure&                                target);
     [[nodiscard]] Result<void> createShaderBindingTable();
 
     /** @brief Device-local RGBA16F storage target for traceRays (HDR canvases lack STORAGE usage). */

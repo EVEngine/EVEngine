@@ -150,9 +150,39 @@ auto fields(T& v) {
     else if constexpr (std::is_same_v<U, Faction::Technology>)
         return std::tie(v.unlocked, v.consumedTasks, v.unlockedDefinitions);
     else if constexpr (std::is_same_v<U, Match::Rules>)
-        return std::tie(v.rule, v.archetype, v.targetValue);
+        return std::tie(v.rule, v.archetype, v.targetValue, v.timeLimit, v.suddenDeath);
     else if constexpr (std::is_same_v<U, Match::State>)
-        return std::tie(v.phase, v.winningTeam, v.updateSequence);
+        return std::tie(v.phase, v.winningTeam, v.updateSequence, v.elapsed, v.suddenDeathActive);
+    else if constexpr (std::is_same_v<U, Match::Scores::Entry>)
+        return std::tie(v.team, v.value);
+    else if constexpr (std::is_same_v<U, Match::Scores>)
+        return std::tie(v.entries);
+    else if constexpr (std::is_same_v<U, Match::Objectives>)
+        return std::tie(v.values);
+    else if constexpr (std::is_same_v<U, MissionObjectiveSpec>)
+        return std::tie(v.id, v.kind, v.beneficiaryTeam, v.targetFaction, v.targetSubject, v.archetype, v.resourceType, v.requiredDuration, v.targetValue, v.requiredSubjects, v.endsMatch, v.failsMatch);
+    else if constexpr (std::is_same_v<U, MissionObjectiveState>)
+        return std::tie(v.spec, v.status, v.completedSequence);
+    else if constexpr (std::is_same_v<U, MissionTriggerEventFilter>)
+        return std::tie(v.kind, v.id, v.subject, v.faction, v.archetype);
+    else if constexpr (std::is_same_v<U, MissionTriggerCondition>)
+        return std::tie(v.variable, v.op, v.value);
+    else if constexpr (std::is_same_v<U, MissionAction>)
+        return std::tie(v.kind, v.targetId, v.numeric, v.args);
+    else if constexpr (std::is_same_v<U, MissionTrigger>)
+        return std::tie(v.id, v.enabled, v.once, v.priority, v.events, v.conditions, v.actions, v.fired);
+    else if constexpr (std::is_same_v<U, MissionRegionMonitor>)
+        return std::tie(v.id, v.enabled, v.minX, v.minY, v.maxX, v.maxY, v.faction, v.subjects, v.occupants);
+    else if constexpr (std::is_same_v<U, MissionTimer>)
+        return std::tie(v.id, v.duration, v.elapsed, v.running, v.repeating);
+    else if constexpr (std::is_same_v<U, MissionVariable>)
+        return std::tie(v.id, v.value);
+    else if constexpr (std::is_same_v<U, MissionPendingEvent>)
+        return std::tie(v.kind, v.id, v.subject, v.faction, v.archetype, v.team);
+    else if constexpr (std::is_same_v<U, MissionActionLogEntry>)
+        return std::tie(v.sequence, v.tick, v.triggerId, v.kind, v.targetId, v.numeric, v.args);
+    else if constexpr (std::is_same_v<U, Match::Campaign>)
+        return std::tie(v.triggers, v.monitors, v.timers, v.variables, v.pending, v.actions, v.trackedAlive, v.bridgedEventSequence, v.actionSequence);
     else if constexpr (std::is_same_v<U, Match::Events::Event>)
         return std::tie(v.sequence, v.kind, v.faction, v.team, v.reason);
     else if constexpr (std::is_same_v<U, Match::Events>)
@@ -171,7 +201,7 @@ auto fields(T& v) {
         return std::tie(v.subject, v.displayName, v.units, v.buildings, v.strategy, v.workforce, v.productionPolicy,
                         v.intel, v.technology);
     else if constexpr (std::is_same_v<U, RTSMatchSnapshot>)
-        return std::tie(v.subject, v.rules, v.participants, v.state, v.events);
+        return std::tie(v.subject, v.rules, v.participants, v.state, v.events, v.scores, v.objectives, v.campaign);
     else if constexpr (std::is_same_v<U, RTSUnitSnapshot>)
         return std::tie(v.subject, v.definition, v.displayName, v.attributes, v.tags, v.effects, v.faction, v.motion,
                         v.navigation, v.vision, v.worker, v.combat, v.combatTarget, v.durability, v.shield, v.veterancy,

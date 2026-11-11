@@ -8,7 +8,7 @@ import zipfile
 
 import utf8_stdio
 
-SDK_TARGETS = ("win32", "win32-arm64", "linux", "linux-arm64", "android", "ios", "macosx-arm64", "macosx-x86_64")
+SDK_TARGETS = ("win32", "win32-arm64", "linux", "linux-arm64", "android", "ios", "macosx-arm64", "macosx-x86_64", "webgpu")
 
 
 def verify(directory: Path, tag: str) -> None:
@@ -24,6 +24,11 @@ def verify(directory: Path, tag: str) -> None:
             expected_platform = target.removesuffix("-arm64").removesuffix("-x86_64")
             if version != tag.removeprefix("v") or platform != expected_platform:
                 raise ValueError(f"SDK version/platform mismatch in {target}: {version}/{platform}")
+            if target == "webgpu":
+                for filename in ("eve.html", "eve.js", "eve.wasm", "eve.data"):
+                    entry = f"eve-sdk/webgpu/bin/{filename}"
+                    if archive.getinfo(entry).file_size == 0:
+                        raise ValueError(f"empty WebGPU runtime file: {filename}")
             if expected_platform == "macosx":
                 architecture = archive.read(f"{root}/TARGET_ARCHITECTURE").decode("utf-8").strip()
                 if architecture != target.removeprefix("macosx-"):

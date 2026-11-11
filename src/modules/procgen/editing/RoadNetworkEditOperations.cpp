@@ -465,7 +465,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectNodeAtP
         {source.value().x, source.value().y, source.value().z},
         {inserted.value().x, inserted.value().y, inserted.value().z}};
     auto branchId = candidate.addEdge(sourceNodeId, split.value().nodeId, std::move(branchPoints), lanesForward,
-                                      lanesBackward, style);
+                                      lanesBackward, std::move(style));
     if (!branchId.ok()) return roadFailure<editing::DomainOperation>(branchId.status());
     auto connected = candidate.connectAllTurns(split.value().nodeId);
     if (!connected.ok()) return roadFailure<editing::DomainOperation>(connected.status());
@@ -597,7 +597,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeAddEdge(
     std::uint32_t from, std::uint32_t to, std::vector<procgen::road::RoadControlPoint> points, int lanesForward,
     int lanesBackward, procgen::road::RoadStyle style) const {
     auto candidate = *network_;
-    auto added     = candidate.addEdge(from, to, std::move(points), lanesForward, lanesBackward, style);
+    auto added     = candidate.addEdge(from, to, std::move(points), lanesForward, lanesBackward, std::move(style));
     if (!added.ok()) return roadFailure<editing::DomainOperation>(added.status());
     auto edge = candidate.edgeResult(added.value());
     if (!edge.ok()) return roadFailure<editing::DomainOperation>(edge.status());
@@ -615,7 +615,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeAddEdge(
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeAddEdgeAndConnect(
     std::uint32_t from, std::uint32_t to, std::vector<procgen::road::RoadControlPoint> points, int lanesForward,
     int lanesBackward, procgen::road::RoadStyle style) const {
-    auto planned = makeAddEdge(from, to, std::move(points), lanesForward, lanesBackward, style);
+    auto planned = makeAddEdge(from, to, std::move(points), lanesForward, lanesBackward, std::move(style));
     if (!planned.ok()) return planned;
 
     auto                                           operation = std::move(planned).takeValue();

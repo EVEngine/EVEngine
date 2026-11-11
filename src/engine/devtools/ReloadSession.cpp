@@ -1,4 +1,5 @@
 #include "devtools/ReloadSession.h"
+#include "devtools/McpActionGuideTools.hpp"
 #include "devtools/McpFrameCapture.hpp"
 
 #include "devtools/Snapshot.hpp"
@@ -44,6 +45,7 @@ bool ReloadSession::begin(HSQUIRRELVM vm, std::string* err) {
     std::string saveErr;
     Snapshot::instance().saveFile(vm, "eve_snapshot.json", &saveErr);
     resetMcpFrameCapture();
+    resetMcpActionGuide();
     active_ = true;
     return true;
 }

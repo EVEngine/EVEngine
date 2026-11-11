@@ -1,7 +1,9 @@
 #include "rpg/WorldInteraction.h"
+
 #include <cmath>
 #include <optional>
 #include <string>
+#include <utility>
 #include "inventory/InventorySystem.h"
 #include "rpg/GameState.h"
 #include "rpg/Tracker.h"
@@ -13,8 +15,9 @@ namespace {
 
 eve::Result<int> interactionFailure(eve::DiagnosticCode code, std::string message, std::string path,
                                     const WorldLootRequest &request) {
-    return eve::Result<int>::failure(eve::Diagnostic::error(
-        code, message, path, {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.world-loot"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path),
+                                                            {{"mapId", request.mapId}, {"objectId", request.objectId}},
+                                                            "rpg.world-loot"));
 }
 
 struct TrackerRollback {

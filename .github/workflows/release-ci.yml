@@ -20,7 +20,7 @@ permissions:
 env:
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
-  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.363.0' }}
   # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
   # images (27.3.13750724), so setup-android downloads nothing extra.
   ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
@@ -32,6 +32,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       ref: ${{ inputs.ref || github.ref }}
+      full: true
     secrets: inherit
 
   profile-matrix:
@@ -126,11 +127,47 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  macos-x86_64:
-    name: macOS x86_64 (${{ matrix.configuration }}, build)
-    needs: [debug-checks]
+  macos-metal-probe:
+    name: Native Intel Metal preflight
     runs-on: macos-15-intel
-    timeout-minutes: 180
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        timeout-minutes: 5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Probe native Intel Metal rasterization
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          clang++ -std=c++20 -fobjc-arc .github/scripts/probe-metal-render.mm \
+            -framework Foundation -framework Metal -o build/probe-metal-render
+          build/probe-metal-render 2>&1 | tee build/macosx-x86_64-metal-probe.log
+
+      - name: Upload native Metal probe evidence
+        if: ${{ !cancelled() }}
+        timeout-minutes: 5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-native-metal-probe
+          path: build/macosx-x86_64-metal-probe.log
+          if-no-files-found: error
+
+  macos-x86_64:
+    name: macOS x86_64 (${{ matrix.configuration }}, build + test)
+    needs: [debug-checks, macos-metal-probe]
+    # Owner: EVEngine; tracking: #701. Intel AppleParavirtDevice aborts during
+    # Metal argument-buffer probing and times out on its first 3D frame with
+    # Metal event semaphores. Remove these settings when headless initialization,
+    # fresh glTF rendering and both full suites pass with the defaults.
+    env:
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: '0'
+    runs-on: macos-15-intel
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -176,7 +213,7 @@ jobs:
           mkdir -p build
           log="build/macosx-x86_64${suffix}.log"
           if make "build/macosx-x86_64${suffix}" JOBS=4 \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120" >"$log" 2>&1; then
             tail -n 30 "$log"
           else
             awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
@@ -184,13 +221,49 @@ jobs:
             exit 1
           fi
 
+      - name: Validate Intel macOS rendering before the full suite
+        timeout-minutes: 20
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          # Cover independent paths in one bounded pass, so one blank map does
+          # not hide texture, skinning, frame-slot or compute failures.
+          ctest --test-dir "build/macosx-x86_64${suffix}" --output-on-failure -j 1 \
+            --timeout 120 --no-tests=error \
+            -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
+
+      - name: Run native Intel macOS unit tests
+        # Headroom for until-pass:2 after an occasional MoltenVK GPU hang
+        # (ErrorDeviceLost / AppleParavirtDevice) before the suite cascades.
+        timeout-minutes: 180
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          # Share the virtual GPU between one test process at a time.
+          # Bound a stalled case before it consumes the whole validation lane.
+          # Keep Makefile's default --repeat until-pass:2 so a single DeviceLost
+          # on GpuDriven.* can recover in a fresh process instead of poisoning
+          # the rest of the lane (see #701).
+          make --old-file="build/macosx-x86_64${suffix}" "test/macosx-x86_64${suffix}" \
+            JOBS=4 CTEST_JOBS=1 LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
+
       - name: Upload Intel macOS build diagnostics
         if: failure()
         timeout-minutes: 10
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: macosx-x86_64-${{ matrix.configuration }}-build-logs
-          path: build/macosx-x86_64*.log
+          path: |
+            build/macosx-x86_64*.log
+            build/macosx-x86_64*/Testing/Temporary/
           if-no-files-found: ignore
 
   # Native ARM64 lanes also run the process-isolated tests and validate SDKs.
@@ -498,7 +571,7 @@ jobs:
 
       - name: Setup Dawn generator Python
         timeout-minutes: 5
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
 
@@ -594,7 +667,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: ./.github/actions/install-vulkan-sdk
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -891,7 +964,8 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/macosx
+          make test/macosx JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
           LABEL_FILTER=''
 
       - name: Sample settlement release benchmark
@@ -1009,7 +1083,7 @@ jobs:
     # Run even if later unit tests fail, provided the build published a runtime.
     if: ${{ !cancelled() && needs.linux-release.outputs.smoke-runtime != '' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 100
+    timeout-minutes: 150
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1058,7 +1132,7 @@ jobs:
 
       - name: Download example smoke runtime
         timeout-minutes: 10
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: linux-example-smoke-runtime
           path: ${{ runner.temp }}/example-smoke-artifact
@@ -1085,21 +1159,29 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      # 150 headless Lavapipe smokes have finished green then still hit the old
-      # 20-minute step guard during teardown (PR #586 run 38844868063;
-      # run 38775560674). Keep headroom above the ~15+ minute live window.
+      # Startup compilation has its own bounded budget; observe gameplay only
+      # after initialization, and preserve every example's complete transcript.
       - name: Smoke all examples (headless, >=2s alive each)
-        # 151 examples take up to 151 * (6s run + 3s termination grace),
-        # already over 22 minutes before process/display setup overhead.
-        timeout-minutes: 30
+        timeout-minutes: 50
         env:
           ALSOFT_DRIVERS: "null"
           # Contract for examples/README.md "示例规范": every runnable example
           # must still be running MIN_RUN_SECONDS after launch, with no error
           # markers in its log; dying early or exiting non-zero fails the job.
           MIN_RUN_SECONDS: "2"
+          STARTUP_SECONDS: "60"
+          SMOKE_LOG_DIR: build/example-smoke-logs
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" make smoke/examples
+
+      - name: Upload complete example smoke logs
+        if: ${{ !cancelled() }}
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-example-smoke-logs
+          path: build/example-smoke-logs/
+          if-no-files-found: error
 
   linux-release:
     name: Linux (Release)

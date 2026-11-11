@@ -29,3 +29,9 @@ Action attack_vfx payload 的 recipeId 与 uri 二选一；不能两者都给或
 源码：[StylizeAction.cpp](../../../src/modules/stylize/action/StylizeAction.cpp)；可复用的
 recipe 与 provider 测试：[stylize_action_attack_vfx.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp)。
 完整资源层组合见 [stylize_attack_vfx_audio_decal.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp)。
+
+粒子层 URI 指向 `eve.particle-effect` 资产。从 Unity 开源 VFX **意图迁移**到共享配方、再挂进
+`anticipate` / `release` / `aftermath` 的流程见
+[particles.md「从 Unity 开源 VFX 迁移」](particles.md) 与
+[`2026-11-03-unity-vfx-porting-plan.md`](../../dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md)；
+可运行示例：`examples/attack-vfx/`。

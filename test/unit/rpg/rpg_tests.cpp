@@ -21,7 +21,8 @@
     "rpg_skill_condition.cpp",
     "rpg_story_event.cpp",
     "rpg_trait.cpp",
-    "status_effect_adapter.cpp"
+    "status_effect_adapter.cpp",
+    "rpg_equipment_upgrade.cpp"
   ]
 }
 */
@@ -1705,6 +1706,7 @@ TEST_CASE("Class catalogue loads level gated skills and class change replaces tr
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_gamestate)
 #include "PrivateTestScope.h"
+#include "common/Value.h"
 #include "rpg/GameState.h"
 #include "rpg/RPG.h"
 namespace test_rpg_game_state_contract {
@@ -1735,6 +1737,9 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
     source.switchOn("door.open");
     source.setVariable("gold", 125.5);
     source.setSelfVariable("map:1", "visits", 2);
+    const std::string longKey = "story-key-" + std::string(96, 'k');
+    source.setSelfVariable("map:1", longKey, 42.25);
+    source.setSelfString("story.scope", longKey, "未完成的章节");
     const auto encoded = source.snapshotJson();
     REQUIRE(encoded.ok());
     GameState target;
@@ -1743,6 +1748,8 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
     CHECK(target.isSwitchOn("door.open"));
     CHECK_EQ(target.getVariable("gold"), 125.5);
     CHECK_EQ(target.getSelfVariable("map:1", "visits"), 2.0);
+    CHECK_EQ(target.getSelfVariable("map:1", longKey), 42.25);
+    CHECK_EQ(target.getSelfString("story.scope", longKey), std::string("未完成的章节"));
     CHECK_EQ(target.getVariable("sentinel"), 0.0);
     {
         CHECK(
@@ -1759,6 +1766,22 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
                    .ok());
         CHECK_EQ(target.getVariable("gold"), 125.5);
     };
+    auto invalid = eve::Value::fromJson(encoded.value());
+    REQUIRE(invalid.ok());
+    auto& invalidRoot   = *invalid.value().getIf<eve::Value::Object>();
+    auto& scopes        = *invalidRoot.at("selfStrings").getIf<eve::Value::Object>();
+    auto& strings       = *scopes.at("story.scope").getIf<eve::Value::Object>();
+    strings.at(longKey) = eve::Value(7);
+    auto invalidJson    = invalid.value().toJson();
+    REQUIRE(invalidJson.ok());
+    auto rejected = target.restoreSnapshotJson(invalidJson.value());
+    REQUIRE(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK(rejected.error()->code() == eve::DiagnosticCode::ParseError);
+    CHECK_EQ(rejected.error()->path(), "$.selfStrings.story.scope." + longKey);
+    auto unchanged = target.snapshotJson();
+    REQUIRE(unchanged.ok());
+    CHECK_EQ(unchanged.value(), encoded.value());
 }
 }  // namespace test_rpg_game_state_contract
 #endif
@@ -1816,6 +1839,7 @@ TEST_CASE("Vitals clamp writes damage and healing and revival restores capacity"
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_quest)
 #include "PrivateTestScope.h"
 #include "rpg/Quest.h"
+#include "rpg/QuestGeneration.h"
 #include "rpg/Tracker.h"
 namespace test_rpg_quest_contract {
 using namespace eve::rpg;
@@ -1882,6 +1906,187 @@ TEST_CASE("Quest prerequisite unlocks only after claim and failed quests require
     CHECK(!tracker.activate("rewrite.rpg.quest.next"));
     REQUIRE(tracker.reset("rewrite.rpg.quest.next"));
     CHECK_EQ(tracker.getState("rewrite.rpg.quest.next"), std::string("active"));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest objectivePolicy any completes on first required objective") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.any",
+      "startPolicy":"manual",
+      "completePolicy":"claim",
+      "objectivePolicy":"any",
+      "objectives":[
+        {"id":"kill","topic":"kill","target":"slime","count":1},
+        {"id":"talk","topic":"talk","target":"npc","count":1}
+      ]
+    }])"),
+               1);
+    Tracker tracker;
+    REQUIRE(tracker.activate("rewrite.rpg.quest.any"));
+    CHECK_EQ(tracker.getObjectivePolicy("rewrite.rpg.quest.any"), std::string("any"));
+    tracker.notify("kill", "slime", 1);
+    CHECK(tracker.isObjectivesSatisfied("rewrite.rpg.quest.any"));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.any"), std::string("ready"));
+    CHECK(!tracker.isObjectiveDone("rewrite.rpg.quest.any", 1));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest ordered policy gates later required objectives while optional still listens") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.ordered",
+      "startPolicy":"manual",
+      "completePolicy":"auto",
+      "objectivePolicy":"ordered",
+      "objectives":[
+        {"id":"first","topic":"kill","target":"a","count":1},
+        {"id":"bonus","topic":"loot","target":"chest","count":1,"optional":true},
+        {"id":"second","topic":"kill","target":"b","count":1}
+      ]
+    }])"),
+               1);
+    Tracker tracker;
+    REQUIRE(tracker.activate("rewrite.rpg.quest.ordered"));
+    CHECK(tracker.isObjectiveOptional("rewrite.rpg.quest.ordered", 1));
+    tracker.notify("kill", "b", 1);
+    CHECK_EQ(tracker.getObjectiveCurrent("rewrite.rpg.quest.ordered", 2), 0);
+    tracker.notify("loot", "chest", 1);
+    CHECK(tracker.isObjectiveDone("rewrite.rpg.quest.ordered", 1));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.ordered"), std::string("active"));
+    tracker.notify("kill", "a", 1);
+    tracker.notify("kill", "b", 1);
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.ordered"), std::string("completed"));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest dialogue phase maps tracker state and clock refresh hooks work") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.timed",
+      "startPolicy":"manual",
+      "completePolicy":"claim",
+      "timeLimitSeconds":10,
+      "refreshKey":"daily",
+      "objectives":[{"id":"x","topic":"kill","count":1}]
+    }])"),
+               1);
+    Tracker tracker;
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("offer"));
+    CHECK_EQ(tracker.dialogueConversationId("rewrite.rpg.quest.timed", "npc.giver"), std::string("npc.giver.offer"));
+    REQUIRE(tracker.activate("rewrite.rpg.quest.timed"));
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("active"));
+    CHECK_EQ(tracker.applyClock(100.0), 0);
+    CHECK_EQ(tracker.getDeadlineAt("rewrite.rpg.quest.timed"), 110.0);
+    CHECK_EQ(tracker.applyClock(110.0), 1);
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.timed"), std::string("failed"));
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("failed"));
+    REQUIRE_EQ(tracker.refreshByKey("daily", "2026-11-06"), 1);
+    CHECK_EQ(tracker.getRefreshStamp("rewrite.rpg.quest.timed"), std::string("2026-11-06"));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.timed"), std::string("inactive"));
+    CHECK_EQ(tracker.refreshByKey("daily", "2026-11-06"), 0);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest replaceFromJsonStrict rejects unknown objectivePolicy") {
+    QuestRegistry::clear();
+    auto rejected = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"rewrite.rpg.quest.bad.policy","objectivePolicy":"xor","objectives":[{"id":"a","topic":"kill","count":1}]}])");
+    CHECK(!rejected.ok());
+    CHECK_EQ(QuestRegistry::count(), 0);
+    auto accepted = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"rewrite.rpg.quest.ok","objectivePolicy":"all","objectives":[{"id":"a","topic":"kill","count":1,"optional":true}]}])");
+    REQUIRE(accepted.ok());
+    CHECK_EQ(accepted.value(), 1);
+    const auto* def = QuestRegistry::find("rewrite.rpg.quest.ok");
+    REQUIRE(def != nullptr);
+    CHECK(def->objectives.front().optional);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator selects urgent entity and registers a playable definition") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    auto archetypes = QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.slay",
+      "weight":1.0,
+      "requiresEntityTags":["enemy"],
+      "completePolicy":"claim",
+      "idPattern":"gen.slay.{entity}",
+      "objectives":[{"id":"kill","topic":"kill","targetSlot":"entity","countVar":"count"}],
+      "rewards":[{"type":"attribute","id":"gold","amountVar":"gold"}],
+      "extra":{"title":"Hunt {entity}","giver":"{giver}"}
+    }])");
+    REQUIRE(archetypes.ok());
+    CHECK_EQ(archetypes.value(), 1);
+
+    auto registered = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate",
+      "version":1,
+      "seed":7,
+      "maxQuests":1,
+      "selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[
+        {"id":"slime","tags":["enemy"],"urgency":10,"vars":{"count":2,"gold":20}},
+        {"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":3,"gold":55}}
+      ]
+    })");
+    REQUIRE(registered.ok());
+    CHECK_EQ(registered.value(), 1);
+    const auto* quest = QuestRegistry::find("gen.slay.wolf");
+    REQUIRE(quest != nullptr);
+    CHECK(quest->hasTag("generated"));
+    REQUIRE_EQ(quest->objectives.size(), 1u);
+    CHECK_EQ(quest->objectives.front().target, std::string("wolf"));
+    CHECK_EQ(quest->objectives.front().count, 3);
+    REQUIRE_EQ(quest->rewards.size(), 1u);
+    CHECK_EQ(quest->rewards.front().amount, 55.0);
+    CHECK_EQ(quest->getExtra("title"), std::string("Hunt wolf"));
+    CHECK_EQ(quest->getExtra("giver"), std::string("npc.elder"));
+
+    Tracker tracker;
+    REQUIRE(tracker.activate("gen.slay.wolf"));
+    tracker.notify("kill", "wolf", 3);
+    CHECK_EQ(tracker.getState("gen.slay.wolf"), std::string("ready"));
+
+    auto again = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":7,"maxQuests":1,"selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[{"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":1,"gold":10}}]
+    })");
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value(), 1);
+    CHECK(QuestRegistry::find("gen.slay.wolf") != nullptr);
+
+    QuestGenerationCatalogue::clear();
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator preview json is deterministic for a fixed seed") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    REQUIRE(QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.fetch",
+      "requiresEntityTags":["item"],
+      "objectives":[{"id":"get","topic":"loot","targetSlot":"entity","count":1}],
+      "rewards":[{"type":"attribute","id":"xp","amount":5}]
+    }])")
+                .ok());
+    const char* request = R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":99,"maxQuests":1,"selection":"weighted",
+      "entities":[
+        {"id":"herb","tags":["item"],"urgency":40},
+        {"id":"ore","tags":["item"],"urgency":40}
+      ]
+    })";
+    auto        first   = QuestGenerator::generateJson(request);
+    auto        second  = QuestGenerator::generateJson(request);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value(), second.value());
+    CHECK(first.value().find("\"schema\":\"eve.rpg.quest-generate-result\"") != std::string::npos);
+    QuestGenerationCatalogue::clear();
     QuestRegistry::clear();
 }
 }  // namespace test_rpg_quest_contract
@@ -2776,4 +2981,205 @@ TEST_CASE("Canonical RPG restore rejects malformed later actor without applying 
     SkillRegistry::remove(skill.id);
 }
 }  // namespace test_rpg_composition_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_equipment_upgrade)
+#include "PrivateTestScope.h"
+
+#include <cmath>
+#include "inventory/Bag.h"
+#include "inventory/Equipment.h"
+#include "inventory/InventoryResourceAccount.h"
+#include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
+#include "production/Production.h"
+#include "rpg/EquipmentSystem.h"
+#include "rpg/EquipmentUpgrade.h"
+#include "rpg/ForgeBench.h"
+#include "rpg/RPG.h"
+#include "rpg/RPGActor.h"
+
+namespace test_rpg_equipment_upgrade {
+using namespace eve;
+
+TEST_CASE("rpg.equipmentUpgradePaysQueuesAndMutatesEnhanceOnce") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::clearEvents();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition blade;
+    blade.id        = "sword.ember";
+    blade.maxStack  = 1;
+    blade.equipSlot = "weapon";
+    blade.tags      = {"weapon"};
+    inventory::ItemRegistry::registerItem(blade);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+
+    inventory::Bag bag(4);
+    bag.setId("forge.bag");
+    REQUIRE_EQ(bag.addItem("sword.ember", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 3), 3);
+    const int slot = bag.findItem("sword.ember");
+    REQUIRE(slot >= 0);
+    const int instanceId = bag.getSlotInstanceId(slot);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "0");
+
+    auto cost = resource::CostSpec::single("emberstone", 1);
+    REQUIRE(cost.ok());
+    rpg::EquipmentUpgradeRecipe recipe;
+    recipe.id          = "enhance.ember.0";
+    recipe.process     = "upgrade";
+    recipe.itemId      = "sword.ember";
+    recipe.fromLevel   = 0;
+    recipe.toLevel     = 1;
+    recipe.ingredients = std::move(cost).takeValue();
+    recipe.duration    = Duration::fromSeconds(1.0).expect("upgrade duration");
+
+    production::WorkQueue               queue;
+    inventory::InventoryResourceAccount account(bag);
+    rpg::EquipmentUpgradeRequest        request;
+    request.production         = &queue;
+    request.ingredients        = &account;
+    request.bag                = &bag;
+    request.bagSlot            = slot;
+    request.expectedInstanceId = instanceId;
+    request.owner              = "forge";
+    request.recipe             = recipe;
+    auto begun                 = rpg::EquipmentUpgrade::begin(std::move(request));
+    REQUIRE(begun.ok());
+    CHECK_EQ(bag.countItem("emberstone"), 2);
+    const std::string taskId = begun.value().productionTaskId;
+    REQUIRE(queue.advance({SimulationTick(1), recipe.duration}).ok());
+    CHECK_EQ(queue.find(taskId)->get().state, production::TaskState::ReadyToSettle);
+
+    auto settled = rpg::EquipmentUpgrade::settle(queue, bag, taskId);
+    REQUIRE(settled.ok());
+    CHECK_EQ(settled.value(), 1);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+    CHECK_EQ(bag.getSlotInstanceId(slot), instanceId);
+
+    auto repeated = rpg::EquipmentUpgrade::settle(queue, bag, taskId);
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.status().code(), StatusCode::NoOp);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+}
+
+TEST_CASE("rpg.equipmentUpgradeRejectsWrongLevelWithoutPayment") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition blade;
+    blade.id       = "sword.ember";
+    blade.maxStack = 1;
+    inventory::ItemRegistry::registerItem(blade);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+
+    inventory::Bag bag(2);
+    REQUIRE_EQ(bag.addItem("sword.ember", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 2), 2);
+    const int slot = bag.findItem("sword.ember");
+    bag.setSlotProp(slot, rpg::kEquipmentEnhanceProp, "2");
+    auto cost = resource::CostSpec::single("emberstone", 1);
+    REQUIRE(cost.ok());
+    rpg::EquipmentUpgradeRecipe recipe;
+    recipe.id          = "enhance.bad";
+    recipe.itemId      = "sword.ember";
+    recipe.fromLevel   = 0;
+    recipe.toLevel     = 1;
+    recipe.ingredients = std::move(cost).takeValue();
+    recipe.duration    = Duration::fromSeconds(0.5).expect("upgrade duration");
+    production::WorkQueue               queue;
+    inventory::InventoryResourceAccount account(bag);
+    rpg::EquipmentUpgradeRequest request{&queue, &account, &bag, slot, bag.getSlotInstanceId(slot), "forge", recipe};
+    auto                         result = rpg::EquipmentUpgrade::begin(std::move(request));
+    CHECK(!result.ok());
+    CHECK_EQ(bag.countItem("emberstone"), 2);
+    CHECK_EQ(queue.taskCount(), 0);
+}
+
+TEST_CASE("rpg.forgeBenchCraftUpgradeAndEnhanceScalesEquipAttack") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition ore;
+    ore.id       = "ore.iron";
+    ore.maxStack = 99;
+    inventory::ItemRegistry::registerItem(ore);
+    inventory::ItemDefinition coal;
+    coal.id       = "coal";
+    coal.maxStack = 99;
+    inventory::ItemRegistry::registerItem(coal);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+    inventory::ItemDefinition blade;
+    blade.id        = "sword.ember";
+    blade.maxStack  = 1;
+    blade.equipSlot = "weapon";
+    blade.tags      = {"weapon"};
+    inventory::ItemRegistry::registerItem(blade);
+
+    auto* rpgModule = rpg::RPG::create();
+    rpgModule->clearAllItemStats();
+    REQUIRE_EQ(
+        rpgModule->registerItemStatsFromJson("sword.ember", R"([{"attribute":"attack","op":"add","value":12.0}])"), 1);
+
+    inventory::Bag bag(8);
+    bag.setId("forge.bag");
+    REQUIRE_EQ(bag.addItem("ore.iron", 3), 3);
+    REQUIRE_EQ(bag.addItem("coal", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 2), 2);
+    inventory::EquipmentSet gear;
+    gear.defineSlot("weapon");
+    gear.addSlotAllowedTag("weapon", "weapon");
+    rpg::RPGActor* hero = rpgModule->newActor();
+    REQUIRE(hero != nullptr);
+    hero->setBaseAttribute("attack", 8.0);
+
+    rpg::ForgeBench forge;
+    REQUIRE(forge.bind(&bag, &gear, hero).ok());
+    auto crafted = forge.craftFromJson(R"({
+      "id":"forge.ember_blade",
+      "process":"craft",
+      "ingredients":{"ore.iron":3,"coal":1},
+      "outputs":[{"item":"sword.ember","quantity":1}],
+      "duration":0.5
+    })");
+    REQUIRE(crafted.ok());
+    REQUIRE(forge.advance(SimulationTick(1), Duration::fromSeconds(0.5).expect("dt")).ok());
+    auto settledCraft = forge.settleReady();
+    REQUIRE(settledCraft.ok());
+    CHECK_EQ(settledCraft.value(), 1);
+    CHECK_EQ(bag.countItem("sword.ember"), 1);
+
+    const int slot = bag.findItem("sword.ember");
+    REQUIRE(slot >= 0);
+    auto upgraded = forge.upgradeFromJson(R"({
+      "id":"enhance.ember.0",
+      "process":"upgrade",
+      "itemId":"sword.ember",
+      "fromLevel":0,
+      "toLevel":1,
+      "ingredients":{"emberstone":1},
+      "duration":0.4
+    })",
+                                          slot, bag.getSlotInstanceId(slot));
+    REQUIRE(upgraded.ok());
+    REQUIRE(forge.advance(SimulationTick(2), Duration::fromSeconds(0.4).expect("dt")).ok());
+    auto settledUpgrade = forge.settleReady();
+    REQUIRE(settledUpgrade.ok());
+    CHECK_EQ(settledUpgrade.value(), 1);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+    CHECK_EQ(bag.countItem("emberstone"), 1);
+
+    REQUIRE(gear.equipFromBag("weapon", &bag, slot));
+    CHECK_EQ(forge.syncEquipment(), 1);
+    // base 8 + blade 12 + enhance bonus max(1, floor(12*0.25+0.5))=3 → 23
+    CHECK(std::abs(hero->getFinalAttribute("attack") - 23.0) < 1e-9);
+}
+}  // namespace test_rpg_equipment_upgrade
 #endif

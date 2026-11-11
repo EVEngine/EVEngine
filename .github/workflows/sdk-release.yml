@@ -6,6 +6,8 @@
 #   macos   → macosx-arm64 / macosx-x86_64 SDKs (+ usability tests)
 #   ios     → ios SDK
 #   linux   → linux SDK (+ usability test)
+#   arm64   → native win32-arm64 / linux-arm64 SDKs (+ consumer tests)
+#   webgpu  → browser SDK (+ extracted-archive startup and canvas tests)
 #
 # Called from release.yml after strict tests, or via workflow_dispatch + tag.
 #
@@ -26,12 +28,20 @@ on:
         description: commit/branch to build (official vX.X.X after start)
         type: string
         default: ""
+      publish:
+        description: Attach to GitHub Release; false runs identical consumers against Actions artifacts
+        type: boolean
+        default: true
   workflow_dispatch:
     inputs:
       tag:
         description: Existing release tag to build and upload SDKs for
         required: true
         type: string
+      publish:
+        description: Upload to GitHub Release (disable for artifact-only verification)
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -39,15 +49,24 @@ permissions:
 env:
   # Reuse the pinned dependency release; build source only if transfer is unavailable.
   CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF -DEVENGINE_THIRD_PARTY_MODE=AUTO
+  ALSOFT_DRIVERS: "null"
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
-  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.363.0' }}
   # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
   # images (27.3.13750724), so setup-android downloads nothing extra.
   ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
   ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
+  webgpu:
+    name: WebGPU Release SDK
+    uses: ./.github/workflows/webgpu-sdk.yml
+    with:
+      ref: ${{ inputs.ref || inputs.tag }}
+      tag: ${{ inputs.tag }}
+    secrets: inherit
+
   windows:
     name: Windows SDK
     runs-on: windows-latest
@@ -73,20 +92,20 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: ./.github/actions/install-vulkan-sdk
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
+          install_swiftshader: true
           cache: true
           # Release refs are one-shot cache scopes. Restore a long-lived cache
           # when available, but do not create a copy that no later run can use.
           cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup software Vulkan (SwiftShader, best-effort)
+      - name: Setup software Vulkan (SwiftShader)
         timeout-minutes: 5
-        run: |
-          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
+        run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 SDK
         # Release run 38296135959 reached 1784/1900 edges at 90 minutes.
@@ -251,13 +270,17 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx SDK
-        timeout-minutes: 90
+        # macos-15-intel cold builds have crossed 90m while still finishing the
+        # last few of ~1850 ninja targets (job wall is 180m). arm64 stays well
+        # under 90m; give x86_64 headroom without starving test/package steps.
+        timeout-minutes: ${{ matrix.architecture == 'x86_64' && 150 || 90 }}
         run: make "sdk/$SDK_TARGET" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS=4
 
       - name: Test macosx SDK usability
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
+          EVENGINE_VULKAN_VALIDATION: ${{ matrix.architecture == 'x86_64' && '1' || '0' }}
         run: bash .github/scripts/test-sdk.sh "dist/eve-sdk/$SDK_TARGET" macosx "${TAG#v}" "$SDK_ARCHITECTURE"
 
       - name: Package SDK zip
@@ -426,7 +449,7 @@ jobs:
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/linux linux "${TAG#v}"
+        run: xvfb-run -a bash .github/scripts/test-sdk.sh dist/eve-sdk/linux linux "${TAG#v}"
 
       - name: Package SDK zip
         timeout-minutes: 10
@@ -456,7 +479,7 @@ jobs:
 
   publish:
     name: Attach SDKs
-    needs: [windows, android, macos, ios, linux, arm64]
+    needs: [windows, android, macos, ios, linux, arm64, webgpu]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -498,6 +521,7 @@ jobs:
           PYEOF
 
       - name: Attest build provenance (best-effort)
+        if: inputs.publish
         timeout-minutes: 10
         # Requires the repository's artifact attestations setting; non-blocking
         # until the maintainer enables it. Attestations bind to the zips by
@@ -513,7 +537,19 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: python3 scripts/verify_sdk_release.py artifacts "$TAG"
 
+      - name: Save complete SDK set for preview consumers
+        if: inputs.publish == false
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-sdk-set
+          path: |
+            artifacts/eve-sdk-*.zip
+            artifacts/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload to GitHub Release
+        if: inputs.publish != false
         timeout-minutes: 15
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -561,6 +597,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag }}
+      - name: Download candidate SDK set (PR preview)
+        if: inputs.publish == false
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sdk-set
+          path: candidate-sdk-set
       - name: Install Linux runtime dependencies
         if: runner.os == 'Linux'
         run: |
@@ -572,6 +614,7 @@ jobs:
         timeout-minutes: 90
         uses: ./.github/actions/setup-arm64-vulkan
       - name: Download released SDK and checksums
+        if: inputs.publish != false
         env:
           PLATFORM: ${{ matrix.platform }}
           REPO: ${{ github.repository }}
@@ -579,6 +622,14 @@ jobs:
           mkdir -p artifacts
           gh release download "$TAG" --repo "$REPO" --dir artifacts \
             --pattern "eve-sdk-$PLATFORM-arm64-$TAG.zip" --pattern SHA256SUMS
+          (cd artifacts && grep "eve-sdk-$PLATFORM-arm64-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
+      - name: Verify candidate ARM64 SDK checksums
+        if: inputs.publish == false
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          mkdir -p artifacts
+          cp "candidate-sdk-set/eve-sdk-$PLATFORM-arm64-$TAG.zip" candidate-sdk-set/SHA256SUMS artifacts/
           (cd artifacts && grep "eve-sdk-$PLATFORM-arm64-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
       - name: Build consumer plugin and run packaged game from released SDK
         timeout-minutes: 15
@@ -607,9 +658,24 @@ jobs:
         with:
           ref: ${{ inputs.ref || inputs.tag }}
 
+      - name: Download candidate SDK set (PR preview)
+        if: inputs.publish == false
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sdk-set
+          path: candidate-sdk-set
+      - name: Use candidate SDK mirror for consumer downloads
+        if: inputs.publish == false
+        shell: bash
+        run: |
+          base="$(python3 -c 'from pathlib import Path; print(Path("candidate-sdk-set").resolve().as_uri())')"
+          echo "EVE_SDK_DOWNLOAD_BASE=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_BASE_URL=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_TAG=$TAG" >> "$GITHUB_ENV"
+
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: ./.github/actions/install-vulkan-sdk
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -643,6 +709,12 @@ jobs:
         timeout-minutes: 60
         run: bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
 
+      - name: Verify Windows publication-lock race with the built SDK
+        timeout-minutes: 5
+        env:
+          EVENGINE_PACKAGE_TEST_SDK: ${{ runner.temp }}/consumer/eve-sdk/win32
+        run: python3 -X utf8 -m unittest scripts.tests.test_windows_package_publish
+
       - name: Upload android APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -673,6 +745,21 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || inputs.tag }}
+
+      - name: Download candidate SDK set (PR preview)
+        if: inputs.publish == false
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sdk-set
+          path: candidate-sdk-set
+      - name: Use candidate SDK mirror for consumer downloads
+        if: inputs.publish == false
+        shell: bash
+        run: |
+          base="$(python3 -c 'from pathlib import Path; print(Path("candidate-sdk-set").resolve().as_uri())')"
+          echo "EVE_SDK_DOWNLOAD_BASE=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_BASE_URL=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_TAG=$TAG" >> "$GITHUB_ENV"
 
       - name: Install headless runtime deps
         timeout-minutes: 10
@@ -754,6 +841,21 @@ jobs:
         with:
           ref: ${{ inputs.ref || inputs.tag }}
 
+      - name: Download candidate SDK set (PR preview)
+        if: inputs.publish == false
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sdk-set
+          path: candidate-sdk-set
+      - name: Use candidate SDK mirror for consumer downloads
+        if: inputs.publish == false
+        shell: bash
+        run: |
+          base="$(python3 -c 'from pathlib import Path; print(Path("candidate-sdk-set").resolve().as_uri())')"
+          echo "EVE_SDK_DOWNLOAD_BASE=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_BASE_URL=$base" >> "$GITHUB_ENV"
+          echo "EVE_SDK_TAG=$TAG" >> "$GITHUB_ENV"
+
       - name: Cache Android toolchain (JDK/Gradle/cmdline-tools/platform)
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -804,7 +906,7 @@ jobs:
   # ---- Packaged-game run verification on the target platform ---------------
   # A package produced by a foreign host must actually run on its target.
   run-win32-cross:
-    name: Run win32 packages (built on linux/macosx)
+    name: Verify win32 packages from linux/macosx inputs
     needs: [consumer-linux, consumer-macosx]
     runs-on: windows-latest
     timeout-minutes: 30
@@ -820,7 +922,7 @@ jobs:
 
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: ./.github/actions/install-vulkan-sdk
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -857,8 +959,9 @@ jobs:
             dir="$RUNNER_TEMP/run-$name"
             mkdir -p "$dir"
             tar -xzf "$tgz" -C "$dir"
+            bash .github/scripts/prepare-cross-consumer.sh win32 "$dir"
             log="$RUNNER_TEMP/run-${name}.log"
-            ( cd "$dir" && exec ./eve.exe >"$log" 2>&1 ) &
+            ( cd "$dir/verified" && exec ./eve.exe >"$log" 2>&1 ) &
             pid=$!
             ok=0
             for i in $(seq 1 40); do
@@ -868,16 +971,17 @@ jobs:
             kill "$pid" 2>/dev/null || true
             if [ "$ok" -eq 1 ]; then
               echo "OK: $name printed EVE_CI_GAME_OK"
-              found=1
+              found=$((found + 1))
             else
               echo "FAIL: $name did not start (log tail):"
               tail -n 20 "$log" 2>/dev/null || true
+              exit 1
             fi
           done
-          [ "$found" -eq 1 ] || { echo "ERROR: no win32 package ran successfully" >&2; exit 1; }
+          [ "$found" -eq 2 ] || { echo "ERROR: both linux and macosx win32 transfers must pass" >&2; exit 1; }
 
   run-linux-cross:
-    name: Run linux package (built on macosx)
+    name: Verify linux package from macosx inputs
     needs: consumer-macosx
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -912,11 +1016,11 @@ jobs:
         run: |
           set -euo pipefail
           tar -xzf packages/pkg-linux.tar.gz -C packages
-          chmod +x packages/eve
           # Ubuntu names the Lavapipe manifest lvp_icd.json (no suffix).
           export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           export ALSOFT_DRIVERS=null
-          xvfb-run -a bash -c 'cd packages && exec ./eve > run.log 2>&1' &
+          xvfb-run -a bash .github/scripts/prepare-cross-consumer.sh linux packages
+          xvfb-run -a bash -c 'cd packages/verified && exec ./eve > ../run.log 2>&1' &
           pid=$!
           ok=0
           for i in $(seq 1 40); do
@@ -936,6 +1040,13 @@ jobs:
   # Every desktop consumer builds an ARM64-only APK from the official Android
   # SDK. API 35's x86_64 image can execute those APKs through ARM translation,
   # while GitHub's Linux runner supplies KVM for a reliable emulator boot.
+  #
+  # Host disk math: emulator -partition-size N needs ~N+1638 MB free under
+  # ~/.android/avd (8192 → 9830 MB). ubuntu-latest often has only 6–10 GB free
+  # after the system image download, so free unused host toolchains first.
+  # Guest /data still accumulates PackageManager residue across sequential
+  # ~380 MB APK installs (~+300 MB/cycle); 4096 left INSTALL_FAILED_INSUFFICIENT_STORAGE
+  # on the 4th APK despite ~3.8 GB "Avail". Keep 8192 and reclaim between APKs.
   run-android:
     name: Run all ARM64 consumer APKs on API 35 emulator
     needs: [consumer-win32, consumer-linux, consumer-macosx]
@@ -953,6 +1064,30 @@ jobs:
           pattern: android-apk-*
           path: apk
           merge-multiple: true
+
+      - name: Free host disk for emulator userdata
+        run: |
+          set -euo pipefail
+          df -h /
+          # Keep ANDROID_HOME/emulator + platform-tools; drop large unused
+          # toolchains so AVD userdata creation (~9.8 GB for partition-size
+          # 8192) still fits after the API 35 system-image download.
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android/sdk/ndk \
+            /usr/local/lib/android/sdk/cmake \
+            /opt/ghc \
+            /usr/local/share/boost \
+            "${AGENT_TOOLSDIRECTORY:-/opt/hostedtoolcache}" \
+            || true
+          docker system prune -af || true
+          df -h /
+          avail_kb="$(df -Pk /home/runner | awk 'NR==2 {print $4}')"
+          need_kb=$((9830 * 1024))
+          if [ "$avail_kb" -lt "$need_kb" ]; then
+            echo "ERROR: need >=9830 MB free for -partition-size 8192 userdata; have $((avail_kb / 1024)) MB" >&2
+            exit 1
+          fi
 
       - name: Enable KVM access
         run: |
@@ -977,6 +1112,7 @@ jobs:
             -wipe-data
             -noaudio
             -no-boot-anim
+            -no-metrics
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
@@ -1057,3 +1193,70 @@ jobs:
             xcrun simctl spawn "$SIM" log show --last 60s --predicate 'process == "eve"' 2>/dev/null | tail -n 40 || true
             exit 1
           fi
+
+  consumer-webgpu:
+    name: Downloaded WebGPU SDK browser consumer
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout checks
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+      - name: Download candidate SDK set
+        if: inputs.publish == false
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-sdk-set
+          path: artifacts
+      - name: Download released WebGPU SDK
+        if: inputs.publish != false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p artifacts
+          gh release download "$TAG" --repo "$REPO" --dir artifacts \
+            --pattern "eve-sdk-webgpu-$TAG.zip" --pattern SHA256SUMS
+      - name: Setup pinned WebGPU browser
+        # playwright install --with-deps can stall >10m on apt font mirrors;
+        # the composite action installs the browser binary only and gets
+        # display/Vulkan deps from its second step.
+        timeout-minutes: 20
+        uses: ./.github/actions/setup-webgpu-browser
+
+      - name: Verify checksum and run extracted SDK
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          (cd artifacts && grep "eve-sdk-webgpu-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
+          xvfb-run -a python3 scripts/test_webgpu_sdk.py "artifacts/eve-sdk-webgpu-$TAG.zip" --headed \
+            --version "${TAG#v}" --output artifacts/webgpu-consumer
+      - name: Upload WebGPU consumer evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-consumer-evidence
+          path: artifacts/webgpu-consumer/
+          if-no-files-found: warn
+
+  release-ready:
+    name: Nine SDKs and all consumer gates passed
+    if: always()
+    needs: [publish, consumer-arm64, consumer-win32, consumer-linux, consumer-macosx, consumer-webgpu, run-win32-cross, run-linux-cross, run-android, ios-sim]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every gate to succeed (skips fail closed)
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          results = json.loads(os.environ["RESULTS"])
+          failed = {name: job["result"] for name, job in results.items() if job["result"] != "success"}
+          if failed:
+              raise SystemExit(f"Release gates did not pass: {failed}")
+          print("All nine SDKs and consumer runtime gates passed")
+          PY

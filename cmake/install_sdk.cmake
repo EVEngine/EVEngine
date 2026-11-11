@@ -49,8 +49,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.js"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.wasm"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.html"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.data"
         DESTINATION bin
-        OPTIONAL
     )
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell"
         DESTINATION bin
@@ -230,15 +230,24 @@ install(FILES
     "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
     DESTINATION share/eve/ai
 )
+# Language skill kept at share/eve/ai/SKILL.md for older SDK entry points.
 install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
     DESTINATION share/eve/ai
 )
-install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
-    DESTINATION .cursor/skills/evescript
+# Paradigm + language skills for Cursor discovery (SKILL.md + optional README).
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/.cursor/skills/"
+    DESTINATION .cursor/skills
+    FILES_MATCHING
+        PATTERN "SKILL.md"
+        PATTERN "README.md"
 )
 install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
     DESTINATION .
     RENAME llms.txt
+)
+# AI asset kits: pixel/format contracts for card / visual-novel art generation.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/cmake/sdk/asset-kits/"
+    DESTINATION share/eve/ai/asset-kits
 )
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
     DESTINATION share/eve/ai/eve-mcp
@@ -383,4 +392,12 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/README.md"
 # Desktop FreePats / TiMidity bank (win32 / linux / macosx only).
 include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
 eve_install_timidity_share()
+
+# Strip only installed Android Release copies, including copied SDL/NDK libs.
+# Keep the original build outputs intact for crash symbolization.
+if(BUILD_PLATFORM STREQUAL "android")
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/android_sdk_strip.cmake.in"
+        "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake" @ONLY)
+    install(SCRIPT "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake")
+endif()
 

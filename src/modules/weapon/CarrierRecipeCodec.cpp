@@ -640,7 +640,7 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         entry.emplace("axisZ", Value(op.axis.z));
         entry.emplace("randomSeed", Value(static_cast<std::int64_t>(op.randomSeed)));
         entry.emplace("predictionSeconds", Value(op.predictionSeconds));
-        motion.push_back(Value(std::move(entry)));
+        motion.emplace_back(std::move(entry));
     }
     object.emplace("motion", Value(std::move(motion)));
 
@@ -652,7 +652,7 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         if (trigger.interval > Duration::zero()) entry.emplace("interval", Value(trigger.interval.seconds()));
         if (trigger.proximityRadius > 0.0) entry.emplace("proximityRadius", Value(trigger.proximityRadius));
         if (trigger.threshold != 0.0) entry.emplace("threshold", Value(trigger.threshold));
-        triggers.push_back(Value(std::move(entry)));
+        triggers.emplace_back(std::move(entry));
     }
     object.emplace("triggers", Value(std::move(triggers)));
 
@@ -672,7 +672,7 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         if (impact.bounceFriction != 0.0) entry.emplace("bounceFriction", Value(impact.bounceFriction));
         if (impact.bounceSpreadDegrees != 0.0) entry.emplace("bounceSpreadDegrees", Value(impact.bounceSpreadDegrees));
         if (impact.randomSeed != 0) entry.emplace("randomSeed", Value(static_cast<std::int64_t>(impact.randomSeed)));
-        impacts.push_back(Value(std::move(entry)));
+        impacts.emplace_back(std::move(entry));
     }
     object.emplace("impacts", Value(std::move(impacts)));
     return Result<Value>::success(Value(std::move(object)));

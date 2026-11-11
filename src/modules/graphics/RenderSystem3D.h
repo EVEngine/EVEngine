@@ -58,6 +58,16 @@ public:
         std::array<float, 32>                             shadowLayerCullDistances{};
         bool                                              orthographic = false;
         float                                             orthoHeight  = 20.f;
+        /** @brief Screen pixels per world unit at scale 1 for perfect-pixel ortho. 0 = unset. */
+        float pixelsPerUnit = 0.f;
+        /** @brief Virtual reference width in pixels; 0 disables integer fitting. */
+        int pixelRefWidth = 0;
+        /** @brief Virtual reference height in pixels; 0 disables integer fitting. */
+        int pixelRefHeight = 0;
+        /** @brief Last integer upscale chosen by applyPixelPerfect. */
+        int pixelScale = 1;
+        /** @brief Snap eye onto the view-plane pixel grid when applying perfect-pixel ortho. */
+        bool                                              pixelSnap = true;
         float                                             ambientR = 0.12f, ambientG = 0.12f, ambientB = 0.14f;
         Texture*                                          envMap       = nullptr;  // cubemap; nullptr → no IBL
         float                                             envIntensity = 1.f;
@@ -106,10 +116,64 @@ public:
     void  setFov(float fovYDeg);
     /** @brief Vertical field of view in degrees. */
     float getFov();
-    /** @brief Enable an orthographic projection with the given vertical world-space span. */
+    /** @brief Enable a pure orthographic projection with the given vertical world-space span. */
     void setOrthographic(float height);
     /** @brief Return to perspective projection, retaining the configured field of view. */
     void setPerspective();
+    /** @brief Return whether the camera currently uses orthographic projection. */
+    bool isOrthographic();
+    /** @brief Return the vertical world-space span used by orthographic projection. */
+    float getOrthoHeight();
+
+    /**
+     * @brief Store perfect-pixel sizing for pure orthographic projection.
+     * @param pixelsPerUnit Screen pixels per world unit at scale 1; must be finite and > 0.
+     * @param refWidth Virtual width in pixels; 0 skips integer fitting.
+     * @param refHeight Virtual height in pixels; 0 skips integer fitting.
+     * @return InvalidArgument when pixelsPerUnit or a positive reference size is invalid.
+     */
+    [[nodiscard]] Result<void> setPixelConfig(float pixelsPerUnit, int refWidth = 0, int refHeight = 0);
+    /** @brief Clear pixel sizing so applyPixelPerfect / setPixelOrthographic require a fresh config. */
+    void clearPixelConfig();
+    /** @brief Return whether a pixels-per-unit config is stored. */
+    bool hasPixelConfig();
+    /** @brief Enable or disable snapping the eye onto the view-plane pixel grid. */
+    void setPixelSnap(bool enabled);
+    /** @brief Return whether pixel-grid snapping is enabled. */
+    bool getPixelSnap();
+    /** @brief Return configured pixels per world unit, or 0 when unset. */
+    float getPixelsPerUnit();
+    /** @brief Return reference width, or 0 when unset. */
+    int getPixelRefWidth();
+    /** @brief Return reference height, or 0 when unset. */
+    int getPixelRefHeight();
+    /** @brief Return the last integer upscale from applyPixelPerfect. */
+    int getPixelScale();
+    /**
+     * @brief Enable pure orthographic projection sized for crisp pixels from the stored config.
+     * @param viewWidth Drawable width in pixels; must be > 0.
+     * @param viewHeight Drawable height in pixels; must be > 0.
+     * @return InvalidArgument when config/viewport is invalid.
+     * @cost O(1).
+     */
+    [[nodiscard]] Result<void> applyPixelPerfect(int viewWidth, int viewHeight);
+    /**
+     * @brief One-shot perfect-pixel orthographic setup: store config then apply for this viewport.
+     * @param pixelsPerUnit Screen pixels per world unit at scale 1.
+     * @param viewWidth Drawable width in pixels.
+     * @param viewHeight Drawable height in pixels.
+     * @param refWidth Optional virtual width; 0 uses the live viewport without integer fitting.
+     * @param refHeight Optional virtual height; 0 uses the live viewport without integer fitting.
+     */
+    [[nodiscard]] Result<void> setPixelOrthographic(float pixelsPerUnit, int viewWidth, int viewHeight,
+                                                    int refWidth = 0, int refHeight = 0);
+    /**
+     * @brief Snap the eye onto the view-plane pixel grid for the current ortho / pixel sizing.
+     * @param viewWidth Drawable width used when pixel config needs a live fallback.
+     * @param viewHeight Drawable height used when pixel config needs a live fallback.
+     */
+    void snapToPixelGrid(int viewWidth, int viewHeight);
+
     /** @brief Set positive near/far clipping distances; far is kept beyond near. */
     void setClipPlanes(float nearZ, float farZ);
     /** @brief Return the positive near clipping distance. */ float getNearClip();

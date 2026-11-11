@@ -5,6 +5,7 @@
 #include "common/Value.h"
 
 #include <algorithm>
+#include <cmath>
 #include <unordered_set>
 #include <utility>
 
@@ -36,6 +37,12 @@ bool Tracker::fail(const std::string &id, const std::string &reason) {
     return QuestSystem::fail(this, id, reason);
 }
 
+int Tracker::applyClock(double nowSeconds) { return QuestSystem::applyClock(this, nowSeconds); }
+
+int Tracker::refreshByKey(const std::string &refreshKey, const std::string &stamp) {
+    return QuestSystem::refreshByKey(this, refreshKey, stamp);
+}
+
 void Tracker::pollEvents() {
     polled = std::move(pending);
     pending.clear();
@@ -58,8 +65,10 @@ eve::Result<std::string> Tracker::snapshotJson() const {
             objectives.emplace_back(std::move(encodedObjective));
         }
         eve::Value::Object encodedEntry;
+        encodedEntry.emplace("deadlineAt", eve::Value(found->second.deadlineAt));
         encodedEntry.emplace("id", eve::Value(found->second.id));
         encodedEntry.emplace("objectives", eve::Value(std::move(objectives)));
+        encodedEntry.emplace("refreshStamp", eve::Value(found->second.refreshStamp));
         encodedEntry.emplace("state", eve::Value(found->second.state));
         encodedEntries.emplace_back(std::move(encodedEntry));
     }
@@ -74,8 +83,8 @@ eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     const eve::Value &root = parsed.value();
-    auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, path));
+    auto              fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
     };
     if (!root.isObject())
         return fail(eve::DiagnosticCode::ParseError, "quest tracker root must be an object", "$");
@@ -117,9 +126,8 @@ eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
             stateName != "ready" && stateName != "completed" && stateName != "failed")
             return fail(eve::DiagnosticCode::InvalidArgument, "quest tracker state is invalid", path + ".state");
         if (objectives->arraySize() != entryIt->second.objectives.size())
-            return fail(eve::DiagnosticCode::Conflict,
-                        "quest objective list does not match the current definition", path + ".objectives");
-        bool allDone = true;
+            return fail(eve::DiagnosticCode::Conflict, "quest objective list does not match the current definition",
+                        path + ".objectives");
         for (std::size_t objectiveIndex = 0; objectiveIndex < entryIt->second.objectives.size(); ++objectiveIndex) {
             const eve::Value &encodedObjective = objectives->at(objectiveIndex);
             const std::string objectivePath = path + ".objectives[" + std::to_string(objectiveIndex) + "]";
@@ -137,21 +145,43 @@ eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
                 return fail(eve::DiagnosticCode::InvalidArgument,
                             "quest objective progress is outside its definition bounds", objectivePath + ".current");
             runtime.current = static_cast<int>(current->asInt());
-            runtime.done = runtime.current >= runtime.count;
-            allDone = allDone && runtime.done;
+            runtime.done    = runtime.current >= runtime.count;
         }
-        if ((stateName == "ready" || stateName == "completed") && !allDone)
+        const eve::Value *deadlineAt = encoded.find("deadlineAt");
+        if (deadlineAt) {
+            if (!deadlineAt->isNumeric() || !std::isfinite(deadlineAt->asDouble()) || deadlineAt->asDouble() < 0.0)
+                return fail(eve::DiagnosticCode::InvalidArgument,
+                            "quest deadlineAt must be a finite non-negative number", path + ".deadlineAt");
+            entryIt->second.deadlineAt = deadlineAt->asDouble();
+        } else {
+            entryIt->second.deadlineAt = 0.0;
+        }
+        const eve::Value *refreshStamp = encoded.find("refreshStamp");
+        if (refreshStamp) {
+            if (!refreshStamp->isString())
+                return fail(eve::DiagnosticCode::ParseError, "quest refreshStamp must be a string",
+                            path + ".refreshStamp");
+            entryIt->second.refreshStamp = refreshStamp->asString();
+        } else {
+            entryIt->second.refreshStamp.clear();
+        }
+        entryIt->second.state = stateName;
+        const bool satisfied  = QuestSystem::isObjectivesSatisfied(candidate, id->asString());
+        if ((stateName == "ready" || stateName == "completed") && !satisfied)
             return fail(eve::DiagnosticCode::InvariantViolation,
-                        "ready or completed quest must have every objective complete", path + ".state");
+                        "ready or completed quest must satisfy its objective policy", path + ".state");
         if ((stateName == "locked" || stateName == "inactive") &&
             std::any_of(entryIt->second.objectives.begin(), entryIt->second.objectives.end(),
                         [](const ObjectiveRuntime &objective) { return objective.current != 0; }))
             return fail(eve::DiagnosticCode::InvariantViolation,
                         "locked or inactive quest cannot contain progress", path + ".state");
-        if (allDone && stateName != "ready" && stateName != "completed" && stateName != "failed")
+        if (satisfied && stateName != "ready" && stateName != "completed" && stateName != "failed")
             return fail(eve::DiagnosticCode::InvariantViolation,
-                        "fully progressed quest must be ready, completed, or failed", path + ".state");
-        entryIt->second.state = stateName;
+                        "objective-satisfied quest must be ready, completed, or failed", path + ".state");
+        if ((stateName == "locked" || stateName == "inactive" || stateName == "completed" || stateName == "failed") &&
+            entryIt->second.deadlineAt != 0.0)
+            return fail(eve::DiagnosticCode::InvariantViolation,
+                        "non-listening quest states cannot carry an armed deadline", path + ".deadlineAt");
     }
     candidate.pending.clear();
     candidate.polled.clear();
@@ -215,6 +245,39 @@ bool Tracker::isObjectiveDone(const std::string &id, int index) const {
     if (it == entries.end()) return false;
     if (index < 0 || size_t(index) >= it->second.objectives.size()) return false;
     return it->second.objectives[size_t(index)].done;
+}
+
+bool Tracker::isObjectiveOptional(const std::string &id, int index) const {
+    const QuestDefinition *def = QuestRegistry::find(id);
+    if (!def || index < 0 || size_t(index) >= def->objectives.size()) return false;
+    return def->objectives[size_t(index)].optional;
+}
+
+std::string Tracker::getObjectivePolicy(const std::string &id) const {
+    const QuestDefinition *def = QuestRegistry::find(id);
+    return def ? def->objectivePolicy : std::string{};
+}
+
+bool Tracker::isObjectivesSatisfied(const std::string &id) const {
+    return QuestSystem::isObjectivesSatisfied(*this, id);
+}
+
+std::string Tracker::dialoguePhase(const std::string &questId) const {
+    return QuestSystem::dialoguePhase(*this, questId);
+}
+
+std::string Tracker::dialogueConversationId(const std::string &questId, const std::string &dialogueBase) const {
+    return QuestSystem::dialogueConversationId(*this, questId, dialogueBase);
+}
+
+double Tracker::getDeadlineAt(const std::string &id) const {
+    auto it = entries.find(id);
+    return it == entries.end() ? 0.0 : it->second.deadlineAt;
+}
+
+std::string Tracker::getRefreshStamp(const std::string &id) const {
+    auto it = entries.find(id);
+    return it == entries.end() ? std::string{} : it->second.refreshStamp;
 }
 
 int Tracker::getRewardCount(const std::string &id) const {

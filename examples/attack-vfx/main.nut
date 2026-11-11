@@ -17,7 +17,7 @@ persist avParticles = null
 persist avFont = null
 persist avHandle = null
 persist avSkinIndex = 0
-persist avPhase = "idle"   // idle | anticipate | release
+persist avPhase = "idle"   // idle | anticipate | release | aftermath
 persist avTimer = 0.0
 persist avCycle = 0
 persist avLastEvents = ""
@@ -30,32 +30,50 @@ persist avFxCones = null
 persist avFxOrbs = null
 persist avChargeRing = null
 
+// Particle URIs: Phase-1 Unity-intent recipes + Phase-3 flipbook fidelity.
+// Earth/air keep elemental burst JSON where the pack has no matching shape.
 skins <- [
     {
         id = "skin:water", label = "WATER", title = "Water - Whip",
         tint = [0.35, 0.78, 1.0], meshUri = "skill:weaponSlash",
-        particle = "water_burst.particle.json",
+        chargeParticle = "portal.effect.json",
+        impactParticle = "water_burst.particle.json",
+        aftermathParticle = "aftermath_smoke.effect.json",
+        chargeIntensity = 0.55, impactIntensity = 1.25, aftermathIntensity = 0.85,
         decalR = 0.25, decalG = 0.55, decalB = 0.95
     },
     {
         id = "skin:earth", label = "EARTH", title = "Earth - Impact Cones",
         tint = [0.72, 0.42, 0.22], meshUri = "skill:impactFlash",
-        particle = "earth_burst.particle.json",
+        chargeParticle = "bonfire.effect.json",
+        impactParticle = "earth_burst.particle.json",
+        aftermathParticle = "smoke_flipbook.effect.json",
+        chargeIntensity = 0.45, impactIntensity = 1.3, aftermathIntensity = 1.0,
         decalR = 0.55, decalG = 0.35, decalB = 0.18
     },
     {
         id = "skin:fire", label = "FIRE", title = "Fire - Projectile Burst",
         tint = [1.0, 0.42, 0.08], meshUri = "skill:burningBody",
-        particle = "fire_burst.particle.json",
+        chargeParticle = "fire_flipbook.effect.json",
+        impactParticle = "fireworks.effect.json",
+        aftermathParticle = "smoke_flipbook.effect.json",
+        chargeIntensity = 0.85, impactIntensity = 1.35, aftermathIntensity = 1.15,
         decalR = 0.95, decalG = 0.28, decalB = 0.06
     },
     {
         id = "skin:air", label = "AIR", title = "Air - Impact Distortions",
         tint = [0.55, 0.95, 0.82], meshUri = "skill:weaponSlash",
-        particle = "air_burst.particle.json",
+        chargeParticle = "portal.effect.json",
+        impactParticle = "air_burst.particle.json",
+        aftermathParticle = "aftermath_smoke.effect.json",
+        chargeIntensity = 0.6, impactIntensity = 1.2, aftermathIntensity = 0.8,
         decalR = 0.45, decalG = 0.85, decalB = 0.75
     }
 ];
+
+ANTICIPATE_SEC <- 0.42;
+RELEASE_SEC <- 0.78;
+AFTERMATH_SEC <- 0.9;
 
 SRC_X <- 0.0;
 SRC_Z <- 0.0;
@@ -84,10 +102,19 @@ function hideAllFx() {
     hideProp(avChargeRing);
 }
 
+function particleLayer(uri, x, y, intensity) {
+    return "{\"role\":\"particles\",\"uri\":\"" + uri +
+        "\",\"stopBehavior\":\"stopEmitting\"," +
+        "\"floatParams\":{\"x\":" + x + ",\"y\":" + y +
+        ",\"intensity\":" + intensity + "}}";
+}
+
 function recipeJson(skin) {
-    // Screen-space particle placement near the impact (1100x700).
-    local px = 720.0;
-    local py = 360.0;
+    // Screen-space particle placement (1100x700): charge near caster, impact/aftermath at hit.
+    local chargeX = 540.0;
+    local chargeY = 400.0;
+    local hitX = 720.0;
+    local hitY = 360.0;
     return "{" +
         "\"schema\":\"eve.stylize.attack-vfx\",\"schemaVersion\":1," +
         "\"id\":\"attackvfx:showcase\"," +
@@ -99,17 +126,15 @@ function recipeJson(skin) {
         "}," +
         "\"phases\":[" +
             "{" +
-                "\"kind\":\"anticipate\",\"durationSeconds\":0.42," +
+                "\"kind\":\"anticipate\",\"durationSeconds\":" + ANTICIPATE_SEC + "," +
                 "\"layers\":[" +
                     "{\"role\":\"meshVfx\",\"uri\":\"skill:chargeAura\"}," +
                     "{\"role\":\"prefab\",\"uri\":\"prefab://charge-ring\"}," +
-                    "{\"role\":\"particles\",\"uri\":\"" + skin.particle +
-                        "\",\"floatParams\":{\"x\":" + (px - 180.0) +
-                        ",\"y\":" + (py + 40.0) + ",\"intensity\":0.7}}" +
+                    particleLayer(skin.chargeParticle, chargeX, chargeY, skin.chargeIntensity) +
                 "]" +
             "}," +
             "{" +
-                "\"kind\":\"release\",\"startCue\":\"impact\",\"durationSeconds\":0.78," +
+                "\"kind\":\"release\",\"startCue\":\"impact\",\"durationSeconds\":" + RELEASE_SEC + "," +
                 "\"layers\":[" +
                     "{\"role\":\"meshVfx\",\"uri\":\"" + skin.meshUri + "\"}," +
                     "{\"role\":\"trail\",\"uri\":\"trail://blade\",\"floatParams\":{\"lifetime\":0.28}}," +
@@ -122,9 +147,13 @@ function recipeJson(skin) {
                         ",\"b\":" + skin.decalB + ",\"a\":0.8}}," +
                     "{\"role\":\"audio\",\"uri\":\"hit.wav\",\"floatParams\":{\"volume\":0.75}}," +
                     "{\"role\":\"prefab\",\"uri\":\"prefab://impact-burst\"}," +
-                    "{\"role\":\"particles\",\"uri\":\"" + skin.particle +
-                        "\",\"floatParams\":{\"x\":" + px + ",\"y\":" + py +
-                        ",\"intensity\":1.35}}" +
+                    particleLayer(skin.impactParticle, hitX, hitY, skin.impactIntensity) +
+                "]" +
+            "}," +
+            "{" +
+                "\"kind\":\"aftermath\",\"durationSeconds\":" + AFTERMATH_SEC + "," +
+                "\"layers\":[" +
+                    particleLayer(skin.aftermathParticle, hitX, hitY + 20.0, skin.aftermathIntensity) +
                 "]" +
             "}" +
         "]" +
@@ -532,7 +561,7 @@ function updatePresentation(dt) {
         return;
     }
     if (avPhase == "anticipate") {
-        local t = clamp01(avTimer / 0.42);
+        local t = clamp01(avTimer / ANTICIPATE_SEC);
         updateChargeAura(skin, t);
         // Warm-up strand for water/air.
         if (skin.label == "WATER" || skin.label == "AIR") {
@@ -545,8 +574,16 @@ function updatePresentation(dt) {
         }
         return;
     }
+    if (avPhase == "aftermath") {
+        // Residual particles are AttackVfx-owned; keep a faint dust ring as presentation glue.
+        local fade = 1.0 - clamp01(avTimer / AFTERMATH_SEC);
+        avChargeRing.setPosition(TGT_X, 0.35, TGT_Z);
+        avChargeRing.setScale(0.4 + 0.55 * fade, 0.03, 0.4 + 0.55 * fade);
+        avChargeRing.setTint(skin.tint[0], skin.tint[1], skin.tint[2], 1.0);
+        return;
+    }
     // release
-    local t = clamp01(avTimer / 0.78);
+    local t = clamp01(avTimer / RELEASE_SEC);
     if (skin.label == "WATER") updateWaterWhip(skin, t);
     else if (skin.label == "EARTH") updateEarthCones(skin, t);
     else if (skin.label == "FIRE") updateFireBurst(skin, t);
@@ -573,7 +610,7 @@ eve_update <- function(dt) {
         local summary = summarizeEvents(frame);
         if (summary != "") avLastEvents = summary;
 
-        if (avPhase == "anticipate" && avTimer >= 0.38) {
+        if (avPhase == "anticipate" && avTimer >= (ANTICIPATE_SEC - 0.04)) {
             local signaled = avRequire(
                 avAction.signal(avHandle.slot, avHandle.generation, "impact"), "signal");
             avPhase = "release";
@@ -582,6 +619,11 @@ eve_update <- function(dt) {
             local hitSummary = summarizeEvents(signaled);
             if (hitSummary != "") avLastEvents = "impact " + hitSummary;
             print("ATTACK_VFX_IMPACT " + avLastEvents + "\n");
+        } else if (avPhase == "release" && avTimer >= RELEASE_SEC) {
+            avPhase = "aftermath";
+            avTimer = 0.0;
+            hideAllFx();
+            print("ATTACK_VFX_AFTERMATH skin=" + skins[avSkinIndex].label + "\n");
         }
 
         if (avAction.activeCount() == 0) {
@@ -635,6 +677,7 @@ eve_render <- function() {
         gfx.setFont(avFont);
         gfx.print(skin.title, 48.0, 14.0, 0.95, 0.95, 0.97, 1.0, 0.72);
         local phaseLabel = avPhase == "release" ? "RELEASE" :
+                           avPhase == "aftermath" ? "AFTERMATH" :
                            avPhase == "anticipate" ? "ANTICIPATE" : "IDLE";
         gfx.print(phaseLabel, 920.0, 16.0, skin.tint[0], skin.tint[1], skin.tint[2], 0.9, 0.55);
     }

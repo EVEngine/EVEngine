@@ -38,12 +38,20 @@ def main() -> None:
         # quirks inside vendored license trees) instead of raising like rglob;
         # individual unreadable files/symlinks are skipped too.
         for dirpath, dirnames, filenames in os.walk(root, onerror=lambda _e: None):
+            relative_dir = pathlib.Path(dirpath).relative_to(root).as_posix()
             dirnames[:] = [
                 d for d in dirnames
                 # Never ship build outputs: the android SDK template is compiled
                 # by test-sdk.sh before packaging, leaving app/build outputs
                 # (e.g. a CI test APK) that consumers must not inherit.
                 if d not in ("build", ".gradle")
+                # SDK usability checks stage canonical lib/ files here.
+                # Consumers stage them again; do not ship a second copy.
+                if not (
+                    args.platform in ("android", "android-debug")
+                    and relative_dir == "platform/apk/app/src/main"
+                    and d == "jniLibs"
+                )
                 if os.access(os.path.join(dirpath, d), os.R_OK)
             ]
             for name in filenames:

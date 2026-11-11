@@ -114,6 +114,30 @@ public:
     /** @brief Return whether one exact quest definition is present in the current catalogue. */
     bool hasQuestDefinition(const std::string &id) const;
     /**
+     * @brief Strictly replace the process-local quest-generation archetype catalogue.
+     * @return Committed archetype count, or a structured failure preserving the prior catalogue.
+     * @thread Call on the owning simulation/content thread.
+     * @reentrancy Does not invoke script callbacks.
+     */
+    [[nodiscard]] eve::Result<int> replaceQuestGenerationArchetypesFromJson(const std::string &json);
+    /** @brief Clear every quest-generation archetype. */
+    void clearQuestGenerationArchetypes();
+    /** @brief Return the number of registered generation archetypes. */
+    int getQuestGenerationArchetypeCount() const;
+    /**
+     * @brief Preview procedural quests as JSON without mutating QuestRegistry.
+     * @return `eve.rpg.quest-generate-result` JSON, or a structured failure.
+     * @cost Medium — board-refill cadence; not per-frame.
+     */
+    [[nodiscard]] eve::Result<std::string> generateQuestsJson(const std::string &requestJson);
+    /**
+     * @brief Generate procedural quests and register them into QuestRegistry.
+     * @return Newly registered definition count, or a structured failure.
+     * @remarks Call Tracker::syncAuto() afterwards. Default replaceGenerated clears tag `generated`.
+     * @cost Medium — board-refill cadence; not per-frame.
+     */
+    [[nodiscard]] eve::Result<int> generateQuestsAndRegister(const std::string &requestJson);
+    /**
      * @brief Atomically complete one ready quest and apply all item/attribute rewards.
      * @return Committed reward-entry count, or a structured failure without observable mutation.
      * @thread Call on the authoritative state owners' simulation thread.

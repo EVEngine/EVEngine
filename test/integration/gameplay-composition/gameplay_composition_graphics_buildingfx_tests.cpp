@@ -1940,6 +1940,20 @@ TEST_CASE("combatDamage.defaultRuleCommitsHealthPoiseReactionAndKnockback") {
     CHECK_EQ(outcome.value().knockback.x, 2.0);
     CHECK(static_cast<int>(outcome.value().reaction) == static_cast<int>(eve::combat::HitReaction::Flinch));
     CHECK(static_cast<int>(outcome.value().ruleSource) == static_cast<int>(eve::combat::DamageRuleSource::Default));
+    const auto audit = outcome.value().settlementResult;
+    REQUIRE(!audit.stages.empty());
+    auto next         = request;
+    next.healthDamage = 1.0;
+    auto second       = damage.apply(target, next);
+    REQUIRE(second.ok());
+    CHECK_EQ(outcome.value().settlementResult.applied, audit.applied);
+    REQUIRE_EQ(outcome.value().settlementResult.stages.size(), audit.stages.size());
+    for (size_t i = 0; i < audit.stages.size(); ++i) {
+        const auto& retained = outcome.value().settlementResult.stages[i];
+        CHECK_EQ(retained.name, audit.stages[i].name);
+        CHECK_EQ(retained.after, audit.stages[i].after);
+        CHECK(retained.details == audit.stages[i].details);
+    }
 }
 
 TEST_CASE("combatDamage.providerPathIsObservableAndPreparedBeforeCommit") {
@@ -2342,6 +2356,24 @@ TEST_CASE("combatLoop.requiresCharacterAndMelee") {
     eve::combat::CombatLoopRuntime loop;
     auto missing = loop.advance({eve::SimulationTick(1), eve::Duration::fromNanoseconds(16000000)});
     CHECK(!missing.ok());
+}
+
+TEST_CASE("combatLoop.rejectsDuplicateAdvanceOnSameTick") {
+    const auto                          player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    eve::combat::CombatCharacterRuntime characters;
+    REQUIRE(characters.registerSubject({player, "fighter:player", {0.0, 0.0, 0.0}}).ok());
+    eve::combat::MeleeHitRuntime   melee;
+    eve::combat::CombatLoopRuntime loop;
+    loop.setCharacters(characters);
+    loop.setMelee(melee);
+    const auto step = eve::SimulationStep{eve::SimulationTick(1), eve::Duration::fromNanoseconds(16000000)};
+    REQUIRE(loop.advance(step).ok());
+    const double x         = characters.state(player).value().position.x;
+    auto         duplicate = loop.advance(step);
+    REQUIRE(!duplicate.ok());
+    CHECK_EQ(duplicate.status().code(), eve::StatusCode::Conflict);
+    CHECK_EQ(characters.state(player).value().position.x, x);
+    REQUIRE(loop.advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(16000000)}).ok());
 }
 
 TEST_CASE("combatLoop.warpsAttackerTowardLockAndFramesCamera") {

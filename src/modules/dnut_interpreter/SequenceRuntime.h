@@ -61,15 +61,18 @@ using SequenceCommandHandler = std::function<SequenceCommandResponse(const Seque
  * facts and gameplay state stay with the domain owner that persists them.
  *
  * The runtime never interprets a step payload. Control-flow types
- * (`branch` / `choice` / `call` / `command` / `wait` / `end`) are handled here;
- * every other type is routed through the configured `StepKindRegistry`.
+ * (`branch` / `choice` / `call` / `command` / `wait` / `end` / `label` /
+ * `jump` / `loop` / `break` / `continue` / `parallel` / `join`) are handled
+ * here; every other type is routed through the configured `StepKindRegistry`.
  */
 class EVENGINE_API_PLATFORM SequenceRuntime {
 public:
     /** @brief Stable cursor save schema retained across the L1 ownership migration. */
     static constexpr std::string_view SaveSchema = "eve.dialogue.runner";
-    /** @brief Current cursor save schema version. */
-    static constexpr std::int64_t SaveVersion = 2;
+    /** @brief Current cursor save schema version (v3 adds loop/parallel stacks). */
+    static constexpr std::int64_t SaveVersion = 3;
+    /** @brief Oldest restoreable cursor save schema version. */
+    static constexpr std::int64_t MinSaveVersion = 2;
 
     /** @brief Resolves a called asset id to a borrowed, externally owned asset. */
     using AssetResolver = std::function<const SequenceAsset*(const std::string&)>;
@@ -240,11 +243,41 @@ public:
     }
 
 private:
+    /** @brief Active `loop` frame so `break` / `continue` and times counters resolve. */
+    struct LoopFrame {
+        std::string loopNodeId;
+        std::string afterNodeId;
+        std::string mode;
+        int         remaining = -1;
+        bool        entered   = false;
+    };
+
+    /** @brief One lane cursor inside an active `parallel` fork-join. */
+    struct ParallelLane {
+        std::string nodeId;
+        bool        done         = false;
+        bool        blocked      = false;
+        bool        waitingStep  = false;
+        eve::Value  lastStepResult;
+    };
+
+    /** @brief Active `parallel` frame coordinating cooperative lane execution. */
+    struct ParallelFrame {
+        std::string               parallelNodeId;
+        std::string               joinNext;
+        std::string               joinNodeId;
+        std::vector<ParallelLane> lanes;
+        std::size_t               activeLane = 0;
+        bool                      hostBlocked = false;
+    };
+
     struct Frame {
-        const SequenceAsset* asset = nullptr;
-        std::string          returnNode;
-        eve::Value           bindings = eve::Value::Object{};
-        eve::Value           locals   = eve::Value::Object{};
+        const SequenceAsset*       asset = nullptr;
+        std::string                returnNode;
+        eve::Value                 bindings = eve::Value::Object{};
+        eve::Value                 locals   = eve::Value::Object{};
+        std::vector<LoopFrame>     loopStack;
+        std::vector<ParallelFrame> parallelStack;
     };
 
     /** @brief Owning in-process snapshot used to roll back one failed transition. */
@@ -257,6 +290,8 @@ private:
         bool                                    waitingStep    = false;
         bool                                    waitingCommand = false;
         std::vector<Frame>                      callStack;
+        std::vector<LoopFrame>                  loopStack;
+        std::vector<ParallelFrame>              parallelStack;
         eve::Value                              lastStepResult;
         std::optional<SequenceCommandRequest>   lastCommandRequest;
         std::string                             pendingCommandRequestId;
@@ -273,6 +308,12 @@ private:
     [[nodiscard]] eve::Result<std::string> evaluateRoute(const SequenceNode& node);
     [[nodiscard]] eve::Result<void>        selectImpl(std::string_view routeLabel);
     [[nodiscard]] eve::Result<void>        resumeCommandImpl(std::string_view requestId, eve::Value result);
+    [[nodiscard]] eve::Result<void>        handleLoop(const SequenceNode& node);
+    [[nodiscard]] eve::Result<void>        handleBreakOrContinue(const SequenceNode& node, bool isBreak);
+    [[nodiscard]] eve::Result<void>        handleParallel(const SequenceNode& node);
+    [[nodiscard]] eve::Result<void>        handleJoin(const SequenceNode& node);
+    [[nodiscard]] eve::Result<void>        driveParallelUntilBlocked();
+    [[nodiscard]] eve::Result<void>        stepLaneOnce(ParallelLane& lane);
     void emit(EventKind kind, const SequenceNode* node = nullptr, const std::string& detail = {}) const;
 
     const SequenceAsset*    asset_ = nullptr;
@@ -283,6 +324,8 @@ private:
     bool                    waitingStep_ = false;
     bool                                                    waitingCommand_ = false;
     std::vector<Frame>      callStack_;
+    std::vector<LoopFrame>  loopStack_;
+    std::vector<ParallelFrame> parallelStack_;
     AssetResolver           assetResolver_;
     ConditionEvaluator      conditionEvaluator_;
     const StepKindRegistry* registry_ = nullptr;

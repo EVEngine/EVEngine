@@ -115,6 +115,15 @@ public:
      *         sorted by self time descending.
      */
     ssq::Object capture();
+    /**
+     * @brief Top zones of the last completed frame for quick hotspot triage.
+     * @param limit Maximum rows to return; values &lt;= 0 yield an empty array.
+     * @param minSelfMs Drop zones whose selfMs is strictly below this threshold.
+     * @return Array of tables {module, name, thread, selfMs, totalMs, count},
+     *         still sorted by self time descending.
+     * @cost Linear in last-frame zone count; diagnostic only, never per entity.
+     */
+    ssq::Object hotspots(int limit, float minSelfMs);
 
     /**
      * @brief Intern a script-supplied zone name so it can be handed to the collector.

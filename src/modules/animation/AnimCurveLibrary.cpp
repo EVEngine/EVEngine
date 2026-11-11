@@ -1,4 +1,5 @@
 #include "animation/AnimCurveLibrary.h"
+
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -6,6 +7,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 #include "common/Utf8Validation.h"
 
@@ -52,7 +54,7 @@ private:
     std::size_t                offset = 0;
 };
 eve::Diagnostic invalid(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, "animationCurves", {},
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), "animationCurves", {},
                                   "animation");
 }
 }  // namespace

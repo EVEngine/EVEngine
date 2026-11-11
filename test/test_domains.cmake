@@ -129,6 +129,7 @@ set(EVE_TEST_MODULE_DOMAIN
     # --- physics and vehicles
     "physics;physics"
     "vehicle;physics"
+    "warship;physics"
 
     # --- simulation-heavy domains
     "fluids;fluids"
@@ -149,6 +150,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "authority;rpg"
     "emergence;rpg"
     "production;rpg"
+    "growth;rpg"
     "orders;rpg"
     "settlement;rpg"
     "social;rpg"
@@ -170,6 +172,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "npc_ai;npc_ai"
     "crowd;npc_ai"
     "sensing;npc_ai"
+    "roster;npc_ai"
 
     # --- construction
     # house generation lives under the procgen package (src/modules/procgen/house)
@@ -177,6 +180,7 @@ set(EVE_TEST_MODULE_DOMAIN
     # through the include rule above rather than through a root of their own.
     "building;building"
     "archspace;building"
+    "logistics;building"
 
     # --- narrative, assets, media, platform, weather
     "dialogue;dialogue"

@@ -21,7 +21,7 @@ Result<void> CrowdFlowNavigation::replaceGroups(crowd::Crowd& crowd, std::vector
         return groupFailure<void>(DiagnosticCode::InvalidArgument, "Expected at most 64 shared groups");
     const auto                source = crowd.getFieldStatus();
     std::vector<GroupBinding> staged;
-    for (const auto& group : groups) {
+    for (auto& group : groups) {
         if (group.members.empty() || group.members.size() > 1024)
             return groupFailure<void>(DiagnosticCode::InvalidArgument, "Expected 1..1024 group members");
         auto normalized = goalSet(crowd, group.targets);
@@ -36,15 +36,17 @@ Result<void> CrowdFlowNavigation::replaceGroups(crowd::Crowd& crowd, std::vector
             goals = priorGroup->goals;
         else
             goals = std::make_shared<const std::vector<crowd::FlowGoal>>(std::move(normalized).takeValue());
-        for (const auto& member : group.members) {
+        for (auto& member : group.members) {
             if (member.unit.table == nullptr || member.unit.generation == 0 || member.orderId.empty())
                 return groupFailure<void>(DiagnosticCode::InvalidArgument, "Invalid group member binding");
-            GroupBinding binding{member, goals, false, source.owner, source.inputRevision};
-            const auto   previous = std::lower_bound(
-                groups_.begin(), groups_.end(), member.unit,
+            // The input projection is owned here; transfer its order keys into staged bindings.
+            GroupBinding binding{std::move(member), goals, false, source.owner, source.inputRevision};
+            const auto&  ownedMember = binding.member;
+            const auto   previous    = std::lower_bound(
+                groups_.begin(), groups_.end(), ownedMember.unit,
                 [](const auto& candidate, const auto& handle) { return handleLess(candidate.member.unit, handle); });
-            if (previous != groups_.end() && !handleLess(member.unit, previous->member.unit) &&
-                previous->member.orderId == member.orderId && previous->owner == source.owner &&
+            if (previous != groups_.end() && !handleLess(ownedMember.unit, previous->member.unit) &&
+                previous->member.orderId == ownedMember.orderId && previous->owner == source.owner &&
                 previous->input == source.inputRevision && previous->goals == goals)
                 binding.reform = previous->reform;
             staged.push_back(std::move(binding));

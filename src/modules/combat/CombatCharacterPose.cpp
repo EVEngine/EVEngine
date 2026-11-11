@@ -447,6 +447,15 @@ Result<CombatLoopFrame> CombatLoopRuntime::advance(const SimulationStep& step) {
     if (!characters_ || !melee_)
         return Result<CombatLoopFrame>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "combat loop requires character and melee runtimes", "loop"));
+    if (lastAdvanceTick_.has_value()) {
+        if (step.tick < *lastAdvanceTick_)
+            return Result<CombatLoopFrame>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "combat loop tick moved backwards", "tick"));
+        if (step.tick == *lastAdvanceTick_)
+            return Result<CombatLoopFrame>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "CombatLoopRuntime already advanced this tick", "tick"));
+    }
+    lastAdvanceTick_ = step.tick;
 
     CombatLoopFrame frame;
     frame.tick = step.tick;

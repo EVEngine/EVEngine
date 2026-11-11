@@ -92,6 +92,14 @@ public:
     [[nodiscard]] Result<void> setFoliageTranslucency(float red, float green, float blue, float intensity,
                                                       float strength, float normalDistortion, float scattering,
                                                       float direct, float ambient, float shadow);
+    /**
+     * @brief Publish clearcoat layer factors on the current PBR surface snapshot.
+     * @param factor Clearcoat weight in [0,1].
+     * @param roughness Clearcoat roughness in [0,1].
+     * @return Success after atomic publication, or validation failure with the material unchanged.
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setClearcoat(float factor, float roughness);
     /** @brief Publish object-space foliage wind while preserving the current PBR material snapshot.
      * @param motionTexture Borrowed nine-layer motion field owned by Graphics.
      * @param noiseTexture Borrowed repeat-addressed noise owned by Graphics.
@@ -118,6 +126,44 @@ public:
      * @lifetime Keep alive through the material and every submitted draw; invalid after factory release.
      * @thread Render-thread affine; no callbacks or retained temporary data. */
     Texture* getAlbedoTexture() const { return pbr_.textures[0].texture; }
+
+    /**
+     * @brief Publish base-color UV offset and enable the extended PBR surface path.
+     * Sampling uses `uv' = rotate(uv * scale) + offset`. Scroll a conveyor/tire strip by
+     * updating offset each frame; pair with Shape3D.setTangentVelocity for physics.
+     * @param u Horizontal offset in UV units (REPEAT wrap).
+     * @param v Vertical offset in UV units.
+     * @return Success, or InvalidArgument when a component is non-finite (material unchanged).
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setAlbedoUvOffset(float u, float v);
+    /** @brief Current base-color UV offset U. */
+    float getAlbedoUvOffsetU() const { return pbr_.textures[0].offset[0]; }
+    /** @brief Current base-color UV offset V. */
+    float getAlbedoUvOffsetV() const { return pbr_.textures[0].offset[1]; }
+
+    /**
+     * @brief Publish base-color UV scale (tiling) and enable the extended PBR surface path.
+     * @param u Horizontal repeats across mesh UV 0..1; must be finite and non-zero.
+     * @param v Vertical repeats across mesh UV 0..1; must be finite and non-zero.
+     * @return Success, or InvalidArgument without mutation.
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setAlbedoUvScale(float u, float v);
+    /** @brief Current base-color UV scale U. */
+    float getAlbedoUvScaleU() const { return pbr_.textures[0].scale[0]; }
+    /** @brief Current base-color UV scale V. */
+    float getAlbedoUvScaleV() const { return pbr_.textures[0].scale[1]; }
+
+    /**
+     * @brief Publish base-color UV rotation (radians, around UV origin) and enable PBR.
+     * @param radians Finite rotation applied after scale and before offset.
+     * @return Success, or InvalidArgument without mutation.
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setAlbedoUvRotation(float radians);
+    /** @brief Current base-color UV rotation in radians. */
+    float getAlbedoUvRotation() const { return pbr_.textures[0].rotation; }
 
     /** @brief Set the borrowed material texture.
      * @ownership Graphics factory owns the resource.

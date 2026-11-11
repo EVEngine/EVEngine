@@ -21,7 +21,7 @@ Result<std::string> stringField(const Value& value, std::string_view name, std::
     const Value* member = field(value, name);
     if (!member || !member->isString())
         return Result<std::string>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected string field", path));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected string field", std::move(path)));
     return Result<std::string>::success(member->asString());
 }
 
@@ -29,7 +29,7 @@ Result<std::int64_t> intField(const Value& value, std::string_view name, std::st
     const Value* member = field(value, name);
     if (!member || !member->isInt64())
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", path));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", std::move(path)));
     return Result<std::int64_t>::success(member->asInt());
 }
 
@@ -37,7 +37,7 @@ Result<bool> boolField(const Value& value, std::string_view name, std::string pa
     const Value* member = field(value, name);
     if (!member || !member->isBool())
         return Result<bool>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", path));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", std::move(path)));
     return Result<bool>::success(member->asBool());
 }
 
@@ -57,7 +57,7 @@ Result<Value::Object> payloadField(const Value& value, std::string path) {
     const Value* payload = field(value, "payload");
     if (!payload || !payload->isObject())
         return Result<Value::Object>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object payload", path));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object payload", std::move(path)));
     return Result<Value::Object>::success(*payload->getIf<Value::Object>());
 }
 

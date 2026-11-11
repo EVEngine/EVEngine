@@ -551,6 +551,7 @@ std::string GridGraph::serializeDefinition() const {
         const auto& node = nodes_.at(id);
         out << "NODE " << std::quoted(id) << ' ' << std::quoted(node.operation) << '\n';
         std::vector<std::string> keys;
+        keys.reserve(node.ints.size());
         for (const auto& [key, value] : node.ints) keys.push_back(key);
         std::sort(keys.begin(), keys.end());
         for (const auto& key : keys)

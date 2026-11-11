@@ -1,0 +1,20 @@
+name: Setup WebGPU browser
+description: Install the pinned browser with current WebGPU resource-limit tiers
+runs:
+  using: composite
+  steps:
+    - name: Install Playwright and Chromium
+      shell: bash
+      run: |
+        # Use a fixed full browser; adapter limits are checked and recorded by the test.
+        # Do not pass --with-deps: apt font mirrors on GitHub runners can stall the
+        # job past the step timeout (fonts-unifont / wqy-zenhei). Display + Vulkan
+        # packages are installed explicitly in the next step.
+        python3 -m pip install --quiet pillow playwright==1.64.1
+        python3 -m playwright install --no-shell chromium
+    - name: Install browser display and software Vulkan dependencies
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get install -y --no-install-recommends xvfb xauth mesa-vulkan-drivers vulkan-tools
+        bash .github/scripts/setup-software-vulkan.sh

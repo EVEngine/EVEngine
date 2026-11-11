@@ -14,7 +14,42 @@ from generate_binding_contracts import (
     class_blocks,
     write_dts,
     write_json,
+    write_cpp,
 )
+
+
+class RegistrationChunkTests(unittest.TestCase):
+    def test_bounded_chunks_preserve_every_contract_and_dispatch_order(self) -> None:
+        contracts = [Contract(
+            module="probe", script_class="Probe", method=f"method{index:02d}", parameters=[],
+            return_type="void", return_nullable=False, ownership="value", thread_affinity="main",
+            platforms=["webgpu"], documentation_id=f"probe.{index}", source="probe.cpp",
+        ) for index in range(33)]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "bindings.cpp"
+            write_cpp(output, contracts)
+            text = output.read_text(encoding="utf-8")
+        chunks = text.split("void registerChunk")[1:]
+        calls = []
+        for chunk in chunks:
+            body = chunk.split("\n}", 1)[0]
+            entries = [line for line in body.splitlines() if line.startswith("    addContract(")]
+            self.assertLessEqual(len(entries), 16)
+            calls.extend(entries)
+        self.assertEqual(len(calls), len(contracts))
+        for contract, call in zip(contracts, calls, strict=True):
+            self.assertIn(f'"{contract.method}"', call)
+        dispatch = text.split("static constexpr RegisterChunk chunks[] = {", 1)[1].split("};", 1)[0]
+        self.assertEqual([line.strip().rstrip(",") for line in dispatch.splitlines() if line.strip()],
+                         [f"registerChunk{index}" for index in range(len(chunks))])
+
+    def test_empty_registry_has_no_zero_length_dispatch_array(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "bindings.cpp"
+            write_cpp(output, [])
+            text = output.read_text(encoding="utf-8")
+        self.assertNotIn("RegisterChunk chunks[]", text)
+        self.assertNotIn("void registerChunk", text)
 
 
 class ClassBlocksTests(unittest.TestCase):

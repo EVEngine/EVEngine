@@ -21,6 +21,7 @@ class Tracker;
 struct BattleVictoryRequest {
     std::string mapId;
     std::string objectId;
+    /** @brief Empty disables the quest prerequisite; nonempty requires an active quest. */
     std::string requiredQuestId;
     double      xpAmount = 0.0;
     double      xpGrowth = 1.2;
@@ -47,7 +48,8 @@ public:
     /**
      * @brief Atomically settle XP, derived class skills, attributes, quest progress, and encounter consumption.
      * @return Receipt after complete commit, or a structured failure with actor/state/tracker unchanged.
-     * @remarks The required quest must be active and the encounter unconsumed. Level-up events are
+     * @remarks A nonempty requiredQuestId must be active; an empty ID imposes no quest prerequisite.
+     * The encounter must be unconsumed. Quest notifications still reach eligible observers. Level-up events are
      * queued only after all non-actor owners have committed, and are poll-only.
      * @ownership All participants are borrowed and remain caller-owned.
      * @thread Call on the participants' owning simulation thread; concurrent mutation is unsupported.

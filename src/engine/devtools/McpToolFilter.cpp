@@ -137,6 +137,11 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("agent");
         return tags;
     }
+    if (startsWith(name, "eve_asset_kit_")) {
+        add("agent");
+        add("core");
+        return tags;
+    }
     if (name == "eve_workshop") {
         add("play");
         add("scene");
@@ -208,6 +213,9 @@ bool mcpToolMutates(std::string_view name) {
     if (name == "eve_scene_modify" || name == "eve_scene_batch" || name == "eve_scene_reset" ||
         name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
         name == "eve_whitebox_playtest" || name == "eve_recipe_apply")
+        return true;
+    if (name == "eve_action_guide_pack_set" || name == "eve_action_guide_capture" ||
+        name == "eve_action_guide_export" || name == "eve_action_guide_ingest" || name == "eve_action_guide_verify")
         return true;
     if (name == "eve_workshop") return true;
     if (startsWith(name, "eve_editor_") &&

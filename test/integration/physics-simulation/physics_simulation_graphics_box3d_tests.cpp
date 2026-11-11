@@ -320,6 +320,45 @@ TEST_CASE("box2d.fixture.sensor") {
     CHECK(std::fabs(fixture->getFriction() - 0.7f) < 0.001f);
 }
 
+TEST_CASE("box2d.triggers.exposeSensorAndVisitorSides") {
+    auto                  *mod = Physics::create();
+    std::unique_ptr<World> world(mod->newWorld(0.f, 0.f, true));
+    Body                  *zone   = world->newBody("static", 100.f, 100.f);
+    Fixture               *sensor = zone->newRectangleFixture(80.f, 80.f, 0.f, 0.f, 0.f);
+    sensor->setTag("zone.pressure");
+    sensor->setSensor(true);
+    Body    *visitor   = world->newBody("dynamic", 40.f, 100.f);
+    Fixture *visitorFx = visitor->newRectangleFixture(30.f, 30.f, 1.f, 0.f, 0.f);
+    visitorFx->setTag("prop.crate");
+    visitor->setLinearVelocity(200.f, 0.f);
+
+    for (int i = 0; i < 60 && world->getBeginTriggerCount() == 0; ++i) world->update(1.f / 60.f);
+
+    REQUIRE_GT(world->getBeginTriggerCount(), 0);
+    CHECK_EQ(world->getBeginTriggerSensorBodyId(0), zone->getId());
+    CHECK_EQ(world->getBeginTriggerVisitorBodyId(0), visitor->getId());
+    CHECK_EQ(world->getBeginTriggerSensorFixtureTag(0), std::string("zone.pressure"));
+    CHECK_EQ(world->getBeginTriggerVisitorFixtureTag(0), std::string("prop.crate"));
+    // Sensor overlaps still appear in the legacy contact buffer for compatibility.
+    REQUIRE_GT(world->getBeginContactCount(), 0);
+
+    visitor->setPosition(300.f, 100.f);
+    visitor->setLinearVelocity(0.f, 0.f);
+    for (int i = 0; i < 10 && world->getEndTriggerCount() == 0; ++i) world->update(1.f / 60.f);
+    REQUIRE_GT(world->getEndTriggerCount(), 0);
+    CHECK_EQ(world->getEndTriggerSensorFixtureTag(0), std::string("zone.pressure"));
+    CHECK_EQ(world->getEndTriggerVisitorFixtureTag(0), std::string("prop.crate"));
+
+    world->clearContactEvents();
+    CHECK_EQ(world->getBeginTriggerCount(), 0);
+    CHECK_EQ(world->getEndTriggerCount(), 0);
+
+    delete visitorFx;
+    delete visitor;
+    delete sensor;
+    delete zone;
+}
+
 TEST_CASE("box2d.fixture.tagsFiltersAndBodyProperties") {
     auto                    *mod = Physics::create();
     std::unique_ptr<World>   world(mod->newWorld(0.f, 0.f, true));
@@ -2789,7 +2828,7 @@ TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     ClimbingWorld                  fixture;
     eve::climbing::ClimbingRuntime runtime;
     runtime.setDebugCapture(eve::climbing::ClimbingDebugCapture::Enabled);
-    auto                           added = runtime.upsertAction(ledgeGrabAction());
+    auto added = runtime.upsertAction(ledgeGrabAction());
     REQUIRE(added.ok());
     const eve::climbing::ClimbingPose pose{{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, 1.f, -1, -1.f, false};
     auto                              begun = runtime.tryBegin(*fixture.world, pose, eve::SimulationTick(10));

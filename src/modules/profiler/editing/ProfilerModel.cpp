@@ -94,6 +94,7 @@ std::vector<EditorProfilerModuleSummary> EditorProfilerModel::moduleSummary() co
         }
     }
     std::vector<EditorProfilerModuleSummary> result;
+    result.reserve(grouped.size());
     for (auto& [name, summary] : grouped) result.push_back(std::move(summary));
     std::stable_sort(result.begin(), result.end(), [](const auto& left, const auto& right) {
         if (left.selfMs != right.selfMs) return left.selfMs > right.selfMs;

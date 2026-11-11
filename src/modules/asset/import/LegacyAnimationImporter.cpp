@@ -243,7 +243,7 @@ Result<PreparedAssetImport> prepareLegacyAnimationImport(const LegacyAnimationIm
     put32(clipBlob, static_cast<std::uint32_t>(fixture.markers.size()));
     put32(clipBlob, static_cast<std::uint32_t>(fixture.tracks.size()));
     for (const auto& marker : fixture.markers) { putFloat(clipBlob, marker.time); putString(clipBlob, marker.name); }
-    for (auto track : fixture.tracks) {
+    for (const auto& track : fixture.tracks) {
         put32(clipBlob, track.bone);
         put32(clipBlob, static_cast<std::uint32_t>(track.position.size()));
         put32(clipBlob, static_cast<std::uint32_t>(track.rotation.size()));

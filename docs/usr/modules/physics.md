@@ -361,10 +361,12 @@ fluid.draw(gfx);
 `Physics` 保存 2D 像素/米比例并创建 World / World3D / DistanceField3D / Cloth /
 Cloth3D / Fluid2D。World 管理 Body、Fixture、Joint2D 与 Mechanism2D；World3D 管理 Body3D、Shape3D、Joint3D 与 Mechanism3D。
 布料、流体和距离场可按需组合；`Cloth.setCollideWorld(world)` /
-`Cloth3D.setCollideWorld(world3)` 可将布料接到刚体世界做碰撞。2D 碰撞消息为
-`begincontact` / `endcontact`；3D 普通碰撞为 `begincontact3d` / `endcontact3d`，Sensor
-重叠为 `begintrigger3d` / `endtrigger3d`，显著撞击为 `hit3d`。3D 消息的六个整数参数依次是
-A/Sensor Body ID、B/Visitor Body ID、A/Sensor Shape ID、B/Visitor Shape ID、两个 Shape Tag；
+`Cloth3D.setCollideWorld(world3)` 可将布料接到刚体世界做碰撞。2D 普通碰撞消息为
+`begincontact` / `endcontact`；Sensor 重叠另有 `begintrigger` / `endtrigger`
+（以及 `getBeginTrigger*` / `getEndTrigger*` 缓冲，参数为 Sensor/Visitor Body ID）。
+3D 普通碰撞为 `begincontact3d` / `endcontact3d`，Sensor 重叠为 `begintrigger3d` /
+`endtrigger3d`，显著撞击为 `hit3d`。3D 消息的六个整数参数依次是 A/Sensor Body ID、
+B/Visitor Body ID、A/Sensor Shape ID、B/Visitor Shape ID、两个 Shape Tag；
 Hit 的浮点反馈从 World3D 当帧缓冲读取。查询结果对应**上一次查询**写入的缓存。
 
 每帧：`world.update` / `world3.update` / `cloth.update` / `cloth3.update` / `fluid.update` 各调用一次；绘制在 `eve_render` 中用 `draw` / `drawDebug`。
@@ -573,7 +575,12 @@ for (local i = 0; i < world3.getJointStressCount(); ++i) {
 
 ### 制作触发区域
 
-把 Fixture / Shape3D 设为 sensor。2D 监听 `begincontact` / `endcontact`；3D 监听独立的 `begintrigger3d` / `endtrigger3d`，或逐帧读取 `getBeginTrigger*` / `getEndTrigger*` 缓冲。Sensor 不产生碰撞推力，适合传送门、拾取物和区域检测。Trigger API 明确区分 Sensor 与 Visitor，不依赖底层碰撞器顺序。调试时调用 `world.drawDebug(gfx)` 核对 2D 形状。
+把 Fixture / Shape3D 设为 sensor。2D / 3D 都提供 Sensor/Visitor 定向的触发缓冲：
+`getBeginTrigger*` / `getEndTrigger*`（2D 消息 `begintrigger` / `endtrigger`，3D 为
+`begintrigger3d` / `endtrigger3d`）。2D 仍保留 `begincontact` / `endcontact`（含 sensor
+重叠，兼容旧脚本）；机关区域优先读 Trigger 缓冲，避免依赖碰撞器 A/B 顺序。
+Sensor 不产生碰撞推力，适合传送门、拾取物和区域检测。调试时调用 `world.drawDebug(gfx)`
+核对 2D 形状。
 
 ### 组合 3D 碰撞体
 
@@ -901,6 +908,9 @@ tire.setRollingResistance(0.04)
 ```
 
 切向速度会随 Shape 的朝向旋转，并投影到接触平面，因此旋转传送带形状即可改变输送方向。
+**视觉滚动**不由物理驱动：对皮带 `Material` 每帧调用 `setAlbedoUvOffset`（见
+[graphics 材质](graphics.md#材质material与模型部件)），速度符号与 `setTangentVelocity` 对齐即可；
+完整组合见 `examples/conveyor-belt`。
 滚动阻力只对球体和胶囊体产生物理效果。材质 ID 保留完整低 32 位，可作为有符号脚本整数往返；
 切换 Sensor 或运行时重建几何时，高级材质参数都会保留。Ray Cast 可通过
 `getRayHitMaterialId()` / `getRayResultMaterialId(i)` 读取实际命中的表面材质；Shape Cast

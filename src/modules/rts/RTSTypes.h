@@ -959,6 +959,8 @@ public:
         float             progress = 0.0f;
         ecs::EntityHandle capturingFaction{};
         bool              blockedByGarrison = false;
+        /** @brief Held-building score accrual for ScoreTarget matches; zero disables control-point scoring. */
+        float             scorePerSecond = 0.0f;
     };
     /** @brief Resource delivery policy; actual balances remain in the economy provider. */
     struct Dropoff {
@@ -1322,10 +1324,177 @@ public:
     [[nodiscard]] static Faction* createFaction(SubjectRef subject = {});
 };
 
-/** @brief Supported deterministic RTS victory policies. */
-enum class VictoryRule : std::uint8_t { Annihilation, DestroyHeadquarters, ResourceTarget };
+/**
+ * @brief Supported deterministic RTS victory policies.
+ * @remarks ScoreTarget races Match-owned team scores. timeLimit/suddenDeath on Rules are orthogonal clocks.
+ */
+enum class VictoryRule : std::uint8_t {
+    Annihilation,
+    DestroyHeadquarters,
+    ResourceTarget,
+    ScoreTarget,
+    /** @brief Campaign/mission mode: Match::Objectives own completion and failure settlement. */
+    Mission,
+};
 /** @brief Lifecycle of one independent RTS match root. */
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
+
+/** @brief Deterministic campaign objective kinds owned by a Match. */
+enum class MissionObjectiveKind : std::uint8_t {
+    EliminateFaction,
+    DestroyBuilding,
+    SurviveDuration,
+    ProtectSubjects,
+    OccupyBuildings,
+    ReachScore,
+    ReachResource,
+};
+/** @brief Objective lifecycle projection. */
+enum class MissionObjectiveStatus : std::uint8_t { Pending, Completed, Failed };
+
+/** @brief Persistent mission objective definition using stable subjects and team ids. */
+struct MissionObjectiveSpec {
+    std::string id;
+    MissionObjectiveKind kind = MissionObjectiveKind::EliminateFaction;
+    int beneficiaryTeam = 0;
+    SubjectRef targetFaction;
+    SubjectRef targetSubject;
+    std::string archetype;
+    std::string resourceType;
+    Duration requiredDuration{};
+    double targetValue = 0.0;
+    std::vector<SubjectRef> requiredSubjects;
+    /** @brief Completing this objective finishes the match for the beneficiary team. */
+    bool endsMatch = true;
+    /** @brief Failing this objective finishes the match as a mission failure (winningTeam = -1). */
+    bool failsMatch = true;
+};
+
+/** @brief Mutable objective status retained with the match. */
+struct MissionObjectiveState {
+    MissionObjectiveSpec spec;
+    MissionObjectiveStatus status = MissionObjectiveStatus::Pending;
+    std::uint64_t completedSequence = 0;
+};
+
+/** @brief Domain event kinds that can wake Match campaign triggers. */
+enum class MissionTriggerEventKind : std::uint8_t {
+    MatchStarted,
+    MatchFinished,
+    ObjectiveCompleted,
+    ObjectiveFailed,
+    TimerElapsed,
+    RegionEntered,
+    RegionExited,
+    UnitDied,
+    BuildingDestroyed,
+    Custom,
+};
+
+/** @brief Optional filters that narrow one trigger event subscription. */
+struct MissionTriggerEventFilter {
+    MissionTriggerEventKind kind = MissionTriggerEventKind::Custom;
+    /** @brief Timer, region, objective, or custom id; empty matches any id for that kind. */
+    std::string id;
+    SubjectRef subject;
+    SubjectRef faction;
+    std::string archetype;
+};
+
+/** @brief Variable comparison used as an AND gate on a trigger. */
+enum class MissionVariableCompare : std::uint8_t { Eq, Ne, Lt, Le, Gt, Ge };
+
+/** @brief One variable predicate evaluated against Match::Campaign variables. */
+struct MissionTriggerCondition {
+    std::string variable;
+    MissionVariableCompare op = MissionVariableCompare::Eq;
+    double value = 0.0;
+};
+
+/** @brief Built-in campaign actions; Script entries are retained for the game layer. */
+enum class MissionActionKind : std::uint8_t {
+    SetVariable,
+    AddVariable,
+    StartTimer,
+    StopTimer,
+    ResetTimer,
+    EnableTrigger,
+    DisableTrigger,
+    EnableMonitor,
+    DisableMonitor,
+    EmitCustom,
+    Script,
+};
+
+/** @brief One deferred campaign side-effect descriptor. */
+struct MissionAction {
+    MissionActionKind kind = MissionActionKind::Script;
+    std::string targetId;
+    double numeric = 0.0;
+    Value args = Value::Object{};
+};
+
+/** @brief Authorable trigger: OR of events, AND of variable conditions, then actions. */
+struct MissionTrigger {
+    std::string id;
+    bool enabled = true;
+    bool once = true;
+    int priority = 0;
+    std::vector<MissionTriggerEventFilter> events;
+    std::vector<MissionTriggerCondition> conditions;
+    std::vector<MissionAction> actions;
+    bool fired = false;
+};
+
+/** @brief Axis-aligned world region that emits enter/exit events for live subjects. */
+struct MissionRegionMonitor {
+    std::string id;
+    bool enabled = true;
+    float minX = 0.0f;
+    float minY = 0.0f;
+    float maxX = 0.0f;
+    float maxY = 0.0f;
+    SubjectRef faction;
+    std::vector<SubjectRef> subjects;
+    /** @brief Runtime occupants discovered on the previous step. */
+    std::vector<SubjectRef> occupants;
+};
+
+/** @brief Match-owned countdown that emits TimerElapsed when it reaches zero. */
+struct MissionTimer {
+    std::string id;
+    Duration duration{};
+    Duration elapsed{};
+    bool running = false;
+    bool repeating = false;
+};
+
+/** @brief Named numeric campaign variable. */
+struct MissionVariable {
+    std::string id;
+    double value = 0.0;
+};
+
+/** @brief Queued campaign event waiting to wake triggers. */
+struct MissionPendingEvent {
+    MissionTriggerEventKind kind = MissionTriggerEventKind::Custom;
+    std::string id;
+    SubjectRef subject;
+    SubjectRef faction;
+    std::string archetype;
+    int team = -1;
+};
+
+/** @brief Retained Script-action activation for game-layer consumption. */
+struct MissionActionLogEntry {
+    std::uint64_t sequence = 0;
+    std::uint64_t tick = 0;
+    std::string triggerId;
+    std::string kind;
+    std::string targetId;
+    double numeric = 0.0;
+    Value args = Value::Object{};
+};
 
 /** @brief Independent match composition root; factions may participate in different matches. */
 class EVENGINE_API_DOMAINS Match : public ecs::Entity {
@@ -1345,6 +1514,13 @@ public:
         VictoryRule rule = VictoryRule::Annihilation;
         std::string archetype;
         double targetValue = 0.0;
+        /** @brief Positive duration ends the match; zero keeps an open clock. */
+        Duration timeLimit{};
+        /**
+         * @brief After timeLimit, keep running until last team stands instead of settling/drawing.
+         * @remarks Applies to Annihilation and DestroyHeadquarters. Score/resource targets still settle by value.
+         */
+        bool suddenDeath = false;
     };
     /** @brief One faction's team and elimination projection. */
     struct Participants {
@@ -1358,11 +1534,27 @@ public:
         };
         std::vector<Entry> entries;
     };
-    /** @brief Authoritative match outcome. */
+    /** @brief Authoritative match outcome and clock. */
     struct State {
         MatchPhase phase = MatchPhase::Setup;
         int winningTeam = -1;
         std::uint64_t updateSequence = 0;
+        Duration elapsed{};
+        bool suddenDeathActive = false;
+    };
+    /** @brief Match-owned team scores for ScoreTarget and timed score settlement. */
+    struct Scores {
+        /** @brief One team's accumulated score. */
+        struct Entry {
+            int team = 0;
+            double value = 0.0;
+        };
+        /** @brief Sorted by ascending team id for deterministic projection. */
+        std::vector<Entry> entries;
+    };
+    /** @brief Campaign objectives evaluated each match step. */
+    struct Objectives {
+        std::vector<MissionObjectiveState> values;
     };
     /** @brief Deterministic retained lifecycle events. */
     struct Events {
@@ -1376,12 +1568,32 @@ public:
         };
         std::vector<Event> values;
     };
+    /**
+     * @brief Campaign trigger host owned by the match (WC3-style events/monitors/timers).
+     * @remarks Objectives settle win/fail; Campaign orchestrates mid-mission reactions.
+     */
+    struct Campaign {
+        std::vector<MissionTrigger> triggers;
+        std::vector<MissionRegionMonitor> monitors;
+        std::vector<MissionTimer> timers;
+        std::vector<MissionVariable> variables;
+        std::vector<MissionPendingEvent> pending;
+        std::vector<MissionActionLogEntry> actions;
+        /** @brief Subjects known alive on the previous campaign step for death edges. */
+        std::vector<SubjectRef> trackedAlive;
+        /** @brief Match::Events watermark already bridged into pending. */
+        std::uint64_t bridgedEventSequence = 0;
+        std::uint64_t actionSequence = 0;
+    };
 
     COMPONENT(Identity, identity)
     COMPONENT(Rules, rules)
     COMPONENT(Participants, participants)
     COMPONENT(State, state)
+    COMPONENT(Scores, scores)
+    COMPONENT(Objectives, objectives)
     COMPONENT(Events, events)
+    COMPONENT(Campaign, campaign)
 
     /**
      * @brief Create a match and initialize every composition component.

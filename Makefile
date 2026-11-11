@@ -145,7 +145,7 @@ GAME ?=
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/adhoc-result-tables \
 	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
-	check/examples check \
+	check/examples check/arpg-loop check \
 	check/format check/depgraph check/versions check/scripts check/scripts-test \
 	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
@@ -189,6 +189,11 @@ check/test-manifest:
 # contract is scripts/smoke_examples.sh (MIN_RUN_SECONDS).
 check/examples:
 	python3 scripts/check_examples.py
+
+# Live eve_play acceptance for the ARPG vertical slice (starts eve + MCP).
+# Requires a built host binary; under CI wrap with xvfb-run like smoke/examples.
+check/arpg-loop:
+	bash scripts/verify_arpg_loop.sh $(or $(EVE),build/$(PLATFORM)-debug/src/engine/eve)
 
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:
@@ -624,7 +629,8 @@ unit-test/%:
 	  echo "domains are declared in test/test_domains.cmake"; exit 2; }
 	@if [ ! -f build/$*/build.ninja ] && [ ! -f build/$*/Makefile ]; then \
 	  echo "build/$* is not configured; run: make build/$*"; exit 2; fi
-	@if ! ctest --test-dir build/$* -N -L '^unit_test_$(DOMAIN)$$' 2>/dev/null | grep -q 'Total Tests: [1-9]'; then \
+	@# CTest discovers cases after linking; inspect the configured split before the first build.
+	@if ! grep -Eq '^EVENGINE_TEST_DOMAIN_SPLIT:BOOL=(ON|TRUE|1)$$' build/$*/CMakeCache.txt; then \
 	  echo "build/$* has no unit_test_$(DOMAIN): the suite is monolithic there"; \
 	  echo "(EVENGINE_TEST_DOMAIN_SPLIT=OFF). Reconfigure with"; \
 	  echo "-DEVENGINE_TEST_DOMAIN_SPLIT=ON for per-domain units, or build the whole"; \

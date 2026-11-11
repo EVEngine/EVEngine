@@ -1,0 +1,19 @@
+{
+  "allowAntisocialOrHateUsage": false,
+  "allowExcessivelySexualUsage": true,
+  "allowExcessivelyViolentUsage": true,
+  "allowPoliticalOrReligiousUsage": true,
+  "allowRedistribution": true,
+  "authors": [
+    "pixiv Inc."
+  ],
+  "avatarPermission": "everyone",
+  "commercialUsage": "corporation",
+  "copyrightInformation": "(c) 2022 pixiv Inc.",
+  "creditNotation": "unnecessary",
+  "licenseUrl": "https://vrm.dev/licenses/1.0/",
+  "modification": "allowModificationRedistribution",
+  "name": "VRM1_Constraint_Twist_Sample",
+  "thumbnailImage": 18,
+  "version": "v1.0.1"
+}

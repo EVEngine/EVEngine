@@ -40,8 +40,8 @@ Result<animation::AnimStateMachine*> AnimationStateGraphRuntimeBuilder::build(
     std::map<GraphNodeId, GraphNodeId> from;
     std::map<GraphNodeId, GraphNodeId> to;
     for (const GraphEdgeRecord& edge : graph.edges) {
-        const GraphNodeId fromNode = pinOwners.at(edge.from);
-        const GraphNodeId toNode = pinOwners.at(edge.to);
+        const GraphNodeId& fromNode = pinOwners.at(edge.from);
+        const GraphNodeId& toNode   = pinOwners.at(edge.to);
         if (nodes.at(fromNode)->type == "animation.state") from[toNode] = fromNode;
         else to[fromNode] = toNode;
     }

@@ -1,5 +1,7 @@
 #include "game_event/GameEvent.h"
 
+#include <utility>
+
 #include "common/SquirrelBinding.h"
 
 #include "common/Json.h"
@@ -233,7 +235,7 @@ GameEventLog::GameEventLog(eve::UuidEntropySource entropy, eve::UuidClock clock)
 
 eve::Result<EventSequence> GameEventLog::append(GameEvent envelope) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, message));
+        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, std::move(message)));
     };
     if (envelope.type.empty()) return failure(eve::DiagnosticCode::InvalidArgument, "event type must not be empty");
     if (!envelope.schemaId.isValid())
@@ -378,7 +380,7 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     auto        document = eve::json::Document::parse(std::string(json), &error);
     const auto  root     = document.root();
     const auto  invalid  = [&](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, message));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
     };
     const int snapshotVersion = root.getInt("version");
     if (!document.valid() || !root.isObject() || (snapshotVersion != 1 && snapshotVersion != 2)) {

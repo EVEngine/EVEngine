@@ -8,8 +8,10 @@
 #include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/CameraPixel.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DepthPyramid.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
 #include "graphics/GlobalIllumination.h"
@@ -19,6 +21,7 @@
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PathSceneCapture.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
@@ -33,8 +36,11 @@
 
 #include <algorithm>
 #include <cmath>
+#include <glm/geometric.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -230,6 +236,119 @@ void Camera3D::setOrthographic(float height) {
 }
 
 void Camera3D::setPerspective() { data()->orthographic = false; }
+
+bool Camera3D::isOrthographic() { return data()->orthographic; }
+
+float Camera3D::getOrthoHeight() { return data()->orthoHeight; }
+
+Result<void> Camera3D::setPixelConfig(float pixelsPerUnit, int refWidth, int refHeight) {
+    if (!std::isfinite(pixelsPerUnit) || pixelsPerUnit <= 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixelsPerUnit must be finite and > 0", "camera3d.pixelsPerUnit"));
+    if (refWidth < 0 || refHeight < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference size must be >= 0", "camera3d.pixelRef"));
+    if ((refWidth == 0) != (refHeight == 0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference width and height must both be set or both 0",
+                                                       "camera3d.pixelRef"));
+    auto d            = data();
+    d->pixelsPerUnit  = pixelsPerUnit;
+    d->pixelRefWidth  = refWidth;
+    d->pixelRefHeight = refHeight;
+    return Result<void>::success();
+}
+
+void Camera3D::clearPixelConfig() {
+    auto d            = data();
+    d->pixelsPerUnit  = 0.f;
+    d->pixelRefWidth  = 0;
+    d->pixelRefHeight = 0;
+    d->pixelScale     = 1;
+}
+
+bool Camera3D::hasPixelConfig() { return data()->pixelsPerUnit > 0.f; }
+
+void Camera3D::setPixelSnap(bool enabled) { data()->pixelSnap = enabled; }
+
+bool Camera3D::getPixelSnap() { return data()->pixelSnap; }
+
+float Camera3D::getPixelsPerUnit() { return data()->pixelsPerUnit; }
+
+int Camera3D::getPixelRefWidth() { return data()->pixelRefWidth; }
+
+int Camera3D::getPixelRefHeight() { return data()->pixelRefHeight; }
+
+int Camera3D::getPixelScale() { return data()->pixelScale; }
+
+Result<void> Camera3D::applyPixelPerfect(int viewWidth, int viewHeight) {
+    if (viewWidth <= 0 || viewHeight <= 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "viewport size must be > 0", "camera3d.viewport"));
+    auto d = data();
+    if (!(d->pixelsPerUnit > 0.f))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixel config requires pixelsPerUnit > 0", "camera3d.pixelsPerUnit"));
+    const auto sized =
+        computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+    d->pixelScale   = sized.scale;
+    d->orthographic = true;
+    d->orthoHeight  = sized.orthoHeight;
+    if (d->pixelSnap) snapToPixelGrid(viewWidth, viewHeight);
+    return Result<void>::success();
+}
+
+Result<void> Camera3D::setPixelOrthographic(float pixelsPerUnit, int viewWidth, int viewHeight, int refWidth,
+                                            int refHeight) {
+    auto configured = setPixelConfig(pixelsPerUnit, refWidth, refHeight);
+    if (!configured.ok()) return configured;
+    return applyPixelPerfect(viewWidth, viewHeight);
+}
+
+void Camera3D::snapToPixelGrid(int viewWidth, int viewHeight) {
+    auto  d             = data();
+    float worldPerPixel = 0.f;
+    if (d->pixelsPerUnit > 0.f) {
+        const auto sized =
+            computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+        worldPerPixel = sized.worldPerPixel;
+    } else if (d->orthographic && viewHeight > 0) {
+        worldPerPixel = d->orthoHeight / float(viewHeight);
+    }
+    if (!(worldPerPixel > 0.f) || !std::isfinite(worldPerPixel)) return;
+
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+    glm::vec3       forward = target - eye;
+    const float     flen    = glm::length(forward);
+    if (flen < 1e-6f) return;
+    forward /= flen;
+    glm::vec3 up(d->upX, d->upY, d->upZ);
+    if (glm::length(up) < 1e-6f)
+        up = glm::vec3(0.f, 1.f, 0.f);
+    else
+        up = glm::normalize(up);
+    glm::vec3 right = glm::cross(forward, up);
+    if (glm::length(right) < 1e-6f)
+        right = glm::vec3(1.f, 0.f, 0.f);
+    else
+        right = glm::normalize(right);
+    up = glm::normalize(glm::cross(right, forward));
+
+    const float     alongRight = glm::dot(eye, right);
+    const float     alongUp    = glm::dot(eye, up);
+    const float     alongFwd   = glm::dot(eye, forward);
+    const float     snappedR   = std::round(alongRight / worldPerPixel) * worldPerPixel;
+    const float     snappedU   = std::round(alongUp / worldPerPixel) * worldPerPixel;
+    const glm::vec3 snappedEye = right * snappedR + up * snappedU + forward * alongFwd;
+    const glm::vec3 delta      = snappedEye - eye;
+    d->eyeX                    = snappedEye.x;
+    d->eyeY                    = snappedEye.y;
+    d->eyeZ                    = snappedEye.z;
+    d->targetX += delta.x;
+    d->targetY += delta.y;
+    d->targetZ += delta.z;
+}
 
 void Camera3D::setClipPlanes(float nearZ, float farZ) {
     data()->nearZ = std::max(0.001f, nearZ);
@@ -715,6 +834,63 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     RenderControl* rc = gfx.getRenderControl();
     rc->ensureCompiled();
+    rc->pathTracingState_ = PathTracingFrameState::Disabled;
+    rc->pathTracingDiagnostic_.clear();
+    if (rc->isPathTracingRequested()) {
+        auto* provider = rc->pathProvider_;
+        if (!provider || !provider->isAvailable()) {
+            rc->pathTracingState_      = PathTracingFrameState::Unavailable;
+            rc->pathTracingDiagnostic_ = "Hardware path tracing is unavailable; rendering raster frame";
+        } else {
+            rc->pathTracingState_ = PathTracingFrameState::SceneRejected;
+            const auto primitives = gfx.getPrimitiveScene();
+            if (!defaultCam || defaultCam->data()->orthographic || defaultCam->data()->envMap ||
+                defaultCam->data()->dofMaxBlurPx > 0.f || !g_forwardDrawers.empty() || !g_gpuOpaqueCollectors.empty() ||
+                !g_gbufferDrawers.empty() || !g_decalDrawers.empty() || (primitives && primitives->size())) {
+                rc->pathTracingDiagnostic_ = "Path scene requires a perspective camera and supported contributors";
+            } else {
+                auto scene = preparePathWorld(*ecs::current(), gfx, *provider);
+                if (!scene.ok()) {
+                    rc->pathTracingDiagnostic_ = scene.status().describe();
+                } else {
+                    const auto width  = uint32_t(std::max(1, gfx.getPixelWidth()));
+                    const auto height = uint32_t(std::max(1, gfx.getPixelHeight()));
+                    auto       output = provider->preparePathFrame(scene.value(), width, height);
+                    if (!output.ok()) {
+                        rc->pathTracingDiagnostic_ = output.status().describe();
+                    } else {
+                        const auto    camera = defaultCam->data();
+                        PathTraceView view;
+                        view.eye              = {camera->eyeX, camera->eyeY, camera->eyeZ};
+                        const auto projection = cameraProjectionVulkanRH_ZO(
+                            false, camera->fovYDeg * 0.017453292519943295f, camera->orthoHeight,
+                            float(width) / float(height), camera->nearZ, camera->farZ);
+                        view.invViewProj = glm::inverse(
+                            projection * glm::lookAtRH(view.eye,
+                                                       glm::vec3(camera->targetX, camera->targetY, camera->targetZ),
+                                                       glm::vec3(camera->upX, camera->upY, camera->upZ)));
+                        view.environment          = {camera->ambientR, camera->ambientG, camera->ambientB};
+                        view.samples              = rc->pathSamples_;
+                        view.firstSample          = rc->pathSampleIndex_;
+                        view.resetTemporalHistory = view.firstSample == 0;
+                        rc->pathSampleIndex_      = (rc->pathSampleIndex_ + view.samples) % (1u << 24);
+                        view.denoise = rc->pathTemporalRequested_ ? PathDenoise::Temporal : PathDenoise::Spatial;
+                        gfx.gpuDrivenSetEnabled(false);
+                        gfx.setSceneExposure(std::exp2(camera->exposureEV));
+                        gfx.setSceneAutoExposure(camera->autoExposure, camera->autoExposureMinEV,
+                                                 camera->autoExposureMaxEV);
+                        gfx.setSceneBloom(camera->bloomIntensity, camera->bloomThreshold);
+                        gfx.setSceneDepthOfField(0.f, 0.f, 1.f, camera->nearZ, camera->farZ);
+                        gfx.begin3DFrame();
+                        auto recorded = provider->recordPathFrame(scene.value(), output.value(), view);
+                        if (!recorded.ok()) throw eve::Exception("%s", recorded.status().describe().c_str());
+                        rc->pathTracingState_ = PathTracingFrameState::Active;
+                        return;
+                    }
+                }
+            }
+        }
+    }
     const bool doShadow           = rc->hasPass("shadow");
     const bool doGBuffer          = rc->hasPass("gbuffer");
     const bool doDecal            = rc->hasPass("decal");
@@ -802,7 +978,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     std::vector<ClusteredLightGpu> clusteredDirs;
     if (useClustered) {
         splitLights(packed, clusteredPoints, clusteredDirs);
-        if (clusteredDirs.empty()) {
+        // Match packLights3D: the default sun belongs only to a lightless scene.
+        // Point-only scenes must not gain a directional light when using Hybrid.
+        if (packed.empty()) {
             ClusteredLightGpu d{};
             d.posRadius = glm::vec4(gLightDir, 0.f);
             d.color     = glm::vec4(gLightColor, 1.f);
@@ -860,7 +1038,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     // Single ECS traversal: one model matrix, one LOD pick, one set of
     // sphere-vs-frustum tests per part. Passes below only replay the list.
     std::vector<CulledItem> items;
-    items.reserve(64);
+    items.reserve(1024);
     if (haveManager) {
         auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
         for (auto it = view.begin(); it != view.end(); ++it) {
@@ -872,7 +1050,7 @@ void RenderSystem3D::render(Graphics& gfx) {
             }
             Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
             if (!camEnt) continue;
-            const int         camIdx        = findOrAddCam(camEnt);
+            const int         camIdx        = camEnt == defaultCam ? 0 : findOrAddCam(camEnt);
             const CameraView& cv            = cams[size_t(camIdx)];
             const float       dx            = xf->x - cv.eye.x;
             const float       dy            = xf->y - cv.eye.y;
@@ -934,15 +1112,19 @@ void RenderSystem3D::render(Graphics& gfx) {
                     item.worldR = glm::length(half) * maxScale;
                     item.inView = meshInstanceRangeVisible(range, model, cv.cullViewProj, cv.eye);
                     item.inDefaultView =
-                        defaultCam ? meshInstanceRangeVisible(range, model, cams[0].cullViewProj, cams[0].eye) : true;
+                        !defaultCam || camIdx == 0
+                            ? item.inView
+                            : meshInstanceRangeVisible(range, model, cams[0].cullViewProj, cams[0].eye);
                 } else if (drawMesh->hasBounds()) {
                     const glm::vec4 c4 =
                         model * glm::vec4(drawMesh->boundsCx, drawMesh->boundsCy, drawMesh->boundsCz, 1.f);
                     item.worldC        = glm::vec3(c4);
                     item.worldR        = drawMesh->boundsRadius * maxScale;
                     item.inView        = cv.frustum.sphereVisible(item.worldC, item.worldR);
-                    item.inDefaultView = defaultCam ? cams[0].frustum.sphereVisible(item.worldC, item.worldR) : true;
-                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    item.inDefaultView                 = !defaultCam || camIdx == 0
+                                                             ? item.inView
+                                                             : cams[0].frustum.sphereVisible(item.worldC, item.worldR);
+                    const Camera3D::Data* shadowCamera = defaultCam ? cams[0].data : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
                     if (shadowCaster && shadowActive && castsShadow &&
                         (shadowDistance <= 0.f || dist <= shadowDistance)) {
@@ -955,7 +1137,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                     // No bounds (e.g. legacy/imported mesh): never cull.
                     item.inView                          = true;
                     item.inDefaultView                   = true;
-                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    const Camera3D::Data* shadowCamera   = defaultCam ? cams[0].data : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
                     if (shadowCaster && shadowActive && castsShadow &&
                         (shadowDistance <= 0.f || dist <= shadowDistance))
@@ -1115,7 +1297,26 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     // GPU-driven opaque is a ForwardPlus path; Hybrid lights core opaque via
     // deferredLighting and must not also submit GPU-driven lit draws.
-    const bool gpuDrivenWanted = !doDeferredLighting && rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    // Repeated opaque mesh/material pairs are cheaper as one instanced indirect
+    // draw. Keep the explicit feature for smaller scenes and other backends.
+    bool autoInstance = false;
+    if (!rc->isEnabled("gpuDriven") && !doDeferredLighting && !useClustered && defaultCam &&
+        gfx.getBackendName() == "vulkan" && gfx.supportsGpuDriven3D()) {
+        std::unordered_map<Material*, std::unordered_map<Mesh*, uint32_t>> counts;
+        for (const CulledItem& item : items) {
+            if (!item.inView || item.shadowsOnly || item.camIdx != 0 || !item.material ||
+                item.surfaceMode != SurfaceMode::Opaque || item.shader || item.hair || item.xray ||
+                item.speedTreeFade || item.lodWeight < 0.9999f || item.mr->instances || item.mr->camera ||
+                item.mesh->hasGpuSkinning() || item.lightProbeUsage != 0 || !gfx.gpuDrivenMaterialUsable(item.material))
+                continue;
+            if (++counts[item.material][item.mesh] >= 128) {
+                autoInstance = true;
+                break;
+            }
+        }
+    }
+    const bool gpuDrivenWanted =
+        !doDeferredLighting && (rc->isEnabled("gpuDriven") || autoInstance) && gfx.supportsGpuDriven3D();
     gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
 
     if (defaultCam) {
@@ -1394,7 +1595,9 @@ void RenderSystem3D::render(Graphics& gfx) {
             gpuOpaque.reserve(opaque.size());
             cpuOpaque.reserve(opaque.size());
             for (const CulledItem* it : opaque) {
-                if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
+                if ((autoInstance && (it->surfaceMode != SurfaceMode::Opaque || it->hair || it->xray ||
+                                      it->speedTreeFade || it->lodWeight < 0.9999f || it->mr->instances)) ||
+                    it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
                     it->material->effectiveShader() != nullptr || it->lightProbeUsage != 0 ||
                     !gfx.gpuDrivenMaterialUsable(it->material))
                     cpuOpaque.push_back(it);
@@ -1419,6 +1622,18 @@ void RenderSystem3D::render(Graphics& gfx) {
 
                 std::vector<eve::graphics::GpuInstance> instances;
                 instances.reserve(gpuOpaque.size());
+                std::unordered_map<Material*, uint32_t> materialIds;
+                std::unordered_map<Mesh*, uint32_t>     meshIds;
+                auto                                    materialId = [&](Material* material) {
+                    auto [entry, inserted] = materialIds.try_emplace(material);
+                    if (inserted) entry->second = gfx.gpuDrivenMaterialRecord(material);
+                    return entry->second;
+                };
+                auto meshId = [&](Mesh* mesh) {
+                    auto [entry, inserted] = meshIds.try_emplace(mesh);
+                    if (inserted) entry->second = gfx.gpuDrivenMeshRecord(mesh);
+                    return entry->second;
+                };
                 bool       recordsOk     = true;
                 bool       vgAny         = false;
                 const bool resolveWanted = gfx.gpuDrivenResolveWanted();
@@ -1429,7 +1644,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                     const uint32_t vgAsset =
                         resolveWanted ? gfx.gpuDrivenVgAssetId(it->mesh) : eve::graphics::kInvalidGpuDrivenSlot;
                     if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot && probes.count == 0) {
-                        const uint32_t matId = gfx.gpuDrivenMaterialRecord(it->material);
+                        const uint32_t matId = materialId(it->material);
                         if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
                             recordsOk = false;
                             break;
@@ -1439,8 +1654,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                     eve::graphics::GpuInstance inst{};
                     inst.model                  = it->model;
-                    inst.meshId                 = gfx.gpuDrivenMeshRecord(it->mesh);
-                    inst.materialId             = gfx.gpuDrivenMaterialRecord(it->material);
+                    inst.meshId                 = meshId(it->mesh);
+                    inst.materialId             = materialId(it->material);
                     inst.reflectionProbeSlots.z = uint32_t(probes.count);
                     for (int probeIndex = 0; probeIndex < probes.count; ++probeIndex) {
                         const auto&    probe = probes.probes[probeIndex];
@@ -1468,7 +1683,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                 }
                 if (recordsOk) {
                     // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
-                    if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
+                    if (rc->isEnabled("gpuDriven") && gfx.gpuDrivenCullEnabled() && !instances.empty() &&
                         gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
                         gfx.gpuDrivenCullEmit(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
                         if (gfx.gpuDrivenResolveWanted()) {
@@ -1482,7 +1697,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                             gfx.gpuDrivenDrawOpaque();
                         }
                         gpuDrivenUsed = true;
-                    } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
+                    } else if (rc->isEnabled("gpuDriven") && gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
                         // VG-only frame: no instance chain; the vis pass runs the
                         // VG cluster cull + draws + resolve.
                         gfx.gpuDrivenVgComputeSection(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
@@ -1545,13 +1760,14 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     drawPersistentPrimitives();
 
-    const bool doAO      = rc->isEnabled("ao");
-    const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
-    const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
-    const bool doRTX     = rc->isEnabled("rtx");
+    const bool doAO            = rc->isEnabled("ao");
+    const bool doContactShadow = rc->isEnabled("contactShadow");
+    const bool doRTGI          = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
+    const bool doSSR           = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX           = rc->isEnabled("rtx");
     bool       aoApplied = false;
-    auto       applyAO   = [&]() {
-        if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
+    auto       applyAO         = [&]() {
+        if ((!doAO && !doContactShadow) || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto        cd         = defaultCam->data();
@@ -1560,17 +1776,39 @@ void RenderSystem3D::render(Graphics& gfx) {
                 fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ, cd->upX, cd->upY,
                               cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
             };
-            AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
-            ao->setQuality("medium");
-            ao->setIntensity(0.16f);
-            ao->setPower(1.1f);
-            ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
-            bindCam(ao);
             // WebGPU cannot bind a depth-aspect texture to the generic 2D
             // post-process layout. Its G-buffer already carries equivalent
             // linear depth in a filterable RGBA target.
             Texture* depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
-            if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            if (doAO) {
+                AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
+                ao->setQuality("medium");
+                ao->setIntensity(0.16f);
+                ao->setPower(1.1f);
+                ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
+                bindCam(ao);
+                if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
+            if (doContactShadow && depth) {
+                ContactShadow* cs = gfx.pipelineContactShadow();
+                // High: dual-ray soft (center + tangent) + binary refine;
+                // kills zebra banding under spheres / box feet without a blur pass.
+                cs->setQuality(rc->getPostProcessQuality() == "low" ? "medium" : "high");
+                glm::vec3 lightDir = gLightDir;
+                if (shadowCaster) {
+                    lightDir = glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
+                } else if (!packed.empty() && packed[0].data && !packed[0].isPoint) {
+                    lightDir = glm::vec3(packed[0].data->dx, packed[0].data->dy, packed[0].data->dz);
+                }
+                if (glm::length(lightDir) < 1e-6f)
+                    lightDir = glm::vec3(0.f, 1.f, 0.f);
+                else
+                    lightDir = glm::normalize(lightDir);
+                cs->setLightDirection(lightDir.x, lightDir.y, lightDir.z);
+                bindCam(cs);
+                if (!cams.empty()) cs->setInvViewProj(glm::inverse(cams.front().viewProj));
+                cs->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
             // Fullscreen SSGI from lit scene color reprints nearby props
             // (curtains, planters) onto the floor as multiple swimming ghosts.
             // Mesh shaders still add hemispheric sky/ground + wrap fill.
@@ -1933,12 +2171,6 @@ void RenderSystem3D::renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D*
             std::vector<ClusteredLightGpu> clusteredPoints;
             std::vector<ClusteredLightGpu> clusteredDirections;
             splitLights(packed, clusteredPoints, clusteredDirections);
-            if (clusteredDirections.empty()) {
-                ClusteredLightGpu direction{};
-                direction.posRadius = glm::vec4(gLightDir, 0.f);
-                direction.color     = glm::vec4(gLightColor, 1.f);
-                clusteredDirections.push_back(direction);
-            }
             ClusteredLightingUpload clustered =
                 buildClusteredLighting(clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
                                        target->getWidth(), target->getHeight(), cd->fovYDeg * 0.017453292519943295f,

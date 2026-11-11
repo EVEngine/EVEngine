@@ -4,6 +4,13 @@
 `unitSurfacePresets` in `style.nut`; `unitSurfacePresetNames()` returns reference
 order. SDK installation includes this directory at `share/eve/styles/unit-surface`.
 
+`build.sh` generates optimized fragment binaries for every immutable preset mode
+and the neutral material from the same `surface.frag` source. Instances retain
+independent mutable parameters and the same 128-byte layout. Specializing the
+mode offline avoids recompiling all 26 effect branches for every GPU pipeline
+during cold startup, especially on software Vulkan. Rebuild the binaries after
+editing the shader; the script also synchronizes the standalone example copy.
+
 [Same-mesh concept target](reference/same-mesh-26.png) ·
 [Pilot reference](reference/pilot-same-mesh.png) ·
 [Original art directions](reference/ART_DIRECTION.md)

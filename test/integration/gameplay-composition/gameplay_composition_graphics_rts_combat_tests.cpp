@@ -22,6 +22,7 @@
 #include "zeroerr/assert.h"
 
 #include "RtsCompositionFixtures.h"
+#include "rts/RTSMission.h"
 // rts_combat.cpp
 namespace test_rts_combat {
 // rts_combat.cpp
@@ -3697,6 +3698,224 @@ TEST_CASE("rts.matchHeadquartersResourceVictoryAndTeamSurrender") {
     CHECK_EQ(surrender->state()->winningTeam, 1);
     CHECK(surrender->participants()->entries[1].surrendered);
 
+    Match* scored = Match::createMatch(subject("00000000-0000-7000-8000-000000000206"));
+    scored->rules()->rule = eve::rts::VictoryRule::ScoreTarget;
+    scored->rules()->targetValue = 10.0;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*scored, *alpha, 10).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*scored, *beta, 20).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*scored).ok());
+    Building* point = Building::createBuilding({}, *hqId);
+    auto pointOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(pointOwner.ok());
+    point->faction()->link = std::move(pointOwner).takeValue();
+    point->integrity()->alive = true;
+    point->integrity()->state.health = 100.0;
+    point->construction()->progress = 1.0f;
+    point->capture()->scorePerSecond = 5.0f;
+    auto scoreStep = eve::rts::MatchSystem::step(
+        *scored, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(2.0).value()});
+    REQUIRE(scoreStep.ok());
+    CHECK_EQ(static_cast<int>(scored->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(scored->state()->winningTeam, 10);
+    CHECK_EQ(eve::rts::MatchSystem::teamScore(*scored, 10).value(), 10.0);
+
+    Match* timed = Match::createMatch(subject("00000000-0000-7000-8000-000000000207"));
+    timed->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    timed->rules()->timeLimit = eve::Duration::fromSeconds(1.0).value();
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*timed, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*timed, *beta, 2).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*timed).ok());
+    Unit* survivorA = Unit::createUnit(subject("00000000-0000-7000-8000-000000000208"));
+    Unit* survivorB = Unit::createUnit(subject("00000000-0000-7000-8000-000000000209"));
+    auto ownerA = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    auto ownerB = eve::rts::FactionLink::bind(ecs::handle_of(beta));
+    REQUIRE(ownerA.ok());
+    REQUIRE(ownerB.ok());
+    survivorA->faction()->link = std::move(ownerA).takeValue();
+    survivorB->faction()->link = std::move(ownerB).takeValue();
+    survivorA->durability()->alive = true;
+    survivorA->durability()->state.health = 10.0;
+    survivorB->durability()->alive = true;
+    survivorB->durability()->state.health = 10.0;
+    auto timedOut = eve::rts::MatchSystem::step(
+        *timed, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(timedOut.ok());
+    CHECK_EQ(static_cast<int>(timed->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(timed->state()->winningTeam, -1);
+
+    Match* sudden = Match::createMatch(subject("00000000-0000-7000-8000-00000000020a"));
+    sudden->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    sudden->rules()->timeLimit = eve::Duration::fromSeconds(1.0).value();
+    sudden->rules()->suddenDeath = true;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*sudden, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*sudden, *beta, 2).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*sudden).ok());
+    auto enteredSudden = eve::rts::MatchSystem::step(
+        *sudden, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(enteredSudden.ok());
+    CHECK(sudden->state()->suddenDeathActive);
+    CHECK_EQ(static_cast<int>(sudden->state()->phase), static_cast<int>(eve::rts::MatchPhase::Running));
+    survivorB->durability()->alive = false;
+    survivorB->durability()->state.health = 0.0;
+    auto suddenWin = eve::rts::MatchSystem::step(*sudden);
+    REQUIRE(suddenWin.ok());
+    CHECK_EQ(static_cast<int>(sudden->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(sudden->state()->winningTeam, 1);
+
+    Match* mission = Match::createMatch(subject("00000000-0000-7000-8000-00000000020b"));
+    mission->rules()->rule = eve::rts::VictoryRule::Mission;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*mission, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*mission, *beta, 2).ok());
+    Unit* escort = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020c"));
+    Unit* enemy  = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020d"));
+    auto escortOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    auto enemyOwner  = eve::rts::FactionLink::bind(ecs::handle_of(beta));
+    REQUIRE(escortOwner.ok());
+    REQUIRE(enemyOwner.ok());
+    escort->faction()->link = std::move(escortOwner).takeValue();
+    enemy->faction()->link  = std::move(enemyOwner).takeValue();
+    escort->durability()->alive = true;
+    escort->durability()->state.health = 10.0;
+    enemy->durability()->alive = true;
+    enemy->durability()->state.health = 10.0;
+    eve::rts::MissionObjectiveSpec survive;
+    survive.id = "hold_the_line";
+    survive.kind = eve::rts::MissionObjectiveKind::SurviveDuration;
+    survive.beneficiaryTeam = 1;
+    survive.requiredDuration = eve::Duration::fromSeconds(2.0).value();
+    survive.endsMatch = true;
+    survive.failsMatch = true;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*mission, survive).ok());
+    eve::rts::MissionObjectiveSpec wipe;
+    wipe.id = "wipe_beta";
+    wipe.kind = eve::rts::MissionObjectiveKind::EliminateFaction;
+    wipe.beneficiaryTeam = 1;
+    wipe.targetFaction = beta->identity()->subject;
+    wipe.endsMatch = true;
+    wipe.failsMatch = false;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*mission, wipe).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*mission).ok());
+    auto missionTick = eve::rts::MatchSystem::step(
+        *mission, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(missionTick.ok());
+    CHECK_EQ(static_cast<int>(mission->state()->phase), static_cast<int>(eve::rts::MatchPhase::Running));
+    enemy->durability()->alive = false;
+    enemy->durability()->state.health = 0.0;
+    auto missionWin = eve::rts::MatchSystem::step(*mission);
+    REQUIRE(missionWin.ok());
+    CHECK_EQ(static_cast<int>(mission->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(mission->state()->winningTeam, 1);
+    CHECK_EQ(static_cast<int>(mission->objectives()->values[1].status),
+             static_cast<int>(eve::rts::MissionObjectiveStatus::Completed));
+
+    Match* protect = Match::createMatch(subject("00000000-0000-7000-8000-00000000020e"));
+    protect->rules()->rule = eve::rts::VictoryRule::Mission;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*protect, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*protect, *beta, 2).ok());
+    Unit* vip = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020f"));
+    auto vipOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(vipOwner.ok());
+    vip->faction()->link = std::move(vipOwner).takeValue();
+    vip->durability()->alive = true;
+    vip->durability()->state.health = 10.0;
+    eve::rts::MissionObjectiveSpec escortVip;
+    escortVip.id = "guard_vip";
+    escortVip.kind = eve::rts::MissionObjectiveKind::ProtectSubjects;
+    escortVip.beneficiaryTeam = 1;
+    escortVip.requiredSubjects = {vip->identity()->subject};
+    escortVip.requiredDuration = eve::Duration::fromSeconds(3.0).value();
+    escortVip.endsMatch = true;
+    escortVip.failsMatch = true;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*protect, escortVip).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*protect).ok());
+    vip->durability()->alive = false;
+    vip->durability()->state.health = 0.0;
+    auto protectFailed = eve::rts::MatchSystem::step(
+        *protect, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(protectFailed.ok());
+    CHECK_EQ(static_cast<int>(protect->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(protect->state()->winningTeam, -1);
+    CHECK_EQ(static_cast<int>(protect->objectives()->values[0].status),
+             static_cast<int>(eve::rts::MissionObjectiveStatus::Failed));
+
+    Match* campaign = Match::createMatch(subject("00000000-0000-7000-8000-000000000220"));
+    campaign->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*campaign, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*campaign, *beta, 2).ok());
+    REQUIRE(eve::rts::MissionScriptSystem::setVariable(*campaign, "wave", 0.0).ok());
+    eve::rts::MissionTimer countdown;
+    countdown.id = "countdown";
+    countdown.duration = eve::Duration::fromSeconds(1.0).value();
+    countdown.running = true;
+    REQUIRE(eve::rts::MissionScriptSystem::addTimer(*campaign, countdown).ok());
+    eve::rts::MissionRegionMonitor beach;
+    beach.id = "beach";
+    beach.minX = 0.0f;
+    beach.minY = 0.0f;
+    beach.maxX = 5.0f;
+    beach.maxY = 5.0f;
+    REQUIRE(eve::rts::MissionScriptSystem::addMonitor(*campaign, beach).ok());
+    eve::rts::MissionTrigger onTimer;
+    onTimer.id = "on_countdown";
+    onTimer.once = true;
+    onTimer.events.push_back({eve::rts::MissionTriggerEventKind::TimerElapsed, "countdown", {}, {}, {}});
+    onTimer.actions.push_back(
+        {eve::rts::MissionActionKind::SetVariable, "wave", 1.0, eve::Value::Object{}});
+    onTimer.actions.push_back(
+        {eve::rts::MissionActionKind::Script, "spawn_wave", 0.0, eve::Value::Object{{"count", 3}}});
+    REQUIRE(eve::rts::MissionScriptSystem::addTrigger(*campaign, onTimer).ok());
+    eve::rts::MissionTrigger onEnter;
+    onEnter.id = "on_beach";
+    onEnter.once = true;
+    onEnter.events.push_back({eve::rts::MissionTriggerEventKind::RegionEntered, "beach", {}, {}, {}});
+    onEnter.conditions.push_back({"wave", eve::rts::MissionVariableCompare::Ge, 1.0});
+    onEnter.actions.push_back(
+        {eve::rts::MissionActionKind::Script, "briefing", 0.0, eve::Value::Object{}});
+    REQUIRE(eve::rts::MissionScriptSystem::addTrigger(*campaign, onEnter).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*campaign).ok());
+    Unit* scout = Unit::createUnit(subject("00000000-0000-7000-8000-000000000221"));
+    auto scoutOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(scoutOwner.ok());
+    scout->faction()->link = std::move(scoutOwner).takeValue();
+    scout->durability()->alive = true;
+    scout->durability()->state.health = 10.0;
+    scout->motion()->x = 100.0f;
+    scout->motion()->y = 100.0f;
+    auto campaignSeed = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(campaignSeed.ok());
+    CHECK_EQ(eve::rts::MissionScriptSystem::variable(*campaign, "wave").value(), 0.0);
+    auto campaignTick = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{2}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(campaignTick.ok());
+    CHECK_EQ(eve::rts::MissionScriptSystem::variable(*campaign, "wave").value(), 1.0);
+    bool sawSpawn = false;
+    for (const auto& action : campaign->campaign()->actions)
+        if (action.kind == "script" && action.targetId == "spawn_wave") sawSpawn = true;
+    CHECK(sawSpawn);
+    scout->motion()->x = 2.0f;
+    scout->motion()->y = 2.0f;
+    auto campaignEnter = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{3}, eve::Duration::zero()});
+    REQUIRE(campaignEnter.ok());
+    bool sawBriefing = false;
+    for (const auto& action : campaign->campaign()->actions)
+        if (action.kind == "script" && action.targetId == "briefing") sawBriefing = true;
+    CHECK(sawBriefing);
+
+    scout->release();
+    campaign->release();
+    protect->release();
+    vip->release();
+    mission->release();
+    enemy->release();
+    escort->release();
+    sudden->release();
+    timed->release();
+    scored->release();
+    survivorB->release();
+    survivorA->release();
+    point->release();
     surrender->release();
     resource->release();
     headquarters->release();

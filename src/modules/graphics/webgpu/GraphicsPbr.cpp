@@ -60,10 +60,21 @@ Result<void> Graphics::setMesh3DPbrSurface(const PbrSurface* surface) {
     }
     auto valid = validatePbrSurface(*surface);
     if (!valid) return valid;
-    const auto requireGpu = [](Texture* texture, const char* role) -> Result<void> {
-        if (texture && !texture->gpuHandle)
+    const auto requireGpu = [&](Texture* texture, const char* role) -> Result<void> {
+        if (!texture) return Result<void>::success();
+        const auto ownedTexture =
+            std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                         [texture](const std::unique_ptr<Texture>& candidate) { return candidate.get() == texture; });
+        if (ownedTexture == ownedTextures.end())
             return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(role) + " has no GPU resource"));
+                Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(role) + " is not an owned GPU texture"));
+        auto*      gpu = gpuForTexture(texture);
+        const auto ownedGpu =
+            std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                         [gpu](const std::unique_ptr<GpuTexture>& candidate) { return candidate.get() == gpu; });
+        if (!gpu || ownedGpu == ownedGpuTextures.end())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(role) + " is not an owned GPU texture"));
         return Result<void>::success();
     };
     const auto requireKind = [&](Texture* texture, const char* role, bool array, bool volume,

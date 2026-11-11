@@ -151,6 +151,7 @@ TEST_CASE("procgen.hexTerrain.sphere_seed_repeats_payload") {
 #include "procgen/heightmap/TerrainCurveTexture.h"
 #include "procgen/heightmap/TerrainDerivedMap.h"
 #include "procgen/heightmap/TerrainFile.h"
+#include "procgen/heightmap/TerrainTerraceRemover.h"
 
 #include <array>
 #include <cmath>
@@ -197,6 +198,42 @@ TEST_CASE("procgen.derivedMap.aspect_slope_and_rejected_shape") {
     CHECK(aspect.data() == before);
     Heightmap wrong(2, 2);
     CHECK(!generateTerrainHeightmapSlope(wrong, plane).ok());
+}
+
+TEST_CASE("procgen.derivedMap.borrowed_inputs_preserve_aliased_output_and_failure") {
+    Heightmap source(5, 6);
+    for (int z = 0; z < 6; ++z)
+        for (int x = 0; x < 5; ++x) source.setHeight(x, z, .01f * float(x * x + z));
+    const auto original = source.data();
+    auto       verify   = [&](auto operation) {
+        Heightmap separate(5, 6), aliased = source;
+        REQUIRE(operation(separate, source).ok());
+        REQUIRE(operation(aliased, aliased).ok());
+        CHECK_EQ(aliased.getWidth(), separate.getWidth());
+        CHECK_EQ(aliased.getHeight(), separate.getHeight());
+        CHECK(aliased.data() == separate.data());
+        CHECK(source.data() == original);
+    };
+    verify([](auto& out, const auto& in) {
+        return generateTerrainHeightmapCurvature(out, in, TerrainHeightmapCurvature::Average);
+    });
+    verify([](auto& out, const auto& in) {
+        return generateTerrainHeightmapAspect(out, in, TerrainHeightmapAspect::Aspect);
+    });
+    verify([](auto& out, const auto& in) { return flipTerrainHeightmap(out, in); });
+    Heightmap classes(5, 6);
+    verify([&](auto& out, const auto& in) { return removeTerrainTerraces(out, in, classes, {}); });
+    CHECK(!generateTerrainHeightmapAspect(source, source, static_cast<TerrainHeightmapAspect>(99)).ok());
+    CHECK(source.data() == original);
+    CHECK(!removeTerrainTerraces(source, source, source, {}).ok());
+    CHECK(source.data() == original);
+    Heightmap row(1, 4), column(4, 1);
+    row.data()    = {1.f, 2.f, 3.f, 4.f};
+    column.data() = row.data();
+    REQUIRE(setTerrainHeightmapRow(row, 0, row).ok());
+    REQUIRE(setTerrainHeightmapColumn(column, 0, column).ok());
+    CHECK(row.data() == column.data());
+    CHECK(row.data() == std::vector<float>({1.f, 2.f, 3.f, 4.f}));
 }
 
 // Scalar arithmetic emits exact unclamped/clamped values. Division by zero
@@ -433,6 +470,53 @@ TEST_CASE("procgen.legacyErosion.hydraulic_hardness_and_distributed_step") {
     REQUIRE(applyTerrainLegacyDistributedErosion(thermal, distributed).ok());
     CHECK_EQ(thermal.height(1, 1), .5f);
     CHECK_EQ(thermal.height(1, 0), .125f);
+}
+TEST_CASE("procgen.legacyErosion.borrowedInputsPreserveAliasedOutputsAndFailureAtomicity") {
+    Heightmap originalHeight(5, 5), originalSediment(5, 5);
+    for (size_t i = 0; i < originalHeight.data().size(); ++i) {
+        originalHeight.data()[i]   = float((i * 7) % 11) / 10.f;
+        originalSediment.data()[i] = float(i % 5) / 10.f;
+    }
+    TerrainLegacyHydraulicSettings hydraulic;
+    hydraulic.iterations           = 4;
+    hydraulic.rainFrequency        = 2;
+    hydraulic.sedimentDissolveRate = .7f;
+    for (int aliases = 0; aliases < 4; ++aliases) {
+        auto       height = originalHeight, sediment = originalSediment;
+        auto       expectedHeight = height, expectedSediment = sediment;
+        const auto hardness = (aliases & 1) ? height : sediment;
+        const auto rain     = (aliases & 2) ? height : sediment;
+        auto       expected = applyTerrainLegacyHydraulic(expectedHeight, expectedSediment, hardness, rain, hydraulic);
+        REQUIRE(expected.ok());
+        auto actual = applyTerrainLegacyHydraulic(height, sediment, (aliases & 1) ? height : sediment,
+                                                  (aliases & 2) ? height : sediment, hydraulic);
+        REQUIRE(actual.ok());
+        CHECK_EQ(actual.value(), expected.value());
+        CHECK(height.data() == expectedHeight.data());
+        CHECK(sediment.data() == expectedSediment.data());
+    }
+    auto                                 height         = originalHeight;
+    auto                                 expectedHeight = height;
+    const auto                           hardness       = height;
+    TerrainLegacySteepestErosionSettings thermal;
+    thermal.iterations = 4;
+    auto expected      = applyTerrainLegacySteepestErosion(expectedHeight, hardness, thermal);
+    REQUIRE(expected.ok());
+    auto actual = applyTerrainLegacySteepestErosion(height, height, thermal);
+    REQUIRE(actual.ok());
+    CHECK_EQ(actual.value(), expected.value());
+    CHECK(height.data() == expectedHeight.data());
+    auto sediment           = originalSediment;
+    height                  = originalHeight;
+    hydraulic.rainFrequency = 0;
+    auto rejected           = applyTerrainLegacyHydraulic(height, sediment, height, sediment, hydraulic);
+    CHECK(!rejected.ok());
+    CHECK(height.data() == originalHeight.data());
+    CHECK(sediment.data() == originalSediment.data());
+    thermal.talusMinimum = -1.f;
+    auto rejectedThermal = applyTerrainLegacySteepestErosion(height, height, thermal);
+    CHECK(!rejectedThermal.ok());
+    CHECK(height.data() == originalHeight.data());
 }
 }  // namespace test_legacy_erosion_contract
 #endif
@@ -809,6 +893,9 @@ TEST_CASE("procgen.water.velocity_map_normalization_flat_and_invalid") {
     REQUIRE(generateTerrainVelocityFlowMap(first, slope, 4).ok());
     REQUIRE(generateTerrainVelocityFlowMap(repeated, slope, 4).ok());
     CHECK(first.data() == repeated.data());
+    Heightmap aliased = slope;
+    REQUIRE(generateTerrainVelocityFlowMap(aliased, aliased, 4).ok());
+    CHECK(aliased.data() == first.data());
     CHECK_EQ(*std::min_element(first.data().begin(), first.data().end()), 0.f);
     CHECK_EQ(*std::max_element(first.data().begin(), first.data().end()), 1.f);
     Heightmap flat(4, 3), output(4, 3);

@@ -692,9 +692,31 @@ float Math::noise3(float x, float y, float z) const {
     return noiseToUnit(glm::simplex(glm::vec3(x, y, z)));
 }
 
+float Math::simplex1(float x) const { return noise1(x); }
+float Math::simplex2(float x, float y) const { return noise2(x, y); }
+float Math::simplex3(float x, float y, float z) const { return noise3(x, y, z); }
+
 float Math::perlin2(float x, float y) const { return noiseToUnit(glm::perlin(glm::vec2(x, y))); }
 float Math::perlin3(float x, float y, float z) const {
     return noiseToUnit(glm::perlin(glm::vec3(x, y, z)));
+}
+
+float Math::white2(float x, float y) const { return hash21(std::floor(x), std::floor(y)); }
+
+float Math::value2(float x, float y) const {
+    const float x0  = std::floor(x);
+    const float y0  = std::floor(y);
+    const float fx  = x - x0;
+    const float fy  = y - y0;
+    const float u   = fx * fx * (3.f - 2.f * fx);
+    const float v   = fy * fy * (3.f - 2.f * fy);
+    const float n00 = hash21(x0, y0);
+    const float n10 = hash21(x0 + 1.f, y0);
+    const float n01 = hash21(x0, y0 + 1.f);
+    const float n11 = hash21(x0 + 1.f, y0 + 1.f);
+    const float nx0 = n00 + (n10 - n00) * u;
+    const float nx1 = n01 + (n11 - n01) * u;
+    return nx0 + (nx1 - nx0) * v;
 }
 
 float Math::fbm2(float x, float y, int octaves, float lacunarity, float gain) const {
@@ -768,6 +790,10 @@ float Math::turbulence2(float x, float y, int octaves, float lacunarity, float g
     return norm > 0.f ? clamp01(sum / norm) : 0.f;
 }
 
+float Math::billow2(float x, float y, int octaves, float lacunarity, float gain) const {
+    return turbulence2(x, y, octaves, lacunarity, gain);
+}
+
 float Math::voronoi2(float x, float y) const {
     float f1, f2;
     voronoiF1F2(x, y, f1, f2);
@@ -780,10 +806,326 @@ float Math::voronoiEdge2(float x, float y) const {
     return f2 - f1;
 }
 
+float Math::worley2(float x, float y) const { return clamp01(1.f - voronoi2(x, y)); }
+
 float Math::warpNoise2(float x, float y, float warpAmp) const {
     float wx = noise2(x, y) - 0.5f;
     float wy = noise2(x + 5.2f, y + 1.3f) - 0.5f;
     return noise2(x + wx * warpAmp, y + wy * warpAmp);
+}
+
+float Math::warpNoise2Deep(float x, float y, float warpAmp) const {
+    const float qx = noise2(x, y) - 0.5f;
+    const float qy = noise2(x + 5.2f, y + 1.3f) - 0.5f;
+    const float rx = noise2(x + warpAmp * qx + 1.7f, y + warpAmp * qy + 9.2f) - 0.5f;
+    const float ry = noise2(x + warpAmp * qx + 8.3f, y + warpAmp * qy + 2.8f) - 0.5f;
+    return noise2(x + warpAmp * rx, y + warpAmp * ry);
+}
+
+float Math::voronoiF2_2(float x, float y) const {
+    float f1, f2;
+    voronoiF1F2(x, y, f1, f2);
+    return f2;
+}
+
+float Math::worleyManhattan2(float x, float y) const {
+    const int ix = int(std::floor(x));
+    const int iy = int(std::floor(y));
+    float     f1 = 1e9f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const glm::vec2 p = voronoiPoint(ix + i, iy + j);
+            f1                = std::min(f1, std::fabs(x - p.x) + std::fabs(y - p.y));
+        }
+    }
+    return f1;
+}
+
+float Math::worleyChebyshev2(float x, float y) const {
+    const int ix = int(std::floor(x));
+    const int iy = int(std::floor(y));
+    float     f1 = 1e9f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const glm::vec2 p = voronoiPoint(ix + i, iy + j);
+            f1                = std::min(f1, std::max(std::fabs(x - p.x), std::fabs(y - p.y)));
+        }
+    }
+    return f1;
+}
+
+float Math::worleySmooth2(float x, float y, float smoothness) const {
+    smoothness    = std::max(1e-4f, smoothness);
+    const int ix  = int(std::floor(x));
+    const int iy  = int(std::floor(y));
+    float     acc = 0.f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const glm::vec2 p  = voronoiPoint(ix + i, iy + j);
+            const float     dx = x - p.x;
+            const float     dy = y - p.y;
+            acc += std::exp(-(dx * dx + dy * dy) / (smoothness * smoothness));
+        }
+    }
+    return clamp01(1.f - std::exp(-acc));
+}
+
+float Math::curlNoise2X(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (value2(x, y + eps) - value2(x, y - eps)) / (2.f * eps);
+}
+
+float Math::curlNoise2Y(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return -(value2(x + eps, y) - value2(x - eps, y)) / (2.f * eps);
+}
+
+float Math::hexDistance2(float x, float y) const {
+    constexpr float hexFactor = 0.86602540378f;
+    auto            posMod    = [](float v, float m) {
+        float r = std::fmod(v, m);
+        return r < 0.f ? r + m : r;
+    };
+    const float gposX = x / hexFactor;
+    float       hx    = std::floor(gposX);
+    float       hy    = std::floor(y);
+    const float sy    = (posMod(hx + 1.f, 4.f) >= 2.f) ? 1.f : 0.f;
+    hx += posMod(hx, 2.f);
+    hy += posMod(hy + sy, 2.f);
+    float gdx = gposX - hx;
+    float gdy = y - hy;
+    if (std::fabs(gdx) * (hexFactor * hexFactor) + std::fabs(gdy) * 0.5f > 1.f) {
+        hx += (gdx >= 0.f ? 1.f : -1.f) * 2.f;
+        hy += (gdy >= 0.f ? 1.f : -1.f);
+    }
+    float px = std::fabs(x - hx * hexFactor);
+    float py = std::fabs(y - hy);
+    return std::fabs(std::max(px * hexFactor + py * 0.5f, py) - 1.f);
+}
+
+float Math::hexEdge2(float x, float y, float width, float soft) const {
+    const float d    = hexDistance2(x, y);
+    const float band = std::max(soft, 1e-4f);
+    const float t    = clamp01((d - width) / band);
+    return 1.f - (t * t * (3.f - 2.f * t));
+}
+
+float Math::gyroid3(float x, float y, float z) const {
+    const float g = std::sin(x) * std::cos(y) + std::sin(y) * std::cos(z) + std::sin(z) * std::cos(x);
+    return clamp01(g / 3.f * 0.5f + 0.5f);
+}
+
+float Math::gyroidFbm3(float x, float y, float z, int octaves) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 8) octaves = 8;
+    float result = 0.f, a = 0.5f, seedZ = z, norm = 0.f;
+    for (int i = 0; i < octaves; ++i) {
+        seedZ += result * 0.5f;
+        const float g = std::sin(x / a) * std::cos(y / a) + std::sin(y / a) * std::cos(seedZ / a) +
+                        std::sin(seedZ / a) * std::cos(x / a);
+        result += std::fabs(g) * a;
+        norm += a;
+        a *= 0.5f;
+    }
+    return norm > 0.f ? clamp01(result / (norm * 1.5f)) : 0.f;
+}
+
+float Math::swiss2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 16) octaves = 16;
+    float sum = 0.f, amp = 1.f, norm = 0.f, freq = 1.f;
+    float px = x, py = y;
+    for (int i = 0; i < octaves; ++i) {
+        const float n = value2(px, py) * 2.f - 1.f;
+        sum += n * amp;
+        norm += amp;
+        freq *= lacunarity;
+        px = x * freq + sum * warpStrength;
+        py = y * freq + sum * warpStrength;
+        amp *= gain;
+    }
+    return norm > 0.f ? clamp01(sum / norm * 0.5f + 0.5f) : 0.5f;
+}
+
+float Math::hybrid2(float x, float y, int octaves, float lacunarity, float gain, float offset) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 16) octaves = 16;
+    float freq   = 1.f;
+    float signal = (value2(x, y) + offset) * gain;
+    float result = signal;
+    float weight = clamp01(signal);
+    float amp    = gain;
+    float norm   = 1.f;
+    for (int i = 1; i < octaves; ++i) {
+        freq *= lacunarity;
+        amp *= gain;
+        signal = (value2(x * freq, y * freq) + offset) * gain;
+        result += weight * signal * amp;
+        norm += amp;
+        weight = clamp01(weight * signal);
+    }
+    return norm > 0.f ? clamp01(result / (norm * (1.f + offset))) : 0.f;
+}
+
+float Math::jordan2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 16) octaves = 16;
+    float           sum = 0.f, amp = 1.f, norm = 0.f, freq = 1.f;
+    float           dx = 0.f, dy = 0.f;
+    constexpr float kEps = 1e-3f;
+    for (int i = 0; i < octaves; ++i) {
+        const float px  = x * freq + dx * warpStrength;
+        const float py  = y * freq + dy * warpStrength;
+        const float n   = value2(px, py) * 2.f - 1.f;
+        const float dnx = (value2(px + kEps, py) - value2(px - kEps, py)) / (2.f * kEps);
+        const float dny = (value2(px, py + kEps) - value2(px, py - kEps)) / (2.f * kEps);
+        sum += n * amp;
+        norm += amp;
+        dx += dnx * amp;
+        dy += dny * amp;
+        amp *= gain;
+        freq *= lacunarity;
+    }
+    return norm > 0.f ? clamp01(sum / norm * 0.5f + 0.5f) : 0.5f;
+}
+
+float Math::gabor2(float x, float y, float dirX, float dirY, float frequency) const {
+    const int       ix       = int(std::floor(x));
+    const int       iy       = int(std::floor(y));
+    const float     fx       = x - float(ix);
+    const float     fy       = y - float(iy);
+    constexpr float kCellVar = 0.8f;
+    constexpr float kDirVar  = 0.4f;
+    float           va       = 0.f;
+    float           wt       = 0.f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const float cx  = float(ix + i);
+            const float cy  = float(iy + j);
+            const float hx  = hash21(cx, cy) - 0.5f;
+            const float hy  = hash21(cx * 3.f + 11.f, cy * 7.f + 5.f) - 0.5f;
+            const float ox  = float(i) - 0.5f;
+            const float oy  = float(j) - 0.5f;
+            const float ppx = fx + ox - hx;
+            const float ppy = fy + oy - hy;
+            const float d2  = ppx * ppx + ppy * ppy;
+            const float w   = std::exp(-d2 * 4.f);
+            const float dx  = kDirVar * hx + dirX;
+            const float dy  = kDirVar * hy + dirY;
+            wt += w;
+            va += std::cos((ppx * dx + ppy * dy) * frequency / kCellVar) * w;
+        }
+    }
+    return wt > 0.f ? clamp01(va / wt * 0.5f + 0.5f) : 0.5f;
+}
+
+float Math::gaborFbm2(float x, float y, int octaves, float dirX, float dirY) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 8) octaves = 8;
+    float sum = 0.f, freq = 1.f, norm = 0.f, amp = 1.f;
+    float px = x, py = y;
+    for (int i = 0; i < octaves; ++i) {
+        const float n = gabor2(px * freq, py * freq, dirX, dirY, 6.2831853f) * 2.f - 1.f;
+        sum += std::fabs(n) * amp;
+        norm += amp;
+        px += -0.01f * sum;
+        py += 0.07f * sum;
+        amp *= 0.5f;
+        freq *= 2.2f;
+    }
+    return norm > 0.f ? clamp01(sum / norm) : 0.f;
+}
+
+float Math::valueDx2(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (value2(x + eps, y) - value2(x - eps, y)) / (2.f * eps);
+}
+
+float Math::valueDy2(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (value2(x, y + eps) - value2(x, y - eps)) / (2.f * eps);
+}
+
+float Math::valueSlope2(float x, float y, float eps) const {
+    const float dx = valueDx2(x, y, eps);
+    const float dy = valueDy2(x, y, eps);
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+float Math::isoLine2(float x, float y, int levels, float width) const {
+    if (levels < 1) levels = 1;
+    width              = std::max(1e-4f, width);
+    const float n      = value2(x, y);
+    const float scaled = n * float(levels);
+    const float v      = std::fabs(std::fmod(scaled + 0.5f, 1.f) - 0.5f);
+    const float t      = clamp01(v / width);
+    return 1.f - (t * t * (3.f - 2.f * t));
+}
+
+float Math::banding2(float x, float y, int bands) const {
+    if (bands < 1) bands = 1;
+    const float n = value2(x, y);
+    return std::floor(n * float(bands)) / float(bands);
+}
+
+float Math::fbmColor2(float x, float y, int channel, int octaves, float lacunarity, float gain) const {
+    channel                      = ((channel % 3) + 3) % 3;
+    static constexpr float ox[3] = {0.f, 19.1f, 5.2f};
+    static constexpr float oy[3] = {0.f, 7.3f, 31.7f};
+    return fbm2(x + ox[channel], y + oy[channel], octaves, lacunarity, gain);
+}
+
+float Math::white3(float x, float y, float z) const { return hash31(std::floor(x), std::floor(y), std::floor(z)); }
+
+float Math::value3(float x, float y, float z) const {
+    const float x0   = std::floor(x);
+    const float y0   = std::floor(y);
+    const float z0   = std::floor(z);
+    const float fx   = x - x0;
+    const float fy   = y - y0;
+    const float fz   = z - z0;
+    const float u    = fx * fx * (3.f - 2.f * fx);
+    const float v    = fy * fy * (3.f - 2.f * fy);
+    const float w    = fz * fz * (3.f - 2.f * fz);
+    const float n000 = hash31(x0, y0, z0);
+    const float n100 = hash31(x0 + 1.f, y0, z0);
+    const float n010 = hash31(x0, y0 + 1.f, z0);
+    const float n110 = hash31(x0 + 1.f, y0 + 1.f, z0);
+    const float n001 = hash31(x0, y0, z0 + 1.f);
+    const float n101 = hash31(x0 + 1.f, y0, z0 + 1.f);
+    const float n011 = hash31(x0, y0 + 1.f, z0 + 1.f);
+    const float n111 = hash31(x0 + 1.f, y0 + 1.f, z0 + 1.f);
+    const float nx00 = n000 + (n100 - n000) * u;
+    const float nx10 = n010 + (n110 - n010) * u;
+    const float nx01 = n001 + (n101 - n001) * u;
+    const float nx11 = n011 + (n111 - n011) * u;
+    const float nxy0 = nx00 + (nx10 - nx00) * v;
+    const float nxy1 = nx01 + (nx11 - nx01) * v;
+    return nxy0 + (nxy1 - nxy0) * w;
+}
+
+float Math::worley3(float x, float y, float z) const {
+    const int ix = int(std::floor(x));
+    const int iy = int(std::floor(y));
+    const int iz = int(std::floor(z));
+    float     f1 = 1e9f;
+    for (int k = -1; k <= 1; ++k) {
+        for (int j = -1; j <= 1; ++j) {
+            for (int i = -1; i <= 1; ++i) {
+                const float cx = float(ix + i);
+                const float cy = float(iy + j);
+                const float cz = float(iz + k);
+                const float px = cx + hash31(cx, cy, cz);
+                const float py = cy + hash31(cx + 19.f, cy + 47.f, cz + 3.f);
+                const float pz = cz + hash31(cx + 7.f, cy + 13.f, cz + 29.f);
+                const float dx = x - px;
+                const float dy = y - py;
+                const float dz = z - pz;
+                f1             = std::min(f1, std::sqrt(dx * dx + dy * dy + dz * dz));
+            }
+        }
+    }
+    return clamp01(1.f - f1);
 }
 
 float Math::bezierQuadratic(float t, float p0, float p1, float p2) const {
@@ -984,16 +1326,48 @@ void Math::expose(ssq::Class &cls) {
     cls.addFunc("noise1", &Math::noise1);
     cls.addFunc("noise2", &Math::noise2);
     cls.addFunc("noise3", &Math::noise3);
+    cls.addFunc("simplex1", &Math::simplex1);
+    cls.addFunc("simplex2", &Math::simplex2);
+    cls.addFunc("simplex3", &Math::simplex3);
     cls.addFunc("perlin2", &Math::perlin2);
     cls.addFunc("perlin3", &Math::perlin3);
+    cls.addFunc("white2", &Math::white2);
+    cls.addFunc("value2", &Math::value2);
     cls.addFunc("fbm2", &Math::fbm2);
     cls.addFunc("fbm3", &Math::fbm3);
     cls.addFunc("ridged2", &Math::ridged2);
     cls.addFunc("ridged3", &Math::ridged3);
     cls.addFunc("turbulence2", &Math::turbulence2);
+    cls.addFunc("billow2", &Math::billow2);
     cls.addFunc("voronoi2", &Math::voronoi2);
     cls.addFunc("voronoiEdge2", &Math::voronoiEdge2);
+    cls.addFunc("worley2", &Math::worley2);
     cls.addFunc("warpNoise2", &Math::warpNoise2);
+    cls.addFunc("warpNoise2Deep", &Math::warpNoise2Deep);
+    cls.addFunc("voronoiF2_2", &Math::voronoiF2_2);
+    cls.addFunc("worleyManhattan2", &Math::worleyManhattan2);
+    cls.addFunc("worleyChebyshev2", &Math::worleyChebyshev2);
+    cls.addFunc("worleySmooth2", &Math::worleySmooth2);
+    cls.addFunc("curlNoise2X", &Math::curlNoise2X);
+    cls.addFunc("curlNoise2Y", &Math::curlNoise2Y);
+    cls.addFunc("hexDistance2", &Math::hexDistance2);
+    cls.addFunc("hexEdge2", &Math::hexEdge2);
+    cls.addFunc("gyroid3", &Math::gyroid3);
+    cls.addFunc("gyroidFbm3", &Math::gyroidFbm3);
+    cls.addFunc("swiss2", &Math::swiss2);
+    cls.addFunc("hybrid2", &Math::hybrid2);
+    cls.addFunc("jordan2", &Math::jordan2);
+    cls.addFunc("gabor2", &Math::gabor2);
+    cls.addFunc("gaborFbm2", &Math::gaborFbm2);
+    cls.addFunc("valueDx2", &Math::valueDx2);
+    cls.addFunc("valueDy2", &Math::valueDy2);
+    cls.addFunc("valueSlope2", &Math::valueSlope2);
+    cls.addFunc("isoLine2", &Math::isoLine2);
+    cls.addFunc("banding2", &Math::banding2);
+    cls.addFunc("fbmColor2", &Math::fbmColor2);
+    cls.addFunc("white3", &Math::white3);
+    cls.addFunc("value3", &Math::value3);
+    cls.addFunc("worley3", &Math::worley3);
 
     cls.addFunc("bezierQuadratic", &Math::bezierQuadratic);
     cls.addFunc("bezierCubic", &Math::bezierCubic);

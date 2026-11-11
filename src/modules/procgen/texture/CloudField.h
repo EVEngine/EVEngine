@@ -11,7 +11,8 @@ namespace eve::procgen {
  *
  * Samples a 2D cloud coverage over the XZ ground plane: coverageAt(x, z, t)
  * returns [0,1] where 0 = clear sky and 1 = dense cloud. The field is built
- * from domain-warped value-noise fBm, thresholded into billowy puffs with
+ * from iq-style nested domain warp plus a Perlin–Worley hybrid (NoiseCreator /
+ * noisecreater.com cloud recipe), thresholded into billowy puffs with
  * high-frequency wisp detail, and drifts with a constant wind vector over
  * time. When `seamless` is enabled the field tiles over a `worldScale`-wide
  * grid so it can be repeated across an arbitrarily large ground plane.

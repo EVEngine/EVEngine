@@ -3,7 +3,13 @@
   "factory": "Scene",
   "bindings": {
     "getNodeRefAt": {"role":"scene_ref","resultClass":"SceneNodeRef","identityArgument":1,"relatedArgument":0},
-    "beginNode": {"role":"scene_define","identityArgument":0},
+    "beginNode": {"role":"scene_define","identityArgument":0,"relatedArgument":1},
+    "beginGroup": {"role":"scene_define","identityArgument":0},
+    "addNode": {"role":"scene_leaf","identityArgument":0,"relatedArgument":1},
+    "end": {"role":"scene_pop"},
+    "mountBuildAs": {"role":"scene_mount","identityArgument":0},
+    "remountBuildAs": {"role":"scene_mount","identityArgument":0},
+    "load": {"role":"resource_load","identityArgument":0},
     "SceneNodeRef.setVisible": {"role":"scene_write"}
   }
 }

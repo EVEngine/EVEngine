@@ -936,6 +936,7 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     auto       garrison        = integer(object, "garrisonCapacity", 0);
     auto       capturable      = boolean(object, "capturable", false);
     auto       captureTime     = number(object, "captureTime", 5.0f, 0.000001f);
+    auto       scorePerSecond  = number(object, "controlPointScorePerSecond", 0.0f, 0.0f);
     auto       powerProduced   = number(object, "powerProvided", 0.0f, 0.0f);
     auto       powerUsed       = number(object, "powerUsed", 0.0f, 0.0f);
     auto       powerPriority   = integer(object, "powerPriority", 0);
@@ -968,10 +969,10 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     auto       firingHeight    = number(object, "firingHeight", 2.0f, 0.000001f);
     auto       targetHeight    = number(object, "targetHeight", 1.5f, 0.000001f);
     if (!health || !radius || !buildTime || !sight || !weaponType || !garrison || !capturable || !captureTime ||
-        !powerProduced || !powerUsed || !powerPriority || !influence || !incomeResource || !incomeRate || !repairCost ||
-        !repairResource || !shield || !shieldRegen || !shieldDelay || !garrisonBonus || !ammoCapacity || !ammoRange ||
-        !ammoRate || !ammoResource || !ammoCost || !ammoProduction || !commandRange || !commandCapacity ||
-        !commandJamming || !turretTurn || !firingArc || !firingHeight || !targetHeight)
+        !scorePerSecond || !powerProduced || !powerUsed || !powerPriority || !influence || !incomeResource ||
+        !incomeRate || !repairCost || !repairResource || !shield || !shieldRegen || !shieldDelay || !garrisonBonus ||
+        !ammoCapacity || !ammoRange || !ammoRate || !ammoResource || !ammoCost || !ammoProduction || !commandRange ||
+        !commandCapacity || !commandJamming || !turretTurn || !firingArc || !firingHeight || !targetHeight)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "RTS building definition contains an invalid field", "building",
                                                        {}, "rts.archetype"));
@@ -1004,6 +1005,7 @@ Result<void> RTSArchetypeMaterializer::apply(definitions::DefinitionRegistry& re
     building.garrison()->damageBonusPerOccupant     = garrisonBonus.value();
     building.capture()->capturable                  = capturable.value();
     building.capture()->durationSeconds             = captureTime.value();
+    building.capture()->scorePerSecond              = scorePerSecond.value();
     building.infrastructure()->powerProduced        = powerProduced.value();
     building.infrastructure()->powerConsumed        = powerUsed.value();
     building.infrastructure()->powerPriority        = powerPriority.value();

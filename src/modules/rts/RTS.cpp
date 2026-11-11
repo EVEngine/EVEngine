@@ -12,6 +12,7 @@
 #include "rts/RTSComponentAccessInternal.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"
 #include "rts/RTSCrowdSurfaceInternal.h"
+#include "rts/RTSMission.h"
 #include "rts/RTSScriptInternal.h"
 #include "rts/RTSScriptRuntimeInternal.h"
 #include "rts/RTSTerrainTraceInternal.h"
@@ -810,9 +811,41 @@ Result<void> RTS::configureMatch(Match& match, VictoryRule rule, std::string arc
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "RTS resource victory requires a resource and positive target",
                                                        "targetValue"));
+    if (rule == VictoryRule::ScoreTarget && (!std::isfinite(targetValue) || targetValue <= 0.0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS score victory requires a positive target", "targetValue"));
+    if (match.rules()->suddenDeath && (rule == VictoryRule::ScoreTarget || rule == VictoryRule::ResourceTarget ||
+                                       rule == VictoryRule::Mission))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "RTS sudden death applies only to annihilation or headquarters victory", "rules.suddenDeath"));
     match.rules()->rule        = rule;
     match.rules()->archetype   = std::move(archetype);
     match.rules()->targetValue = targetValue;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> RTS::configureMatchTiming(Match& match, Duration timeLimit, bool suddenDeath) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    if (match.state()->phase != MatchPhase::Setup)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RTS match timing is immutable after start", "match.phase"));
+    if (timeLimit.nanoseconds() < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match time limit cannot be negative", "timeLimit"));
+    if (suddenDeath && timeLimit.isZero())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS sudden death requires a positive time limit", "suddenDeath"));
+    if (suddenDeath && (match.rules()->rule == VictoryRule::ScoreTarget ||
+                        match.rules()->rule == VictoryRule::ResourceTarget ||
+                        match.rules()->rule == VictoryRule::Mission))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "RTS sudden death applies only to annihilation or headquarters victory", "suddenDeath"));
+    match.rules()->timeLimit = timeLimit;
+    match.rules()->suddenDeath = suddenDeath;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -821,6 +854,55 @@ Result<void> RTS::addMatchParticipant(Match& match, Faction& faction, int team) 
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS match and faction must share this composition root", "participant"));
     return MatchSystem::addParticipant(match, faction, team);
+}
+
+Result<void> RTS::addMatchObjective(Match& match, MissionObjectiveSpec objective) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MatchSystem::addObjective(match, std::move(objective));
+}
+
+Result<void> RTS::addMatchTrigger(Match& match, MissionTrigger trigger) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::addTrigger(match, std::move(trigger));
+}
+
+Result<void> RTS::addMatchMonitor(Match& match, MissionRegionMonitor monitor) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::addMonitor(match, std::move(monitor));
+}
+
+Result<void> RTS::addMatchTimer(Match& match, MissionTimer timer) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::addTimer(match, std::move(timer));
+}
+
+Result<void> RTS::setMatchVariable(Match& match, std::string id, double value) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::setVariable(match, std::move(id), value);
+}
+
+Result<void> RTS::pushMatchCampaignEvent(Match& match, MissionPendingEvent event) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::pushEvent(match, std::move(event));
+}
+
+Result<void> RTS::clearMatchCampaignActions(Match& match) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MissionScriptSystem::clearActionLog(match);
 }
 
 Result<void> RTS::startMatch(Match& match) const {
@@ -837,6 +919,13 @@ Result<void> RTS::surrenderMatch(Match& match, Faction& faction) const {
     return MatchSystem::surrender(match, faction);
 }
 
+Result<void> RTS::creditMatchScore(Match& match, int team, double amount) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MatchSystem::creditScore(match, team, amount);
+}
+
 Result<Value> RTS::inspectMatch(Match& match) const {
     if (!owns(matches_, match))
         return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
@@ -844,6 +933,14 @@ Result<Value> RTS::inspectMatch(Match& match) const {
     const auto   phase = match.state()->phase == MatchPhase::Setup     ? "setup"
                          : match.state()->phase == MatchPhase::Running ? "running"
                                                                        : "finished";
+    const char* ruleName = "annihilation";
+    switch (match.rules()->rule) {
+        case VictoryRule::DestroyHeadquarters: ruleName = "headquarters"; break;
+        case VictoryRule::ResourceTarget: ruleName = "resource"; break;
+        case VictoryRule::ScoreTarget: ruleName = "score"; break;
+        case VictoryRule::Mission: ruleName = "mission"; break;
+        case VictoryRule::Annihilation: break;
+    }
     Value::Array participants;
     for (auto& entry : match.participants()->entries) {
         auto* faction = dynamic_cast<Faction*>(entry.faction.resolve());
@@ -854,6 +951,43 @@ Result<Value> RTS::inspectMatch(Match& match) const {
                           {"surrendered", entry.surrendered},
                           {"reason", entry.reason}});
     }
+    Value::Array scores;
+    for (const auto& entry : match.scores()->entries)
+        scores.emplace_back(Value::Object{{"team", entry.team}, {"value", entry.value}});
+    Value::Array objectives;
+    for (const auto& objective : match.objectives()->values) {
+        const char* kindName = "eliminate";
+        switch (objective.spec.kind) {
+            case MissionObjectiveKind::DestroyBuilding: kindName = "destroy_building"; break;
+            case MissionObjectiveKind::SurviveDuration: kindName = "survive"; break;
+            case MissionObjectiveKind::ProtectSubjects: kindName = "protect"; break;
+            case MissionObjectiveKind::OccupyBuildings: kindName = "occupy"; break;
+            case MissionObjectiveKind::ReachScore: kindName = "reach_score"; break;
+            case MissionObjectiveKind::ReachResource: kindName = "reach_resource"; break;
+            case MissionObjectiveKind::EliminateFaction: break;
+        }
+        const char* statusName = objective.status == MissionObjectiveStatus::Completed ? "completed"
+                                 : objective.status == MissionObjectiveStatus::Failed  ? "failed"
+                                                                                       : "pending";
+        Value::Array subjects;
+        for (const auto& subject : objective.spec.requiredSubjects) subjects.emplace_back(subject.format());
+        objectives.emplace_back(Value::Object{
+            {"id", objective.spec.id},
+            {"kind", kindName},
+            {"status", statusName},
+            {"beneficiaryTeam", objective.spec.beneficiaryTeam},
+            {"targetFaction", objective.spec.targetFaction.isValid() ? objective.spec.targetFaction.format()
+                                                                     : std::string{}},
+            {"targetSubject", objective.spec.targetSubject.isValid() ? objective.spec.targetSubject.format()
+                                                                     : std::string{}},
+            {"archetype", objective.spec.archetype},
+            {"resourceType", objective.spec.resourceType},
+            {"requiredDuration", objective.spec.requiredDuration.seconds()},
+            {"targetValue", objective.spec.targetValue},
+            {"requiredSubjects", Value(std::move(subjects))},
+            {"endsMatch", objective.spec.endsMatch},
+            {"failsMatch", objective.spec.failsMatch}});
+    }
     Value::Array events;
     for (const auto& event : match.events()->values)
         events.emplace_back(Value::Object{{"sequence", static_cast<std::int64_t>(event.sequence)},
@@ -861,15 +995,68 @@ Result<Value> RTS::inspectMatch(Match& match) const {
                                           {"faction", event.faction.isValid() ? event.faction.format() : std::string{}},
                                           {"team", event.team},
                                           {"reason", event.reason}});
-    return Result<Value>::success(Value(Value::Object{{"subject", match.identity()->subject.format()},
-                                                      {"phase", phase},
-                                                      {"winningTeam", match.state()->winningTeam},
-                                                      {"rule", static_cast<std::int64_t>(match.rules()->rule)},
-                                                      {"archetype", match.rules()->archetype},
-                                                      {"target", match.rules()->targetValue},
-                                                      {"participants", Value(std::move(participants))},
-                                                      {"events", Value(std::move(events))}}),
-                                  Status::success(StatusCode::Applied));
+    Value::Array triggers;
+    for (const auto& trigger : match.campaign()->triggers)
+        triggers.emplace_back(Value::Object{{"id", trigger.id},
+                                            {"enabled", trigger.enabled},
+                                            {"once", trigger.once},
+                                            {"priority", trigger.priority},
+                                            {"fired", trigger.fired},
+                                            {"eventCount", static_cast<std::int64_t>(trigger.events.size())},
+                                            {"actionCount", static_cast<std::int64_t>(trigger.actions.size())}});
+    Value::Array monitors;
+    for (const auto& monitor : match.campaign()->monitors) {
+        Value::Array occupants;
+        for (const auto& subject : monitor.occupants) occupants.emplace_back(subject.format());
+        monitors.emplace_back(Value::Object{{"id", monitor.id},
+                                            {"enabled", monitor.enabled},
+                                            {"minX", static_cast<double>(monitor.minX)},
+                                            {"minY", static_cast<double>(monitor.minY)},
+                                            {"maxX", static_cast<double>(monitor.maxX)},
+                                            {"maxY", static_cast<double>(monitor.maxY)},
+                                            {"occupants", Value(std::move(occupants))}});
+    }
+    Value::Array timers;
+    for (const auto& timer : match.campaign()->timers)
+        timers.emplace_back(Value::Object{{"id", timer.id},
+                                          {"duration", timer.duration.seconds()},
+                                          {"elapsed", timer.elapsed.seconds()},
+                                          {"running", timer.running},
+                                          {"repeating", timer.repeating}});
+    Value::Array variables;
+    for (const auto& variable : match.campaign()->variables)
+        variables.emplace_back(Value::Object{{"id", variable.id}, {"value", variable.value}});
+    Value::Array campaignActions;
+    for (const auto& action : match.campaign()->actions)
+        campaignActions.emplace_back(Value::Object{{"sequence", static_cast<std::int64_t>(action.sequence)},
+                                                   {"tick", static_cast<std::int64_t>(action.tick)},
+                                                   {"triggerId", action.triggerId},
+                                                   {"kind", action.kind},
+                                                   {"targetId", action.targetId},
+                                                   {"numeric", action.numeric},
+                                                   {"args", action.args}});
+    return Result<Value>::success(
+        Value(Value::Object{{"subject", match.identity()->subject.format()},
+                            {"phase", phase},
+                            {"winningTeam", match.state()->winningTeam},
+                            {"rule", static_cast<std::int64_t>(match.rules()->rule)},
+                            {"ruleName", ruleName},
+                            {"archetype", match.rules()->archetype},
+                            {"target", match.rules()->targetValue},
+                            {"timeLimit", match.rules()->timeLimit.seconds()},
+                            {"suddenDeath", match.rules()->suddenDeath},
+                            {"elapsed", match.state()->elapsed.seconds()},
+                            {"suddenDeathActive", match.state()->suddenDeathActive},
+                            {"scores", Value(std::move(scores))},
+                            {"objectives", Value(std::move(objectives))},
+                            {"participants", Value(std::move(participants))},
+                            {"events", Value(std::move(events))},
+                            {"triggers", Value(std::move(triggers))},
+                            {"monitors", Value(std::move(monitors))},
+                            {"timers", Value(std::move(timers))},
+                            {"variables", Value(std::move(variables))},
+                            {"campaignActions", Value(std::move(campaignActions))}}),
+        Status::success(StatusCode::Applied));
 }
 
 Unit* RTS::findUnit(SubjectRef subject) const noexcept { return findSubject<Unit>(units_, subject); }
@@ -1871,9 +2058,12 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     for (const auto& handle : matches_) {
         auto* match = tryGetCurrent<Match>(handle);
         if (match == nullptr) continue;
-        auto outcome = MatchSystem::step(*match, matchResourceQuery_);
+        auto outcome = MatchSystem::step(*match, simulationStep, matchResourceQuery_);
         if (!outcome) return Result<std::size_t>::failure(outcome.status());
         processed += std::move(outcome).takeValue();
+        auto campaign = MissionScriptSystem::step(*match, simulationStep);
+        if (!campaign) return Result<std::size_t>::failure(campaign.status());
+        processed += std::move(campaign).takeValue();
     }
     auto cleanup = cleanupDestroyed();
     if (!cleanup) return Result<std::size_t>::failure(cleanup.status());
@@ -3587,12 +3777,30 @@ void RTS::expose(ssq::Class& cls) {
                         rule = VictoryRule::DestroyHeadquarters;
                     else if (ruleText == "resource")
                         rule = VictoryRule::ResourceTarget;
+                    else if (ruleText == "score")
+                        rule = VictoryRule::ScoreTarget;
+                    else if (ruleText == "mission")
+                        rule = VictoryRule::Mission;
                     else
                         return script::projectStatusResult(
                             vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                   "RTS victory rule is invalid", "rule")));
                     return script::projectResult(
                         vm, self->configureMatch(*match, rule, archetype, static_cast<double>(targetValue)));
+                });
+    cls.addFunc("configureMatchTiming",
+                [vm](RTS* self, const std::string& matchText, float timeLimitSeconds, bool suddenDeath) -> ssq::Table {
+                    auto matchSubject = parseScriptSubject(matchText, "match");
+                    if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+                    Match* match = self->findMatch(matchSubject.value());
+                    if (match == nullptr)
+                        return script::projectStatusResult(
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                  "RTS match identity was not found", "match")));
+                    auto duration = Duration::fromSeconds(static_cast<double>(timeLimitSeconds));
+                    if (!duration) return script::projectStatusResult(vm, duration.status());
+                    return script::projectResult(vm, self->configureMatchTiming(
+                                                         *match, std::move(duration).takeValue(), suddenDeath));
                 });
     cls.addFunc(
         "addMatchParticipant",
@@ -3609,6 +3817,217 @@ void RTS::expose(ssq::Class& cls) {
                             DiagnosticCode::NotFound, "RTS match participant identity was not found", "participant")));
             return script::projectResult(vm, self->addMatchParticipant(*match, *faction, team));
         });
+    cls.addFunc("addMatchObjectiveJson", [vm](RTS* self, const std::string& matchText,
+                                              const std::string& json) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        auto parsed = Value::fromJson(json);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
+        const auto* object = parsed.value().getIf<Value::Object>();
+        if (object == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS mission objective JSON must be an object", "objective")));
+        auto requireString = [&](const char* key) -> Result<std::string> {
+            const auto found = object->find(key);
+            if (found == object->end() || found->second.getIf<std::string>() == nullptr)
+                return Result<std::string>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "RTS mission objective field missing", key));
+            return Result<std::string>::success(*found->second.getIf<std::string>());
+        };
+        auto optionalString = [&](const char* key) -> std::string {
+            const auto found = object->find(key);
+            if (found == object->end() || found->second.getIf<std::string>() == nullptr) return {};
+            return *found->second.getIf<std::string>();
+        };
+        auto optionalBool = [&](const char* key, bool fallback) {
+            const auto found = object->find(key);
+            if (found == object->end() || found->second.getIf<bool>() == nullptr) return fallback;
+            return *found->second.getIf<bool>();
+        };
+        auto optionalNumber = [&](const char* key, double fallback) {
+            const auto found = object->find(key);
+            if (found == object->end()) return fallback;
+            if (const auto* asDouble = found->second.getIf<double>()) return *asDouble;
+            if (const auto* asInt = found->second.getIf<std::int64_t>()) return static_cast<double>(*asInt);
+            return fallback;
+        };
+        auto id = requireString("id");
+        if (!id) return script::projectStatusResult(vm, id.status());
+        auto kindText = requireString("kind");
+        if (!kindText) return script::projectStatusResult(vm, kindText.status());
+        MissionObjectiveSpec objective;
+        objective.id = std::move(id).takeValue();
+        const auto kind = kindText.value();
+        if (kind == "eliminate")
+            objective.kind = MissionObjectiveKind::EliminateFaction;
+        else if (kind == "destroy_building")
+            objective.kind = MissionObjectiveKind::DestroyBuilding;
+        else if (kind == "survive")
+            objective.kind = MissionObjectiveKind::SurviveDuration;
+        else if (kind == "protect")
+            objective.kind = MissionObjectiveKind::ProtectSubjects;
+        else if (kind == "occupy")
+            objective.kind = MissionObjectiveKind::OccupyBuildings;
+        else if (kind == "reach_score")
+            objective.kind = MissionObjectiveKind::ReachScore;
+        else if (kind == "reach_resource")
+            objective.kind = MissionObjectiveKind::ReachResource;
+        else
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS mission objective kind is invalid", "kind")));
+        objective.beneficiaryTeam = static_cast<int>(optionalNumber("beneficiaryTeam", 0.0));
+        objective.archetype = optionalString("archetype");
+        objective.resourceType = optionalString("resourceType");
+        objective.targetValue = optionalNumber("targetValue", 0.0);
+        objective.endsMatch = optionalBool("endsMatch", true);
+        objective.failsMatch = optionalBool("failsMatch", true);
+        if (const auto targetFaction = optionalString("targetFaction"); !targetFaction.empty()) {
+            auto subject = parseScriptSubject(targetFaction, "targetFaction");
+            if (!subject) return script::projectStatusResult(vm, subject.status());
+            objective.targetFaction = std::move(subject).takeValue();
+        }
+        if (const auto targetSubject = optionalString("targetSubject"); !targetSubject.empty()) {
+            auto subject = parseScriptSubject(targetSubject, "targetSubject");
+            if (!subject) return script::projectStatusResult(vm, subject.status());
+            objective.targetSubject = std::move(subject).takeValue();
+        }
+        const double durationSeconds = optionalNumber("requiredDuration", 0.0);
+        if (durationSeconds != 0.0) {
+            auto duration = Duration::fromSeconds(durationSeconds);
+            if (!duration) return script::projectStatusResult(vm, duration.status());
+            objective.requiredDuration = std::move(duration).takeValue();
+        }
+        const auto subjectsFound = object->find("requiredSubjects");
+        if (subjectsFound != object->end()) {
+            const auto* subjects = subjectsFound->second.getIf<Value::Array>();
+            if (subjects == nullptr)
+                return script::projectStatusResult(
+                    vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                          "RTS requiredSubjects must be an array",
+                                                          "requiredSubjects")));
+            for (const auto& entry : *subjects) {
+                const auto* text = entry.getIf<std::string>();
+                if (text == nullptr)
+                    return script::projectStatusResult(
+                        vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "RTS requiredSubjects entries must be strings",
+                                                              "requiredSubjects")));
+                auto subject = parseScriptSubject(*text, "requiredSubjects");
+                if (!subject) return script::projectStatusResult(vm, subject.status());
+                objective.requiredSubjects.push_back(std::move(subject).takeValue());
+            }
+        }
+        return script::projectResult(vm, self->addMatchObjective(*match, std::move(objective)));
+    });
+    cls.addFunc("addMatchTriggerJson", [vm](RTS* self, const std::string& matchText,
+                                            const std::string& json) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        auto trigger = MissionScriptSystem::parseTriggerJson(json);
+        if (!trigger) return script::projectStatusResult(vm, trigger.status());
+        return script::projectResult(vm, self->addMatchTrigger(*match, std::move(trigger).takeValue()));
+    });
+    cls.addFunc("addMatchMonitorJson", [vm](RTS* self, const std::string& matchText,
+                                            const std::string& json) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        auto monitor = MissionScriptSystem::parseMonitorJson(json);
+        if (!monitor) return script::projectStatusResult(vm, monitor.status());
+        return script::projectResult(vm, self->addMatchMonitor(*match, std::move(monitor).takeValue()));
+    });
+    cls.addFunc("addMatchTimer", [vm](RTS* self, const std::string& matchText, const std::string& id,
+                                      float seconds, bool repeating, bool start) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        auto duration = Duration::fromSeconds(static_cast<double>(seconds));
+        if (!duration) return script::projectStatusResult(vm, duration.status());
+        MissionTimer timer;
+        timer.id = id;
+        timer.duration = std::move(duration).takeValue();
+        timer.repeating = repeating;
+        timer.running = start;
+        return script::projectResult(vm, self->addMatchTimer(*match, std::move(timer)));
+    });
+    cls.addFunc("setMatchVariable", [vm](RTS* self, const std::string& matchText, const std::string& id,
+                                         float value) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        return script::projectResult(vm, self->setMatchVariable(*match, id, static_cast<double>(value)));
+    });
+    cls.addFunc("pushMatchCampaignEvent", [vm](RTS* self, const std::string& matchText, const std::string& kindText,
+                                               const std::string& id) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        MissionPendingEvent event;
+        event.id = id;
+        if (kindText == "custom")
+            event.kind = MissionTriggerEventKind::Custom;
+        else if (kindText == "timer_elapsed")
+            event.kind = MissionTriggerEventKind::TimerElapsed;
+        else if (kindText == "region_entered")
+            event.kind = MissionTriggerEventKind::RegionEntered;
+        else if (kindText == "region_exited")
+            event.kind = MissionTriggerEventKind::RegionExited;
+        else if (kindText == "unit_died")
+            event.kind = MissionTriggerEventKind::UnitDied;
+        else if (kindText == "building_destroyed")
+            event.kind = MissionTriggerEventKind::BuildingDestroyed;
+        else if (kindText == "objective_completed")
+            event.kind = MissionTriggerEventKind::ObjectiveCompleted;
+        else if (kindText == "objective_failed")
+            event.kind = MissionTriggerEventKind::ObjectiveFailed;
+        else if (kindText == "match_started")
+            event.kind = MissionTriggerEventKind::MatchStarted;
+        else if (kindText == "match_finished")
+            event.kind = MissionTriggerEventKind::MatchFinished;
+        else
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS campaign event kind is invalid", "kind")));
+        return script::projectResult(vm, self->pushMatchCampaignEvent(*match, std::move(event)));
+    });
+    cls.addFunc("clearMatchCampaignActions", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
+        auto matchSubject = parseScriptSubject(matchText, "match");
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+        Match* match = self->findMatch(matchSubject.value());
+        if (match == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
+        return script::projectResult(vm, self->clearMatchCampaignActions(*match));
+    });
     cls.addFunc("startMatch", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
         if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
@@ -3633,6 +4052,17 @@ void RTS::expose(ssq::Class& cls) {
                             DiagnosticCode::NotFound, "RTS match participant identity was not found", "participant")));
             return script::projectResult(vm, self->surrenderMatch(*match, *faction));
         });
+    cls.addFunc("creditMatchScore",
+                [vm](RTS* self, const std::string& matchText, int team, float amount) -> ssq::Table {
+                    auto matchSubject = parseScriptSubject(matchText, "match");
+                    if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+                    Match* match = self->findMatch(matchSubject.value());
+                    if (match == nullptr)
+                        return script::projectStatusResult(
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                  "RTS match identity was not found", "match")));
+                    return script::projectResult(vm, self->creditMatchScore(*match, team, static_cast<double>(amount)));
+                });
     cls.addFunc("inspectMatch", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
         if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());

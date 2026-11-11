@@ -58,12 +58,14 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
 | [meteor-impact](meteor-impact/README.md) | 陨石雨范围攻击、随机落点、错峰爆炸与弹道碎块 |
+| [surface-vine-growth](surface-vine-growth/README.md) | 贴面爬藤：7–10 tip 沿房屋/地面/山脉表面爬行并分叉生长 |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
 | [physics-bake-replay](physics-bake-replay/README.md) | 刚体、布料、绳索、粒子真实录制与持久化，源停用后双实例独立重放 |
 | [railgun-3d](railgun-3d/README.md) | 超电磁炮 3D：瞬闪光束、黄红冷却弹道、等距烟圈与白蓝飘散粒子 |
 | [physics-workshop](physics-workshop/README.md) | 3D 悬索、气动布帆、双配重滑轮与共享阵风场综合模拟 |
+| [conveyor-belt](conveyor-belt/README.md) | 3D 传送带：材质 UV 滚动 + Shape3D 切向速度同速驱动货物 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
@@ -76,6 +78,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 ## 入门与基础
 
+- [growth](growth/README.md)：作物阶段/浇水/收获与畜牧喂养/产奶/繁殖的确定性生长模拟（独立实体，不绑 hex）。
 - [ironwarden-retarget](ironwarden-retarget/README.md)：RX-78-2 风格 SCAD 机甲、人体骨架导入、23 骨骼重定向、8 个动作与完整 HDR 渲染。
 
 | 示例 | 演示能力 |
@@ -90,6 +93,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [environment-query](environment-query/README.md) | 环境查询：圆环位置候选、评分诊断、消费者显式选点与移动。 |
+| [enemy-vision](enemy-vision/README.md) | 每敌人锥形视野：`SensingWorld` QueryCone + `NpcAi` `remember(vision)` 与追击状态 |
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [rpg-classic](rpg-classic/README.md) | 经典回合制 RPG 纵向切片：`eve.RPG()` + `eve.Inventory()` + `map` 的数据驱动界面 |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
@@ -107,6 +111,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [interactive-shallow-water](interactive-shallow-water/README.md) | GPU 浅水方程交互水面：Saint-Venant 求解 + 角色腿部 Capsule 排水/涌浪 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
 | [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
+| [sangokushi10](sangokushi10/README.md) | 三国志 10 风格回合竖切：Schema 自定义国家/城池/武将/军团，Social 任命与邻接，Database 排行 |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |
 | [rts-cardfront](rts-cardfront/README.md) | 可玩联动任务：真实采集、工人建造、单位生产与原子卡牌技能 |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
@@ -115,6 +120,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [neon-racing](neon-racing/README.md) | NEON R 参数化跑车、程序化环形公路、vehicle 轮式控制与碰撞、跟车镜头、检查点和圈速 |
+| [flight-vehicle-controllers](flight-vehicle-controllers/README.md) | 可复用 `FlyingController`（天空）与 `VehicleController`（汽车），Tab 切换演示 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
 | [crowd-battle](crowd-battle/README.md) | Native two-army battle: AttackMove formations, narrow passage, real damage and melee admission |
 | [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
@@ -125,6 +131,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
+| [fps-arena](fps-arena/README.md) | 第一人称射击 Phase A：镜头 + 胶囊移动 + weapon 事件 → rayCast → combat 伤害 |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
 | [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |
@@ -153,6 +160,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [avatar-document-editor](avatar-document-editor/README.md) | Azure / Avatar 工作区：可编辑分层母稿 + 真实 `eve.Avatar` 图层渲染 |
 | [vrm-avatar](vrm-avatar/README.md) | VRM 角色加载与渲染示例 |
 | [character-atelier](character-atelier/README.md) | 骨骼捏脸编辑器：现成女性、YSA、脸部关键点、身体比例、姿势、存档与撤销 |
+| [character-cape-hair](character-cape-hair/README.md) | 网上下载角色：DynamicBone 飘发/衣服 + Cloth3D 披肩真实物理 |
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
 | [ocean-voyage](ocean-voyage/README.md) | 可驾驶 055 展示舰、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
@@ -183,6 +191,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
 | [bush-generator](bush-generator/README.md) | 低多边形灌木配方（mesh.bush）与参数实时调节 |
+| [water-splash-vfx](water-splash-vfx/README.md) | 风格化程序化水花：泥胚片网格 + 半透明噪声浪花材质与迸溅动画 |
 | [bush-fog-volumes](bush-fog-volumes/README.md) | 程序化灌木穿过全局与局部体积雾的深度、透明度和多视角检查 |
 | [rock-generator](rock-generator/README.md) | 岩石配方：变形 + 程序化石材纹理 + 自动 LOD |
 | [castle-generator](castle-generator/README.md) | 城堡配方 `mesh.castle`：同心结构、塔楼与程序化材质 |
@@ -224,17 +233,22 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
 | [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
 | [flame-jet](flame-jet/README.md) | 火焰射流：白热火芯、橙红火舌、火星与烟雾 |
+| [unity-vfx-port-lab](unity-vfx-port-lab/README.md) | Unity 开源 VFX 意图移植 Phase 1–3：bonfire / portal / fireworks / flipbook / ribbon |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [unit-surface-effects](unit-surface-effects/README.md) | 26 种单位表面特效：同模型参考、材质/发光/附加几何分层、逐项时间序列对照 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
+| [bullet-time](bullet-time/README.md) | 狙击精英式子弹时间：打断流程、慢放跟弹、穿墙 X-ray 命中高亮后恢复 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
 | [modern-balcony](modern-balcony/README.md) | 现代阳台：SCAD 固定建筑、程序化花园、两款骨骼动画猫、大气天空与硬件光追 / 便携反射 |
 | [scad-living-room](scad-living-room/README.md) | SCAD 原创现代客厅：暖光、PBR 家具、CSM / 局部阴影、体积光、AO / SSGI / SSR / TAA 与默认硬件光追探测 |
+| [scad-music-box](scad-music-box/README.md) | SCAD 八音盒：铰链盖、发条桶、销钉滚筒与音梳机械传动，PCM 拨弦同步演奏 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [vortex-cloud](vortex-cloud/README.md) | 仰视天空体积漩涡：人物岩脊、巨大云墙、暖光风眼与实时调参 |
 | [tornado-lab](tornado-lab/README.md) | 参数化体积龙卷风：Shader、粒子碎屑和原生曲线轮廓 |
 | [blade-whirlwind](blade-whirlwind/README.md) | 可复用世界空间剑刃旋风：攻击触发、生命周期、深度遮挡和可替换样式 |
+| [sword-slash-trail](sword-slash-trail/README.md) | 武士挥刀：刀根/刀尖轨迹追踪 → 扇形弧面 Ribbon → 刀光遮罩拖影 |
+| [ultra-elements](ultra-elements/README.md) | Ultra Elements 39 法术参数化 VFX 实验室：上游 params/ranges/presets + 原生粒子/闪电/网格表现 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
 | [ink-combat](ink-combat/README.md) | 中国风水墨攻击：弧形刀光、飞白、墨滴与蚀散 |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
@@ -263,6 +277,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
+| [post-patrol-reinforce](post-patrol-reinforce/README.md) | 岗哨编制 / 小队巡逻意图 / 阵亡后延迟补员请求（`eve.Roster`） |
 | [squad-boss-3d](squad-boss-3d/README.md) | 3D 四人打 BOSS：EQS 站位/躲避、GAS 玩家技能、多队友协同（治疗预约/指挥/原生 AI） |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
@@ -285,7 +300,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [agent](agent/README.md) | Squirrel 强化学习：定义环境、训练策略、选择动作与回放（C++ 侧 `eve.Agent`） |
 | [economy](economy/README.md) | `eve.Economy` 无窗口脚本演示：采集循环与满仓浪费（`eve run -r`） |
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
-| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
+| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather / bonfire / portal / fireworks / flipbook / ribbon，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
 | [workspace-recipes](workspace-recipes/README.md) | 编辑器 Workspace 配方目录：嵌套薄壳入口，指向完整领域编辑器示例（本身不参与 smoke） |
 

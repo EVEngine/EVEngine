@@ -2535,4 +2535,61 @@ TEST_CASE("RTS spawn world retains identity and releases population capacity acr
     REQUIRE_EQ(fixture.count(), 2u);
 }
 
+TEST_CASE("RTS merged Match clocks scores objectives and campaign survive portable restore") {
+    eve::rts::RTSStateSnapshot snapshot;
+    eve::rts::RTSMatchSnapshot match;
+    match.subject = eve::SubjectRef::fromPersistentId(*eve::PersistentId::parse("01900000-0000-7000-8000-000000000911"));
+    match.rules.rule = eve::rts::VictoryRule::Mission;
+    match.rules.timeLimit = eve::Duration(9007199254740993LL);
+    match.rules.suddenDeath = true;
+    match.state.elapsed = eve::Duration(1234);
+    match.state.suddenDeathActive = true;
+    match.scores.entries.push_back({2, 17.5});
+    eve::rts::MissionObjectiveState objective;
+    objective.spec.id = "survive";
+    objective.spec.kind = eve::rts::MissionObjectiveKind::SurviveDuration;
+    objective.spec.requiredDuration = eve::Duration(9007199254740995LL);
+    match.objectives.values.push_back(objective);
+    eve::rts::MissionTrigger trigger;
+    trigger.id = "alarm";
+    trigger.events.push_back({eve::rts::MissionTriggerEventKind::Custom, "alarm"});
+    trigger.actions.push_back({eve::rts::MissionActionKind::Script, "reinforce", 3.0, eve::Value::object({{"count", 3}})});
+    match.campaign.triggers.push_back(trigger);
+    match.campaign.timers.push_back({"clock", eve::Duration(5000), eve::Duration(2000), true, true});
+    match.campaign.pending.push_back({eve::rts::MissionTriggerEventKind::TimerElapsed, "clock"});
+    match.campaign.variables.push_back({"kills", 6});
+    match.campaign.trackedAlive.push_back(match.subject);
+    match.campaign.actionSequence = 9007199254740997ULL;
+    snapshot.matches.push_back(match);
+    const auto encoded = snapshot.encodeState().expect("encode merged match");
+    auto restored = eve::rts::RTSStateSnapshot::prepareState(encoded).expect("decode merged match");
+    REQUIRE_EQ(restored.matches.size(), 1u);
+    CHECK_EQ(restored.matches[0].rules.timeLimit.nanoseconds(), 9007199254740993LL);
+    CHECK_EQ(restored.matches[0].scores.entries[0].value, 17.5);
+    CHECK_EQ(restored.matches[0].campaign.actionSequence, 9007199254740997ULL);
+    CHECK_EQ(restored.encodeState().expect("encode restored match").toJson().expect("json"), encoded.toJson().expect("json"));
+}
+
+TEST_CASE("RTS legacy portable Match rows migrate clocks and campaign without changing input") {
+    eve::rts::RTSStateSnapshot snapshot;
+    eve::rts::RTSMatchSnapshot match;
+    match.subject = eve::SubjectRef::fromPersistentId(*eve::PersistentId::parse("01900000-0000-7000-8000-000000000912"));
+    snapshot.matches.push_back(match);
+    auto legacy = snapshot.encodeState().expect("encode current match");
+    auto& object = *legacy.getIf<eve::Value::Object>();
+    object["version"] = 1;
+    auto& row = *object.at("matches").getIf<eve::Value::Array>()->at(0).getIf<eve::Value::Array>();
+    row.resize(5);
+    row[1].getIf<eve::Value::Array>()->resize(3);
+    row[3].getIf<eve::Value::Array>()->resize(3);
+    const auto before = legacy.toJson().expect("legacy bytes");
+    auto restored = eve::rts::RTSStateSnapshot::prepareState(legacy).expect("migrate legacy match");
+    REQUIRE_EQ(restored.matches.size(), 1u);
+    CHECK_EQ(restored.matches[0].rules.timeLimit.nanoseconds(), 0);
+    CHECK(restored.matches[0].campaign.triggers.empty());
+    CHECK_EQ(legacy.toJson().expect("unchanged legacy"), before);
+    row[1].getIf<eve::Value::Array>()->push_back(false);
+    CHECK(!eve::rts::RTSStateSnapshot::prepareState(legacy).ok());
+}
+
 }  // namespace test_rts_spawn

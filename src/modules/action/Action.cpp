@@ -47,7 +47,7 @@ Status notFoundStatus() {
 
 Status invalidStatus(std::string message, std::string path = {}) {
     return Status::failure(StatusCode::Rejected,
-                           Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
+                           Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 Status pendingStatus() { return Status::success(StatusCode::Pending); }

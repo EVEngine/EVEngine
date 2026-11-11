@@ -1,0 +1,291 @@
+{
+  "schema": "evengine.crowd-cpu-comparison",
+  "version": 1,
+  "date": "2026-10-31",
+  "base_revision": "8315da221165c0623159353c8672d3c8c25dbf51",
+  "compiler": "GCC 14.2.0",
+  "flags": "-O3 -DNDEBUG, C++20, no fast-math, IPO off",
+  "profile": "crowd-core-only",
+  "linkage": "OBJECT",
+  "cpu": "AMD EPYC 9V74 (virtualized)",
+  "cpu_quota": "4 CPUs; 5 visible logical CPUs",
+  "memory_limit_bytes": 17179869184,
+  "workload": {
+    "agents": 1000,
+    "warmup_frames": 120,
+    "measured_frames": 600,
+    "workers": 1,
+    "max_neighbors": 32,
+    "command": "eve_crowd_benchmark 1000 600 1 <march|crossing>",
+    "run_order": "before/after in rounds 1 and 3; after/before in round 2"
+  },
+  "optimization": "Reuse 14 sampled directions across three speed fractions; defer base-angle calculation until sampling is required.",
+  "binary_sha256": {
+    "before": "e6084fe8ead6c9efc6b4e4f1e1d742760099329a87619dc9c957485fb3008142",
+    "after": "31a0f7e739bc813fa46ea95331f0e0eb6dda6a589ceb5370e43a89364cfff1f6"
+  },
+  "validation": {
+    "paired_final_motion_hashes_equal": true,
+    "paired_per_frame_nontiming_fields_equal": true,
+    "checksum_scope": "Final x, y, heading, speed, vx, vy float bit patterns in slot order; same machine/compiler only.",
+    "process_isolated_crowd_cases_passed": 77,
+    "additional_neighbor_limits_matched": [
+      1,
+      8,
+      128
+    ],
+    "source_quality_gate": "make check CI_BASE=HEAD passed after all code changes",
+    "standard_profile_test_target": "blocked by pre-existing script API TU missing EVENGINE_SOURCE_DIR; focused module suite linked against production CMake objects"
+  },
+  "limitations": [
+    "CPU Crowd microbenchmarks, not full-game frame times or GPU profiling.",
+    "Shared virtual machine; medians are descriptive, not a statistical significance claim.",
+    "Same-direction march has no established improvement; its run ranges overlap.",
+    "Sampling identified neighbor-query/motion paths; only 29-33 samples per short capture, so percentages are not precise estimates.",
+    "Heap and batched nearest-neighbor selection experiments were rejected and are not in the final source."
+  ],
+  "summary": [
+    {
+      "scene": "march",
+      "before_median_p50_ms": 2.82507,
+      "after_median_p50_ms": 2.81839,
+      "reduction_percent": 0.23645431794611094
+    },
+    {
+      "scene": "crossing",
+      "before_median_p50_ms": 8.36718,
+      "after_median_p50_ms": 7.45262,
+      "reduction_percent": 10.93032539039437
+    }
+  ],
+  "runs": [
+    {
+      "scene": "march",
+      "round": 1,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 2.82507,
+      "p95_ms": 4.25004,
+      "p99_ms": 6.11086,
+      "phase_mean_ms": {
+        "total": 3.0437803116666666,
+        "grid": 0.08540282333333334,
+        "motion": 2.613283153333333,
+        "contact": 0.22107603833333334,
+        "wall": 0.000160625,
+        "residual": 0.11047938333333333
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "march",
+      "round": 1,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 2.81839,
+      "p95_ms": 3.8993,
+      "p99_ms": 5.09894,
+      "phase_mean_ms": {
+        "total": 2.96423989,
+        "grid": 0.08526906333333334,
+        "motion": 2.5394380416666666,
+        "contact": 0.221482815,
+        "wall": 7.386333333333333e-05,
+        "residual": 0.10620768833333334
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "march",
+      "round": 2,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 2.80186,
+      "p95_ms": 3.32772,
+      "p99_ms": 3.85475,
+      "phase_mean_ms": {
+        "total": 2.859186006666667,
+        "grid": 0.07915457333333334,
+        "motion": 2.4526279783333336,
+        "contact": 0.213330365,
+        "wall": 7.344833333333334e-05,
+        "residual": 0.102488105
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "march",
+      "round": 2,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 2.84582,
+      "p95_ms": 3.53639,
+      "p99_ms": 4.13215,
+      "phase_mean_ms": {
+        "total": 2.905703281666667,
+        "grid": 0.081533155,
+        "motion": 2.4883915099999996,
+        "contact": 0.21385195833333334,
+        "wall": 7.022e-05,
+        "residual": 0.11037159833333333
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "march",
+      "round": 3,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 2.99182,
+      "p95_ms": 4.01913,
+      "p99_ms": 4.76117,
+      "phase_mean_ms": {
+        "total": 3.103602875,
+        "grid": 0.09111770833333332,
+        "motion": 2.6621424833333336,
+        "contact": 0.22946283666666667,
+        "wall": 9.2435e-05,
+        "residual": 0.1095183
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "march",
+      "round": 3,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 2.62594,
+      "p95_ms": 3.65737,
+      "p99_ms": 5.45705,
+      "phase_mean_ms": {
+        "total": 2.803674298333333,
+        "grid": 0.07803564166666667,
+        "motion": 2.4123941816666665,
+        "contact": 0.20161423833333333,
+        "wall": 6.1935e-05,
+        "residual": 0.100581735
+      },
+      "final_motion_checksum": "5544760520935286068",
+      "logical_counters_sha256": "5c9d412a51540ddeb51278fcb106485cd4f9b7bb6ae0fc4ab57420d2da7802df"
+    },
+    {
+      "scene": "crossing",
+      "round": 1,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 8.76406,
+      "p95_ms": 14.1814,
+      "p99_ms": 17.4367,
+      "phase_mean_ms": {
+        "total": 9.305925776666667,
+        "grid": 0.18549011499999998,
+        "motion": 8.321742818333334,
+        "contact": 0.6468389,
+        "wall": 0.00037679833333333334,
+        "residual": 0.13387501833333335
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    },
+    {
+      "scene": "crossing",
+      "round": 1,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 7.55344,
+      "p95_ms": 9.73507,
+      "p99_ms": 15.814,
+      "phase_mean_ms": {
+        "total": 7.826844673333333,
+        "grid": 0.16353768666666668,
+        "motion": 6.96795234,
+        "contact": 0.5497404100000001,
+        "wall": 0.00014226833333333335,
+        "residual": 0.13200463166666665
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    },
+    {
+      "scene": "crossing",
+      "round": 2,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 8.21902,
+      "p95_ms": 11.1825,
+      "p99_ms": 14.0431,
+      "phase_mean_ms": {
+        "total": 8.566079753333334,
+        "grid": 0.18002967833333333,
+        "motion": 7.655841161666667,
+        "contact": 0.5775227433333333,
+        "wall": 0.000155845,
+        "residual": 0.13689836166666666
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    },
+    {
+      "scene": "crossing",
+      "round": 2,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 7.11638,
+      "p95_ms": 9.85671,
+      "p99_ms": 13.8121,
+      "phase_mean_ms": {
+        "total": 7.484217283333333,
+        "grid": 0.165987,
+        "motion": 6.666426525,
+        "contact": 0.52209047,
+        "wall": 0.00014341166666666667,
+        "residual": 0.11674172166666666
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    },
+    {
+      "scene": "crossing",
+      "round": 3,
+      "variant": "before",
+      "frames": 600,
+      "p50_ms": 8.36718,
+      "p95_ms": 10.4014,
+      "p99_ms": 11.5246,
+      "phase_mean_ms": {
+        "total": 8.487026076666666,
+        "grid": 0.16548608333333334,
+        "motion": 7.597777408333333,
+        "contact": 0.5714183516666667,
+        "wall": 0.00014221666666666666,
+        "residual": 0.1374767
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    },
+    {
+      "scene": "crossing",
+      "round": 3,
+      "variant": "after",
+      "frames": 600,
+      "p50_ms": 7.45262,
+      "p95_ms": 9.57709,
+      "p99_ms": 12.2468,
+      "phase_mean_ms": {
+        "total": 7.650922195000001,
+        "grid": 0.16399247833333333,
+        "motion": 6.796514480000001,
+        "contact": 0.5466426483333333,
+        "wall": 0.0004964583333333333,
+        "residual": 0.12990740666666667
+      },
+      "final_motion_checksum": "18437896534646015417",
+      "logical_counters_sha256": "d00cf9015cb17e28788aed40f34a1883881f4ea32f812816a73d6ac4f31831b9"
+    }
+  ]
+}

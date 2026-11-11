@@ -2,6 +2,7 @@
 
 #include "common/Export.h"
 #include "common/Result.h"
+#include "graphics/PathTracing.h"
 #include "graphics/RayTracingCaps.h"
 
 // Incomplete glm types are enough for const-reference parameters.
@@ -36,6 +37,64 @@ public:
 
     /** @brief Borrowed device caps; valid while Graphics remains initialized. */
     virtual RayTracingCaps caps() const = 0;
+
+    /** @brief Prepare an independently owned path-tracing scene and publish it atomically.
+     * @param gfx Initialized graphics device; borrowed until device detachment.
+     * @param scene Borrowed geometry, materials, textures, instances and lights; copied during preparation.
+     * @return Current token for identical values, new token for changed values, or a failure preserving the prior
+     * scene.
+     * @cost CPU validation/comparison proportional to input; unchanged values reuse GPU resources.
+     * Geometry/material/light/texture changes upload/build; native textures copy GPU bytes proportional to texels.
+     * Source content identities amortize unchanged native captures; instance-only changes reuse BLAS and update TLAS.
+     * @thread Render thread, outside frame recording; no callbacks or reentrancy.
+     * @lifetime Successful preparation of changed inputs invalidates prior tokens/history. Source edits/releases
+     * alone leave an existing snapshot intact. Device detachment releases the owned scene.
+     */
+    [[nodiscard]] virtual Result<PathSceneToken> preparePathScene(Graphics* gfx, const PathSceneDescription& scene) = 0;
+
+    /** @brief Replace instances of a prepared geometry set without rebuilding its BLAS.
+     * @param token Current prepared-scene token.
+     * @param instances Complete replacement instance list; geometry indices refer to the prepared geometry set.
+     * @return New scene token on success; failure preserves the prior token and scene.
+     * @ownership Input is borrowed for this call; geometry/material buffers remain provider-owned.
+     * @lifetime Success invalidates the old token and accumulation. Detachment invalidates all tokens.
+     * @thread Render thread, outside frame recording; no callbacks or reentrancy.
+     * @cost TLAS build and emissive-instance upload proportional to instances/emissive triangles;
+     * amortize across frames with unchanged instances. Geometry/material/light replacement requires preparation.
+     */
+    [[nodiscard]] virtual Result<PathSceneToken> updatePathInstances(PathSceneToken                token,
+                                                                     std::span<const PathInstance> instances) = 0;
+
+    /** @brief Render a prepared path-tracing sample batch into an HDR canvas.
+     * @param token Token returned by this provider's latest successful preparation.
+     * @param dest Borrowed RGBA16F output canvas; must outlive the call.
+     * @param view Camera, environment and deterministic sampling/accumulation settings.
+     * @return InvalidArgument for stale tokens or invalid inputs; Failed for GPU errors.
+     * @cost GPU work scales with pixels, samples and bounces; currently waits for GPU completion per batch.
+     * @thread Render thread, outside frame recording; no callbacks or reentrancy.
+     * @ownership Provider owns accumulation; destination remains caller-owned.
+     */
+    [[nodiscard]] virtual Result<void> renderPaths(PathSceneToken token, Canvas* dest, const PathTraceView& view) = 0;
+
+    /** @brief Prepare provider-owned output images for normal-frame path tracing.
+     * @ownership Provider owns output images and sampled textures; no caller storage is retained.
+     * @thread Render thread, outside frame recording; no callbacks.
+     * @cost Allocates images proportional to pixels on resize; equal extents reuse the current output token.
+     * @return Output identity, invalidated by resize, full scene replacement or device detach.
+     */
+    [[nodiscard]] virtual Result<PathFrameToken> preparePathFrame(PathSceneToken scene, uint32_t width,
+                                                                  uint32_t height) = 0;
+    /** @brief End the scene pass and record one path batch as this normal frame's HDR resolve source.
+     * @ownership Returned texture is borrowed from the provider until output invalidation; use it in this frame only.
+     * @thread Render thread; once per present frame, no callbacks or reentrancy.
+     * @cost Records pixel/sample/bounce-proportional GPU work; does not submit or wait for this batch.
+     * @return Sampleable output for same-frame composition, or a structured failure. Success is recording, not
+     * completion.
+     * @details The caller submits the normal frame. Reset history if a previous recording was not submitted.
+     * Subsequent 3D raster draws are not permitted; 2D UI overlays remain supported.
+     */
+    [[nodiscard]] virtual Result<Texture*> recordPathFrame(PathSceneToken scene, PathFrameToken output,
+                                                           const PathTraceView& view) = 0;
 
     /**
      * @brief Trace mirror-style reflections into `dest` (RGBA16F, A = hit mask).

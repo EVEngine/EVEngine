@@ -6,7 +6,15 @@
 #include "graphics/shaders/mesh3d_toon_vert_spv.inc"
 #include "stylize/shaders/chromatic_post_frag_spv.inc"
 #include "stylize/shaders/dissolve_mesh_frag_spv.inc"
+#include "stylize/shaders/glitch_analog_post_frag_spv.inc"
+#include "stylize/shaders/glitch_block_post_frag_spv.inc"
+#include "stylize/shaders/glitch_wave_post_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
+#include "stylize/shaders/kuwahara_post_frag_spv.inc"
+#include "stylize/shaders/kuwahara_aniso_post_frag_spv.inc"
+#include "stylize/shaders/dog_post_frag_spv.inc"
+#include "stylize/shaders/sharpen_post_frag_spv.inc"
+#include "stylize/shaders/neon_edge_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
 #include "stylize/shaders/ember_mesh_frag_spv.inc"
@@ -38,6 +46,15 @@ const StyleDefinition kPostEffects[] = {
     {"vignette", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 260},
     {"chromatic", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 270},
     {"grain", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 280},
+    {"glitchAnalog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 290},
+    {"glitchBlock", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 300},
+    {"glitchWave", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 310},
+    {"kuwahara", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 220},
+    {"kuwaharaAniso", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 225},
+    {"dog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 230},
+    {"sharpen", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 240},
+    // BeforeTonemap so neon edges sit with cartoon/ink outline peers (port program Wave 2).
+    {"neonEdge", true, false, false, false, false, graphics::PostEffectStage::BeforeTonemap, 120},
 };
 
 const StyleParameterDesc kRimParams[] = {
@@ -106,6 +123,67 @@ const StyleParameterDesc kGrainParams[] = {
     {"colorAmount", 0.1f, 0.f, 1.f},
 };
 
+// Defaults keep the pass near-identity until knobs are raised (DoD: strength 0
+// or all knobs 0 ≈ passthrough). Artistic ranges match KinoGlitch public API.
+const StyleParameterDesc kGlitchAnalogParams[] = {
+    {"strength", 1.f, 0.f, 1.f},        {"scanLineJitter", 0.f, 0.f, 1.f},
+    {"verticalJump", 0.f, 0.f, 1.f},     {"horizontalShake", 0.f, 0.f, 1.f},
+    {"colorDrift", 0.f, 0.f, 1.f},       {"time", 0.f, 0.f, 120.f},
+};
+
+// Digital block damage. intensity mirrors Kino DigitalGlitch; cell counts default
+// to the original 64×32 noise atlas. Trash history is approximated in-shader.
+const StyleParameterDesc kGlitchBlockParams[] = {
+    {"strength", 1.f, 0.f, 1.f},   {"intensity", 0.f, 0.f, 1.f}, {"time", 0.f, 0.f, 120.f},
+    {"cellCountX", 64.f, 4.f, 256.f}, {"cellCountY", 32.f, 4.f, 256.f},
+};
+
+// XPL WaveJitter. amount default 0 → near-identity; screenW/H appended in bind.
+const StyleParameterDesc kGlitchWaveParams[] = {
+    {"strength", 1.f, 0.f, 1.f},     {"amount", 0.f, 0.f, 2.f},      {"frequency", 5.f, 0.f, 50.f},
+    {"rgbSplit", 20.f, 0.f, 50.f},   {"speed", 0.25f, 0.f, 1.f},     {"direction", 0.f, 0.f, 1.f},
+    {"infiniteFreq", 0.f, 0.f, 1.f}, {"time", 0.f, 0.f, 120.f},
+};
+
+// Acerola basic Kuwahara. strength 0 → identity; texelW/H appended in bind.
+// kernelSize capped at 8 in the shader for SPIR-V loop bounds / cost.
+const StyleParameterDesc kKuwaharaParams[] = {
+    {"strength", 0.f, 0.f, 1.f},
+    {"kernelSize", 3.f, 1.f, 8.f},
+};
+
+// Acerola anisotropic Kuwahara (fused). strength 0 → identity; texelW/H in bind.
+// zeta 0 → auto 2/kernelSize (Acerola useZeta=false path). Diameter capped at 8.
+const StyleParameterDesc kKuwaharaAnisoParams[] = {
+    {"strength", 0.f, 0.f, 1.f},       {"kernelSize", 4.f, 2.f, 8.f}, {"sharpness", 8.f, 1.f, 18.f},
+    {"hardness", 8.f, 1.f, 100.f},     {"alpha", 1.f, 0.01f, 2.f},    {"zeroCrossing", 0.58f, 0.01f, 2.f},
+    {"zeta", 0.f, 0.f, 3.f},
+};
+
+// Acerola Difference of Gaussians. strength 0 → identity; texelW/H in bind.
+// thresholding/useTanh/invert are 0/1 flags (float knobs for push-constant layout).
+const StyleParameterDesc kDogParams[] = {
+    {"strength", 0.f, 0.f, 1.f},      {"kernelSize", 5.f, 1.f, 8.f}, {"sigma", 2.f, 0.1f, 5.f},
+    {"k", 1.6f, 0.1f, 5.f},           {"tau", 1.f, 0.01f, 5.f},     {"thresholding", 1.f, 0.f, 1.f},
+    {"useTanh", 0.f, 0.f, 1.f},       {"phi", 1.f, 0.01f, 100.f},   {"threshold", 0.005f, -1.f, 1.f},
+    {"invert", 0.f, 0.f, 1.f},
+};
+
+// Acerola Contrast Adaptive Sharpening. strength 0 → identity; texelW/H in bind.
+// amount maps to CAS sharpness lerp(10,7); CAS alone is never identity.
+const StyleParameterDesc kSharpenParams[] = {
+    {"strength", 0.f, 0.f, 1.f},
+    {"amount", 0.5f, 0.f, 1.f},
+};
+
+// XPL EdgeDetectionSobelNeonV2. strength 0 → identity; screenW/H appended in bind.
+// RGB Sobel gradients → colorful neon edges (not luma-only V1).
+const StyleParameterDesc kNeonEdgeParams[] = {
+    {"strength", 0.f, 0.f, 1.f},     {"edgeWidth", 1.f, 0.05f, 5.f}, {"neonFade", 1.f, 0.1f, 1.f},
+    {"brightness", 1.f, 0.2f, 2.f},  {"backgroundFade", 0.f, 0.f, 1.f},
+    {"bgR", 0.f, 0.f, 1.f},          {"bgG", 0.f, 0.f, 1.f},         {"bgB", 0.f, 0.f, 1.f},
+};
+
 const StyleDefinition* findMesh(const std::string& style) {
     for (const auto& d : kMeshEffects)
         if (style == d.id) return &d;
@@ -146,12 +224,28 @@ int postParamCount(const std::string& style) {
     if (style == "vignette") return int(sizeof(kVignetteParams) / sizeof(kVignetteParams[0]));
     if (style == "chromatic") return int(sizeof(kChromaticParams) / sizeof(kChromaticParams[0]));
     if (style == "grain") return int(sizeof(kGrainParams) / sizeof(kGrainParams[0]));
+    if (style == "glitchAnalog") return int(sizeof(kGlitchAnalogParams) / sizeof(kGlitchAnalogParams[0]));
+    if (style == "glitchBlock") return int(sizeof(kGlitchBlockParams) / sizeof(kGlitchBlockParams[0]));
+    if (style == "glitchWave") return int(sizeof(kGlitchWaveParams) / sizeof(kGlitchWaveParams[0]));
+    if (style == "kuwahara") return int(sizeof(kKuwaharaParams) / sizeof(kKuwaharaParams[0]));
+    if (style == "kuwaharaAniso") return int(sizeof(kKuwaharaAnisoParams) / sizeof(kKuwaharaAnisoParams[0]));
+    if (style == "dog") return int(sizeof(kDogParams) / sizeof(kDogParams[0]));
+    if (style == "sharpen") return int(sizeof(kSharpenParams) / sizeof(kSharpenParams[0]));
+    if (style == "neonEdge") return int(sizeof(kNeonEdgeParams) / sizeof(kNeonEdgeParams[0]));
     return 0;
 }
 const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "vignette") return paramAt(kVignetteParams, index);
     if (style == "chromatic") return paramAt(kChromaticParams, index);
     if (style == "grain") return paramAt(kGrainParams, index);
+    if (style == "glitchAnalog") return paramAt(kGlitchAnalogParams, index);
+    if (style == "glitchBlock") return paramAt(kGlitchBlockParams, index);
+    if (style == "glitchWave") return paramAt(kGlitchWaveParams, index);
+    if (style == "kuwahara") return paramAt(kKuwaharaParams, index);
+    if (style == "kuwaharaAniso") return paramAt(kKuwaharaAnisoParams, index);
+    if (style == "dog") return paramAt(kDogParams, index);
+    if (style == "sharpen") return paramAt(kSharpenParams, index);
+    if (style == "neonEdge") return paramAt(kNeonEdgeParams, index);
     return nullptr;
 }
 
@@ -217,13 +311,19 @@ const StyleParameterDesc* effectParameterAt(const std::string& style, int index)
 
 void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) {
     bindParamArray(shader, style, /*mesh=*/false);
-    // Chromatic dispersion needs the framebuffer size to keep the RGB split
-    // aspect-correct; StylePass::uploadScreenUniforms refreshes these.
-    if (style == "chromatic") {
+    // Chromatic / wave glitch need framebuffer size; StylePass::uploadScreenUniforms
+    // refreshes these each apply.
+    if (style == "chromatic" || style == "glitchWave" || style == "neonEdge") {
         shader->declareFloat("screenW");
         shader->declareFloat("screenH");
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
+    }
+    if (style == "kuwahara" || style == "kuwaharaAniso" || style == "dog" || style == "sharpen") {
+        shader->declareFloat("texelW");
+        shader->declareFloat("texelH");
+        shader->sendFloat("texelW", 1.f / 256.f);
+        shader->sendFloat("texelH", 1.f / 256.f);
     }
 }
 
@@ -240,6 +340,22 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(chromatic_post_frag_spv, chromatic_post_frag_spv_count);
     else if (style == "grain")
         frag = copySpv(grain_post_frag_spv, grain_post_frag_spv_count);
+    else if (style == "glitchAnalog")
+        frag = copySpv(glitch_analog_post_frag_spv, glitch_analog_post_frag_spv_count);
+    else if (style == "glitchBlock")
+        frag = copySpv(glitch_block_post_frag_spv, glitch_block_post_frag_spv_count);
+    else if (style == "glitchWave")
+        frag = copySpv(glitch_wave_post_frag_spv, glitch_wave_post_frag_spv_count);
+    else if (style == "kuwahara")
+        frag = copySpv(kuwahara_post_frag_spv, kuwahara_post_frag_spv_count);
+    else if (style == "kuwaharaAniso")
+        frag = copySpv(kuwahara_aniso_post_frag_spv, kuwahara_aniso_post_frag_spv_count);
+    else if (style == "dog")
+        frag = copySpv(dog_post_frag_spv, dog_post_frag_spv_count);
+    else if (style == "sharpen")
+        frag = copySpv(sharpen_post_frag_spv, sharpen_post_frag_spv_count);
+    else if (style == "neonEdge")
+        frag = copySpv(neon_edge_post_frag_spv, neon_edge_post_frag_spv_count);
     else
         throw eve::Exception("createEffectPostShader: not an effect post style '%s'", style.c_str());
 

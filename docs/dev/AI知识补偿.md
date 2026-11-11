@@ -40,10 +40,27 @@ EveScript（Squirrel 超集）和 `eve.X()` / `persist` / Result 表几乎不在
 给 Coding Agent 的默认上下文必须短、稳定、可版本化，不要把整本
 [`docs/usr/EVESCRIPT.md`](../usr/EVESCRIPT.md) 塞进 system prompt。
 
-入口：引擎仓库 [`.cursor/skills/evescript/SKILL.md`](../../.cursor/skills/evescript/SKILL.md)
-与根目录 [`llms.txt`](../../llms.txt)。**SDK 发行物**把同一份 skill 装到
-`share/eve/ai/SKILL.md` 和 `.cursor/skills/evescript/SKILL.md`，并把 `llms.txt` 放在 SDK 根目录，
-这样解压 `eve-sdk-*.zip` 的游戏开发者不必克隆源码。
+入口：引擎仓库 [`.cursor/skills/`](../../.cursor/skills/README.md)（语言 skill + 成熟玩法范式
+skill）与根目录 [`llms.txt`](../../llms.txt)。**SDK 发行物**把 `evescript` 装到
+`share/eve/ai/SKILL.md`，并把整棵 `.cursor/skills/<name>/SKILL.md`（含范式 skill）和
+`llms.txt` 装进 SDK 根，这样解压 `eve-sdk-*.zip` 的游戏开发者不必克隆源码。
+
+模块用户文档在正文前用 **这篇解决什么** 标明：覆盖哪些问题、推荐入口 API、禁止的低层拼法。
+Agent 先读该段再翻细节（样板：[sensing](../usr/modules/sensing.md)、[spatial](../usr/modules/spatial.md)）。
+入口规则写在 `llms.txt` 与 Cursor skill；范式用短 skill（触发描述 + 所有权图 + 金样例）
+封装，**不**另建平行 recipe 目录或把整本手册塞进 system prompt。
+静态成本维与规模化热点读取见 [API 成本与 Profiler 约定](API成本与Profiler约定.md)。
+
+成熟范式 skill（见 [`.cursor/skills/README.md`](../../.cursor/skills/README.md)）：
+
+| Skill | 覆盖 |
+| --- | --- |
+| `eve-agent-loop` | Discover→Modify→Run→Observe→Verify 证据会话 |
+| `eve-game-loop` | 可玩工程骨架、权威状态、persist/存档/HUD |
+| `eve-arpg` | action→combat→settlement→rpg/inventory 闭环 |
+| `eve-rpg` | 属性/Buff/技能/Vitals/任务/回合战 |
+| `eve-rts` | 固定步进、阵营、命令、支付组合 |
+| `eve-action-guide` | 白膜引导 AOV → AI 成图 → Ability draft |
 
 ### 层 B — 机器可读 API 目录
 
@@ -68,6 +85,23 @@ AI 改「有 schema 的事实」；脚本只写无法数据化的行为。
 - 玩法观察 / 操作：`game.agent.json` + `eve_play`。**禁止把 `eve_eval` 教成过关手段。**
 - 生成脚本后的闭环：查 API → 编译诊断 → 真实帧 → `eve_screenshot` / observe → 证据会话。
 
+### 层 D — 素材像素合同（Asset Kits）
+
+AI 生图前必须拿到引擎声明的尺寸 / 比例 / 透明通道 / 路径模板，而不是猜 Unity 卡牌
+分辨率或视觉小说立绘比例。
+
+| 入口 | 用途 |
+| --- | --- |
+| MCP `eve_asset_kit_list` / `get` / `resolve` | 运行时发现与落盘任务解析（只读；各 task profile 可用） |
+| `cmake/sdk/asset-kits/catalog.json` | 源码真源；`python3 scripts/asset_kits.py list\|get\|resolve\|validate` |
+| `cmake/sdk/asset-kits/protocol.json` + `INTEGRATION.md` | 跨内部系统的稳定 `eve.asset-kit.api`（CLI / 库 / MCP / 文件） |
+| SDK `share/eve/ai/asset-kits/` | 解压 SDK 后离线可读（与 MCP 嵌入目录同源）；`EVE_ASSET_KITS_EXTRA` 可叠公司目录 |
+
+首批 kit：`card.playing`（262×372）、`card.collectible`（512×724）、
+`visual-novel.dialogue`（立绘 1024×1536 / 显示 256×384，背景 1920×1080）。
+说明见 [`cmake/sdk/asset-kits/README.md`](../../cmake/sdk/asset-kits/README.md)。
+引擎拥有合同与验收宿主；像素创意仍由引擎外图像模型生成（与 [白膜引导管线](2026-11-03-2d-action-ai-guide-pipeline.md) 同构）。
+
 ## 编译器当老师
 
 绑定合同已进入 LSP hover/补全。MCP `eve_api_search` 使用同一份合同，避免 Agent 对着 40 个模块手册猜。
@@ -75,5 +109,6 @@ AI 改「有 schema 的事实」；脚本只写无法数据化的行为。
 
 ## 成功标准
 
-一个没见过本仓库的 Agent，只靠 **SDK 内** skill + `share/eve/ai/eve-api.json` 或 `eve_api_search`，
+一个没见过本仓库的 Agent，只靠 **SDK 内** skill（含范式 skill）+ `share/eve/ai/eve-api.json` 或 `eve_api_search`，
 能写出通过编译的 `eve_update` 移动方块，并且用 MCP 截图或 observe 证明，而不是从 Unity C# 臆造 API。
+做 ARPG/RTS/验收闭环时，应加载对应范式 skill，而不是从手册全文猜测所有权边界。

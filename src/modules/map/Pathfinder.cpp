@@ -4,15 +4,19 @@
 
 #include "map/TileOrientation.h"
 
+#include "common/Diagnostic.h"
+
 #include <algorithm>
 #include <charconv>
 #include <cmath>
 #include <cstdint>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <queue>
 #include <tuple>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 namespace eve::map {
@@ -925,6 +929,59 @@ Result<NavigationGridSnapshot> Pathfinder::captureNavigationGrid() try {
 
 Path *Pathfinder::findPath(int sx, int sy, int gx, int gy) {
     return findPath(sx, sy, gx, gy, {});
+}
+
+namespace {
+
+struct CellHash {
+    std::size_t operator()(const std::pair<int, int> &cell) const noexcept {
+        return (static_cast<std::size_t>(static_cast<std::uint32_t>(cell.first)) << 32) ^
+               static_cast<std::uint32_t>(cell.second);
+    }
+};
+
+Result<bool> keepsPathOpenWithBlocks(Pathfinder &finder, Grid &grid, int sx, int sy, int gx, int gy,
+                                     const std::unordered_set<std::pair<int, int>, CellHash> &blocks) {
+    if (!ensureSynced(grid) || grid.width <= 0 || grid.height <= 0) {
+        return Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                            "pathfinder grid is empty", "pathfinder.grid", {}, "map"));
+    }
+    for (const auto &cell : blocks) {
+        if (cell.first < 0 || cell.second < 0 || cell.first >= grid.width || cell.second >= grid.height) {
+            return Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "temporary block cell is out of bounds",
+                                                                "pathfinder.block", {}, "map"));
+        }
+        if ((cell.first == sx && cell.second == sy) || (cell.first == gx && cell.second == gy))
+            return Result<bool>::success(false);
+    }
+    if (!grid.isWalkable(sx, sy) || !grid.isWalkable(gx, gy)) return Result<bool>::success(false);
+    std::unique_ptr<Path> path(finder.findPath(sx, sy, gx, gy, [&blocks](int x, int y) {
+        return blocks.count({x, y}) ? kInf : 0.f;
+    }));
+    return Result<bool>::success(path && path->getLength() > 0);
+}
+
+}  // namespace
+
+Result<bool> Pathfinder::keepsPathOpen(int sx, int sy, int gx, int gy, int blockX, int blockY) {
+    std::unordered_set<std::pair<int, int>, CellHash> blocks;
+    blocks.emplace(blockX, blockY);
+    return keepsPathOpenWithBlocks(*this, impl_->grid, sx, sy, gx, gy, blocks);
+}
+
+Result<bool> Pathfinder::keepsPathOpenFootprint(int sx, int sy, int gx, int gy, int originX, int originY,
+                                                int footprintW, int footprintH) {
+    if (footprintW <= 0 || footprintH <= 0) {
+        return Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                            "footprint size must be positive",
+                                                            "pathfinder.footprint", {}, "map"));
+    }
+    std::unordered_set<std::pair<int, int>, CellHash> blocks;
+    blocks.reserve(static_cast<std::size_t>(footprintW) * static_cast<std::size_t>(footprintH));
+    for (int y = 0; y < footprintH; ++y)
+        for (int x = 0; x < footprintW; ++x) blocks.emplace(originX + x, originY + y);
+    return keepsPathOpenWithBlocks(*this, impl_->grid, sx, sy, gx, gy, blocks);
 }
 
 Path *Pathfinder::findPath(int sx, int sy, int gx, int gy,

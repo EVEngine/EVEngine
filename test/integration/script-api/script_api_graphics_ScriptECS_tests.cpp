@@ -2521,10 +2521,16 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.snapshotRejectsUnknownComponent
     REQUIRE(stillOriginal());
 
     // 2) schema 之外的字段：同样拒绝——否则存储里会出现没人声明的字段，序列化/编辑器都会看到它。
-    auto unknownField = seal(
-        snapshotPayload(snapshotEntry(std::to_string(entityId), "Position", 1,
-                                      {{"x", eve::Value::number(9.0)}, {"notDeclared", eve::Value::number(1.0)}})));
-    REQUIRE(!eve::restoreScriptComponents(unknownField, hash).ok());
+    const std::string firstUnknown   = "a" + std::string(96, 'u');
+    const std::string lastUnknown    = "z" + std::string(96, 'u');
+    auto              unknownField   = seal(snapshotPayload(snapshotEntry(std::to_string(entityId), "Position", 1,
+                                                                          {{"x", eve::Value::number(9.0)},
+                                                                           {lastUnknown, eve::Value::number(1.0)},
+                                                                           {firstUnknown, eve::Value::number(2.0)}})));
+    auto              rejectedFields = eve::restoreScriptComponents(unknownField, hash);
+    REQUIRE(!rejectedFields.ok());
+    REQUIRE(rejectedFields.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(rejectedFields.status().primaryDiagnostic()->path(), "Position." + firstUnknown);
     REQUIRE(stillOriginal());
 
     // 3) 被改过的载荷：哈希对不上，拒绝且不改动现有数据。
@@ -4720,22 +4726,25 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.capabilitySeamRequiresDecl
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.capabilitySeamBindsAndUnbinds") {
     auto& registry = eve::ScriptProviderRegistry::instance();
     auto  recorder = std::make_shared<SeamRecorder>();
+    const std::string providerName = "test.seam." + std::string(96, 'p');
 
     registry.declareCapability(
         kSeamCapability, [recorder](const eve::ScriptProviderHandle& handle) { return recorder->onBind(handle); },
         [recorder](const eve::ScriptProviderHandle& handle) { return recorder->onUnbind(handle); });
 
-    auto published = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
+    auto published = registry.publishForCapability(kSeamCapability, providerName, vm.find("provider"));
     REQUIRE(published.ok());
     REQUIRE_EQ(recorder->bound.size(), std::size_t{1});
-    REQUIRE_EQ(recorder->bound.front(), std::string("test.seam"));
+    REQUIRE_EQ(recorder->bound.front(), providerName);
     REQUIRE(recorder->unbound.empty());
 
     // Superseding runs the unbinder for the retired generation, then binds the new one.
-    auto superseded = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
+    auto superseded = registry.publishForCapability(kSeamCapability, providerName, vm.find("provider"));
     REQUIRE(superseded.ok());
     REQUIRE_EQ(recorder->unbound.size(), std::size_t{1});
-    REQUIRE_EQ(recorder->unbound.front(), std::string("test.seam"));
+    REQUIRE_EQ(recorder->unbound.front(), providerName);
+    REQUIRE_EQ(published.value().name, providerName);
+    REQUIRE_EQ(superseded.value().name, providerName);
     REQUIRE_EQ(recorder->bound.size(), std::size_t{2});
 
     REQUIRE(registry.unload(superseded.value()).ok());

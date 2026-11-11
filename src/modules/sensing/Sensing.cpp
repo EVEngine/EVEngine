@@ -2,6 +2,7 @@
 #include "sensing/Sensing.h"
 #include <ranges>
 #include "common/Identity.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "sensing/SensingQueryBinding.h"
 #include "sensing/SensingScriptCandidateSeam.h"
@@ -368,7 +369,12 @@ Result<void> SensingWorld::upsertPosition(std::string_view id, float x, float y,
         if (spatialIndexEnabled() && positionChanged) indexSubject(found->second);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
-    Subject    subject{key, x, y, std::string(f), csv(t), csv(v), {}, z};
+    Subject subject{key, x, y, std::string(f), csv(t), csv(v), {}, z};
+    if (found != subjects_.end()) {
+        // Zones stay owned by setZones: upsert clears them. Preserve TD metrics only.
+        subject.pathProgress = found->second.pathProgress;
+        subject.strength     = found->second.strength;
+    }
     const bool positionChanged =
         found == subjects_.end() || found->second.x != x || found->second.y != y || found->second.z != z;
     if (found == subjects_.end()) {
@@ -410,6 +416,21 @@ eve::Result<void> SensingWorld::setZones(std::string_view id, std::string_view z
                                                                      "subject.zones", {}, "sensing"));
     }
     it->second.zones = std::move(zones);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> SensingWorld::setMetrics(std::string_view id, float pathProgress, float strength) {
+    if (!finite(pathProgress) || !finite(strength))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "pathProgress and strength must be finite",
+                                                                 "subject.metrics", {}, "sensing"));
+    const std::string key(id);
+    auto              it = subjects_.find(key);
+    if (it == subjects_.end())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id", {}, "sensing"));
+    it->second.pathProgress = pathProgress;
+    it->second.strength     = strength;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -657,8 +678,8 @@ void SensingWorld::publishResults(std::vector<RankedCandidate> ranked) {
     results_.reserve(ranked.size());
     for (const auto& candidate : ranked)
         results_.push_back(Candidate{candidate.id, candidate.x, candidate.y, candidate.distance, candidate.z});
-    lastQuery_.ranked   = ranked;
-    lastQuery_.accepted = static_cast<std::uint32_t>(ranked.size());
+    lastQuery_.ranked   = std::move(ranked);
+    lastQuery_.accepted = static_cast<std::uint32_t>(lastQuery_.ranked.size());
 }
 
 eve::Result<CandidateCollection> SensingWorld::collectCandidates(const QueryOrigin& origin,
@@ -698,14 +719,16 @@ eve::Result<CandidateCollection> SensingWorld::collectCandidates(const QueryOrig
                                    : std::hypot(sx - ox, sy - oy);
         if (distance < spec.minRange || distance > spec.maxRange) continue;
         RankedCandidate candidate;
-        candidate.id          = subject.id;
-        candidate.x           = subject.x;
-        candidate.y           = subject.y;
-        candidate.z           = subject.z;
-        candidate.space       = origin.space;
-        candidate.distance    = distance;
-        candidate.score       = -distance;
-        candidate.scoreReason = "distance";
+        candidate.id           = subject.id;
+        candidate.x            = subject.x;
+        candidate.y            = subject.y;
+        candidate.z            = subject.z;
+        candidate.space        = origin.space;
+        candidate.distance     = distance;
+        candidate.pathProgress = subject.pathProgress;
+        candidate.strength     = subject.strength;
+        candidate.score        = -distance;
+        candidate.scoreReason  = "distance";
         ranked.push_back(std::move(candidate));
     }
 
@@ -719,6 +742,7 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
 
 Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec,
                                                  OptionalRef<const ILineOfSightQuery> lineOfSight) {
+    EV_PROFILE_MODULE("sensing", "SensingWorld::query");
     if (spec.requireLineOfSight && !lineOfSight)
         return Result<CandidateQueryResult>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                                        "query requires a line-of-sight provider",
@@ -748,14 +772,57 @@ Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, cons
         }
         ranked = std::move(visible);
     }
-    if (spec.sortKey == SortKey::DistanceAscending) {
-        std::sort(ranked.begin(), ranked.end(), [](const RankedCandidate& a, const RankedCandidate& b) {
-            if (a.distance != b.distance) return a.distance < b.distance;
-            return a.id < b.id;
-        });
-    } else {
+    auto byScoreThenId = [](const RankedCandidate& a, const RankedCandidate& b) {
+        if (a.score != b.score) return a.score > b.score;
+        return a.id < b.id;
+    };
+    switch (spec.sortKey) {
+    case SortKey::DistanceAscending:
+        for (auto& candidate : ranked) {
+            candidate.score       = -candidate.distance;
+            candidate.scoreReason = "distance";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::DistanceDescending:
+        for (auto& candidate : ranked) {
+            candidate.score       = candidate.distance;
+            candidate.scoreReason = "distanceDescending";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::PathProgressDescending:
+        for (auto& candidate : ranked) {
+            candidate.score       = candidate.pathProgress;
+            candidate.scoreReason = "pathProgress";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::PathProgressAscending:
+        for (auto& candidate : ranked) {
+            candidate.score       = -candidate.pathProgress;
+            candidate.scoreReason = "pathProgressAscending";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::StrengthDescending:
+        for (auto& candidate : ranked) {
+            candidate.score       = candidate.strength;
+            candidate.scoreReason = "strength";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::StrengthAscending:
+        for (auto& candidate : ranked) {
+            candidate.score       = -candidate.strength;
+            candidate.scoreReason = "strengthAscending";
+        }
+        std::sort(ranked.begin(), ranked.end(), byScoreThenId);
+        break;
+    case SortKey::None:
         std::sort(ranked.begin(), ranked.end(),
                   [](const RankedCandidate& a, const RankedCandidate& b) { return a.id < b.id; });
+        break;
     }
 
     if (spec.countPolicy == CountPolicy::TruncateToMax) {
@@ -793,11 +860,44 @@ Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, cons
     return eve::Result<CandidateQueryResult>::success(CandidateQueryResult{std::move(ranked)});
 }
 
+namespace {
+
+eve::Result<SortKey> parseSortPolicy(std::string_view sortPolicy) {
+    if (sortPolicy.empty() || sortPolicy == "distance" || sortPolicy == "closest")
+        return eve::Result<SortKey>::success(SortKey::DistanceAscending);
+    if (sortPolicy == "furthest") return eve::Result<SortKey>::success(SortKey::DistanceDescending);
+    if (sortPolicy == "first") return eve::Result<SortKey>::success(SortKey::PathProgressDescending);
+    if (sortPolicy == "last") return eve::Result<SortKey>::success(SortKey::PathProgressAscending);
+    if (sortPolicy == "strongest") return eve::Result<SortKey>::success(SortKey::StrengthDescending);
+    if (sortPolicy == "weakest") return eve::Result<SortKey>::success(SortKey::StrengthAscending);
+    if (sortPolicy == "none") return eve::Result<SortKey>::success(SortKey::None);
+    return eve::Result<SortKey>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument,
+        "sortPolicy must be closest|furthest|first|last|strongest|weakest|distance|none", "query.sort", {},
+        "sensing"));
+}
+
+}  // namespace
+
 eve::Result<int> SensingWorld::circle(float x, float y, float radius, std::string_view r, std::string_view e,
                                       std::string_view i, std::string_view ef, std::string_view v, int limit) {
     auto spec = circleSpec(x, y, radius, r, e, i, ef, v, limit);
     if (!spec) return eve::Result<int>::failure(spec.status());
     auto result = query(QueryOrigin{x, y, std::nullopt}, std::move(spec).takeValue());
+    if (!result) return eve::Result<int>::failure(result.status());
+    return eve::Result<int>::success(static_cast<int>(std::move(result).takeValue().size()));
+}
+
+eve::Result<int> SensingWorld::circleSorted(float x, float y, float radius, std::string_view r, std::string_view e,
+                                            std::string_view i, std::string_view ef, std::string_view v, int limit,
+                                            std::string_view sortPolicy) {
+    auto sort = parseSortPolicy(sortPolicy);
+    if (!sort) return eve::Result<int>::failure(sort.status());
+    auto spec = circleSpec(x, y, radius, r, e, i, ef, v, limit);
+    if (!spec) return eve::Result<int>::failure(spec.status());
+    auto value     = std::move(spec).takeValue();
+    value.sortKey  = sort.value();
+    auto result    = query(QueryOrigin{x, y, std::nullopt}, std::move(value));
     if (!result) return eve::Result<int>::failure(result.status());
     return eve::Result<int>::success(static_cast<int>(std::move(result).takeValue().size()));
 }
@@ -1028,6 +1128,18 @@ void Sensing::expose(ssq::Table& t) {
                         eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->setZones(id, zones));
     });
+    w.addFunc("setMetrics", [vm](ScriptSensingWorld* value, const std::string& id, float pathProgress, float strength) {
+        if (!value)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
+        return eve::script::projectResult(vm, world->setMetrics(id, pathProgress, strength));
+    });
     auto projectCount = [vm](eve::Result<int>&& result) {
         return eve::script::projectResult(vm, std::move(result),
                                           [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
@@ -1051,6 +1163,27 @@ void Sensing::expose(ssq::Table& t) {
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(
             world->circle(x, y, radius, required, excluded, includedFactions, excludedFactions, visibleTo, limit));
+    });
+    w.addFunc("circleSorted", [vm, projectCount](ScriptSensingWorld* value, float x, float y, float radius,
+                                                 const std::string& required, const std::string& excluded,
+                                                 const std::string& includedFactions,
+                                                 const std::string& excludedFactions, const std::string& visibleTo,
+                                                 int limit, const std::string& sortPolicy) {
+        if (!value)
+            return eve::script::projectResult(vm,
+                                              eve::Result<int>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
+                                              [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
+                [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
+        return projectCount(world->circleSorted(x, y, radius, required, excluded, includedFactions, excludedFactions,
+                                                visibleTo, limit, sortPolicy));
     });
     w.addFunc("box", [vm, projectCount](ScriptSensingWorld* value, float minX, float minY, float maxX, float maxY,
                                         const std::string& required, const std::string& excluded,

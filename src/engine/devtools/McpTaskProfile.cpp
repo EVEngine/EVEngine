@@ -65,7 +65,8 @@ bool isAgentSessionTool(std::string_view tool) { return startsWith(tool, "eve_ag
 
 bool isCoreDiscoverTool(std::string_view tool) {
     return equalsAny(tool, {"eve_status", "eve_game_world", "eve_ai_log", "eve_ai_note", "eve_crash_report",
-                            "eve_console_read", "eve_console_write", "eve_console_clear"});
+                            "eve_console_read", "eve_console_write", "eve_console_clear"}) ||
+           startsWith(tool, "eve_asset_kit_");
 }
 
 bool tagsAllow(std::string_view tool, const std::unordered_set<std::string>& tags) {
@@ -144,7 +145,10 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
     if (profile.empty()) return true;
     if (!isKnownProfile(profile)) return false;
     // Session / agent tools stay reachable so the Agent can escalate, status, and complete.
-    if (isAgentSessionTool(tool) || tool == "eve_status" || tool == "eve_game_world") return true;
+    // Asset kits are read-only pixel contracts; available on every profile before art gen.
+    if (isAgentSessionTool(tool) || tool == "eve_status" || tool == "eve_game_world" ||
+        startsWith(tool, "eve_asset_kit_"))
+        return true;
 
     if (isDangerEvalTool(tool)) {
         // Only the fix profile may touch eval/run_script; still not valid required evidence.
@@ -182,8 +186,8 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
     }
 
     if (profile == "content.scene") {
-        if (startsWith(tool, "eve_procgen_") || startsWith(tool, "eve_recipe_") || tool == "eve_scene_info" ||
-            tool == "eve_scene_director_status")
+        if (startsWith(tool, "eve_procgen_") || startsWith(tool, "eve_recipe_") ||
+            startsWith(tool, "eve_asset_kit_") || tool == "eve_scene_info" || tool == "eve_scene_director_status")
             return true;
         return tagsAllow(tool, tags);
     }

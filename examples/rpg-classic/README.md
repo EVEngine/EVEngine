@@ -70,7 +70,7 @@ make run/win32-debug GAME=examples/rpg-classic
 | `data/forest.json` | 第二张探索地图、返回村庄入口、森林宝箱与第三处史莱姆遭遇 |
 | `data/world-object-contract.json` | 地图对象类型与属性契约；加载失败不会替换当前场景 |
 | `data/village-dialogue.dnut` | 长者与巡守各自的领取、提醒、交付和完成后对话，使用稳定节点与选择 ID |
-| `data/stories.dnut` | RPG 方言剧情：雾林首次抵达（对话 → 等待 → 本地化提示） |
+| `data/stories.dnut` | RPG 方言剧情：雾林首次抵达（对话 → 镜头 → 寻路移动 → 动画 → 等待 → 开关 → 本地化提示） |
 | `data/localization.json` | `eve.i18n.bundle` v1 中英双语包；对话、菜单、HUD、玩家日志、任务、物品、技能、地图、商店与遭遇展示均由稳定 key 投影 |
 
 伤害公式（`"a.attack * 2"`）、暴击、元素、命中在 `main.nut` 用 `registerSkillDamage`
@@ -94,10 +94,10 @@ make run/win32-debug GAME=examples/rpg-classic
 | 商品目录与交易 | `shop.json` 经 `replaceShopOffersFromJson` 严格原子发布；`buyShopOffer` / `sellShopOffer` 按权威价格提交金币与背包，失败不留下半笔交易 |
 | 状态界面 | `ui` 多窗口 + `setHostVisible` 切换 |
 | 探索地图 | `map.loadFromFileWithObjectContract` + `Pathfinder`，对象契约先准入；`collectWorldLoot` 原子结算通用 loot，portal 属性显式驱动跨地图切换 |
-| 对话任务链 | 通用 `quest_npc` 属性绑定 Quest 与对话前缀，按 `Tracker` 状态选择领取、提醒、交付或完成后会话 |
+| 对话任务链 | 通用 `quest_npc` 属性绑定 Quest 与 `dialogueBase`；`Tracker.dialogueConversationId` 按状态拼出 `offer/active/turnin/completed/failed` 会话 |
 | 奖励事务 | `rpg.claimQuestRewards` 先验证完整物品批次，再原子提交任务、金币与背包；库存监听器只观察最终状态 |
 | 队友策略 | `battle-tactics.json` 按序定义游侠策略：任一队友生命低于 40% 时治疗最低生命队友，否则攻击最低生命敌人；目录严格验证并参与内容包回滚 |
-| 剧情事件编排 | `stories.dnut` 经 `replaceStoriesFromDnut` 严格发布；`RpgStorySession` 把游标 JSON 写入 `GameState` 的 `story.<id>.cursor`，完成事实写入 `completed`；目录热替换不影响活动会话，事件中 F5 保存后会重放尚未确认步骤 |
+| 剧情事件编排 | `stories.dnut` 经 `replaceStoriesFromDnut` 严格发布；宿主 `presentStoryStep` / `updateStoryPresentation` 真正播放 `camera`（镜头平移+高亮）、`move`（Pathfinder 逐格行走）、`animation`（头顶动作气泡）；`RpgStorySession` 把游标 JSON 写入 `GameState` 的 `story.<id>.cursor`，完成事实写入 `completed`，`flag forest.arrival.seen` 写入开关；目录热替换不影响活动会话，事件中 F5 保存后会重放尚未确认步骤 |
 | 本地化内容契约 | `replaceBundleFromJson` 原子校验所有语言的键覆盖、单复数类型和占位符；提交整包前逐语言检查对话节点、剧情提示、玩家日志及产品展示 key，失败恢复上一已接受内容包；标题页和暂停页可即时切换中英文 |
 | 世界交互事务 | `rpg.collectWorldLoot` 将一次性世界对象、任务通知、金币和物品作为一个提交单元，失败不留下半开宝箱 |
 | 产品启动闭环 | 标题页检查三个存档槽；继续游戏只读取通过完整事务预检的主档或备份 |
@@ -105,14 +105,15 @@ make run/win32-debug GAME=examples/rpg-classic
 | 版本化存档 | `RPGSaveSession` schema v2 聚合 `GameState`、`Tracker`、主角＋游侠全队安全检查点、背包与装备，再通过 `filesystem.writeTextAtomic` / `readText` 落盘；全部权威参与者先统一校验、再原子恢复（跨模块拼法见 [SAVE.md](../../docs/usr/SAVE.md)） |
 
 存档通过 `writeTextAtomic` 原子替换到引擎配置的用户写目录，三个槽位分别使用
-`rpg-classic-slot1.json` 至 `rpg-classic-slot3.json`。当前契约为 `rpg-classic.content.v10`：
-`v9` 与 `v8`/`v7` 通过 `allowCompatibleContentVersion` 保持当前队伍 schema，`allowSingleActorPartyMigration` 为
+`rpg-classic-slot1.json` 至 `rpg-classic-slot3.json`。当前契约为 `rpg-classic.content.v11`：
+`v10` / `v9` 与 `v8`/`v7` 通过 `allowCompatibleContentVersion` 保持当前队伍 schema，`allowSingleActorPartyMigration` 为
 `v6`、`v5` 和 `v4` 明确登记旧主角到队伍第 0 位的迁移，
 新游侠采用当前内容基线；`v5` 的旧字符串开关继续迁移到 `RPGWorldState`；
 `addQuestAdditionMigration` 从 `v4` 显式补入新的雾林支线，同时完整保留既有任务进度；
 旧的无场景存档恢复到村庄，未命名空间化的世界事件会迁移到对应村庄或森林事件；完整性摘要用于发现
-意外损坏，不用于防作弊。`v10` 起雾林抵达剧情改用 `.dnut` RPG 方言，中断游标落在
-`story.forest.arrival.cursor`（字符串事实）；旧存档若停在 JSON `story.event:` 游标上不会自动续播该剧情。
+意外损坏，不用于防作弊。`v10` 起雾林抵达剧情改用 `.dnut` RPG 方言；`v11` 起同一故事补全
+镜头 / 寻路移动 / 动画 / 开关步骤，中断游标仍落在 `story.forest.arrival.cursor`（字符串事实）。
+旧存档若停在 JSON `story.event:` 游标、或停在 `v10` 精简步骤图上的未完成节点，不会自动续播该剧情。
 当前示例采用安全检查点语义：
 探索位置、朝向和已消费世界事件由 `GameState` 的权威快照保存，`RPGWorldState` 只提供类型化对象生命周期适配；不保存一场战斗中尚未结算的临时行动队列，
 读取后返回探索安全点。背包格位、物品实例、

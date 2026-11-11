@@ -116,6 +116,14 @@ void DynamicBoneSolver::removeCollider(int index) { if (index>=0 && index<static
 void DynamicBoneSolver::setColliderEnabled(int index,bool enabled) { if (index>=0 && index<static_cast<int>(colliders_.size())) colliders_[static_cast<size_t>(index)].enabled=enabled; }
 void DynamicBoneSolver::setColliderInside(int index,bool inside) { if (index>=0 && index<static_cast<int>(colliders_.size())) colliders_[static_cast<size_t>(index)].inside=inside; }
 void DynamicBoneSolver::setColliderRadius(int index,float radius) { if (index>=0 && index<static_cast<int>(colliders_.size()) && radius>0.f) colliders_[static_cast<size_t>(index)].radius=radius; }
+void DynamicBoneSolver::setColliderCenter(int index, float x, float y, float z) {
+    if (index < 0 || index >= static_cast<int>(colliders_.size())) return;
+    Collider &collider = colliders_[static_cast<size_t>(index)];
+    if (collider.bone >= 0) return;
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) return;
+    collider.center = {x, y, z};
+    if (!collider.capsule) collider.end = collider.center;
+}
 void DynamicBoneSolver::reset() { for (auto &chain:chains_) chain.initialized=false; }
 
 void DynamicBoneSolver::captureTargets(Chain &chain,const AnimPose &pose) {

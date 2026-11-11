@@ -100,7 +100,9 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
 | `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
+| `eve_action_guide_pack_validate` / `_set` / `_get` / `eve_action_guide_landmarks` / `eve_action_guide_capture` / `_status` / `_export` / `_ingest` / `_verify` | 2D 动作白膜引导包：校验/会话、关节投影、capture→export、候选帧 ingest（sequence + ability draft）、几何 verify（silhouette IoU / joint）；GPU AOV 需 `IActionGuideCapture`（见 [白膜引导管线](2026-11-03-2d-action-ai-guide-pipeline.md)） |
 | `eve_recipe_list` / `eve_recipe_apply` | 内容 recipe：注册表 id + 少量 params → 一次 `scene_director.batch` 事务（`content.scene` / workshop 转发） |
+| `eve_asset_kit_list` / `get` / `resolve` | AI 素材合同（`eve.asset-kit.api`）：按 genre/module/tag 发现 kit；`resolve` 产出可交给任意内部管线的 `job`（`pixelSize` / path / prompt / bindings）。只读；源 `cmake/sdk/asset-kits/`，SDK `share/eve/ai/asset-kits/` |
 | `eve_workshop` | 工坊窄 facade：`status` / `set_mode` / `recipe.apply` / `map.brush` / `play.observe` / `play.submit`（仅 `workshop.rpg`） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
@@ -116,7 +118,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_decal_status` / `eve_decal_project` / `eve_decal_remove` / `eve_decal_clear` / `eve_decal_set_limit` | 贴花查询与投影（`IDecalQuery`）：当前贴花、把包围盒/射线投到网格、清理与上限 |
 | `eve_physics_sphere_cast` | 3D 物理球体扫描（世界由脚本创建；返回命中点/法线/距离） |
 | `eve_world_project_down` | 相机障碍投影（`ICameraObstructionQuery`）：从机位向下取可用落点，供无人值守取景 |
-| `eve_profiler_frame` / `eve_profiler_report` | CPU profiler 采样：当前帧 zone 树与聚合报告（总时长/自耗时/热点） |
+| `eve_profiler_frame` / `eve_profiler_report` / `eve_profiler_hotspots` | CPU profiler：整帧 JSON（含 `hotspots`）、文本报告、按 limit/minSelfMs 取热点 |
 | `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
 | `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |

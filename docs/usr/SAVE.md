@@ -22,6 +22,38 @@
 
 动作战斗竖切（`examples/combat-arena`）当前是**确定性仿真演示**，不以跨会话存档为验收目标；需要持久化时，把 HP/冷却接到 RPG 或自有权威状态后再用上面的会话拼装。
 
+动作 RPG 闭环（`examples/arpg-loop`）用 `RPGSaveSession` 做**安全点**存档：无活动敌人、无
+`hasPendingReward`、玩家存活时才允许保存。读档恢复永久 RPG/背包/任务态并回营地，不恢复半途
+攻击窗口或敌人血量。宿主清单与失败语义见 [动作 RPG 宿主接线](modules/arpg-host.md)。
+
+### 动作 RPG 安全点模板（跨示例复用编排）
+
+引擎不提供第二套「ARPG 存档模块」：跨示例复用的是同一编排，不是新 CMake 目标。
+
+1. **绑定同一批权威所有者**：`GameState` + `Tracker` + 主角（或 `bindParty`）+ `Bag` + `EquipmentSet`。
+2. **钉死 `contentVersion`**（`arpg-loop` 现为 `arpg-loop-v1`）。未知未来版本必须拒绝；旧版仅在显式
+   `allowCompatibleContentVersion` / 迁移路由下可读。
+3. **宿主安全点谓词**（引擎在 `hp<=0` 时仍可能 `snapshotJson` 成功，产品必须自己拒绝）：
+   在营地、无存活敌人、无 `hasPendingReward`、玩家 `hp>0`。
+4. **写档**：`snapshotJson` → `validateSnapshotJson` → `fs.writeTextAtomic`；任一步失败不覆盖好档。
+5. **读档**：加载同版本定义 → `validateSnapshotJson` → `restoreSnapshotJson`；失败则权威状态不变；
+   成功后清理遭遇 Handle、回营地、`resetTransient`、`syncEquipModifiers`。
+6. **半失败不提交**：C++ 可用 `prepareRestoreSnapshotJson` + `commitPrepared`；脚本路径依赖
+   validate→restore 的原子发布。损坏档（摘要不符）与参与者 codec 失败都会留下现场不变。
+
+`examples/arpg-loop` 与 `examples/rpg-classic`（槽位 + backup）都遵循上述编排；新产品复制此顺序即可。
+
+### `arpg-loop` 内容版本契约（D3）
+
+| 存档 `contentVersion` | 当前会话 | 行为 |
+| --- | --- | --- |
+| `arpg-loop-v1` | `arpg-loop-v1` | 精确匹配，可 restore |
+| `arpg-loop-v0` | `arpg-loop-v1` | **默认拒绝**（Conflict）；仅当宿主调用 `allowCompatibleContentVersion("arpg-loop-v0")` 且 codec 仍可读时才接受 |
+| `arpg-loop-v1` | `arpg-loop-v2`（未来） | **拒绝**，直到注册兼容或 ID/任务迁移路由 |
+| 损坏 / 未知信封字段 | 任意 | validate/restore 失败，现场不变 |
+
+需要改物品/任务 ID 时用 `addIdRenameMigration` / `addQuestAdditionMigration`，不要手改 JSON 字符串。
+
 ## RPG：推荐主路径
 
 以下是已有 RPG 关卡的存档接线片段，不是独立 `main.nut`。先按

@@ -45,7 +45,7 @@ bool isAnimationFixtureTextPath(const std::string& path) {
 }
 
 /** @brief IAssetReloader: `*.anim.txt` fixture changes refresh registered AnimClip instances. */
-class AnimClipReloader : public eve::caps::IAssetReloader {
+class AnimClipReloader final : public eve::caps::IAssetReloader {
 public:
     const char* reloadKind() const override { return "animclip"; }
 

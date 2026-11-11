@@ -64,6 +64,18 @@ struct LayoutConfig {
     float hoverSpeed = 0.18f;
     /** @brief 通用归位运动速度。 */
     float motionSpeed = 0.12f;
+    /**
+     * @brief Face flip lerp speed (same 60fps-normalized units as motionSpeed).
+     * Drives the animated 0..1 face-down progress used by 2D squash and 3D adapters.
+     */
+    float flipSpeed = 0.18f;
+    /** @brief Peak lift (logical pixels) at the edge-on midpoint of a flip. */
+    float flipLift = 28.f;
+    /**
+     * @brief Flip hinge: 0 = vertical (width foreshortens / rotate about local up),
+     * 1 = horizontal (height foreshortens / rotate about local right).
+     */
+    int flipAxis = 0;
     /** @brief 禁用牌透明度。 */
     float disabledAlpha = 0.35f;
     /** @brief 是否绘制落牌区。 */
@@ -130,7 +142,14 @@ public:
     };
     /** @brief 朝向、禁用、色调、卡图。 */
     struct Visual {
+        /** @brief Logical face target; presentation animates `flip` toward it. */
         bool faceUp = true;
+        /**
+         * @brief Animated face-down progress in [0, 1].
+         * 0 = fully face-up, 1 = fully face-down. Midpoint (0.5) is edge-on:
+         * swap front/back art when showingFront flips across that threshold.
+         */
+        float              flip     = 0.f;
         bool disabled = false;
         glm::vec3 tint{0.62f, 0.50f, 0.40f};
         graphics::Texture *texture = nullptr;
@@ -327,12 +346,44 @@ public:
     void render(graphics::Graphics *gfx);
 };
 
+/**
+ * @brief Evaluated flip pose for external 2D/3D adapters (graphics-independent).
+ *
+ * Progress 0 is face-up and 1 is face-down. showingFront swaps at the edge-on
+ * pinch where axisScale reaches 0 so adapters never show the new face through the old one.
+ */
+struct CardFlipPose {
+    float progress     = 0.f;
+    float angleRadians = 0.f;
+    float angleDegrees = 0.f;
+    float lift         = 0.f;
+    float axisScale    = 1.f;
+    bool  showingFront = true;
+};
+
+/** @brief Evaluate face-down progress into an adapter-facing flip pose.
+ * @param flipProgress Animated face-down amount in [0, 1].
+ * @param liftPeak Peak rise at the edge-on midpoint (same units as layout).
+ */
+EVENGINE_API_WORLD CardFlipPose evaluateCardFlip(float flipProgress, float liftPeak);
+
+/** @brief Advance animated flip toward a face-down target with frame-rate-normalized speed. */
+EVENGINE_API_WORLD void advanceCardFlip(float &flip, float targetFaceDown, float speed, float dt);
+
+/**
+ * @brief Resolve whether a card should read as face-up under hand faceDown/peek rules.
+ * @param cardFaceUp Per-card logical face target.
+ * @param handFaceDown When true, the owning hand forces back-face display unless peeking.
+ * @param handPeek When the hand is face-down, peek reveals the front.
+ */
+EVENGINE_API_WORLD bool resolveCardWantFaceUp(bool cardFaceUp, bool handFaceDown, bool handPeek);
+
 /** @brief 渲染辅助（也供 Zone / Deck 复用）。 */
 void printCentered(graphics::Graphics *gfx, const std::string &text, float cx, float cy, float scale,
                    const glm::vec4 &color);
 /** @brief 绘制牌背。 */
 void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h, float angle, float a);
-/** @brief 绘制单张卡牌（正面或牌背）。 */
+/** @brief 绘制单张卡牌（正面或牌背；back 强制牌背，忽略 flip）。 */
 void renderCard(graphics::Graphics *gfx, const CardData &card, const LayoutConfig &cfg, bool back);
 
 }  // namespace eve::card

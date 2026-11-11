@@ -9,6 +9,7 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 #include "filesystem/physfs/FileApi.h"
+#include "scripts.h"
 
 #if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
@@ -149,10 +150,19 @@ int Cmdline::McpHost(std::string path, int port) {
         dt.attach(runtime, /*sampleLocals=*/false);
         dt.exposeScriptApi(runtime.vm());
 
-        // The headless host never runs load.nut, so registered modules are not
-        // instantiated automatically and their capability providers
-        // (IEditorHost, IRenderCapture, ISceneQuery, ...) are absent. Mirror
-        // load.nut's binding loop so the host exposes the full tool surface.
+        // Match load.nut's manifest order: requireAll() alone iterates an
+        // unordered registry and can construct editor consumers before their
+        // command/capability providers. Reuse the existing generated script
+        // manifest instead of maintaining a second native dependency list.
+        const auto moduleBootstrap = runtime.compileSource(std::string(module_list_content) + R"(
+                if (eve._bindAllNativeClasses() < 0)
+                    throw "failed to bind native module classes";
+                foreach (entry in eve_modules) eve[entry.cls]();
+            )",
+                                                           "mcp_modules.nut");
+        runtime.execute(moduleBootstrap);
+        // Registered native-only modules have no script slot in the manifest.
+
         eve::ModuleManager::requireAll();
 
         // Editor host: JSON Views <-> Squirrel ViewModel binding + window/render.

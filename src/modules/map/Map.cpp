@@ -513,6 +513,31 @@ void Map::expose(ssq::Table &table) {
     pf.addFunc("getCellCost", &Pathfinder::getCellCost);
     pf.addFunc("syncFromLayer", &Pathfinder::syncFromLayer);
     pf.addFunc("findPath", static_cast<Path *(Pathfinder::*)(int, int, int, int)>(&Pathfinder::findPath));
+    pf.addFunc("keepsPathOpen",
+               [vm = table.getHandle()](Pathfinder *finder, int sx, int sy, int gx, int gy, int blockX, int blockY) {
+                   if (!finder)
+                       return eve::script::projectResult(
+                           vm, eve::Result<bool>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::InvalidArgument, "pathfinder must not be null", "pathfinder",
+                                   {}, "map")),
+                           [](bool open) { return eve::Value(open); });
+                   return eve::script::projectResult(vm, finder->keepsPathOpen(sx, sy, gx, gy, blockX, blockY),
+                                                     [](bool open) { return eve::Value(open); });
+               });
+    pf.addFunc("keepsPathOpenFootprint", [vm = table.getHandle()](Pathfinder *finder, int sx, int sy, int gx, int gy,
+                                                                  int originX, int originY, int footprintW,
+                                                                  int footprintH) {
+        if (!finder)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                  "pathfinder must not be null", "pathfinder", {},
+                                                                  "map")),
+                [](bool open) { return eve::Value(open); });
+        return eve::script::projectResult(
+            vm, finder->keepsPathOpenFootprint(sx, sy, gx, gy, originX, originY, footprintW, footprintH),
+            [](bool open) { return eve::Value(open); });
+    });
     pf.addFunc("buildFlowField", &Pathfinder::buildFlowField);
     pf.addFunc("followFlow", &Pathfinder::followFlow);
     pf.addFunc("findGroupPath", &Pathfinder::findGroupPath);

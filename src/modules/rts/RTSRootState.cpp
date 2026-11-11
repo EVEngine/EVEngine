@@ -67,13 +67,25 @@ static_assert(int(MatchPhase::Setup) == 0 && int(MatchPhase::Running) == 1 && in
 template <class T>
 constexpr int enumMaximum() {
     if constexpr (std::is_same_v<T, CombatStance> || std::is_same_v<T, RTSEffectKind> ||
-                  std::is_same_v<T, VictoryRule> || std::is_same_v<T, MatchPhase> ||
+                  std::is_same_v<T, MatchPhase> ||
                   std::is_same_v<T, effects::StackCountPolicy> || std::is_same_v<T, effects::DurationPolicy> ||
                   std::is_same_v<T, effects::OverflowPolicy>)
         return 2;
     else if constexpr (std::is_same_v<T, AbilityTarget> || std::is_same_v<T, effects::StackMode> ||
                        std::is_same_v<T, effects::MagnitudePolicy>)
         return 3;
+    else if constexpr (std::is_same_v<T, MissionObjectiveStatus>)
+        return 2;
+    else if constexpr (std::is_same_v<T, MissionObjectiveKind>)
+        return 6;
+    else if constexpr (std::is_same_v<T, MissionTriggerEventKind>)
+        return 9;
+    else if constexpr (std::is_same_v<T, MissionVariableCompare>)
+        return 5;
+    else if constexpr (std::is_same_v<T, MissionActionKind>)
+        return 10;
+    else if constexpr (std::is_same_v<T, VictoryRule>)
+        return 4;
     else if constexpr (std::is_same_v<T, OrderKind>)
         return 17;
     else if constexpr (std::is_same_v<T, attributes::AttributeOperation>)
@@ -101,7 +113,12 @@ Value encode(const T& v) {
         return int(v);
     } else if constexpr (std::is_same_v<T, SubjectRef> || std::is_same_v<T, LogicalId>)
         return v.format();
-    else if constexpr (std::is_same_v<T, Revision> || std::is_same_v<T, SimulationTick>)
+    else if constexpr (std::is_same_v<T, Duration>)
+        return std::to_string(v.nanoseconds());
+    else if constexpr (std::is_same_v<T, Value>) {
+        take(v.toJson());
+        return v;
+    } else if constexpr (std::is_same_v<T, Revision> || std::is_same_v<T, SimulationTick>)
         return std::to_string(v.value());
     else if constexpr (std::is_same_v<T, ecs::EntityHandle>) {
         if (v.table || v.id || v.generation || v.type != typeid(void)) invalid("Native handle in portable RTS root");
@@ -181,6 +198,11 @@ void decode(const Value& value, T& out) {
         auto id = LogicalId::parse(s);
         if (!id || id->format() != s) invalid("Invalid RTS root definition");
         out = *id;
+    } else if constexpr (std::is_same_v<T, Duration>)
+        out = Duration::fromNanoseconds(integerText<std::int64_t>(value));
+    else if constexpr (std::is_same_v<T, Value>) {
+        take(value.toJson());
+        out = value;
     } else if constexpr (std::is_same_v<T, Revision>)
         out = Revision(integerText<std::uint64_t>(value));
     else if constexpr (std::is_same_v<T, SimulationTick>)
@@ -402,7 +424,7 @@ Result<Value> RTSStateSnapshot::encodeState() const {
     try {
         validate(*this);
         return Result<Value>::success(Value::object({{"schema", "rts.roots"},
-                                                     {"version", 1},
+                                                     {"version", 2},
                                                      {"snapshotVersion", 3},
                                                      {"units", encode(units)},
                                                      {"buildings", encode(buildings)},
@@ -424,7 +446,7 @@ Result<RTSStateSnapshot> RTSStateSnapshot::prepareState(const Value& value) {
         for (const auto* key : {"schema", "version", "snapshotVersion", "units", "buildings", "resourceNodes",
                                 "players", "factions", "matches", "movementGroups", "projectiles"})
             if (!o->contains(key)) invalid("Missing RTS root field");
-        if (text(o->at("schema")) != "rts.roots" || !o->at("version").isInt64() || o->at("version").asInt() != 1 ||
+        if (text(o->at("schema")) != "rts.roots" || !o->at("version").isInt64() || (o->at("version").asInt() != 1 && o->at("version").asInt() != 2) ||
             !o->at("snapshotVersion").isInt64() || o->at("snapshotVersion").asInt() != 3)
             invalid("Unsupported RTS root schema or version");
         RTSStateSnapshot state;
@@ -433,7 +455,29 @@ Result<RTSStateSnapshot> RTSStateSnapshot::prepareState(const Value& value) {
         decode(o->at("resourceNodes"), state.resourceNodes);
         decode(o->at("players"), state.players);
         decode(o->at("factions"), state.factions);
-        decode(o->at("matches"), state.matches);
+        if (o->at("version").asInt() == 1) {
+            // Migrate only the historical three-field Rules/State and five-field Match rows.
+            // Copy the candidate first; failures cannot alter the caller's archive.
+            Value migrated = o->at("matches");
+            auto* matches = migrated.getIf<Value::Array>();
+            if (!matches) invalid("Invalid legacy match rows");
+            for (auto& match : *matches) {
+                auto* row = match.getIf<Value::Array>();
+                if (!row || row->size() != 5) invalid("Invalid legacy match row");
+                for (std::size_t index : {std::size_t(1), std::size_t(3)}) {
+                    auto* fields = (*row)[index].getIf<Value::Array>();
+                    if (!fields || fields->size() != 3) invalid("Invalid legacy match clock");
+                    fields->emplace_back("0");
+                    fields->emplace_back(false);
+                }
+                row->push_back(encode(Match::Scores{}));
+                row->push_back(encode(Match::Objectives{}));
+                row->push_back(encode(Match::Campaign{}));
+            }
+            decode(migrated, state.matches);
+        } else {
+            decode(o->at("matches"), state.matches);
+        }
         decode(o->at("movementGroups"), state.movementGroups);
         decode(o->at("projectiles"), state.projectiles);
         validate(state);

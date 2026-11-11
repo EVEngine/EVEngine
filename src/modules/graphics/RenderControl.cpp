@@ -1,9 +1,11 @@
 #include "graphics/RenderControl.h"
 
+#include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/ScreenSpaceReflection.h"
 
 namespace eve::graphics {
@@ -26,7 +28,10 @@ const char* kKnownFeatures[] = {"depthTest",
                                 "ssr",
                                 "reflectionChain",
                                 "rtx",
+                                "pathTracing",
+                                "pathTemporal",
                                 "outline",
+                                "contactShadow",
                                 "gpuDriven",
                                 "visResolve",
                                 "frustumCull",
@@ -43,6 +48,13 @@ bool isKnownFeature(const std::string &feature) {
     return false;
 }
 
+bool requiresGBuffer(const std::string& feature) {
+    return feature == "gbuffer" || feature == "gbufferAlbedo" || feature == "ao" || feature == "gi" ||
+           feature == "outline" || feature == "contactShadow" || feature == "decal" || feature == "gpuDriven" ||
+           feature == "visResolve" || feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" ||
+           feature == "rtx" || feature == "volumetricFog" || feature == "fogLocalVolumes" || feature == "fogTemporal";
+}
+
 }  // namespace
 
 RenderControl::RenderControl() {
@@ -56,6 +68,7 @@ RenderControl::RenderControl() {
     features_["clusteredDeferred"] = false;
     features_["ao"] = true;
     features_["gi"] = true;
+    features_["contactShadow"]     = false;
     features_["rtgi"] = false;
     features_["aa"] = true;
     features_["taa"] = false;
@@ -80,10 +93,23 @@ RenderControl::RenderControl() {
 
 void RenderControl::attach(Graphics *gfx) {
     gfx_ = gfx;
+    pathProvider_ = eve::cap::query<IRayTracing>();
     gbuffer_.attach(gfx);
 }
 
 bool RenderControl::supports(const std::string &feature) const { return isKnownFeature(feature); }
+
+Result<void> RenderControl::setPathTracingSamples(uint32_t samples) {
+    if (samples == 0 || samples > 16)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "path tracing samples must be in [1, 16]",
+                                                       "graphics.RenderControl.pathSamples"));
+    if (pathSamples_ != samples) {
+        pathSamples_     = samples;
+        pathSampleIndex_ = 0;
+    }
+    return Result<void>::success();
+}
 
 void RenderControl::syncClusteredDeferredFeature() {
     features_["clusteredDeferred"] = lightingMode_ == LightingMode::Hybrid;
@@ -152,6 +178,16 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     const bool cur = it == features_.end() ? false : it->second;
     if (cur == enabled) return;
     features_[feature] = enabled;
+    if (feature == "pathTracing") {
+        pathTracingRequested_ = enabled;
+        pathTracingState_     = PathTracingFrameState::Disabled;
+        pathTracingDiagnostic_.clear();
+        pathSampleIndex_ = 0;
+    }
+    if (feature == "pathTemporal") {
+        pathTemporalRequested_ = enabled;
+        pathSampleIndex_       = 0;
+    }
     if (gfx_ && (feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx")) {
         gfx_->pipelineScreenSpaceReflection()->invalidateHistory();
         gfx_->pipelineGlobalIllumination()->invalidateHistory();
@@ -221,12 +257,31 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     dirty_ = true;
 }
 
-void RenderControl::enable(const std::string &feature) { setFeature(feature, true); }
+Result<void> RenderControl::requestFeature(const std::string& feature, bool enabled) {
+    if (!isKnownFeature(feature))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unknown render feature: " + feature, "graphics.RenderControl.feature"));
+    if (enabled && requiresGBuffer(feature) && gfx_ && !gfx_->supportsGBufferPost())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "render feature requires an unavailable GBuffer: " + feature,
+                                                       "graphics.RenderControl.feature"));
+    setFeature(feature, enabled);
+    return Result<void>::success();
+}
 
-void RenderControl::disable(const std::string &feature) { setFeature(feature, false); }
+void RenderControl::enable(const std::string& feature) {
+    auto result = requestFeature(feature, true);
+    result.ignore();
+}
+
+void RenderControl::disable(const std::string& feature) {
+    auto result = requestFeature(feature, false);
+    result.ignore();
+}
 
 bool RenderControl::isEnabled(const std::string &feature) const {
     if (feature == "clusteredDeferred") return lightingMode_ == LightingMode::Hybrid;
+    if (gfx_ && requiresGBuffer(feature) && !gfx_->supportsGBufferPost()) return false;
     auto it = features_.find(feature);
     return it != features_.end() && it->second;
 }
@@ -242,7 +297,12 @@ void RenderControl::compile() {
     passes_.clear();
 
     const bool wantHybrid   = lightingMode_ == LightingMode::Hybrid;
-    const bool gbufferOn    = isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi");
+    const bool gbufferAvailable = gfx_ == nullptr || gfx_->supportsGBufferPost();
+    const bool gbufferOn =
+        gbufferAvailable &&
+        (isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi") ||
+         isEnabled("contactShadow") || isEnabled("outline") || isEnabled("decal") || isEnabled("rtgi") ||
+         isEnabled("ssr") || isEnabled("reflectionChain") || isEnabled("rtx") || isEnabled("volumetricFog"));
     // GPU-driven opaque and visibility resolve belong to ForwardPlus. Preserve
     // the requested mode while exposing this explicit feature's priority in the
     // effective pass list instead of silently disabling it during rendering.
@@ -256,7 +316,7 @@ void RenderControl::compile() {
 
     if (isEnabled("shadow")) passes_.push_back("shadow");
     if (gbufferOn || canHybrid) passes_.push_back("gbuffer");
-    if (isEnabled("decal")) passes_.push_back("decal");
+    if (gbufferAvailable && isEnabled("decal")) passes_.push_back("decal");
     if (canHybrid) passes_.push_back("deferredLighting");
     if (isEnabled("forward")) passes_.push_back("forward");
     if (isEnabled("atmosphere")) passes_.push_back("atmosphere");

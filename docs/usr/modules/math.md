@@ -25,7 +25,24 @@ local n = math.noise2(p.getX(), p.getY());
 
 ### 平滑移动和程序噪声
 
-用 lerp/smoothstep/ease 做相机与 UI 插值；`noise2()` / fractal noise 适合高度图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。
+用 lerp/smoothstep/ease 做相机与 UI 插值；程序噪声适合高度图与贴图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。
+
+噪声族对齐常见 NoiseCreator / [noisecreater.com](https://www.noisecreater.com) / Musgrave 原语，返回值均在 `[0,1]`（部分 Worley API 为原始距离）：
+
+- `noise1` / `noise2` / `noise3` — Simplex（历史名；等同 `simplex1` / `simplex2` / `simplex3`）
+- `perlin2` / `perlin3` — Perlin
+- `white2` / `white3` — 格点白噪声；`value2` / `value3` — 平滑 Value noise
+- `fbm2` / `fbm3`、`ridged2` / `ridged3`、`turbulence2` / `billow2` — 分形
+- `swiss2` / `hybrid2` / `jordan2` — Musgrave Swiss / Hybrid / Jordan
+- `gabor2` / `gaborFbm2` — Gabor / Voronoi-mix 小波
+- `voronoi2` / `voronoiF2_2` / `voronoiEdge2` / `worley2` / `worley3` — Worley
+- `worleyManhattan2` / `worleyChebyshev2` / `worleySmooth2` — 距离度量与平滑蜂窝
+- `warpNoise2` / `warpNoise2Deep` — 域扭曲；`curlNoise2X` / `curlNoise2Y` — 无散度 curl
+- `valueDx2` / `valueDy2` / `valueSlope2` — Value 导数与坡度
+- `isoLine2` / `banding2` — 等值线掩码与量化分带；`fbmColor2` — 解相关彩色通道 fBm
+- `hexDistance2` / `hexEdge2` — 六边形边距；`gyroid3` / `gyroidFbm3` — Gyroid
+
+贴图/体积侧无缝采样见 procgen `NoiseField` / `NoiseField3`。
 
 ### 山体与地形的平滑融合
 

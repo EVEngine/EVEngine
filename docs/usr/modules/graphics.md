@@ -281,6 +281,15 @@ mat.setSortPriority(0);             // 同优先级按相机深度从后向前�
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
 
+// 传送带 / 履带：几何不动，滚动 albedo UV（启用扩展 PBR 路径）。
+// 采样公式 uv' = rotate(uv * scale) + offset；默认 REPEAT。
+eve.result.ignore(mat.setAlbedoUvScale(tilesU, tilesV), "belt tiling");
+eve.result.ignore(mat.setAlbedoUvOffset(scrollU, 0.0), "belt scroll");
+// getAlbedoUvOffsetU/V、getAlbedoUvScaleU/V、set/getAlbedoUvRotation 对应读写。
+// 与 Shape3D.setTangentVelocity 配套时：d(offsetU)/dt = -V * tilesU / beltLengthX
+// （cube 顶面 U 沿 +X；正速度搬送时条纹也应往 +X 走，故 offset 取负号）。
+// 完整示例见 examples/conveyor-belt。
+
 local r = Renderable3D.create();
 r.setMaterial(mat);                 // 整模
 // 或多部件：r.setPart(0, "body", bodyMesh, bodyMat);
@@ -322,6 +331,33 @@ GBuffer、毛发、体积光、AO、GI 与抗锯齿集中在 [高级渲染与屏
 ### 2D 屏幕拾取
 
 `Camera2D` 用 `setPosition` / `setZoom` 控制视口中心与缩放；`screenToWorldX/Y(screenX, screenY, viewW, viewH)` 把鼠标像素换成世界坐标（`viewW/H` 通常取 `gfx.getWidth/Height`），再交给 Math 的 `pointIn*` 或 Physics 的 `testPoint` / `queryAABB`。
+
+### 完美像素正交相机
+
+像素风需要整数缩放与像素对齐时，在相机上配置像素参数，再切到纯正交 / 完美像素路径：
+
+```squirrel
+// 2D：参考分辨率 320×180，1 世界单位 = 1 像素；在 1280×720 上得到 4× 整数缩放
+local cam2 = eve.Camera2D();
+local cfg2 = cam2.setPixelConfig(1.0, 320, 180);
+if (!cfg2.ok) throw cfg2.status.describe();
+local apply2 = cam2.applyPixelPerfect(gfx.getWidth(), gfx.getHeight());
+if (!apply2.ok) throw apply2.status.describe();
+
+// 3D：纯正交 + 像素配置（16 px/单位，参考 320×180）
+local cam3 = eve.Camera3D();
+cam3.setEye(0.0, 12.0, 0.0);
+cam3.setTarget(0.0, 0.0, 0.0);
+local cfg3 = cam3.setPixelOrthographic(16.0, gfx.getWidth(), gfx.getHeight(), 320, 180);
+if (!cfg3.ok) throw cfg3.status.describe();
+```
+
+- `Camera3D.setOrthographic(height)` 开启纯正交；`setPixelConfig` / `applyPixelPerfect` /
+  `setPixelOrthographic` 按 `pixelsPerUnit` 与可选参考分辨率计算正交高度与整数倍缩放。
+- `Camera2D.setPixelConfig` + `applyPixelPerfect`（或 `setPixelPerfect(true)` 后由渲染自动解析）
+  把 `zoom` 设为整数倍，并可选把机位吸附到像素网格（`setPixelSnap`）。
+- 窗口尺寸变化后重新调用 `applyPixelPerfect` / `setPixelOrthographic`。纹理请用
+  `nearest` 采样以避免放大糊边。
 
 ### 3D 屏幕拾取
 

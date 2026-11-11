@@ -33,8 +33,8 @@ bool validId(const std::string &value) {
 }
 
 eve::Result<int> failure(std::string message, std::string path) {
-    return eve::Result<int>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path, {}, "rpg.shop-catalogue"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
+                                                            std::move(path), {}, "rpg.shop-catalogue"));
 }
 
 bool onlyKnownFields(const eve::json::Value &object) {
@@ -121,8 +121,8 @@ namespace {
 
 eve::Result<int> tradeFailure(eve::DiagnosticCode code, std::string message, std::string path,
                               const std::string &itemId) {
-    return eve::Result<int>::failure(
-        eve::Diagnostic::error(code, message, path, {{"itemId", itemId}}, "rpg.shop-transaction"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path),
+                                                            {{"itemId", itemId}}, "rpg.shop-transaction"));
 }
 
 eve::Result<double> validateTrade(const GameState &gameState, const std::string &currencyId, const std::string &itemId,

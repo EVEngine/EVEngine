@@ -25,7 +25,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play-trace value must be an object", path));
+            Diagnostic::error(DiagnosticCode::ParseError, "play-trace value must be an object", std::move(path)));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -197,7 +197,7 @@ void PlayTraceBuffer::append(const Value& request, const Value& response, std::u
         if (path != responseObject->end() && path->second.isString())
             step.emplace("capture", Value(path->second.asString()));
     }
-    stepItems_.emplace_back(Value(std::move(step)));
+    stepItems_.emplace_back(std::move(step));
 }
 
 Value PlayTraceBuffer::exportTrace() const {

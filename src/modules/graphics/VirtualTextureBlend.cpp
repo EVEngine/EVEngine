@@ -1,5 +1,7 @@
 #include "graphics/VirtualTextureBlend.h"
 
+#include <utility>
+
 #include "image/ImageData.h"
 
 #include <algorithm>
@@ -13,7 +15,7 @@ namespace {
 using Color = image::ImageData::Colorf;
 
 eve::Diagnostic invalid(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
 }
 
 float wrap01(float value) {

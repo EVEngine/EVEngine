@@ -960,6 +960,7 @@ void BuildingFx::syncCurveVisuals(WorldState &st, building::PlacementWorld *worl
         curve.active = true;
         curve.memberIds = group.instanceIds;
         std::vector<CurveControlPoint> controls;
+        controls.reserve(group.controlPoints.size());
         for (const building::EdgeCurveControlPoint &point : group.controlPoints)
             controls.push_back({point.x, point.y});
         const float width = toFloat(definition->getVisual3d("thickness"),
@@ -983,6 +984,7 @@ void BuildingFx::syncCurveVisuals(WorldState &st, building::PlacementWorld *worl
                     return buildEdgeCurveMesh(*world, controls, group.subdivisions, width,
                                               height, elevation);
                 std::vector<CurveSurfaceSample> samples;
+                samples.reserve(group.surfaceSamples.size());
                 for (const building::EdgeCurveSurfaceSample &sample : group.surfaceSamples)
                     samples.push_back({sample.worldX, sample.worldY, sample.worldZ,
                                        sample.normalX, sample.normalY, sample.normalZ});

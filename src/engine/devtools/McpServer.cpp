@@ -13,6 +13,7 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/GameWorldContext.hpp"
+#include "devtools/McpActionGuideTools.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpFrameCapture.hpp"
@@ -1381,7 +1382,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
-        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
+        std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1409,7 +1410,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!paramsLiteral.ok()) return sceneDirectorToolError(name, paramsLiteral.status().describe());
         const std::string snippet = "return ::scene_director.modify(" + actionLiteral.value() + "," +
                                     targetLiteral.value() + "," + paramsLiteral.value() + ");";
-        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1443,7 +1444,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!optionsLiteral.ok()) return sceneDirectorToolError(name, optionsLiteral.status().describe());
         const std::string snippet =
             "return ::scene_director.batch(" + actionsLiteral.value() + "," + optionsLiteral.value() + ");";
-        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1455,7 +1456,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const int         count   = getArgInt(args, "count", 6);
         const std::string snippet = "return ::scene_director.cameras(" + std::to_string(count) + ");";
-        const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
+        std::string       out     = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1465,7 +1466,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
-        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
+        std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1598,7 +1599,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.1\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.7.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
@@ -1951,6 +1952,7 @@ bool McpServer::listenStdio(std::istream& in, std::ostream& out) {
     initialized_ = false;
     stdinClosed_.store(false);
     resetMcpFrameCapture();
+    resetMcpActionGuide();
     hasClient_.store(true);
     stdioIn_    = &in;
     stdioOut_   = &out;
@@ -2029,6 +2031,7 @@ void McpServer::poll() {
         for (const auto& line : batch) handleMessage(line);
         if (stdinClosed_.load() && batch.empty() && initialized_) {
             resetMcpFrameCapture();
+            resetMcpActionGuide();
             initialized_ = false;
         }
         flushPendingSceneDirectorInstall(Debugger::instance().vm());
@@ -2053,6 +2056,7 @@ void McpServer::acceptNonBlocking() {
         client_ = std::make_unique<Poco::Net::StreamSocket>(ss);
         hasClient_.store(true);
         resetMcpFrameCapture();
+        resetMcpActionGuide();
         recvBuf_.clear();
         initialized_ = false;
         AiPanel::instance().setMcpConnected(true);
@@ -2101,6 +2105,7 @@ void McpServer::readAndDispatch() {
                 AiPanel::instance().setMcpConnected(false);
                 AiPanel::instance().addLog("system", "mcp.disconnect", "client closed");
                 resetMcpFrameCapture();
+                resetMcpActionGuide();
             }
             return;
         }
@@ -2112,6 +2117,7 @@ void McpServer::readAndDispatch() {
         hasClient_.store(false);
         AiPanel::instance().setMcpConnected(false);
         resetMcpFrameCapture();
+        resetMcpActionGuide();
         return;
     } catch (...) {
         client_.reset();

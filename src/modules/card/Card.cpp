@@ -71,6 +71,50 @@ bool CardPlaneMapper::mapLayout(float x, float y) {
     return true;
 }
 
+eve::Result<void> CardPlaneMapper::mapCardPose(float x, float y, float layoutAngleDeg, float flipProgress,
+                                               float liftPeak, int flipAxis) {
+    if (!mapLayout(x, y)) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card plane mapper logical rect is degenerate", "card.planeMapper"));
+    }
+    const CardFlipPose pose = evaluateCardFlip(flipProgress, liftPeak);
+    resultShowingFront_     = pose.showingFront;
+
+    glm::vec3   u    = axisU_;
+    glm::vec3   v    = axisV_;
+    const float uLen = glm::length(u);
+    const float vLen = glm::length(v);
+    if (uLen < 1e-8f || vLen < 1e-8f) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "card plane mapper axes are degenerate", "card.planeMapper"));
+    }
+    u *= (1.f / uLen);
+    v *= (1.f / vLen);
+    glm::vec3 n = glm::normalize(glm::cross(u, v));
+    v           = glm::normalize(v - u * glm::dot(v, u));
+    n           = glm::normalize(glm::cross(u, v));
+
+    const float     layoutRad = layoutAngleDeg * 3.14159265358979323846f / 180.f;
+    const float     lc        = std::cos(layoutRad);
+    const float     ls        = std::sin(layoutRad);
+    const glm::vec3 laidU     = u * lc + v * ls;
+    const glm::vec3 laidV     = v * lc - u * ls;
+
+    const float fc = std::cos(pose.angleRadians);
+    const float fs = std::sin(pose.angleRadians);
+    if (flipAxis == 1) {
+        resultBasisU_ = laidU;
+        resultBasisV_ = laidV * fc + n * fs;
+        resultBasisN_ = n * fc - laidV * fs;
+    } else {
+        resultBasisV_ = laidV;
+        resultBasisU_ = laidU * fc + n * fs;
+        resultBasisN_ = n * fc - laidU * fs;
+    }
+    resultWorld_ = resultWorld_ + n * pose.lift;
+    return eve::Result<void>::success();
+}
+
 namespace {
 using card_internal::ownsCard;
 
@@ -497,10 +541,25 @@ int Card::capturePresentation() {
     for (const auto &handle : cards_) {
         CardData *card = resolve<CardData>(handle);
         if (!card) continue;
+        Hand        *ownerHand = nullptr;
+        LayoutConfig cfg       = activeConfig_ ? *activeConfig_ : LayoutConfig{};
+        for (const auto &handHandle : hands_) {
+            if (Hand *hand = resolve<Hand>(handHandle)) {
+                if (hand->find(card->identity()->id) != nullptr) {
+                    ownerHand = hand;
+                    if (hand->meta()->config) cfg = *hand->meta()->config;
+                    break;
+                }
+            }
+        }
         const auto *identity = card->identity().operator->();
         const auto *layout = card->layout().operator->();
         const auto *state = card->state().operator->();
         const auto *visual = card->visual().operator->();
+        const bool         handFaceDown = ownerHand != nullptr && ownerHand->meta()->faceDown;
+        const bool         handPeek     = ownerHand != nullptr && ownerHand->meta()->peek;
+        const bool         wantFaceUp   = resolveCardWantFaceUp(visual->faceUp, handFaceDown, handPeek);
+        const CardFlipPose pose         = evaluateCardFlip(visual->flip, cfg.flipLift);
         presentation_.push_back({identity->id,
                                  identity->definitionId,
                                  cardStateName(state->phase),
@@ -514,7 +573,13 @@ int Card::capturePresentation() {
                                  state->hovered,
                                  state->dragging,
                                  visual->disabled,
-                                 visual->faceUp});
+                                 wantFaceUp,
+                                 pose.progress,
+                                 pose.angleDegrees,
+                                 pose.lift,
+                                 pose.axisScale,
+                                 pose.showingFront,
+                                 cfg.flipAxis});
     }
     return static_cast<int>(presentation_.size());
 }
@@ -538,6 +603,23 @@ void Card::update(float dt, float mx, float my, bool down) {
     }
     for (auto &h : hands_) {
         if (Hand *hand = resolve<Hand>(h)) hand->update(dt, mx, my, down, zonePtrs, events_);
+    }
+    const LayoutConfig fallback = activeConfig_ ? *activeConfig_ : LayoutConfig{};
+    for (auto &handle : cards_) {
+        CardData *card = resolve<CardData>(handle);
+        if (!card) continue;
+        bool inHand = false;
+        for (auto &handHandle : hands_) {
+            if (Hand *hand = resolve<Hand>(handHandle)) {
+                if (hand->find(card->identity()->id) != nullptr) {
+                    inHand = true;
+                    break;
+                }
+            }
+        }
+        if (inHand) continue;
+        const float targetFlip = resolveCardWantFaceUp(card->visual()->faceUp, false, false) ? 0.f : 1.f;
+        advanceCardFlip(card->visual()->flip, targetFlip, fallback.flipSpeed, dt);
     }
 }
 
@@ -686,6 +768,18 @@ void Card::expose(ssq::Table &table) {
     cfgCls.addFunc("setHoverSpeed", [](LayoutConfig *c, float v) { if (c) c->hoverSpeed = v; });
     cfgCls.addFunc("getMotionSpeed", [](LayoutConfig *c) -> float { return c ? c->motionSpeed : 0.f; });
     cfgCls.addFunc("setMotionSpeed", [](LayoutConfig *c, float v) { if (c) c->motionSpeed = v; });
+    cfgCls.addFunc("getFlipSpeed", [](LayoutConfig *c) -> float { return c ? c->flipSpeed : 0.f; });
+    cfgCls.addFunc("setFlipSpeed", [](LayoutConfig *c, float v) {
+        if (c) c->flipSpeed = v;
+    });
+    cfgCls.addFunc("getFlipLift", [](LayoutConfig *c) -> float { return c ? c->flipLift : 0.f; });
+    cfgCls.addFunc("setFlipLift", [](LayoutConfig *c, float v) {
+        if (c) c->flipLift = v;
+    });
+    cfgCls.addFunc("getFlipAxis", [](LayoutConfig *c) -> int { return c ? c->flipAxis : 0; });
+    cfgCls.addFunc("setFlipAxis", [](LayoutConfig *c, int v) {
+        if (c) c->flipAxis = (v == 1) ? 1 : 0;
+    });
     cfgCls.addFunc("getDisabledAlpha", [](LayoutConfig *c) -> float { return c ? c->disabledAlpha : 0.f; });
     cfgCls.addFunc("setDisabledAlpha", [](LayoutConfig *c, float v) { if (c) c->disabledAlpha = v; });
     cfgCls.addFunc("getShowZones", [](LayoutConfig *c) -> bool { return c ? c->showZones : false; });
@@ -705,11 +799,27 @@ void Card::expose(ssq::Table &table) {
     mapperCls.addFunc("setPlane", &CardPlaneMapper::setPlane);
     mapperCls.addFunc("mapRay", &CardPlaneMapper::mapRay);
     mapperCls.addFunc("mapLayout", &CardPlaneMapper::mapLayout);
+    mapperCls.addFunc("mapCardPose",
+                      [](CardPlaneMapper *mapper, float x, float y, float layoutAngleDeg, float flipProgress,
+                         float liftPeak, int flipAxis) -> bool {
+                          if (!mapper) return false;
+                          return mapper->mapCardPose(x, y, layoutAngleDeg, flipProgress, liftPeak, flipAxis).ok();
+                      });
     mapperCls.addFunc("getLogicalX", &CardPlaneMapper::getLogicalX);
     mapperCls.addFunc("getLogicalY", &CardPlaneMapper::getLogicalY);
     mapperCls.addFunc("getWorldX", &CardPlaneMapper::getWorldX);
     mapperCls.addFunc("getWorldY", &CardPlaneMapper::getWorldY);
     mapperCls.addFunc("getWorldZ", &CardPlaneMapper::getWorldZ);
+    mapperCls.addFunc("getBasisUX", &CardPlaneMapper::getBasisUX);
+    mapperCls.addFunc("getBasisUY", &CardPlaneMapper::getBasisUY);
+    mapperCls.addFunc("getBasisUZ", &CardPlaneMapper::getBasisUZ);
+    mapperCls.addFunc("getBasisVX", &CardPlaneMapper::getBasisVX);
+    mapperCls.addFunc("getBasisVY", &CardPlaneMapper::getBasisVY);
+    mapperCls.addFunc("getBasisVZ", &CardPlaneMapper::getBasisVZ);
+    mapperCls.addFunc("getBasisNX", &CardPlaneMapper::getBasisNX);
+    mapperCls.addFunc("getBasisNY", &CardPlaneMapper::getBasisNY);
+    mapperCls.addFunc("getBasisNZ", &CardPlaneMapper::getBasisNZ);
+    mapperCls.addFunc("isShowingFront", &CardPlaneMapper::isShowingFront);
 
     // CardData
     auto cardCls = table.addClass<CardData>(
@@ -746,7 +856,28 @@ void Card::expose(ssq::Table &table) {
                                           value->effects()->values.configureSettlementRules(rules.value()));
     });
     cardCls.addFunc("isFaceUp", [](CardData *c) -> bool { return c ? c->visual()->faceUp : true; });
-    cardCls.addFunc("setFaceUp", [](CardData *c, bool v) { if (c) c->visual()->faceUp = v; });
+    cardCls.addFunc("setFaceUp", [](CardData *c, bool v) {
+        if (!c) return;
+        c->visual()->faceUp = v;
+    });
+    cardCls.addFunc("snapFaceUp", [](CardData *c, bool v) {
+        if (!c) return;
+        c->visual()->faceUp = v;
+        c->visual()->flip   = v ? 0.f : 1.f;
+    });
+    cardCls.addFunc("getFlip", [](CardData *c) -> float { return c ? c->visual()->flip : 0.f; });
+    cardCls.addFunc("setFlip", [](CardData *c, float v) {
+        if (!c) return;
+        c->visual()->flip = v < 0.f ? 0.f : (v > 1.f ? 1.f : v);
+    });
+    cardCls.addFunc("isShowingFront", [](CardData *c) -> bool {
+        return c ? evaluateCardFlip(c->visual()->flip, 0.f).showingFront : true;
+    });
+    cardCls.addFunc("isFlipping", [](CardData *c) -> bool {
+        if (!c) return false;
+        const float target = c->visual()->faceUp ? 0.f : 1.f;
+        return std::fabs(c->visual()->flip - target) > 0.001f;
+    });
     cardCls.addFunc("isDisabled", [](CardData *c) -> bool { return c ? c->visual()->disabled : false; });
     cardCls.addFunc("setDisabled", [](CardData *c, bool v) { if (c) c->visual()->disabled = v; });
     cardCls.addFunc("getState", [](CardData *c) -> std::string {
@@ -874,6 +1005,12 @@ void Card::expose(ssq::Table &table) {
     snapshotCls.addFunc("isDragging", [](CardPresentationSnapshot *s) { return s && s->dragging; });
     snapshotCls.addFunc("isDisabled", [](CardPresentationSnapshot *s) { return s && s->disabled; });
     snapshotCls.addFunc("isFaceUp", [](CardPresentationSnapshot *s) { return s && s->faceUp; });
+    snapshotCls.addFunc("getFlip", [](CardPresentationSnapshot *s) { return s ? s->flip : 0.f; });
+    snapshotCls.addFunc("getFlipAngle", [](CardPresentationSnapshot *s) { return s ? s->flipAngle : 0.f; });
+    snapshotCls.addFunc("getFlipLift", [](CardPresentationSnapshot *s) { return s ? s->flipLift : 0.f; });
+    snapshotCls.addFunc("getFlipAxisScale", [](CardPresentationSnapshot *s) { return s ? s->flipAxisScale : 1.f; });
+    snapshotCls.addFunc("isShowingFront", [](CardPresentationSnapshot *s) { return s && s->showingFront; });
+    snapshotCls.addFunc("getFlipAxis", [](CardPresentationSnapshot *s) { return s ? s->flipAxis : 0; });
 }
 
 void Card::expose(ssq::Class &cls) {

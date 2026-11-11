@@ -29,6 +29,7 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
@@ -392,6 +393,22 @@ void Graphics::expose(ssq::Table& table) {
     cam2d.addFunc("getY", &Camera2D::getY);
     cam2d.addFunc("setZoom", &Camera2D::setZoom);
     cam2d.addFunc("getZoom", &Camera2D::getZoom);
+    cam2d.addFunc("setPixelConfig",
+                  [vm = table.getHandle()](Camera2D* self, float pixelsPerUnit, int refWidth, int refHeight) {
+                      return eve::script::projectResult(vm, self->setPixelConfig(pixelsPerUnit, refWidth, refHeight));
+                  });
+    cam2d.addFunc("clearPixelConfig", &Camera2D::clearPixelConfig);
+    cam2d.addFunc("setPixelPerfect", &Camera2D::setPixelPerfect);
+    cam2d.addFunc("getPixelPerfect", &Camera2D::getPixelPerfect);
+    cam2d.addFunc("setPixelSnap", &Camera2D::setPixelSnap);
+    cam2d.addFunc("getPixelSnap", &Camera2D::getPixelSnap);
+    cam2d.addFunc("applyPixelPerfect", [vm = table.getHandle()](Camera2D* self, int viewWidth, int viewHeight) {
+        return eve::script::projectResult(vm, self->applyPixelPerfect(viewWidth, viewHeight));
+    });
+    cam2d.addFunc("getPixelsPerUnit", &Camera2D::getPixelsPerUnit);
+    cam2d.addFunc("getPixelRefWidth", &Camera2D::getPixelRefWidth);
+    cam2d.addFunc("getPixelRefHeight", &Camera2D::getPixelRefHeight);
+    cam2d.addFunc("getPixelScale", &Camera2D::getPixelScale);
     cam2d.addFunc("screenToWorldX", &Camera2D::screenToWorldX);
     cam2d.addFunc("screenToWorldY", &Camera2D::screenToWorldY);
     cam2d.addFunc("worldToScreenX", &Camera2D::worldToScreenX);
@@ -444,6 +461,29 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("getFov", &Camera3D::getFov);
     cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
     cam.addFunc("setPerspective", &Camera3D::setPerspective);
+    cam.addFunc("isOrthographic", &Camera3D::isOrthographic);
+    cam.addFunc("getOrthoHeight", &Camera3D::getOrthoHeight);
+    cam.addFunc("setPixelConfig",
+                [vm = table.getHandle()](Camera3D* self, float pixelsPerUnit, int refWidth, int refHeight) {
+                    return eve::script::projectResult(vm, self->setPixelConfig(pixelsPerUnit, refWidth, refHeight));
+                });
+    cam.addFunc("clearPixelConfig", &Camera3D::clearPixelConfig);
+    cam.addFunc("hasPixelConfig", &Camera3D::hasPixelConfig);
+    cam.addFunc("setPixelSnap", &Camera3D::setPixelSnap);
+    cam.addFunc("getPixelSnap", &Camera3D::getPixelSnap);
+    cam.addFunc("getPixelsPerUnit", &Camera3D::getPixelsPerUnit);
+    cam.addFunc("getPixelRefWidth", &Camera3D::getPixelRefWidth);
+    cam.addFunc("getPixelRefHeight", &Camera3D::getPixelRefHeight);
+    cam.addFunc("getPixelScale", &Camera3D::getPixelScale);
+    cam.addFunc("applyPixelPerfect", [vm = table.getHandle()](Camera3D* self, int viewWidth, int viewHeight) {
+        return eve::script::projectResult(vm, self->applyPixelPerfect(viewWidth, viewHeight));
+    });
+    cam.addFunc("setPixelOrthographic", [vm = table.getHandle()](Camera3D* self, float pixelsPerUnit, int viewWidth,
+                                                                 int viewHeight, int refWidth, int refHeight) {
+        return eve::script::projectResult(
+            vm, self->setPixelOrthographic(pixelsPerUnit, viewWidth, viewHeight, refWidth, refHeight));
+    });
+    cam.addFunc("snapToPixelGrid", &Camera3D::snapToPixelGrid);
     cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
     cam.addFunc("getNearClip", &Camera3D::getNearClip);
     cam.addFunc("getFarClip", &Camera3D::getFarClip);
@@ -584,11 +624,28 @@ void Graphics::expose(ssq::Table& table) {
                 vm, self->setFoliageTranslucency(red, green, blue, intensity, strength, normalDistortion, scattering,
                                                  direct, ambient, shadow));
         });
+    material.addFunc("setClearcoat", [vm = table.getHandle()](Material* self, float factor, float roughness) {
+        return eve::script::projectResult(vm, self->setClearcoat(factor, roughness));
+    });
     material.addFunc("setFoliageWindTime", [vm = table.getHandle()](Material* self, float seconds) {
         return eve::script::projectResult(vm, self->setFoliageWindTime(seconds));
     });
     material.addFunc("setAlbedoTexture", &Material::setAlbedoTexture);
     material.addFunc("getAlbedoTexture", &Material::getAlbedoTexture);
+    material.addFunc("setAlbedoUvOffset", [vm = table.getHandle()](Material* self, float u, float v) {
+        return eve::script::projectResult(vm, self->setAlbedoUvOffset(u, v));
+    });
+    material.addFunc("getAlbedoUvOffsetU", &Material::getAlbedoUvOffsetU);
+    material.addFunc("getAlbedoUvOffsetV", &Material::getAlbedoUvOffsetV);
+    material.addFunc("setAlbedoUvScale", [vm = table.getHandle()](Material* self, float u, float v) {
+        return eve::script::projectResult(vm, self->setAlbedoUvScale(u, v));
+    });
+    material.addFunc("getAlbedoUvScaleU", &Material::getAlbedoUvScaleU);
+    material.addFunc("getAlbedoUvScaleV", &Material::getAlbedoUvScaleV);
+    material.addFunc("setAlbedoUvRotation", [vm = table.getHandle()](Material* self, float radians) {
+        return eve::script::projectResult(vm, self->setAlbedoUvRotation(radians));
+    });
+    material.addFunc("getAlbedoUvRotation", &Material::getAlbedoUvRotation);
     material.addFunc("setNormalTexture", &Material::setNormalTexture);
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);
@@ -698,9 +755,26 @@ void Graphics::expose(ssq::Table& table) {
     auto rctrl = table.addClass<RenderControl>(
         "RenderControl", std::function<RenderControl*()>([]() -> RenderControl* { return nullptr; }), true);
     rctrl.addFunc("supports", &RenderControl::supports);
+    rctrl.addFunc(
+        "requestFeature", [vm = table.getHandle()](RenderControl* rc, const std::string& feature, bool enabled) {
+            auto result =
+                rc ? rc->requestFeature(feature, enabled)
+                   : Result<void>::failure(Diagnostic::error(
+                         DiagnosticCode::InvalidArgument, "RenderControl.requestFeature: non-null control required"));
+            return eve::script::projectResult(vm, std::move(result));
+        });
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
     rctrl.addFunc("isEnabled", &RenderControl::isEnabled);
+    rctrl.addFunc("pathTracingDiagnostic", &RenderControl::pathTracingDiagnostic);
+    rctrl.addFunc("pathTracingFrameState", [](RenderControl* rc) -> std::string {
+        switch (rc->pathTracingFrameState()) {
+            case PathTracingFrameState::Active: return "active";
+            case PathTracingFrameState::Unavailable: return "unavailable";
+            case PathTracingFrameState::SceneRejected: return "sceneRejected";
+            default: return "disabled";
+        }
+    });
     rctrl.addFunc("setLightingMode", [](RenderControl* rc, const std::string& name) -> bool {
         if (!rc) return false;
         return rc->setLightingMode(name).ok();
@@ -1257,6 +1331,24 @@ void Graphics::expose(ssq::Table& table) {
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
     ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
 
+    auto contactShadow = table.addClass<ContactShadow>(
+        "ContactShadow", std::function<ContactShadow*()>([]() -> ContactShadow* { return nullptr; }), true);
+    contactShadow.addFunc("setQuality", &ContactShadow::setQuality);
+    contactShadow.addFunc("getQuality", &ContactShadow::getQuality);
+    contactShadow.addFunc("setCamera", &ContactShadow::setCamera);
+    contactShadow.addFunc("setLightDirection", &ContactShadow::setLightDirection);
+    contactShadow.addFunc("setLength", &ContactShadow::setLength);
+    contactShadow.addFunc("setThickness", &ContactShadow::setThickness);
+    contactShadow.addFunc("setIntensity", &ContactShadow::setIntensity);
+    contactShadow.addFunc("setStartBias", &ContactShadow::setStartBias);
+    contactShadow.addFunc("getLength", &ContactShadow::getLength);
+    contactShadow.addFunc("getThickness", &ContactShadow::getThickness);
+    contactShadow.addFunc("getIntensity", &ContactShadow::getIntensity);
+    contactShadow.addFunc("getStartBias", &ContactShadow::getStartBias);
+    contactShadow.addFunc("getStepCount", &ContactShadow::getStepCount);
+    contactShadow.addFunc("applyFromGBuffer", &ContactShadow::applyFromGBuffer);
+    contactShadow.addFunc("getShader", &ContactShadow::getShader);
+
     auto outline =
         table.addClass<Outline>("Outline", std::function<Outline*()>([]() -> Outline* { return nullptr; }), true);
     outline.addFunc("setColor", &Outline::setColor);
@@ -1486,7 +1578,7 @@ void Graphics::expose(ssq::Class& cls) {
     // Dynamic shadow atlas resolution + CSM coverage. GPU recreates on next
     // shadow ensure when atlas size changes (@cost: full depth-array realloc).
     cls.addFunc("setShadowSchemeDirectionalMapSize", [](Graphics*, int size) {
-        if (size > 0) (void)setShadowSchemeMapSizes(size, -1);
+        if (size > 0) setShadowSchemeMapSizes(size, -1).ignore();
     });
     cls.addFunc("getShadowSchemeDirectionalMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMapSize; });
@@ -1500,7 +1592,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getShadowSchemeAtlasMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
     cls.addFunc("setShadowSchemeDirectionalMaxDistance",
-                [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
+                [](Graphics*, float meters) { setShadowSchemeDirectionalMaxDistance(meters).ignore(); });
     cls.addFunc("getShadowSchemeDirectionalMaxDistance",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
     cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {
@@ -1520,6 +1612,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newDepthOfField", &Graphics::newDepthOfField);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newContactShadow", &Graphics::newContactShadow);
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
     cls.addFunc("newMapFog", &Graphics::newMapFog);
@@ -1560,6 +1653,8 @@ DepthOfField* Graphics::newDepthOfField() { return new DepthOfField(this); }
 
 AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
+ContactShadow* Graphics::newContactShadow() { return new ContactShadow(this); }
+
 Outline*   Graphics::newOutline() { return new Outline(this); }
 AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
 
@@ -1572,6 +1667,11 @@ ScreenSpaceReflection* Graphics::newScreenSpaceReflection() { return new ScreenS
 AmbientOcclusion* Graphics::pipelineAmbientOcclusion() {
     if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);
     return pipelineAO_.get();
+}
+
+ContactShadow* Graphics::pipelineContactShadow() {
+    if (!pipelineContactShadow_) pipelineContactShadow_ = std::make_unique<ContactShadow>(this);
+    return pipelineContactShadow_.get();
 }
 
 GlobalIllumination* Graphics::pipelineGlobalIllumination() {

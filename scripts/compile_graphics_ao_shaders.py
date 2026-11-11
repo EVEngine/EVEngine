@@ -19,6 +19,7 @@ FRAGS = [
     "ao_blur.frag",
     "ao_overlay.frag",
     "ao_from_depth.frag",
+    "contact_shadow.frag",
 ]
 
 

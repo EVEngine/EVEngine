@@ -15,6 +15,7 @@
 #include "common/Identity.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -80,6 +81,9 @@ public:
     /**
      * @brief Advance every wired runtime with the supplied deterministic step.
      * @remarks Frozen (hitstop) subjects skip character integration for this tick.
+     * Simulation ticks must strictly increase: a second advance at the same tick
+     * returns Conflict without mutating wired runtimes.
+     * @cost One composed frame of every wired collaborator; amortize once per simulation tick.
      */
     [[nodiscard]] Result<CombatLoopFrame> advance(const SimulationStep& step);
 
@@ -96,6 +100,7 @@ private:
     SubjectRef                                       cameraFocus_;
     SubjectRef                                       cancelSubject_;
     LogicalId                                        cancelAbility_;
+    std::optional<SimulationTick>                    lastAdvanceTick_;
 };
 
 }  // namespace eve::combat

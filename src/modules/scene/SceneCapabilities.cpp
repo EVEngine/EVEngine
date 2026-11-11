@@ -119,7 +119,7 @@ private:
     static eve::Result<eve::EntitySpatialPose> failure(eve::DiagnosticCode code, std::string message,
                                                         std::string path) {
         return eve::Result<eve::EntitySpatialPose>::failure(
-            eve::Diagnostic::error(code, message, path));
+            eve::Diagnostic::error(code, std::move(message), std::move(path)));
     }
 };
 

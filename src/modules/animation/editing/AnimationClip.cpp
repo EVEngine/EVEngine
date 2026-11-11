@@ -363,7 +363,9 @@ AnimationRetargetPreview AnimationClipDocumentTarget::previewRetarget(const std:
 EditorValue AnimationClipDocumentTarget::snapshotValue() const {
     EditorValue::Array tracks; for (const auto& [id, track] : tracks_) { static_cast<void>(id); tracks.push_back(trackValue(track)); }
     EditorValue::Array events; for (const auto& event : this->events()) events.push_back(eventValue(event));
-    EditorValue::Array masks; for (const auto& [bone, weight] : mask_) masks.push_back(EditorValue::Object{{"bone", bone}, {"weight", weight}});
+    EditorValue::Array masks;
+    for (const auto& [bone, weight] : mask_)
+        masks.emplace_back(EditorValue::Object{{"bone", bone}, {"weight", weight}});
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"settings", settingsValue(duration_, sampleRate_, loop_)}, {"tracks", std::move(tracks)}, {"events", std::move(events)}, {"masks", std::move(masks)}};
 }
 

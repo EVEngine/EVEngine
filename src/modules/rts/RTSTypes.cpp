@@ -305,9 +305,7 @@ Result<void> AttributeComponent::modifyBase(std::string_view attribute, double d
     return impl_->values.modifyBase(attribute, delta);
 }
 
-bool AttributeComponent::has(std::string_view attribute) const {
-    return impl_ && impl_->values.has(std::string(attribute));
-}
+bool AttributeComponent::has(std::string_view attribute) const { return impl_ && impl_->values.has(attribute); }
 
 Result<double> AttributeComponent::getFinal(std::string_view attribute, double fallback) const {
     if (attribute.empty() || !std::isfinite(fallback)) {
@@ -760,7 +758,10 @@ Match* Match::createMatch(SubjectRef subject) {
     (void)*match->rules();
     (void)*match->participants();
     (void)*match->state();
+    (void)*match->scores();
+    (void)*match->objectives();
     (void)*match->events();
+    (void)*match->campaign();
     unpublished.publish();
     return match;
 }

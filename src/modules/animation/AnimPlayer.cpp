@@ -197,7 +197,15 @@ void AnimPlayer::updateUnchecked(float dt) {
 
     rootMotion_              = TransformTRS::identity();
     const float previousTime = time_;
-    clip_->sample(previousTime, &rootPreviousPose_, skeleton_);
+    // Root-motion scratch poses consume only one local bone. Sampling every track here
+    // duplicates the displayed-pose work, including quaternion interpolation and searches.
+    // Keep the same wrap/clamp and bind-pose fallback as AnimClip::sample/sampleClamped.
+    const auto sampleRoot = [&](const AnimClip* clip, float time, AnimPose& out, bool wrap) {
+        out.resize(skeleton_->getBoneCount());
+        time                       = clampf(wrap ? clip->wrapTime(time) : time, 0.f, clip->getDuration());
+        out.local(rootMotionBone_) = clip->sampleBone(rootMotionBone_, time, skeleton_->bindLocal(rootMotionBone_));
+    };
+    sampleRoot(clip_, previousTime, rootPreviousPose_, true);
     time_ += dt * speed_;
     clip_->collectEvents(previousTime, time_, effectiveLoop(), pendingEvents_);
     dispatchEvents(previousTime, time_);
@@ -214,8 +222,8 @@ void AnimPlayer::updateUnchecked(float dt) {
         const float duration = clip_->getDuration();
         const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
         if (cycles != 0) {
-            clip_->sample(0.f, &rootStartPose_, skeleton_);
-            clip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+            sampleRoot(clip_, 0.f, rootStartPose_, true);
+            sampleRoot(clip_, duration, rootEndPose_, false);
             const TransformTRS& startRoot = rootStartPose_.local(rootMotionBone_);
             const TransformTRS& endRoot   = rootEndPose_.local(rootMotionBone_);
             rawMotion.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
@@ -234,7 +242,7 @@ void AnimPlayer::updateUnchecked(float dt) {
         } else {
             // The displayed pose may already have root translation baked out.
             // Measure outgoing motion between two samples of the source clip.
-            prevClip_->sample(prevTime_, &rootPreviousPose_, skeleton_);
+            sampleRoot(prevClip_, prevTime_, rootPreviousPose_, true);
             const TransformTRS outgoingFrom = rootPreviousPose_.local(rootMotionBone_);
             const float        outgoingTime = prevTime_;
             prevTime_ += dt * speed_;
@@ -252,8 +260,8 @@ void AnimPlayer::updateUnchecked(float dt) {
                 const int   cycles =
                     static_cast<int>(std::floor(prevTime_ / duration) - std::floor(outgoingTime / duration));
                 if (cycles != 0) {
-                    prevClip_->sample(0.f, &rootStartPose_, skeleton_);
-                    prevClip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+                    sampleRoot(prevClip_, 0.f, rootStartPose_, true);
+                    sampleRoot(prevClip_, duration, rootEndPose_, false);
                     const auto& start = rootStartPose_.local(rootMotionBone_);
                     const auto& end   = rootEndPose_.local(rootMotionBone_);
                     outgoingDelta.px += static_cast<float>(cycles) * (end.px - start.px);

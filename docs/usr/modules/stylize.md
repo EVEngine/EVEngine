@@ -91,6 +91,21 @@ mat.setShadingModel("custom");
 // 挂到 Renderable3D：r.setMaterial(mat) / r.setPart(...)
 ```
 
+透视遮挡高亮（狙击 / 子弹时间常用）走独立 overlay，不要把 xray shader 设成主材质：
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.enable("gbuffer");   // X-ray 采样场景深度，需要 GBuffer
+rc.compile();
+local xray = stylize.newMeshShader(gfx, "xray");
+xray.sendFloat("colorR", 0.95); xray.sendFloat("colorG", 0.2); xray.sendFloat("colorB", 0.15);
+xray.sendFloat("alpha", 0.95);
+target.setXRayShader(xray);
+target.setXRayHighlight(true);   // 命中/过场时打开；平常保持 false
+```
+
+完整过场编排见 [`examples/bullet-time`](../../../examples/bullet-time/)。
+
 常用技能常见视觉风格可直接通过 `StyleInstance` 新建并映射为角色网格材质：
 
 - `slash`：刀光/斩击轨迹
@@ -179,6 +194,10 @@ mat.setShadingModel("custom");
 - `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
 - Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。
+- 全屏效果扩展：`vignette` / `chromatic` / `grain` / `glitchAnalog` / `glitchBlock` /
+  `glitchWave` / `kuwahara`
+  （glitch 系列：磁带 / 块损伤 / 波浪抖动；`kuwahara`：Acerola 基础四象限画家滤波，
+  `strength` 默认 0，`kernelSize` 1–8。kuwahara 成本约 `4*(k+1)^2` tap，远重于 grain）。
 
 
 ### Impasto 厚涂油彩

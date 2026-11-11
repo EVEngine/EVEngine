@@ -21,15 +21,15 @@ using eve::resource::ResourceId;
 constexpr double kMaxExactlyRepresentableInteger = 9007199254740991.0;  // 2^53 - 1
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
 }
 
 eve::Diagnostic conflict(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), std::move(path));
 }
 
 eve::Diagnostic invariantFailure(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, message, path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move(message), std::move(path));
 }
 
 eve::Result<void> validateCost(const CostSpec& cost) {

@@ -34,7 +34,8 @@
     "hair.cpp",
     "indirect_builder.cpp",
     "reflection_probe_culling.cpp",
-    "tree_wind.cpp"
+    "tree_wind.cpp",
+    "MaterialRenderControl.cpp"
   ]
 }
 */
@@ -242,6 +243,9 @@ TEST_CASE("graphics.cubemapPrefilter.bilinearTapNearCubeEdgeSamplesNeighborFace"
 #include "graphics/RenderSystem.h"
 #include "zeroerr/unittest.h"
 
+#include <cmath>
+#include <string>
+
 namespace test_lighting_2d {
 using namespace eve::graphics;
 
@@ -283,6 +287,29 @@ TEST_CASE("graphics.camera2d.ambientValuesAreOwnedByCreatedCamera") {
     CHECK_EQ(camera->data()->ambientR, 0.2f);
     CHECK_EQ(camera->data()->ambientG, 0.3f);
     CHECK_EQ(camera->data()->ambientB, 0.4f);
+    ecs::DestroyEntity(camera);
+}
+
+TEST_CASE("graphics.camera2d.pixelPerfectResolvesIntegerZoomAndSnapsCenter") {
+    ecs::Table       table;
+    ecs::ScopedTable scope(table);
+    auto*            camera = Camera2D::createCamera();
+    REQUIRE(camera != nullptr);
+    auto bad = camera->setPixelConfig(0.f, 320, 180);
+    REQUIRE(!bad.ok());
+    bad.ignore("expected invalid ppu");
+    auto ok = camera->setPixelConfig(1.f, 320, 180);
+    REQUIRE(ok.ok());
+    camera->setPosition(10.4f, -3.6f);
+    auto applied = camera->applyPixelPerfect(1280, 720);
+    REQUIRE(applied.ok());
+    CHECK(camera->getPixelPerfect());
+    CHECK_EQ(camera->getPixelScale(), 4);
+    CHECK_EQ(camera->getZoom(), 4.f);
+    CHECK_EQ(camera->getX(), 10.5f);
+    CHECK_EQ(camera->getY(), -3.5f);
+    const float screenX = camera->worldToScreenX(10.5f, -3.5f, 1280.f, 720.f);
+    CHECK_LT(std::fabs(std::round(screenX) - screenX), 1e-4f);
     ecs::DestroyEntity(camera);
 }
 }  // namespace test_lighting_2d
@@ -485,6 +512,7 @@ TEST_CASE("graphics.clipSpace.perspectiveAndOrthographicProjectionFlipYForVulkan
 }  // namespace test_render_scene_projection
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem3D)
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "zeroerr/unittest.h"
 
@@ -492,6 +520,21 @@ TEST_CASE("graphics.clipSpace.perspectiveAndOrthographicProjectionFlipYForVulkan
 
 namespace test_render_system_3d {
 using namespace eve::graphics;
+
+
+TEST_CASE("graphics.renderControl.pathSamplesValidateWithoutProvider") {
+    RenderControl control;
+    REQUIRE(control.pathTracingSamples() == 1u);
+    auto valid = control.setPathTracingSamples(3);
+    REQUIRE(valid.ok());
+    REQUIRE(control.pathTracingSamples() == 3u);
+    auto zero = control.setPathTracingSamples(0);
+    REQUIRE(!zero.ok());
+    auto excessive = control.setPathTracingSamples(17);
+    REQUIRE(!excessive.ok());
+    REQUIRE(control.pathTracingSamples() == 3u);
+    REQUIRE(control.pathTracingFrameState() == PathTracingFrameState::Disabled);
+}
 
 TEST_CASE("graphics.camera3d.screenToRayUsesPerspectiveEyeOrOrthographicNearPlane") {
     SUB_CASE("perspective center ray starts at eye and points down normalized view direction") {
@@ -536,6 +579,41 @@ TEST_CASE("graphics.camera3d.screenToRayUsesPerspectiveEyeOrOrthographicNearPlan
         CHECK_LT(camera->getScreenRayDirZ(), -0.99f);
         ecs::DestroyEntity(camera);
     };
+    SUB_CASE("pixel orthographic uses reference height over pixels-per-unit with integer scale") {
+        ecs::Table       table;
+        ecs::ScopedTable scope(table);
+        auto*            camera = Camera3D::createCamera();
+        REQUIRE(camera != nullptr);
+        camera->setEye(0.27f, 0.f, 8.f);
+        camera->setTarget(0.27f, 0.f, 0.f);
+        auto applied = camera->setPixelOrthographic(16.f, 1280, 720, 320, 180);
+        REQUIRE(applied.ok());
+        CHECK(camera->isOrthographic());
+        CHECK_EQ(camera->getPixelScale(), 4);
+        CHECK_LT(std::fabs(camera->getOrthoHeight() - (180.f / 16.f)), 1e-4f);
+        CHECK(camera->hasPixelConfig());
+        CHECK_EQ(camera->getPixelsPerUnit(), 16.f);
+        // One framebuffer pixel at scale 4 and ppu 16 is 1/64 world units.
+        const float step = 1.f / 64.f;
+        const float rem  = std::fabs(camera->getEyeX() / step - std::round(camera->getEyeX() / step));
+        CHECK_LT(rem, 1e-4f);
+        ecs::DestroyEntity(camera);
+    };
+}
+
+TEST_CASE("graphics.camera3d.pixelConfigRejectsInvalidSizing") {
+    ecs::Table       table;
+    ecs::ScopedTable scope(table);
+    auto*            camera = Camera3D::createCamera();
+    REQUIRE(camera != nullptr);
+    auto missingHeight = camera->setPixelConfig(8.f, 320, 0);
+    REQUIRE(!missingHeight.ok());
+    missingHeight.ignore("expected mismatched ref");
+    auto zeroView = camera->setPixelOrthographic(8.f, 0, 720);
+    REQUIRE(!zeroView.ok());
+    zeroView.ignore("expected zero viewport");
+    CHECK(!camera->isOrthographic());
+    ecs::DestroyEntity(camera);
 }
 
 TEST_CASE("graphics.renderSystem3d.shadowDrawerRegistrationIssuesUniqueTokensAndRemovalIsIdempotent") {
@@ -1837,6 +1915,25 @@ TEST_CASE("graphics.primitiveScene.batchMutationIsAtomicAndRenderingSkipsHiddenD
 #include <vector>
 
 namespace test_graphics_skin_palette {
+TEST_CASE("graphics.skinPalette.reusesStorageAndSupportsOverlappingInput") {
+    eve::graphics::Mesh mesh;
+    std::vector<float>  input(64u);
+    for (std::size_t i = 0; i < input.size(); ++i) input[i] = float(i);
+    REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+    const auto* storage = mesh.skinPalette().data();
+    for (int frame = 0; frame < 100; ++frame) {
+        REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+        CHECK(mesh.skinPalette().data() == storage);
+    }
+    REQUIRE(mesh.setSkinPalette(mesh.skinPalette().data(), 4).ok());
+    CHECK_EQ(mesh.skinPalette(), input);
+    REQUIRE(mesh.setSkinPalette(mesh.skinPalette().data() + 16, 3).ok());
+    CHECK_EQ(mesh.skinPalette(), std::vector<float>(input.begin() + 16, input.end()));
+    REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+    CHECK(mesh.skinPalette().data() == storage);
+    CHECK_EQ(mesh.skinPalette(), input);
+}
+
 TEST_CASE("graphics.skinPalette.copiesDynamicMatrixArrayAndReplacesPreviousCount") {
     eve::graphics::Mesh mesh;
     for (const int count : {1, 129, 4096, 17}) {
@@ -1970,6 +2067,20 @@ TEST_CASE("graphics.webgpuPbrVariant.vertexBudgetIsIndependentAndOverflowIsStruc
     surface.vegetationDetail.value               = 1.f;
     surface.vegetationDetail.textures[0].texture = marker(33u);
     surface.vegetationDetail.textures[1].texture = marker(34u);
+    auto extended                                = planPbrVariant(surface, true, true, {17u, 16u});
+    REQUIRE(extended.ok());
+    CHECK_EQ(extended.value().fragmentTextures, 17u);
+    auto coreOverflow = planPbrVariant(surface, true, true, {16u, 16u});
+    REQUIRE(!coreOverflow.ok());
+    CHECK_EQ(coreOverflow.error()->code(), eve::DiagnosticCode::Unsupported);
+    surface.vegetationColors.texture = nullptr;
+    auto core                        = planPbrVariant(surface, true, true, {16u, 16u});
+    REQUIRE(core.ok());
+    CHECK_EQ(core.value().fragmentTextures, 16u);
+    CHECK_EQ(core.value().canonicalTextureMask, extended.value().canonicalTextureMask);
+    CHECK_EQ(core.value().detailTextureMask, extended.value().detailTextureMask);
+    surface.vegetationColors.texture             = marker(31u);
+    surface.vegetationDetail.textures[2].texture = marker(35u);
     auto overflow                                = planPbrVariant(surface, true, true, {17u, 16u});
     REQUIRE(!overflow.ok());
     CHECK_EQ(overflow.error()->code(), eve::DiagnosticCode::Unsupported);
@@ -2943,6 +3054,7 @@ TEST_CASE("graphics.treeWind.invalidGeometryOrSchemaPreservesAllShaderParameters
 #include "graphics/RenderSystem3D.h"
 
 #include <cmath>
+#include <limits>
 #include <string>
 
 namespace test_MaterialRenderControl {
@@ -2983,6 +3095,26 @@ TEST_CASE("Material surface contract") {
         CHECK_EQ(material.getBlendMode(), std::string("premultiplied"));
         CHECK_EQ(material.getAlphaTechnique(), std::string("dither"));
         CHECK_EQ(material.getSortPriority(), 12);
+    };
+
+    SUB_CASE("Material albedo UV transform enables PBR surface for conveyor scroll") {
+        Material material;
+        CHECK(!material.hasPbrSurface());
+        CHECK(std::fabs(material.getAlbedoUvOffsetU()) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 1.f) < 1e-6f);
+        REQUIRE(material.setAlbedoUvScale(4.f, 1.f).ok());
+        REQUIRE(material.setAlbedoUvOffset(0.25f, -0.5f).ok());
+        REQUIRE(material.setAlbedoUvRotation(0.1f).ok());
+        CHECK(material.hasPbrSurface());
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 4.f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleV() - 1.f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvOffsetU() - 0.25f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvOffsetV() + 0.5f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvRotation() - 0.1f) < 1e-6f);
+        CHECK(!material.setAlbedoUvOffset(std::numeric_limits<float>::infinity(), 0.f).ok());
+        CHECK(!material.setAlbedoUvScale(0.f, 1.f).ok());
+        CHECK(std::fabs(material.getAlbedoUvOffsetU() - 0.25f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 4.f) < 1e-6f);
     };
 }
 

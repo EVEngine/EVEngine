@@ -372,7 +372,8 @@ using Colorf = ImageData::Colorf;
 namespace {
 
 const char* kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
-const char* kPostEffects[] = {"vignette", "chromatic", "grain"};
+const char* kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock",
+                              "glitchWave", "kuwahara", "kuwaharaAniso", "dog", "sharpen", "neonEdge"};
 
 [[maybe_unused]] bool near(float a, float b, float eps = 0.02f) { return std::fabs(a - b) <= eps; }
 

@@ -16,6 +16,7 @@ set(_eve_crowd_sources result.cpp crowd.cpp crowd_contacts.cpp crowd_interaction
 eve_add_test_executable(eve_crowd_check
     "${CMAKE_SOURCE_DIR}/test/profile/crowd_main.cpp" ${_eve_crowd_sources})
 target_compile_features(eve_crowd_check PRIVATE cxx_std_20)
+target_compile_definitions(eve_crowd_check PRIVATE EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 eve_thirdparty_libs(_eve_crowd_libraries squirrel)
 eve_append_system_libraries(_eve_crowd_system_libraries)
 target_link_libraries(eve_crowd_check PRIVATE ${_eve_crowd_link_targets} zeroerr eve_engine_includes

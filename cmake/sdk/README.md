@@ -17,8 +17,8 @@ phone or as a universal multi-platform kit.
 - `cmake/` — `find_package(EVEngine)` + `add_eve_plugin()` (not needed for script-only games)
 - `platform/` — **this target only** packaging template (e.g. the Android APK project)
 - `share/eve/` — `VERSION`, `TARGET_PLATFORM`, runnable `examples/basic`, `licenses/`
-- `share/eve/ai/` — Binding Contract catalog (`eve-api.json`), agent skill, MCP stdio bridge
-- `llms.txt` / `.cursor/skills/evescript/SKILL.md` — entry files so an unzipped SDK is agent-readable
+- `share/eve/ai/` — Binding Contract catalog (`eve-api.json`), language skill copy, MCP stdio bridge
+- `llms.txt` / `.cursor/skills/*/SKILL.md` — EveScript + mature paradigm skills so an unzipped SDK is agent-readable
 
 `share/eve/TARGET_PLATFORM` identifies the operating platform. macOS archives use
 `macosx-arm64` or `macosx-x86_64` directory names, keep `TARGET_PLATFORM=macosx`,
@@ -53,6 +53,12 @@ cmake --install build/android-debug --prefix dist/eve-sdk/android-debug
 ```
 
 For Android: `make sdk/android-debug`.
+
+Android Release SDK installs strip unneeded symbols from the installed `.so`
+files with the configured NDK tool. Build outputs retain their symbols for
+crash diagnosis; keep those outputs from the matching release build. Debug SDKs
+retain symbols. Published Android ZIPs keep runtime libraries in `lib/` only;
+APK packaging stages them into the template's `jniLibs/` when needed.
 
 Do **not** install multiple platforms into the same prefix.
 

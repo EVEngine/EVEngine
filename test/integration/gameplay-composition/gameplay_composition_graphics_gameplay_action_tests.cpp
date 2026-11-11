@@ -2801,6 +2801,60 @@ TEST_CASE("editor.ui.layout.workspace_shell_single_panel_skips_tabs") {
     CHECK(findById(tree, "only") != nullptr);
     CHECK_EQ(findById(tree, "only")->type, NodeType::PanelFrame);
 }
+TEST_CASE("editor.ui.layout.workspace_shell_moves_owned_callbacks_without_cloning_them") {
+    struct Click {
+        std::shared_ptr<int> copies, calls;
+        Click(std::shared_ptr<int> copyCount, std::shared_ptr<int> callCount)
+            : copies(std::move(copyCount)), calls(std::move(callCount)) {}
+        Click(const Click& other) : copies(other.copies), calls(other.calls) { ++*copies; }
+        Click(Click&&) = default;
+        void operator()() const { ++*calls; }
+    };
+    auto                copies = std::make_shared<int>(0), calls = std::make_shared<int>(0);
+    eve::ui::WidgetDesc tree;
+    {
+        EditorWorkspace workspace("owning-layout", "Owning layout");
+        REQUIRE(workspace.registerPanel({.id = "center", .title = "Center", .region = "center"}).ok());
+        WorkspaceShellOptions options;
+        options.toolbar = eve::ui::button("Action", "toolbar-action", Click(copies, calls));
+        WorkspaceLayoutShell::ContentBuilder content = [copies, calls](const WorkspacePanelDescriptor&) {
+            std::vector<eve::ui::WidgetDesc> body;
+            body.push_back(eve::ui::button("Nested", "nested-action", Click(copies, calls)));
+            return body;
+        };
+        *copies = 0;
+        tree    = WorkspaceLayoutShell::buildWindow(workspace, std::move(content), std::move(options));
+        CHECK_EQ(*copies, 0);
+    }
+    const auto invoke = [](const auto& self, const eve::ui::WidgetDesc& node) -> void {
+        if (node.onClick) node.onClick();
+        for (const auto& child : node.children) self(self, child);
+    };
+    invoke(invoke, tree);
+    CHECK_EQ(*calls, 2);
+}
+
+TEST_CASE("editor.ui.layout.workspace_shell_keeps_mutable_content_builder_invocations_isolated") {
+    EditorWorkspace workspace("isolated-layout", "Isolated layout");
+    REQUIRE(workspace.registerPanel({.id = "first", .title = "First", .region = "center"}).ok());
+    REQUIRE(workspace.registerPanel({.id = "second", .title = "Second", .region = "center"}).ok());
+    WorkspaceLayoutShell::ContentBuilder content = [state = 0](const WorkspacePanelDescriptor& panel) mutable {
+        std::vector<eve::ui::WidgetDesc> body;
+        body.push_back(eve::ui::text(std::to_string(++state), panel.id + "/counter"));
+        return body;
+    };
+    auto       desc          = WorkspaceLayoutShell::buildWindow(workspace, std::move(content));
+    const auto checkCounters = [&](const auto& self, const eve::ui::WidgetDesc& node) -> int {
+        int found = 0;
+        if (node.id == "first/counter" || node.id == "second/counter") {
+            CHECK_EQ(node.text, std::string("1"));
+            ++found;
+        }
+        for (const auto& child : node.children) found += self(self, child);
+        return found;
+    };
+    CHECK_EQ(checkCounters(checkCounters, desc), 2);
+}
 }  // namespace test_editor_workspace_layout_shell
 
 // Contract section: effects domain adapters
