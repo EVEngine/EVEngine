@@ -191,6 +191,26 @@ Linux sed fixtures checked idempotence and preserved suites, components, signing
 configuration and unrelated repositories. Only four replacement URL protocols change;
 APT signature/TLS checks, package lists, retry/time limits and all build/test gates remain.
 
+The subsequent HTTPS attempts also timed out, and both fuzz jobs explicitly reported
+temporary Ubuntu mirror DNS resolution failures. Ubuntu's published mirror guidance
+recommends registered archive replicas for this availability problem. The shared CI
+normalizer therefore selects the registered Kernel.org Ubuntu replica over HTTPS,
+including the previously unnormalized fuzz/profile preparation paths. It changes only
+Ubuntu archive/security URI roots; Ubuntu ports, other repositories, suites, components,
+the existing signing key and validity policy remain unchanged. No DNS resolver, host
+mapping, credentials, package implementation or test gate is replaced.
+
+Local HTTPS retrieval of noble, noble-updates, noble-backports and noble-security
+InRelease files returned200 from mirrors.edge.kernel.org. All four passed real gpgv
+verification with the existing Ubuntu archive keyring and signing key
+F6ECB3762474EDA9D21B7022871920D1991BC93C. Source:
+https://launchpad.net/ubuntu/+archivemirrors (Kernel.org),
+https://mirrors.kernel.org/ (Ubuntu service), and
+https://discourse.ubuntu.com/t/80500 (Ubuntu mirror guidance).
+An isolated real APT update with error-on-any-failure also refreshed all four suites
+successfully (695kB in13 seconds), retaining the existing Ubuntu signing keyring.
+Only metadata caches under ignored build/ were written; no packages were installed.
+
 ## Validation and review gates
 
 Run against the final PR base/head:

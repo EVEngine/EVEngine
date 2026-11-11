@@ -37,11 +37,7 @@ jobs:
       - name: Install system packages
         timeout-minutes: 10
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
