@@ -13,7 +13,6 @@ layout(location = 9) in vec4 inModelR2;
 layout(location = 10) in vec4 inClip;
 
 layout(location = 0) out vec3 vWorldNormal;
-layout(location = 1) out float vNdcZ;
 layout(location = 2) out vec2 vUV;
 layout(location = 3) flat out vec4 vClip;
 
@@ -24,9 +23,7 @@ void main() {
     mat3 nrmMat = mat3(inModelR0.x, inModelR1.x, inModelR2.x,
                       inModelR0.y, inModelR1.y, inModelR2.y,
                       inModelR0.z, inModelR1.z, inModelR2.z);
-    nrmMat = transpose(inverse(nrmMat));
     vWorldNormal = normalize(nrmMat * inNormal);
-    vNdcZ = hp.z / max(hp.w, 1e-6);
     vUV = inUV;
     vClip = inClip;
 }

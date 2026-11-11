@@ -997,6 +997,15 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .push<GBufferPush>(vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment)
             .build();
 
+    // All mesh G-buffer shaders emit zero emissive. Preserve the attachment's
+    // black clear for readers without writing the same value for every fragment.
+    std::array<vk::PipelineColorBlendAttachmentState, 5> gbufferBlendAttachments{};
+    for (size_t i = 0; i < 4; ++i)
+        gbufferBlendAttachments[i].colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+                                                    vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+    vk::PipelineColorBlendStateCreateInfo gbufferBlend{};
+    gbufferBlend.setAttachments(gbufferBlendAttachments);
+
     std::vector<uint32_t> vert(mesh3d_gbuffer_vert_spv,
                                mesh3d_gbuffer_vert_spv + mesh3d_gbuffer_vert_spv_count);
     std::vector<uint32_t> frag(mesh3d_gbuffer_frag_spv,
@@ -1012,7 +1021,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
-            .setColorAttachmentCount(5)
+            .setColorBlending(gbufferBlend)
             .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
@@ -1032,7 +1041,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                    .setDynamicStatesViewportScissor()
                                    .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                                                   vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
-                                   .setColorAttachmentCount(5)
+                                   .setColorBlending(gbufferBlend)
                                    .build(gbufferPass);
     device->destroyShaderModule(instancedVert);
     device->destroyShaderModule(instancedFrag);
@@ -1055,7 +1064,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
-            .setColorAttachmentCount(5)
+            .setColorBlending(gbufferBlend)
             .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
@@ -1071,7 +1080,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
-            .setColorAttachmentCount(5)
+            .setColorBlending(gbufferBlend)
             .build(gbufferPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_gbuffer_skin_alpha_frag_spv);
     gbufferSkinAlphaPipeline =
@@ -1083,7 +1092,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                            vk::FrontFace::eClockwise)
-            .setColorAttachmentCount(5)
+            .setColorBlending(gbufferBlend)
             .build(gbufferPass);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {

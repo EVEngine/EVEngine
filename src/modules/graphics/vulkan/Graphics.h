@@ -1867,6 +1867,7 @@ private:
     // Screen-space G-buffer (normal / linear-depth / albedo + HW depth).
     struct GBufferPush {
         glm::mat4 mvp{1.f};
+        // The three rows hold the precomputed inverse-transpose normal matrix.
         glm::vec4 modelR0{1.f, 0.f, 0.f, 0.f};
         glm::vec4 modelR1{0.f, 1.f, 0.f, 0.f};
         glm::vec4 modelR2{0.f, 0.f, 1.f, 0.f};

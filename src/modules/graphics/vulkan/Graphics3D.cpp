@@ -825,9 +825,10 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     d.mesh = mesh;
     d.albedo = albedo;
     d.push.mvp = mvp;
-    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
-    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
-    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    const glm::mat3 normal = glm::transpose(glm::inverse(glm::mat3(model)));
+    d.push.modelR0         = glm::vec4(normal[0][0], normal[1][0], normal[2][0], 0.f);
+    d.push.modelR1         = glm::vec4(normal[0][1], normal[1][1], normal[2][1], 0.f);
+    d.push.modelR2         = glm::vec4(normal[0][2], normal[1][2], normal[2][2], 0.f);
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
@@ -857,9 +858,10 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     d.albedo = albedo;
     d.alphaTest = true;
     d.push.mvp = mvp;
-    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
-    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
-    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    const glm::mat3 normal = glm::transpose(glm::inverse(glm::mat3(model)));
+    d.push.modelR0         = glm::vec4(normal[0][0], normal[1][0], normal[2][0], 0.f);
+    d.push.modelR1         = glm::vec4(normal[0][1], normal[1][1], normal[2][1], 0.f);
+    d.push.modelR2         = glm::vec4(normal[0][2], normal[1][2], normal[2][2], 0.f);
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };

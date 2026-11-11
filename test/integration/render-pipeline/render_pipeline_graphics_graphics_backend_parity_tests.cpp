@@ -3650,51 +3650,67 @@ TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
 }
 
 TEST_CASE("graphics.gbufferInstancedOpaqueMatchesIndividualDraws") {
-    eve::graphics::Graphics *gfx = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
     openHeadlessGfx(gfx, 160, 120);
-    const float positions[] = {-0.04f, -0.04f, 0.5f, 0.04f, -0.04f, 0.5f,
-                               0.04f, 0.04f, 0.5f, -0.04f, 0.04f, 0.5f};
-    const float normals[] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-    const float uv[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 2, 1, 0, 3, 2};
-    auto *meshA = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
-    auto *meshB = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    const float    positions[] = {-0.04f, -0.04f, 0.5f, 0.04f, -0.04f, 0.5f, 0.04f, 0.04f, 0.5f, -0.04f, 0.04f, 0.5f};
+    const float    normals[]   = {0.6f, 0.f, 0.8f, 0.6f, 0.f, 0.8f, 0.6f, 0.f, 0.8f, 0.6f, 0.f, 0.8f};
+    const float    uv[]        = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[]   = {0, 2, 1, 0, 3, 2};
+    auto*          meshA       = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    auto*          meshB       = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
     REQUIRE(meshA != nullptr);
     REQUIRE(meshB != nullptr);
     const uint8_t white[] = {255, 255, 255, 255};
-    auto *texture = gfx->newTexture(1, 1, white);
+    auto*         texture = gfx->newTexture(1, 1, white);
     REQUIRE(texture != nullptr);
 
     auto draw = [&](bool alternateMeshes) {
         gfx->beginGBufferPass(160, 120);
         for (int i = 0; i < 128; ++i) {
-            glm::mat4 model = glm::translate(glm::mat4(1.f),
-                                             glm::vec3(-0.9f + float(i % 16) * 0.12f,
-                                                       -0.84f + float(i / 16) * 0.24f, 0.f));
-            auto *mesh = alternateMeshes && (i & 1) ? meshB : meshA;
-            gfx->drawMeshGBuffer(mesh, model, model, 0.1f, 100.f, texture,
-                                 (i & 1) ? 0.f : 1.f, 0.f, (i & 1) ? 1.f : 0.f);
+            glm::mat4 model = glm::translate(
+                glm::mat4(1.f), glm::vec3(-0.9f + float(i % 16) * 0.12f, -0.84f + float(i / 16) * 0.24f, 0.f));
+            model      = glm::scale(model, glm::vec3(0.9f, 1.f, 1.2f));
+            auto* mesh = alternateMeshes && (i & 1) ? meshB : meshA;
+            gfx->drawMeshGBuffer(mesh, model, model, 0.1f, 100.f, texture, (i & 1) ? 0.f : 1.f, 0.f,
+                                 (i & 1) ? 1.f : 0.f);
         }
         gfx->endGBufferPass();
         return std::unique_ptr<eve::image::ImageData>(gfx->readGBufferToImageData("albedo"));
     };
     auto individual = draw(true);
-    auto instanced = draw(false);
+    auto instanced  = draw(false);
+    auto normal     = std::unique_ptr<eve::image::ImageData>(gfx->readGBufferToImageData("normal"));
+    auto emissive   = std::unique_ptr<eve::image::ImageData>(gfx->readGBufferToImageData("emissive"));
     REQUIRE(individual != nullptr);
     REQUIRE(instanced != nullptr);
+    REQUIRE(normal != nullptr);
+    REQUIRE(emissive != nullptr);
     float maxDifference = 0.f;
-    int coloredPixels = 0;
+    float maxNormalR    = 0.f;
+    float maxNormalB    = 0.f;
+    float maxEmissive   = 0.f;
+    int   coloredPixels = 0;
     for (int y = 0; y < 120; ++y) {
         for (int x = 0; x < 160; ++x) {
-            const auto a = individual->getPixel(x, y);
-            const auto b = instanced->getPixel(x, y);
-            maxDifference = std::max({maxDifference, std::fabs(a.r - b.r), std::fabs(a.g - b.g),
-                                      std::fabs(a.b - b.b), std::fabs(a.a - b.a)});
-            if (a.r > 0.5f || a.b > 0.5f) ++coloredPixels;
+            const auto a  = individual->getPixel(x, y);
+            const auto b  = instanced->getPixel(x, y);
+            maxDifference = std::max({maxDifference, std::fabs(a.r - b.r), std::fabs(a.g - b.g), std::fabs(a.b - b.b),
+                                      std::fabs(a.a - b.a)});
+            if (a.r > 0.5f || a.b > 0.5f) {
+                ++coloredPixels;
+                const auto n = normal->getPixel(x, y);
+                maxNormalR   = std::max(maxNormalR, n.r);
+                maxNormalB   = std::max(maxNormalB, n.b);
+            }
+            const auto e = emissive->getPixel(x, y);
+            maxEmissive  = std::max({maxEmissive, e.r, e.g, e.b});
         }
     }
     CHECK(coloredPixels > 100);
     CHECK(maxDifference <= 2.f / 255.f);
+    CHECK(maxNormalR > 0.85f);
+    CHECK(maxNormalB > 0.82f);
+    CHECK(maxEmissive <= 1.f / 255.f);
 }
 }  // namespace test_graphics_gbuffer_depth
 

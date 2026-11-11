@@ -1,7 +1,6 @@
 #version 450
 
 layout(location = 0) in vec3 vWorldNormal;
-layout(location = 1) in float vNdcZ;
 layout(location = 2) in vec2 vUV;
 layout(location = 3) flat in vec4 vClip;
 
