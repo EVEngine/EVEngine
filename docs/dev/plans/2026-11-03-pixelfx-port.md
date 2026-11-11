@@ -180,6 +180,17 @@ also store their draws in source order. RNG implementation, seed, stream count,
 parameters and all reference assertions remain unchanged. No optimization flag,
 dependency implementation or additional tolerance is changed.
 
+### Preserve Ubuntu archive HTTPS during CI provisioning
+
+Atf94cd1444c, Linux SDK and WebGPU SDK provisioning exhausted all three bounded
+APT update attempts against `http://archive.ubuntu.com`, before any compilation.
+The same official noble InRelease index returned200 over verified HTTPS locally.
+The SDK workflows and two remaining Release provisioning paths now normalize to
+`https://archive.ubuntu.com`, matching the existing HTTPS native CI paths. Actual
+Linux sed fixtures checked idempotence and preserved suites, components, signing-key
+configuration and unrelated repositories. Only four replacement URL protocols change;
+APT signature/TLS checks, package lists, retry/time limits and all build/test gates remain.
+
 ## Validation and review gates
 
 Run against the final PR base/head:
