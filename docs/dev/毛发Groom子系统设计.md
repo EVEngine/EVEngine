@@ -269,7 +269,8 @@ public:
 
 ### Phase 6 — Alembic 导入
 
-- [ ] 遵循 Epic *Alembic for Grooms* 属性表；产出 `GroomAsset`  
+- [x] 原生 `GroomAsset` 容器、分组与 LOD 已存在（`graphics/hair/GroomAsset.*`；`graphics.hair.asset` 测试）。
+- [ ] Alembic 导入器按 Epic *Alembic for Grooms* 属性表填充该容器，并完成真实资产验收；不能因容器存在勾选导入。
 
 ### Phase 7 — 编辑器卫星
 

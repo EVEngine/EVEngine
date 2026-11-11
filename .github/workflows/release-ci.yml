@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, physics-bake-only, asset-core-only, headless, server]
     env:
       PROFILE: ${{ matrix.profile }}
       PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
@@ -80,7 +80,7 @@ jobs:
         timeout-minutes: 60
         run: make profile/build
 
-      - name: Run independent capability smoke probes
+      - name: Run independent capability and profile playback smoke probes
         timeout-minutes: 10
         run: make profile/smoke
 
