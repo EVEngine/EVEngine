@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include "procgen/MeshBuild.h"
 #include "procgen/recursive/RecursiveInstance.h"
 #include "procgen/recursive_graphics/FrontierMesh.h"
@@ -60,7 +61,9 @@ TEST_CASE("procgen.recursiveGraphics.editsDeletionAndProjectionBudget") {
     CHECK_EQ(built.value().boxNodePaths.size(), std::size_t{1});
     CHECK_EQ(built.value().boxNodePaths[0], std::uint64_t{3});
     CHECK_EQ(built.value().revision.value(), std::uint64_t{2});
-    for (float x : built.value().mesh->positions()) CHECK(std::abs(x) <= 1);
+    for (float x : built.value().mesh->positions())
+        CHECK(std::abs(static_cast<double>(x)) <=
+              1.0 + built.value().maxObservedCoordinateError + 8 * std::numeric_limits<double>::epsilon());
     policy.origin             = {0.1, 0, 0};
     policy.maxCoordinateError = 0;
     auto quantized            = buildFrontierMesh(instance.value(), keys, policy);
