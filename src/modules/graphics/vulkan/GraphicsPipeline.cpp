@@ -61,6 +61,8 @@
 #include "graphics/shaders/mesh3d_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_alpha_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_instanced_frag_spv.inc"
+#include "graphics/shaders/mesh3d_gbuffer_instanced_vert_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_skin_alpha_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_skin_frag_spv.inc"
 #include "graphics/shaders/mesh3d_gbuffer_skin_vert_spv.inc"
@@ -686,6 +688,7 @@ void Graphics::destroyGBufferResources() {
     gbufferSlots.clear();
     post2Sets.clear();
     destroyPipeline(device, gbufferPipeline);
+    destroyPipeline(device, gbufferInstancedPipeline);
     destroyPipeline(device, gbufferAlphaPipeline);
     destroyPipeline(device, gbufferSkinPipeline);
     destroyPipeline(device, gbufferSkinAlphaPipeline);
@@ -1013,6 +1016,26 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
+
+    auto instancedVert =
+        vkb::PipelineBuilder::createShaderModule(device.instance, embeddedSpirv(mesh3d_gbuffer_instanced_vert_spv));
+    auto instancedFrag =
+        vkb::PipelineBuilder::createShaderModule(device.instance, embeddedSpirv(mesh3d_gbuffer_instanced_frag_spv));
+    gbufferInstancedPipeline = device.createPipeline()
+                                   .useClassicPipeline(instancedVert, instancedFrag)
+                                   .setPipelineLayout(gbufferPipelineLayout)
+                                   .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                            .addInputBinding<MeshVertex>()
+                                                            .addInputBinding<GBufferPush>()
+                                                            .addAttributeDescription<MeshVertex>(1)
+                                                            .addAttributeDescription<GBufferPush>(2))
+                                   .setDynamicStatesViewportScissor()
+                                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                  vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                                   .setColorAttachmentCount(5)
+                                   .build(gbufferPass);
+    device->destroyShaderModule(instancedVert);
+    device->destroyShaderModule(instancedFrag);
 
     // Alpha-cutout variant for billboard/card geometry (sprite-stack slices):
     // same layout/push constants, fragment discards transparent texels.

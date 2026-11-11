@@ -1034,6 +1034,7 @@ void Graphics::dropPendingOffscreenPasses() {
     for (auto& d : shadowCascadeDraws) d.clear();
     gbufferPending = false;
     gbufferPassDraws.clear();
+    gbufferInstancedBatches.clear();
     decalPending = false;
     decalPassDraws.clear();
 }
