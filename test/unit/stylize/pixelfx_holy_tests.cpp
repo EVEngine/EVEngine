@@ -5,6 +5,7 @@
 #include <limits>
 #include <span>
 #include <vector>
+#include "PixelFxColorReference.h"
 #include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/HolyActor.h"
@@ -196,11 +197,15 @@ TEST_CASE("stylize.pixelfx.holy.featherBurstPhasesMaterialsAndTransactions") {
         uint32_t c = 2166136261u, l = 2166136261u;
         for (auto b : std::as_bytes(fx.color())) c = (c ^ uint8_t(b)) * 16777619u;
         for (auto b : std::as_bytes(fx.light())) l = (l ^ uint8_t(b)) * 16777619u;
-        if (c != expected[i * 2])
+        // Approved default tick4 boundary: only R243 ->244 at (87,55).
+        const bool colorMatches = times[i] == 4. / 120. ? test_pixelfx_reference::matchesColorReference(
+                                                              fx.color(), expected[i * 2], {8887, 0xfffaf3f3u, 0b001})
+                                                        : c == expected[i * 2];
+        if (!colorMatches)
             test_pixelfx_diagnostic::dumpSequence("holy/feather-burst", fx, times.size(), [&](size_t j) {
                 return test_pixelfx_diagnostic::ExpectedFrame{times[j], expected[2 * j], expected[2 * j + 1]};
             });
-        REQUIRE(c == expected[i * 2]);
+        REQUIRE(colorMatches);
         REQUIRE(l == expected[i * 2 + 1]);
     }
     sampleSimulated(fx, .375);

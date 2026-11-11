@@ -1068,7 +1068,22 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
     REQUIRE(!fx.isSimulated());
     for (size_t i = 0; i < frames.size(); ++i) {
         fx.render(frames[i] / 120.);
-        if (frames[i] == 48) {
+        if (frames[i] == 0 || frames[i] == 240) {
+            // Approved exact loop repeat: only R98 ->97 at (63,71).
+            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                  {9151, 0xfff4c862u, 0, 0b001}));
+        } else if (frames[i] == 12) {
+            // Approved tick12 boundaries: G-1, B+1, R+1 and G+1 at these four pixels only.
+            constexpr std::array<test_pixelfx_reference::RoundingPixel, 4> pixels{{{4035, 0xffffeca6u, 0, 0b010},
+                                                                                   {12730, 0x6cfef4c9u, 0b100},
+                                                                                   {13113, 0xfffffadbu, 0b001},
+                                                                                   {13114, 0xfffffadcu, 0b010}}};
+            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
+        } else if (frames[i] == 72) {
+            // Approved tick72 boundary: only B255 ->254 at (57,96).
+            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                  {12345, 0x74fff1c0u, 0, 0b100}));
+        } else if (frames[i] == 48) {
             // Pinned upstream pixel (71,64): only G=235/236 differs between V8/MSVC and GCC.
             REQUIRE(
                 test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], {8263, 0xffffeba6u, 0b010}));

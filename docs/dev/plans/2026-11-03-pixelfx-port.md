@@ -79,7 +79,8 @@ all132 frames/264 planes for four seeds. A separate6192-direction diagnostic con
 floor-limited rays; the compensated calculation introduces no additional endpoint-row
 disagreement relative to the existing GCC baseline (both retain20 disagreements with V8).
 That direction-only observation is not a claim of full-frame or universal source parity.
-Actual macOS verification of the strict repair remains required. The separately measured
+Hosted macOS at292e5a91e9 passed all seven original Poof cases, including the strict
+floor-row regression, with their original hashes. The separately measured
 exact-floor semantic candidate and its four reference updates remain unapplied.
 
 On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
@@ -89,7 +90,7 @@ reference export was regenerated and compared with the current GCC native output
 observed directional one-level channel difference is admitted; alpha and every other channel/pixel
 remain exact. The original full-frame hashes are retained: after checking the measured pixel,
 the comparison hashes its canonical reference value with all other actual pixels unchanged.
-Light-plane assertions remain exact, and this approval does not apply to other macOS failures.
+Light-plane assertions remain exact.
 
 - BlizzardVortex, default seed17, tick48 (`0.4s`), 128x116 pixel(71,64): G235/236.
 - BlizzardVortex, default seed17, tick120 (`1.0s`), 128x116: pixel(56,89) B254/255,
@@ -97,6 +98,23 @@ Light-plane assertions remain exact, and this approval does not apply to other m
 - ScytheReap, seed0, tick49 (`0.4083333333333333s`), 184x116 pixel(142,60): R215/216, B241/242.
 - EarthStomp, default seed1, tick166 (`1.3833333333333333s`), 290x142 pixel(181,124): G105/106;
   alpha remains85.
+
+On 2026-11-11 the user explicitly approved ten additional measured pixel positions.
+Full color/light planes from hosted macOS at1cbd4f5c62 and292e5a91e9 reproduce identical
+differences against the pinned source. The same exact position/channel/direction contract
+and original hashes apply; no other frame, seed, palette, alpha or light tolerance is added.
+
+- FeatherBurst default, tick4: pixel8887(87,55), reference0xfffaf3f3, R243 ->244.
+- BlizzardVortex default, tick0 and its exact tick240 loop repeat: pixel9151(63,71),
+  reference0xfff4c862, R98 ->97.
+- BlizzardVortex default, tick12: pixel4035(67,31), reference0xffffeca6, G236 ->235;
+  pixel12730(58,99), reference0x6cfef4c9, B254 ->255;
+  pixel13113(57,102), reference0xfffffadb, R219 ->220;
+  pixel13114(58,102), reference0xfffffadc, G250 ->251.
+- BlizzardVortex default, tick72: pixel12345(57,96), reference0x74fff1c0, B255 ->254.
+- ScytheReap seed123, original palette[4279373632,4281862768,4286604976,4292677584,4293980400],
+  time0.55s: pixels13570(138,73),13572(140,73),13574(142,73), reference0x58dd0fd0,
+  R208 ->207 at each; alpha88 remains exact.
 
 Counterexamples must reject a two-level difference, changes to an unselected channel,
 alpha, or any neighboring pixel, as well as an invalid reference index/channel mask.
