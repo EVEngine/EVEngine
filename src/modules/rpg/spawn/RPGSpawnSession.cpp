@@ -2,6 +2,7 @@
 // Phase: bundle admission -> isolated source binding -> commit materialization -> owner exchange.
 #include "rpg/spawn/RPGSpawnSession.h"
 #include "common/ECS.h"
+#include "rpg/VitalsSystem.h"
 #include "rpg/spawn/RPGSpawnCapture.h"
 #include "rpg/spawn/RPGSpawnFactory.h"
 #include "rpg/spawn/RPGSpawnJointRestore.h"

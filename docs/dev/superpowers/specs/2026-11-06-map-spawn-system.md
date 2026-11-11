@@ -4034,3 +4034,9 @@ Crowd::Snapshot 增加 crowd.snapshot v1 encodeState/prepareState，完整覆盖
 - 新增所属 RPG 用例覆盖所有效果字段双向交换、自交换及同 ID 注册替换；本机完成类型的地图会话消费者语法检查已通过。纯 RPG 原生消费者及源码门禁正在执行，Windows Debug、Windows/ARM64 SDK、Android 与完整 CI/Release 仍需最新提交的实际结果，不将本机检查当作这些平台通过。无断言、测试或产物检查削弱。
 
 - 本批本机验证已终态通过：`make check`（origin/dev）、真实纯 RPG 目标重编及 224/224 项测试，新增完整 no-throw 交换/注册替换用例通过；日志 `/tmp/spawn-ci-fix-source-check.log`、`/tmp/spawn-ci-fix-rpg-build.log`、`/tmp/spawn-ci-fix-rpg-tests.log`。Android 所属会话 .cpp 的本机语法检查通过，不将其等同于 NDK 原生验证。后续由新提交的 CI/Release 验证实际 Windows/ARM64/Android；未改动任何工作流门禁或静态断言要求。
+
+### 2026-11-11：head 66d29c66b 的后续 Android 会话编译失败
+
+重新读取 CI run 43007343617 / Android job 130479790448 的实际日志（官方 gh API 获取，原件 `/tmp/spawn-ci-android-130479790448.log`）。本次错误位于 RPGSpawnSession.cpp:43，而非上一轮已修复的 RPGMapSession.cpp；NDK libc++ 在 collectLifecycle(events) 的 span range 约束中需要完整 VitalsEvent，日志 193027 行给出错误，193052–193065 行给出实例化与前向声明位置。所属 .cpp 显式包含 rpg/VitalsSystem.h；已核对其余事件 span 消费位置，Factory/RPG.cpp 有直接完整定义，MapRuntime 通过 canonical SimulationEventArchive/SimulationEvents 拥有完整类型，地图会话已有直接包含。未改公共头边界、DLL 声明、效果交换断言、工作流或测试门禁。真实纯 RPG 消费者重编通过，所属完整测试与源码门禁执行中；最新 NDK/CI/Release 结果仍须以随后修复提交为准。
+
+本次终态验证：纯 RPG 重编与 224/224 项全部契约通过，`make check`（origin/dev）通过，日志 `/tmp/spawn-ci-android-session-{build,tests,check}.log`。这验证本机实际消费者，不替代随后新 head 的 Android NDK 及完整 CI/Release 原生结果。
