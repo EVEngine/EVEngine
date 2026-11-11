@@ -1720,6 +1720,62 @@ GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
 }  // namespace
 
 /**
+ * @brief Automatic instancing retains registered GPU tables across submissions.
+ */
+TEST_CASE("GpuDriven.automaticInstancingPreservesRegisteredTablesAcrossFrames") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!gfx->supportsGpuDriven3D()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 8.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setOrthographic(4.f);
+    cam->setAmbient(1.f, 1.f, 1.f);
+    auto *mesh     = gfx->newMeshCube(1.f);
+    auto *material = gfx->newMaterial();
+    material->setAlbedoTexture(gdSolid(gfx, 220, 30, 20));
+    // Exercise the examples' automatic path with the explicit feature disabled.
+    // All 128 visible objects share one registered mesh and textured material.
+    for (int y = 0; y < 8; ++y) {
+        for (int x = 0; x < 16; ++x) {
+            auto *object = Renderable3D::create();
+            object->setMesh(mesh);
+            object->setMaterial(material);
+            object->setPosition((float(x) - 7.5f) * .3f, (float(y) - 3.5f) * .3f, 0.f);
+            object->setScale(.2f, .2f, .2f);
+        }
+    }
+    auto *rc = gfx->getRenderControl();
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
+    rc->disable("gpuDriven");
+    rc->disable("clustered");
+    gdWarmPresent(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
+    const auto first = gdCaptureLuma(gfx);
+    gdWarmPresent(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
+    int   redPixels = 0;
+    float maxDelta  = 0.f;
+    for (int y = 0; y < gfx->getHeight(); y += 4) {
+        for (int x = 0; x < gfx->getWidth(); x += 4) {
+            const auto pixel = gfx->getPixel(x, y);
+            if (pixel.r > .1f && pixel.r > pixel.g * 2.f && pixel.r > pixel.b * 2.f) ++redPixels;
+            maxDelta = std::max(maxDelta, std::fabs(gdLuma(pixel) - first[size_t(y * gfx->getWidth() + x)]));
+        }
+    }
+    CHECK(redPixels > 64);
+    CHECK(maxDelta < .03f);
+    win->close();
+}
+
+/**
  * @brief The opaque forward pass must produce the same image with the legacy
  * per-draw path and the GPU-driven (indirect + bindless) path.
  */
