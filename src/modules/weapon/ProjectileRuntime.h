@@ -65,7 +65,7 @@ struct ProjectileDefinition {
     Duration       lifetime           = Duration::zero();
 
     /** @brief Validate finite, non-negative trajectory parameters and mode-specific requirements. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validate() const;
 };
 
 /** @brief Owning spawn request; homing requests require a generation-checked target. */
@@ -92,7 +92,7 @@ struct ProjectileState {
      * @remarks The owning adapter separately admits stable relationships and binds native homing targets.
      * @thread Read-only owner-thread inspection; no callbacks, services or mutations.
      */
-    [[nodiscard]] Result<void> validateTrajectory() const;
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validateTrajectory() const;
 };
 
 /** @brief Owning result of one atomic projectile simulation step. */

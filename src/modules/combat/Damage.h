@@ -67,7 +67,7 @@ struct DamageRequest {
     bool critical = false;
 
     /** @brief Validate target, canonical gameplay-tag damage type and finite amounts. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Provider result prepared before the authoritative state is mutated. */
@@ -98,7 +98,7 @@ struct HitReactionPolicy {
     double staggerPoiseFraction  = 0.5;
 
     /** @brief Validate finite non-negative thresholds and fraction in [0,1]. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Complete owning audit result of one committed damage transaction. */
