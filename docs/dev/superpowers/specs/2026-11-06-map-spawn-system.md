@@ -4040,3 +4040,11 @@ Crowd::Snapshot 增加 crowd.snapshot v1 encodeState/prepareState，完整覆盖
 重新读取 CI run 43007343617 / Android job 130479790448 的实际日志（官方 gh API 获取，原件 `/tmp/spawn-ci-android-130479790448.log`）。本次错误位于 RPGSpawnSession.cpp:43，而非上一轮已修复的 RPGMapSession.cpp；NDK libc++ 在 collectLifecycle(events) 的 span range 约束中需要完整 VitalsEvent，日志 193027 行给出错误，193052–193065 行给出实例化与前向声明位置。所属 .cpp 显式包含 rpg/VitalsSystem.h；已核对其余事件 span 消费位置，Factory/RPG.cpp 有直接完整定义，MapRuntime 通过 canonical SimulationEventArchive/SimulationEvents 拥有完整类型，地图会话已有直接包含。未改公共头边界、DLL 声明、效果交换断言、工作流或测试门禁。真实纯 RPG 消费者重编通过，所属完整测试与源码门禁执行中；最新 NDK/CI/Release 结果仍须以随后修复提交为准。
 
 本次终态验证：纯 RPG 重编与 224/224 项全部契约通过，`make check`（origin/dev）通过，日志 `/tmp/spawn-ci-android-session-{build,tests,check}.log`。这验证本机实际消费者，不替代随后新 head 的 Android NDK 及完整 CI/Release 原生结果。
+
+### 2026-11-11：head 97d48fcfd 的 Linux / Windows / WebGPU 后续修复
+
+- 重新获取 CI run 43015083389 的 Linux job 130509371563、Windows job 130509374917，以及 Release run 43015083680 的 WebGPU job 130505934828 原始日志，分别保留 `/tmp/spawn-97d48-{linux,windows,webgpu}-<job>.log`。未沿用上轮 Android 诊断：Linux 为 MapSpawnLoad.cpp 四处 GCC dangling-reference，Windows 为 friend 声明 C4273，WebGPU 为最终 wasm-ld 缺 data::decode/decompress 符号。
+- required 返回的节点始终属于输入 Value 而非 key；原 key 接口为 const std::string&，使字符串字面量生成临时 owning 参数，GCC 将其与返回借用保守关联。私有键参数改为按值 string_view，并在即时查找/错误构造边界显式创建所需字符串，不复制整棵 Value、不抑制告警。相同 GCC 13 与 -Werror/-Werror=dangling-reference 下，旧源码准确复现 59/62/64/494 四处失败，新源码退出 0 且无诊断；结果 `/tmp/spawn-gcc-map-lifetime-result.log`，容器对照原件 `/work/evidence/map-lifetime-{before,after}.log`。
+- Windows 的命名空间声明虽已带 DLL 标注，friend 重声明仍无标注；现在 friend 与命名空间声明一致使用 EVENGINE_API_FOUNDATION，保持私有构造权限和原 DLL/API 所有者，不关闭 C4273 或 warnings-as-errors。
+- WebGPU 的 canonical DataModule.cpp 因 Poco 被平台源规则排除，恰好也包含 Map 使用的纯二进制 codec 定义。将原有 free codec/压缩/hash 实现原样迁入同一 data 模块的 DataCodec.cpp，纯声明归 DataCodec.h，DataModule.h 重导出同一声明；TileConfig 改用纯头。没有第二实现、平台替代头或放开 Poco 源排除。迁移前后规范化代码一致；本机纯消费者直接编译这些 canonical 源，在不链接 Poco/Squirrel 下通过 hex/base64、lz4/zlib/gzip/deflate 及 SHA256 验证，依赖检查仅见系统 zlib/libc++/libSystem。原始证据 `/tmp/spawn-pure-codec-{build,test}.log`。
+- 本批完整 make check（origin/dev）已通过，日志 `/tmp/spawn-ci-97d48-fix-check.log`；工作流、Windows OBJECT evidence 门禁、效果静态断言和全部测试未改。最新提交的 Linux Debug、Windows Debug/OBJECT 和 WebGPU/SDK 仍需 CI/Release 实际验证。适用唯一实现、显式借用、组导出一致性与平台裁剪规范，无例外。

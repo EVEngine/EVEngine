@@ -124,7 +124,8 @@ public:
     [[nodiscard]] const std::string& canonicalJson() const noexcept { return canonicalJson_; }
 
 private:
-    friend Result<CompiledTemplate> compileTemplate(const Value&, const IUnitDefinitionResolver&);
+    friend EVENGINE_API_FOUNDATION Result<CompiledTemplate> compileTemplate(const Value&,
+                                                                            const IUnitDefinitionResolver&);
     CompiledTemplate(TemplateDefinition definition, std::string canonicalJson)
         : definition_(std::move(definition)), canonicalJson_(std::move(canonicalJson)) {}
     TemplateDefinition definition_;

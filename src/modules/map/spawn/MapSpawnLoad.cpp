@@ -5,6 +5,7 @@
 #include <limits>
 #include <map>
 #include <stdexcept>
+#include <string_view>
 #include "common/Assert.h"
 #include "common/ServiceInterfaces.h"
 #include "common/Uri.h"
@@ -31,14 +32,15 @@ void fields(const Value& value, std::initializer_list<std::string_view> allowed,
         if (std::find(allowed.begin(), allowed.end(), key) == allowed.end())
             reject("Unknown binding field", std::string(path) + "." + key);
 }
-const Value& required(const Value& value, const std::string& key) {
-    const auto* item = value.find(key);
-    if (!item) reject("Required binding field missing", key);
+const Value& required(const Value& value, std::string_view key) {
+    // The returned node belongs only to value; the lookup key is consumed here.
+    const auto* item = value.find(std::string(key));
+    if (!item) reject("Required binding field missing", std::string(key));
     return *item;
 }
-std::string text(const Value& value, const std::string& key) {
+std::string text(const Value& value, std::string_view key) {
     const auto& item = required(value, key);
-    if (!item.isString() || item.asString().empty()) reject("Expected nonempty text", key);
+    if (!item.isString() || item.asString().empty()) reject("Expected nonempty text", std::string(key));
     return item.asString();
 }
 double number(const Value& value) {

@@ -88,7 +88,8 @@ public:
     [[nodiscard]] const std::string& canonicalJson() const noexcept { return canonicalJson_; }
 
 private:
-    friend Result<CompiledMap> compileMap(const Value&, const ITemplateResolver&, const IUnitDefinitionResolver&);
+    friend EVENGINE_API_FOUNDATION Result<CompiledMap> compileMap(const Value&, const ITemplateResolver&,
+                                                                  const IUnitDefinitionResolver&);
     CompiledMap(std::string id, std::vector<BudgetDefinition> budgets, std::vector<InstanceDefinition> instances,
                 std::string canonicalJson)
         : id_(std::move(id)),

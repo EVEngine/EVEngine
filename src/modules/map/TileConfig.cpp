@@ -5,9 +5,9 @@
 #include "common/Json.h"
 #include "common/Module.h"
 #include "common/Xml.h"
-#include "data/DataModule.h"
-#include "filesystem/Filesystem.h"
+#include "data/DataCodec.h"
 #include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 #include "graphics/Graphics.h"
 
