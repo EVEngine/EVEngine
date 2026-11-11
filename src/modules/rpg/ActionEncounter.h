@@ -56,6 +56,15 @@ public:
     [[nodiscard]] Result<void> claim(GameState& state, Tracker& tracker, std::string_view encounterId);
     /** @brief True while a committed death still needs reward delivery; saving is unsafe then. */
     [[nodiscard]] bool hasPendingReward() const;
+    /** @brief True after close() or before the first construction of the provider. */
+    [[nodiscard]] bool isClosed() const;
+    /** @brief True after a successful bind while the encounter remains open. */
+    [[nodiscard]] bool isBound() const;
+    /**
+     * @brief Last injected tick that successfully committed a hit, or -1 when none.
+     * @cost Cheap read of host-facing observation; does not touch Vitals or inventory.
+     */
+    [[nodiscard]] int lastTick() const;
 
 private:
     struct Impl;

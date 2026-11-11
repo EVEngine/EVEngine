@@ -123,6 +123,8 @@ function createPokerTable() {
     configureLayout(aiCfg, 92.0, 131.0, 12.0, 790.0, 108.0);
     aiCfg.setHoverScale(1.0);
     aiCfg.setHoverLift(0.0);
+    aiCfg.setFlipSpeed(0.14);
+    aiCfg.setFlipLift(22.0);
 
     boardCfg = pokerCard.newConfig();
     configureLayout(boardCfg, 96.0, 137.0, 12.0, 790.0, 358.0);
@@ -523,14 +525,16 @@ function drawPlayingCardBack(cx, cy, backW, backH, alpha) {
 function renderPlayingCardBacks() {
     pokerCard.capturePresentation();
     local aiHand = pokerCard.findHand("ai");
-    local aiHidden = aiHand != null && aiHand.isFaceDown() && !aiHand.isPeek();
-    if (aiHidden) {
+    if (aiHand != null) {
         for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
             local snap = pokerCard.getPresentation(i);
-            if (handContains(aiHand, snap.getInstanceId())) {
-                drawPlayingCardBack(snap.getX(), snap.getY(),
-                    snap.getW() * snap.getScale(), snap.getH() * snap.getScale(), snap.getAlpha());
-            }
+            if (!handContains(aiHand, snap.getInstanceId())) continue;
+            if (snap.isShowingFront()) continue;
+            local scale = snap.getScale();
+            local axis = snap.getFlipAxisScale();
+            local lift = snap.getFlipLift();
+            drawPlayingCardBack(snap.getX(), snap.getY() - lift,
+                snap.getW() * scale * axis, snap.getH() * scale, snap.getAlpha());
         }
     }
 
@@ -550,20 +554,19 @@ function renderPlayingCardFaces() {
     local playerHand = pokerCard.findHand("player");
     local aiHand = pokerCard.findHand("ai");
     local boardHand = pokerCard.findHand("board");
-    local aiHidden = aiHand != null && aiHand.isFaceDown() && !aiHand.isPeek();
-
     for (local i = 0; i < pokerCard.getPresentationCount(); i += 1) {
         local snap = pokerCard.getPresentation(i);
         local instanceId = snap.getInstanceId();
         local inPlayer = handContains(playerHand, instanceId);
         local inAi = handContains(aiHand, instanceId);
         local inBoard = handContains(boardHand, instanceId);
-        if ((inPlayer || inAi || inBoard) && snap.isFaceUp() && !(inAi && aiHidden)) {
-            local scale = snap.getScale();
-            gfx.drawTexturedRectRotated(getCardTexture(snap.getDefinitionId()),
-                snap.getX(), snap.getY(), snap.getW() * scale, snap.getH() * scale,
-                snap.getAngle(), 1.0, 1.0, 1.0, snap.getAlpha());
-        }
+        if (!(inPlayer || inAi || inBoard) || !snap.isShowingFront()) continue;
+        local scale = snap.getScale();
+        local axis = snap.getFlipAxisScale();
+        local lift = snap.getFlipLift();
+        gfx.drawTexturedRectRotated(getCardTexture(snap.getDefinitionId()),
+            snap.getX(), snap.getY() - lift, snap.getW() * scale * axis, snap.getH() * scale,
+            snap.getAngle(), 1.0, 1.0, 1.0, snap.getAlpha());
     }
 }
 

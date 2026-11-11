@@ -145,7 +145,7 @@ GAME ?=
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/adhoc-result-tables \
 	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
-	check/examples check \
+	check/examples check/arpg-loop check \
 	check/format check/depgraph check/versions check/scripts check/scripts-test \
 	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
@@ -189,6 +189,11 @@ check/test-manifest:
 # contract is scripts/smoke_examples.sh (MIN_RUN_SECONDS).
 check/examples:
 	python3 scripts/check_examples.py
+
+# Live eve_play acceptance for the ARPG vertical slice (starts eve + MCP).
+# Requires a built host binary; under CI wrap with xvfb-run like smoke/examples.
+check/arpg-loop:
+	bash scripts/verify_arpg_loop.sh $(or $(EVE),build/$(PLATFORM)-debug/src/engine/eve)
 
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:

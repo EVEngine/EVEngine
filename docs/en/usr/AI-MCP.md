@@ -35,6 +35,8 @@ Use your client's own settings format if it differs. Windows paths in JSON need 
 
 Start with `eve_status` and error inspection. Debug tools can pause, evaluate scripts and capture development snapshots. For structured gameplay, follow [AI Game](../../../examples/ai-game/README.en.md): its `eve_play` requests use declared operations and observations rather than arbitrary evaluation. Call `tools/list` to discover what this engine/session actually exposes.
 
+Before generating card or visual-novel artwork, call `eve_asset_kit_list` / `eve_asset_kit_get` / `eve_asset_kit_resolve` (or read `share/eve/ai/asset-kits/` / `python3 scripts/asset_kits.py`) for engine-owned pixel sizes, aspect ratios, alpha rules and path templates — do not invent Unity/Godot texture dimensions. Internal pipelines should follow `share/eve/ai/asset-kits/INTEGRATION.md`.
+
 ## Launch a native editor host
 
 The engine can serve MCP directly, without the Node bridge or a running game:

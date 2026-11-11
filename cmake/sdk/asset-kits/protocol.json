@@ -1,0 +1,93 @@
+{
+  "api": "eve.asset-kit.api",
+  "apiVersion": 1,
+  "description": "Stable, language-neutral operations for discovering and resolving EVEngine AI asset kits. Any internal system (MCP client, Python pipeline, CI job, content tool) should use these operations against the same catalog schema.",
+  "catalogSchema": "eve.asset-kit.catalog",
+  "catalogSchemaVersion": 1,
+  "transport": {
+    "file": {
+      "catalog": "share/eve/ai/asset-kits/catalog.json",
+      "schema": "share/eve/ai/asset-kits/schema.json",
+      "protocol": "share/eve/ai/asset-kits/protocol.json",
+      "sourceTree": "cmake/sdk/asset-kits/"
+    },
+    "cli": {
+      "command": "python3 scripts/asset_kits.py",
+      "flags": ["--json", "--catalog PATH", "--extra PATH"],
+      "env": ["EVE_ASSET_KITS_DIR", "EVE_ASSET_KITS_EXTRA"]
+    },
+    "mcp": {
+      "tools": [
+        "eve_asset_kit_list",
+        "eve_asset_kit_get",
+        "eve_asset_kit_resolve"
+      ]
+    },
+    "library": {
+      "python": "scripts/asset_kits.py (import asset_kits)"
+    }
+  },
+  "operations": {
+    "list": {
+      "args": {
+        "genre": "optional string filter",
+        "module": "optional module/root-slot name filter",
+        "tag": "optional tag filter",
+        "q": "optional substring match on id/title/summary"
+      },
+      "returns": {
+        "ok": true,
+        "api": "eve.asset-kit.api",
+        "apiVersion": 1,
+        "count": "number",
+        "kits": "KitSummary[]",
+        "sources": "CatalogSource[]"
+      }
+    },
+    "get": {
+      "args": { "id": "required kit id" },
+      "returns": {
+        "ok": true,
+        "kit": "Kit document",
+        "source": "CatalogSource id that provided the kit"
+      }
+    },
+    "resolve": {
+      "args": {
+        "kit": "required kit id",
+        "slot": "required slot id",
+        "vars": "optional object of placeholder values"
+      },
+      "returns": {
+        "ok": true,
+        "job": "Resolved generation job (pixelSize, path, prompt, constraints, bindings)"
+      }
+    },
+    "validate": {
+      "args": {},
+      "returns": { "ok": true, "kitCount": "number", "sources": "CatalogSource[]" }
+    },
+    "sources": {
+      "args": {},
+      "returns": {
+        "ok": true,
+        "sources": "CatalogSource[] (engine base first, then overlays)"
+      }
+    }
+  },
+  "overlay": {
+    "description": "Internal systems extend the engine catalog without forking it. Later overlays replace kits with the same id.",
+    "env": "EVE_ASSET_KITS_EXTRA=path/to/extra-catalog.json:path/to/dir",
+    "cli": "--extra path (repeatable)",
+    "document": "Same eve.asset-kit.catalog schema; may contain a subset of kits."
+  },
+  "responseEnvelope": {
+    "ok": "boolean",
+    "api": "eve.asset-kit.api",
+    "apiVersion": 1,
+    "schema": "eve.asset-kit.catalog",
+    "schemaVersion": 1,
+    "error": "string when ok=false",
+    "hint": "optional recovery string"
+  }
+}

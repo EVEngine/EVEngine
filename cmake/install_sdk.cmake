@@ -245,6 +245,10 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
     DESTINATION .
     RENAME llms.txt
 )
+# AI asset kits: pixel/format contracts for card / visual-novel art generation.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/cmake/sdk/asset-kits/"
+    DESTINATION share/eve/ai/asset-kits
+)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
     DESTINATION share/eve/ai/eve-mcp
 )
@@ -388,4 +392,12 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/README.md"
 # Desktop FreePats / TiMidity bank (win32 / linux / macosx only).
 include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
 eve_install_timidity_share()
+
+# Strip only installed Android Release copies, including copied SDL/NDK libs.
+# Keep the original build outputs intact for crash symbolization.
+if(BUILD_PLATFORM STREQUAL "android")
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/android_sdk_strip.cmake.in"
+        "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake" @ONLY)
+    install(SCRIPT "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake")
+endif()
 

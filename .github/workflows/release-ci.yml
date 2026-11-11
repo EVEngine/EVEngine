@@ -194,7 +194,9 @@ jobs:
             -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
 
       - name: Run native Intel macOS unit tests
-        timeout-minutes: 150
+        # Headroom for until-pass:2 after an occasional MoltenVK GPU hang
+        # (ErrorDeviceLost / AppleParavirtDevice) before the suite cascades.
+        timeout-minutes: 180
         env:
           CONFIGURATION: ${{ matrix.configuration }}
           ALSOFT_DRIVERS: "null"
@@ -203,8 +205,11 @@ jobs:
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           # Share the virtual GPU between one test process at a time.
           # Bound a stalled case before it consumes the whole validation lane.
+          # Keep Makefile's default --repeat until-pass:2 so a single DeviceLost
+          # on GpuDriven.* can recover in a fresh process instead of poisoning
+          # the rest of the lane (see #701).
           make --old-file="build/macosx-x86_64${suffix}" "test/macosx-x86_64${suffix}" \
-            JOBS=4 CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' \
+            JOBS=4 CTEST_JOBS=1 LABEL_FILTER='' \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
 
       - name: Upload Intel macOS build diagnostics
@@ -523,7 +528,7 @@ jobs:
 
       - name: Setup Dawn generator Python
         timeout-minutes: 5
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
 
@@ -1044,7 +1049,7 @@ jobs:
 
       - name: Download example smoke runtime
         timeout-minutes: 10
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: linux-example-smoke-runtime
           path: ${{ runner.temp }}/example-smoke-artifact

@@ -3,6 +3,7 @@
 
 
 #include "common/Module.h"
+#include "common/Result.h"
 
 #include <cstdint>
 #include <functional>
@@ -81,6 +82,22 @@ public:
     bool             isConnected() const;
     /** @brief Closes the session (idempotent). */
     void             close();
+    /** @brief Begins a nested-counted transaction (`BEGIN` on the outermost enter). */
+    [[nodiscard]] eve::Result<void> beginTransaction();
+    /** @brief Commits one nesting level (`COMMIT` when the outermost level exits). */
+    [[nodiscard]] eve::Result<void> commitTransaction();
+    /** @brief Rolls back the whole open transaction and clears nesting. */
+    [[nodiscard]] eve::Result<void> rollbackTransaction();
+    /** @brief Compatibility-only boolean facade over beginTransaction(). */
+    bool begin();
+    /** @brief Compatibility-only boolean facade over commitTransaction(). */
+    bool commit();
+    /** @brief Compatibility-only boolean facade over rollbackTransaction(). */
+    bool rollback();
+    /** @brief True while at least one beginTransaction() nesting level is open. */
+    bool isInTransaction() const;
+    /** @brief Compatibility-only boolean alias of isInTransaction(). */
+    bool inTransaction() const;
     /** @brief Executes a statement; returns the affected row count. */
     int              execute(const std::string& sql);
     /** @brief Runs a SELECT and returns every row as name/value maps. */
@@ -89,6 +106,8 @@ public:
     std::string      queryJson(const std::string& sql);
     /** @brief Inserts a row map; returns the affected row count. */
     int              insert(const std::string& table, const Row& values);
+    /** @brief Insert-or-replace a row map (`INSERT OR REPLACE`); returns affected rows. */
+    int upsert(const std::string& table, const Row& values);
     /** @brief Updates rows matching whereClause; returns the affected row count. */
     int              update(const std::string& table, const Row& values, const std::string& whereClause);
     /** @brief Deletes rows matching whereClause; returns the affected row count. */
@@ -96,6 +115,8 @@ public:
 
     /** @brief Script-friendly insert: JSON must be an object of column/value pairs. */
     int insertJson(const std::string& table, const std::string& json);
+    /** @brief Script-friendly insert-or-replace from a JSON object. */
+    int upsertJson(const std::string& table, const std::string& json);
     /** @brief Script-friendly update; whereClause is raw SQL. */
     int updateJson(const std::string& table, const std::string& json, const std::string& whereClause);
 
@@ -105,9 +126,17 @@ public:
     int              removeByKey(const std::string& table, const std::string& key, const Value& id);
     /** @brief Selects rows where key == id. */
     std::vector<Row> queryByKey(const std::string& table, const std::string& key, const Value& id);
-    /** @brief Builds a script-facing Model repository for a table. */
+    /**
+     * @brief Builds a script-facing Model repository for a table.
+     * @ownership Caller deletes.
+     * @lifetime Valid until the caller deletes it; must not outlive this Connection.
+     */
     Model*           model(std::string table, std::string primaryKey = "id");
-    /** @brief Builds a fluent Query builder for a table. */
+    /**
+     * @brief Builds a fluent Query builder for a table.
+     * @ownership Caller deletes.
+     * @lifetime Valid until the caller deletes it; must not outlive this Connection.
+     */
     Query*           from(std::string table);
 
     /** @brief ORM helper: persists one mapped object. */
@@ -142,6 +171,7 @@ public:
 
 private:
     std::unique_ptr<Poco::Data::Session> session_;
+    int                                  transactionDepth_ = 0;
 };
 
 /** @brief Composable filtered/sorted/paged query shared by C++ and scripts. */
@@ -149,33 +179,221 @@ class EVENGINE_API_FOUNDATION Query {
 public:
     /** @brief Queries Query. */
     Query(Connection* connection, std::string table);
-    /** @brief Where. */
-    Query*           where(const std::string& column, const std::string& op, Value value);
-    /** @brief Where json. */
-    Query*           whereJson(const std::string& column, const std::string& op, const std::string& valueJson);
-    /** @brief Order by. */
-    Query*           orderBy(const std::string& column, bool ascending = true);
-    /** @brief Limit. */
-    Query*           limit(int count);
-    /** @brief Offset. */
-    Query*           offset(int count);
+
+    /**
+     * @brief Adds a quoted projection column (default remains SELECT *).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* select(const std::string& column);
+    /**
+     * @brief Adds a quoted projection column with AS alias.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* selectAs(const std::string& column, const std::string& alias);
+    /**
+     * @brief Adds a validated aggregate/expression projection with optional alias.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* selectExpr(const std::string& expression, const std::string& alias = {});
+    /**
+     * @brief Script helper: JSON array of names, {column,as}, or {expr,as}.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* selectJson(const std::string& columnsJson);
+    /**
+     * @brief SELECT DISTINCT …
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* distinct(bool enabled);
+
+    /**
+     * @brief INNER JOIN table ON leftColumn = rightColumn (dotted names allowed).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* innerJoin(const std::string& table, const std::string& leftColumn, const std::string& rightColumn);
+    /**
+     * @brief LEFT JOIN table ON leftColumn = rightColumn (dotted names allowed).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* leftJoin(const std::string& table, const std::string& leftColumn, const std::string& rightColumn);
+
+    /**
+     * @brief AND-combined comparison predicate.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* where(const std::string& column, const std::string& op, Value value);
+    /**
+     * @brief Script AND where; valueJson is one JSON scalar.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereJson(const std::string& column, const std::string& op, const std::string& valueJson);
+    /**
+     * @brief OR-combined comparison predicate.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* orWhere(const std::string& column, const std::string& op, Value value);
+    /**
+     * @brief Script OR where; valueJson is one JSON scalar.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* orWhereJson(const std::string& column, const std::string& op, const std::string& valueJson);
+    /**
+     * @brief AND column IN (…); valuesJson is a JSON array of scalars.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereIn(const std::string& column, const std::string& valuesJson);
+    /**
+     * @brief AND column NOT IN (…).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereNotIn(const std::string& column, const std::string& valuesJson);
+    /**
+     * @brief AND column BETWEEN lo AND hi.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereBetween(const std::string& column, Value low, Value high);
+    /**
+     * @brief Script BETWEEN; lowJson/highJson are JSON scalars.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereBetweenJson(const std::string& column, const std::string& lowJson, const std::string& highJson);
+    /**
+     * @brief AND column IS NULL.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereNull(const std::string& column);
+    /**
+     * @brief AND column IS NOT NULL.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereNotNull(const std::string& column);
+    /**
+     * @brief AND (p0 OR p1 OR …); predicatesJson is [{column,op,value}, …].
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* whereAnyJson(const std::string& predicatesJson);
+    /**
+     * @brief OR (p0 OR p1 OR …) against the previous predicate.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* orWhereAnyJson(const std::string& predicatesJson);
+
+    /**
+     * @brief Adds a GROUP BY column (dotted names allowed).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* groupBy(const std::string& column);
+    /**
+     * @brief Script GROUP BY from a JSON array of column names.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* groupByJson(const std::string& columnsJson);
+    /**
+     * @brief AND-style HAVING comparison (after GROUP BY).
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* having(const std::string& columnOrExpr, const std::string& op, Value value);
+    /**
+     * @brief Script HAVING; valueJson is one JSON scalar.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* havingJson(const std::string& columnOrExpr, const std::string& op, const std::string& valueJson);
+
+    /**
+     * @brief Order by.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* orderBy(const std::string& column, bool ascending = true);
+    /**
+     * @brief Limit.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* limit(int count);
+    /**
+     * @brief Offset.
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* offset(int count);
     /** @brief All. */
     std::vector<Row> all();
     /** @brief All json. */
     std::string      allJson();
     /** @brief First json. */
     std::string      firstJson();
-    /** @brief Returns the number of count. */
+    /** @brief Returns matching row count (or number of groups when GROUP BY is set). */
     int              count();
 
 private:
-    std::string              selectSql(bool countOnly, int forcedLimit = -1) const;
+    struct Predicate {
+        bool        combineWithOr = false;
+        std::string sql;
+    };
+    struct Join {
+        std::string type;  // INNER / LEFT
+        std::string table;
+        std::string left;
+        std::string right;
+    };
+
+    std::string selectSql(bool countOnly, int forcedLimit = -1) const;
+    /**
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* addComparison(bool combineWithOr, const std::string& column, const std::string& op, Value value);
+    /**
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* addIn(bool negate, const std::string& column, const std::string& valuesJson);
+    /**
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* addJoin(std::string type, std::string table, std::string leftColumn, std::string rightColumn);
+    /**
+     * @ownership Borrowed; returns this for chaining.
+     * @lifetime Valid until this Query is destroyed.
+     */
+    Query* addAnyGroup(bool combineWithOr, const std::string& predicatesJson);
+
     Connection*              connection_;
     std::string              table_;
-    std::vector<std::string> predicates_;
+    std::vector<std::string> columns_;
+    std::vector<Join>        joins_;
+    std::vector<Predicate>   predicates_;
+    std::vector<std::string> groups_;
+    std::vector<std::string> havings_;
     std::vector<std::string> ordering_;
-    int                      limit_  = -1;
-    int                      offset_ = 0;
+    int                      limit_    = -1;
+    int                      offset_   = 0;
+    bool                     distinct_ = false;
 };
 
 /** @brief Typed active-record repository built from a Mapping<T>. */

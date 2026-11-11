@@ -2156,6 +2156,63 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
     CHECK_EQ(ranking.size(), 2);
     CHECK_EQ(std::get<std::string>(ranking[0]["name"]), "general");
     CHECK_EQ(ranked->count(), 4);
+
+    CHECK(db.beginTransaction().ok());
+    CHECK(db.isInTransaction());
+    CHECK_EQ(db.upsertJson("actors", R"({"id":7,"name":"general","hp":120})"), 1);
+    CHECK(db.commitTransaction().ok());
+    CHECK(!db.isInTransaction());
+    auto upserted = db.queryByKey("actors", "id", std::int64_t(7));
+    CHECK_EQ(upserted.size(), 1);
+    CHECK_EQ(std::get<double>(upserted[0]["hp"]), 120.0);
+
+    CHECK(db.begin());
+    CHECK(db.inTransaction());
+    CHECK_EQ(db.insertJson("actors", R"({"id":8,"name":"rolled","hp":1})"), 1);
+    CHECK(db.rollback());
+    CHECK(!db.isInTransaction());
+    CHECK_EQ(db.queryByKey("actors", "id", std::int64_t(8)).size(), 0);
+
+    db.execute("CREATE TABLE forces (id TEXT PRIMARY KEY, name TEXT)");
+    db.execute(
+        "CREATE TABLE officers (id TEXT PRIMARY KEY, name TEXT, force_id TEXT, leadership INTEGER, war INTEGER)");
+    db.insertJson("forces", R"({"id":"wei","name":"Wei"})");
+    db.insertJson("forces", R"({"id":"shu","name":"Shu"})");
+    db.insertJson("officers", R"({"id":"cao","name":"Cao","force_id":"wei","leadership":96,"war":72})");
+    db.insertJson("officers", R"({"id":"zhang","name":"Zhang","force_id":"wei","leadership":88,"war":92})");
+    db.insertJson("officers", R"({"id":"liu","name":"Liu","force_id":"shu","leadership":80,"war":70})");
+
+    std::unique_ptr<Query> joined(db.from("officers"));
+    joined->selectAs("officers.name", "officer_name")
+        ->selectAs("forces.name", "force_name")
+        ->select("officers.leadership")
+        ->innerJoin("forces", "officers.force_id", "forces.id")
+        ->where("officers.force_id", "=", "wei")
+        ->orderBy("officers.leadership", false);
+    auto joinedRows = joined->all();
+    CHECK_EQ(joinedRows.size(), 2);
+    CHECK_EQ(std::get<std::string>(joinedRows[0].at("officer_name")), "Cao");
+    CHECK_EQ(std::get<std::string>(joinedRows[0].at("force_name")), "Wei");
+
+    std::unique_ptr<Query> any(db.from("officers"));
+    any->where("force_id", "=", "wei")
+        ->whereAnyJson(R"([{"column":"war","op":">=","value":90},{"column":"leadership","op":">=","value":95}])");
+    CHECK_EQ(any->count(), 2);
+
+    std::unique_ptr<Query> between(db.from("officers"));
+    between->whereBetween("leadership", std::int64_t(85), std::int64_t(100))->whereIn("force_id", R"(["wei"])");
+    CHECK_EQ(between->count(), 2);
+
+    std::unique_ptr<Query> grouped(db.from("officers"));
+    grouped->select("force_id")
+        ->selectExpr("COUNT(*)", "officer_count")
+        ->selectExpr("AVG(leadership)", "avg_lead")
+        ->groupBy("force_id")
+        ->having("COUNT(*)", ">=", std::int64_t(1))
+        ->orderBy("force_id", true);
+    auto groups = grouped->all();
+    CHECK_EQ(groups.size(), 2);
+    CHECK_EQ(grouped->count(), 2);
 }
 }  // namespace test_database
 

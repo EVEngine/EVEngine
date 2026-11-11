@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sentinels",
+    "startPolicy": "auto",
+    "objectives": [
+      {"id": "kills", "topic": "kill", "target": "sentinel", "count": 3}
+    ]
+  },
+  {
+    "id": "scout.report",
+    "startPolicy": "manual",
+    "completePolicy": "claim",
+    "objectives": [
+      {"id": "scout_kill", "topic": "kill", "target": "sentinel", "count": 1}
+    ],
+    "rewards": [
+      {"type": "attribute", "id": "gold", "amount": 8}
+    ],
+    "tags": ["side"],
+    "extra": {"title": "Scout Report"}
+  }
+]

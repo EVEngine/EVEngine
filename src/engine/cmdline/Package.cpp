@@ -123,7 +123,9 @@ PackageLockRelease waitForExternalPackageLocks(const path& candidate, DWORD runt
     const auto deadline     = chrono::steady_clock::now() + chrono::seconds(5);
     const auto publisherPid = GetCurrentProcessId();
     if (owners.status != ERROR_SUCCESS) return PackageLockRelease::Unavailable;
-    if (owners.processes.empty()) return PackageLockRelease::NotExternal;
+    // The borrow can end between the failed rename and this snapshot. An empty
+    // successful query must permit the same verified retry as a later release.
+    if (owners.processes.empty()) return PackageLockRelease::Released;
     for (;;) {
         if (find(owners.processes.begin(), owners.processes.end(), publisherPid) != owners.processes.end() ||
             find(owners.processes.begin(), owners.processes.end(), runtimePid) != owners.processes.end())
@@ -654,7 +656,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
                 // delete-sharing. Revalidate acceptance inputs after that borrow ends.
                 if (hashFile(archive) != archiveHash || hashFile(runtimeDst) != runtimeHash)
                     throw runtime_error("Candidate changed while waiting for external package locks");
-                cerr << "External package locks released; publishing verified candidate\n";
+                cerr << "No package lockers reported; retrying verified candidate\n";
                 rename(outDir, destination, ec);
             }
         } catch (const std::exception& diagnosticError) {
