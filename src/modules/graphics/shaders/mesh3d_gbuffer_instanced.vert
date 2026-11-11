@@ -3,14 +3,14 @@
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
-layout(location = 3) in vec4 inMvp0;
-layout(location = 4) in vec4 inMvp1;
-layout(location = 5) in vec4 inMvp2;
-layout(location = 6) in vec4 inMvp3;
-layout(location = 7) in vec4 inModelR0;
-layout(location = 8) in vec4 inModelR1;
-layout(location = 9) in vec4 inModelR2;
-layout(location = 10) in vec4 inClip;
+layout(location = 7) in vec4 inMvp0;
+layout(location = 8) in vec4 inMvp1;
+layout(location = 9) in vec4 inMvp2;
+layout(location = 10) in vec4 inMvp3;
+layout(location = 11) in vec4 inModelR0;
+layout(location = 12) in vec4 inModelR1;
+layout(location = 13) in vec4 inModelR2;
+layout(location = 14) in vec4 inClip;
 
 layout(location = 0) out vec3 vWorldNormal;
 layout(location = 2) out vec2 vUV;

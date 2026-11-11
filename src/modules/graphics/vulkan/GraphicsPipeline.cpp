@@ -998,9 +998,11 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .build();
 
     // All mesh G-buffer shaders emit zero emissive. Preserve the attachment's
-    // black clear for readers without writing the same value for every fragment.
+    // black clear without redundant per-fragment writes when the enabled
+    // device feature permits different attachment masks.
     std::array<vk::PipelineColorBlendAttachmentState, 5> gbufferBlendAttachments{};
-    for (size_t i = 0; i < 4; ++i)
+    const size_t writableTargets = device.physical_device.features.independentBlend ? 4u : 5u;
+    for (size_t i = 0; i < writableTargets; ++i)
         gbufferBlendAttachments[i].colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
                                                     vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
     vk::PipelineColorBlendStateCreateInfo gbufferBlend{};

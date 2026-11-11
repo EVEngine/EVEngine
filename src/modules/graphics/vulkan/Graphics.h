@@ -1884,7 +1884,7 @@ private:
             std::vector<vk::VertexInputAttributeDescription> attributes;
             attributes.reserve(8);
             for (uint32_t i = 0; i < 8; ++i)
-                attributes.push_back({3u + i, binding, vk::Format::eR32G32B32A32Sfloat, i * 16u});
+                attributes.push_back({7u + i, binding, vk::Format::eR32G32B32A32Sfloat, i * 16u});
             return attributes;
         }
     };
