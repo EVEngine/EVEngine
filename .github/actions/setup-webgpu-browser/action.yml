@@ -16,5 +16,6 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
+        sudo bash .github/scripts/configure-ubuntu-mirror.sh
         sudo apt-get install -y --no-install-recommends xvfb xauth mesa-vulkan-drivers vulkan-tools
         bash .github/scripts/setup-software-vulkan.sh

@@ -194,10 +194,11 @@ APT signature/TLS checks, package lists, retry/time limits and all build/test ga
 The subsequent HTTPS attempts also timed out, and both fuzz jobs explicitly reported
 temporary Ubuntu mirror DNS resolution failures. Ubuntu's published mirror guidance
 recommends registered archive replicas for this availability problem. The shared CI
-normalizer therefore selects the registered Kernel.org Ubuntu replica over HTTPS,
+normalizer therefore selects the registered Kernel.org Ubuntu archive replica over HTTPS,
 including the previously unnormalized fuzz/profile preparation paths. It changes only
-Ubuntu archive/security URI roots; Ubuntu ports, other repositories, suites, components,
-the existing signing key and validity policy remain unchanged. No DNS resolver, host
+Ubuntu archive/security URI roots. Other repositories, suites, components,
+the existing signing key and validity policy remain unchanged; ARM ports are handled
+separately below. No DNS resolver, host
 mapping, credentials, package implementation or test gate is replaced.
 
 Local HTTPS retrieval of noble, noble-updates, noble-backports and noble-security
@@ -210,6 +211,25 @@ https://discourse.ubuntu.com/t/80500 (Ubuntu mirror guidance).
 An isolated real APT update with error-on-any-failure also refreshed all four suites
 successfully (695kB in13 seconds), retaining the existing Ubuntu signing keyring.
 Only metadata caches under ignored build/ were written; no packages were installed.
+
+The live Linux ARM64 SDK page at8aef120410 subsequently showed the same temporary
+DNS failure for ports.ubuntu.com, with its package-install step still running after
+75 minutes. The initial archive-only normalizer intentionally left that distinct
+architecture repository untouched. It now maps ports to the separately registered
+UC Berkeley Ports HTTPS replica, never to the x64 archive. Four Noble Ports InRelease
+files returned200, contained signed ARM64 package-index hashes and passed gpgv with
+the same Ubuntu archive signing key. An isolated real ARM64 APT update with
+error-on-any-failure refreshed all four suites successfully (694kB in4 seconds).
+The native ARM SDK and test preparation paths use this shared normalizer, three
+bounded update attempts and fatal partial-index errors; the SDK install step has
+the existing native-test lane's25-minute bound. Package lists and all native
+build/archive/consumer checks remain. Registry:
+https://launchpad.net/ubuntu/+mirror/mirrors.ocf.berkeley.edu-archive2 .
+The native SDK consumer, Linux package-runtime and extracted WebGPU consumer
+preparation steps also invoke the same normalizer before APT. The source-quality
+lane's isolated Noble source file uses the verified x64 replica directly, retaining
+its Ubuntu key and suites. This closes the remaining preparation paths for the
+applicable CI/SDK matrix rather than fixing only the initial SDK producer.
 
 ## Validation and review gates
 

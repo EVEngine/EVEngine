@@ -601,7 +601,9 @@ jobs:
           path: candidate-sdk-set
       - name: Install Linux runtime dependencies
         if: runner.os == 'Linux'
+        timeout-minutes: 25
         run: |
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           sudo apt-get update -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends cmake build-essential \
             mesa-vulkan-drivers libvulkan1 xvfb xauth libasound2t64 libx11-6 \
@@ -760,6 +762,7 @@ jobs:
       - name: Install headless runtime deps
         timeout-minutes: 10
         run: |
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
@@ -991,6 +994,7 @@ jobs:
       - name: Install headless runtime deps
         timeout-minutes: 10
         run: |
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
