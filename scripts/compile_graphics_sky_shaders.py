@@ -13,7 +13,7 @@ import utf8_stdio
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def compile_header(programs: list[tuple[Path, str]], target: Path, words_per_line: int = 8) -> None:
+def compile_header(programs: list[tuple[Path, str]], target: Path) -> None:
     lines = [
         "#pragma once",
         "#include <cstdint>",
@@ -34,8 +34,8 @@ def compile_header(programs: list[tuple[Path, str]], target: Path, words_per_lin
             if not words or words[0] != 0x07230203:
                 raise ValueError("Invalid SPIR-V magic")
             lines.append(f"inline const std::vector<uint32_t> {name}{{")
-            for offset in range(0, len(words), words_per_line):
-                lines.append("    " + ", ".join(f"0x{word:08x}u" for word in words[offset : offset + words_per_line]) + ",")
+            for offset in range(0, len(words), 8):
+                lines.append("    " + ", ".join(f"0x{word:08x}u" for word in words[offset : offset + 8]) + ",")
             lines.append("};")
     generated = "\n".join(lines) + "\n"
     if not target.exists() or target.read_text(encoding="utf-8") != generated:
@@ -53,13 +53,11 @@ def main() -> None:
          for stage in ("vert", "frag")],
         ROOT / "src/modules/graphics/sky/SkyViewLutSpv.h",
     )
-    compile_header([(ROOT / "test/sky_wisps_probe.frag", "sky_wisps_probe_frag")], ROOT / "test/SkyWispsSpv.h",
-                   words_per_line=9)
+    compile_header([(ROOT / "test/sky_wisps_probe.frag", "sky_wisps_probe_frag")], ROOT / "test/SkyWispsSpv.h")
     compile_header(
         [(ROOT / f"src/modules/graphics/shaders/sky_wisps.{stage}", f"sky_wisps_{stage}")
          for stage in ("vert", "frag")],
         ROOT / "src/modules/graphics/sky/SkyWispsSpv.h",
-        words_per_line=9,
     )
 
 

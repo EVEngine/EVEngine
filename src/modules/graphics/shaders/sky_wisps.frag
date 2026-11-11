@@ -34,12 +34,6 @@ layout(set=1,binding=6) uniform sampler2D moonNormalTexture;
 void main() {
     float alpha = skyWispsOpacityAtPhase(wispsTexture,wispsUV,vertexRed,atmosphere.wispsMotion.xy,
         abs(frame.data[31]),atmosphere.wispsBaseColor.w,atmosphere.wispsLighting.w);
-    if (all(equal(sunDiskColor, vec3(12345.0, 23456.0, 34567.0)))) {
-        float sampledDensity = texture(wispsTexture, wispsUV).r;
-        color = vec4((1.0 - sampledDensity) * 10000.0, (1.0 - atmosphere.wispsLighting.w) * 10000.0,
-                     (1.0 - alpha) * 10000.0, 1.0);
-        return;
-    }
     vec3 radiance = wispsColor*skyWispsLitScale(celestialGradients,atmosphere.wispsLighting.x);
     vec3 direction = normalize(worldRay);
     float skyScale = mix(1.0,skyWispsLitScale(celestialGradients,atmosphere.wispsLighting.x),
@@ -61,10 +55,7 @@ void main() {
             lunarXAxis,lunarScaleIntensity.x,lunarPhase,atmosphere.moonDiskShape.w,atmosphere.moonDiskGlow.xy);
         lunar.rgb*=atmosphere.moonDiskColor.rgb*lunarScaleIntensity.y;
     }
-    vec3 composed = radiance;
-    if (alpha != 1.0)
-        composed = mix(skyViewRadiance(direction)*skyScale+(solar+stars)*(1-lunar.a)+lunar.rgb,radiance,alpha);
-    composed += glow;
+    vec3 composed = mix(skyViewRadiance(direction)*skyScale+(solar+stars)*(1-lunar.a)+lunar.rgb,radiance,alpha)+glow;
     composed = skyMaterialContrast(composed,cycleContrast);
     color = vec4(applyHeightFogColor(composed,direction,cycleFogBase),1);
 }

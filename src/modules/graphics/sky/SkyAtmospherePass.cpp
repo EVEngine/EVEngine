@@ -353,6 +353,12 @@ Result<std::unique_ptr<SkyAtmospherePass>> SkyAtmospherePass::prepare(Graphics& 
             cloudImages[2].binding = 2;
             if (cloudImages[2].dimension != ShaderImageDimension::Image2D)
                 return Prepared::failure(invalid("Wisps density texture must be two dimensional"));
+            // Filtering a single texel is equivalent to fetching it directly, but can lose exact full opacity.
+            if (cloudImages[2].width == 1 && cloudImages[2].height == 1 && cloudImages[2].layers == 1 &&
+                cloudImages[2].mipLevels == 1) {
+                cloudImages[2].sampler.min = FilterMode::Nearest;
+                cloudImages[2].sampler.mag = FilterMode::Nearest;
+            }
             state.wispsShader = graphics.newMeshShaderFromSpv({}, {});
             if (!state.wispsShader) return Prepared::failure(invalid("Could not create wisps shader"));
             auto upload =
