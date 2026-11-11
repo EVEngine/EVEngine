@@ -329,9 +329,8 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         }
         auto* root = dynamic_cast<Match*>(ecs::try_get(handle));
         if (!root) continue;
-        const auto missing =
-            missingComponent<Match::Events, Match::Identity, Match::Participants, Match::Rules, Match::State,
-                             Match::Scores, Match::Objectives, Match::Campaign>(*root);
+        const auto missing = missingComponent<Match::Events, Match::Identity, Match::Participants, Match::Rules,
+                                              Match::State, Match::Scores, Match::Objectives, Match::Campaign>(*root);
         if (!missing.empty())
             return Result<RTSStateSnapshot>::failure(
                 Diagnostic::error(DiagnosticCode::NotFound,
@@ -517,13 +516,13 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         auto* match = dynamic_cast<Match*>(ecs::try_get(handle));
         if (match == nullptr) continue;
         RTSMatchSnapshot value;
-        value.subject = detail::existingComponent<Match::Identity>(*match)->subject;
-        value.rules = *detail::existingComponent<Match::Rules>(*match);
-        value.state = *detail::existingComponent<Match::State>(*match);
-        value.scores = *detail::existingComponent<Match::Scores>(*match);
+        value.subject    = detail::existingComponent<Match::Identity>(*match)->subject;
+        value.rules      = *detail::existingComponent<Match::Rules>(*match);
+        value.state      = *detail::existingComponent<Match::State>(*match);
+        value.scores     = *detail::existingComponent<Match::Scores>(*match);
         value.objectives = *detail::existingComponent<Match::Objectives>(*match);
-        value.campaign = *detail::existingComponent<Match::Campaign>(*match);
-        value.events = *detail::existingComponent<Match::Events>(*match);
+        value.campaign   = *detail::existingComponent<Match::Campaign>(*match);
+        value.events     = *detail::existingComponent<Match::Events>(*match);
         for (const auto& participant : detail::existingComponent<Match::Participants>(*match)->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
                                           participant.eliminated, participant.surrendered, participant.reason});

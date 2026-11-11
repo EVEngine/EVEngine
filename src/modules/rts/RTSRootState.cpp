@@ -1,5 +1,5 @@
 /** @file RTSRootState.cpp
- * @brief rts module-interface: rts.roots v1 portable data face for native v3 roots.
+ * @brief rts module-interface: rts.roots v2 portable data face for native v3 roots.
  * @remarks No ECS, services, policy evaluation or event replay. Other game participants remain external.
  */
 #include <charconv>
@@ -67,9 +67,8 @@ static_assert(int(MatchPhase::Setup) == 0 && int(MatchPhase::Running) == 1 && in
 template <class T>
 constexpr int enumMaximum() {
     if constexpr (std::is_same_v<T, CombatStance> || std::is_same_v<T, RTSEffectKind> ||
-                  std::is_same_v<T, MatchPhase> ||
-                  std::is_same_v<T, effects::StackCountPolicy> || std::is_same_v<T, effects::DurationPolicy> ||
-                  std::is_same_v<T, effects::OverflowPolicy>)
+                  std::is_same_v<T, MatchPhase> || std::is_same_v<T, effects::StackCountPolicy> ||
+                  std::is_same_v<T, effects::DurationPolicy> || std::is_same_v<T, effects::OverflowPolicy>)
         return 2;
     else if constexpr (std::is_same_v<T, AbilityTarget> || std::is_same_v<T, effects::StackMode> ||
                        std::is_same_v<T, effects::MagnitudePolicy>)
@@ -446,8 +445,9 @@ Result<RTSStateSnapshot> RTSStateSnapshot::prepareState(const Value& value) {
         for (const auto* key : {"schema", "version", "snapshotVersion", "units", "buildings", "resourceNodes",
                                 "players", "factions", "matches", "movementGroups", "projectiles"})
             if (!o->contains(key)) invalid("Missing RTS root field");
-        if (text(o->at("schema")) != "rts.roots" || !o->at("version").isInt64() || (o->at("version").asInt() != 1 && o->at("version").asInt() != 2) ||
-            !o->at("snapshotVersion").isInt64() || o->at("snapshotVersion").asInt() != 3)
+        if (text(o->at("schema")) != "rts.roots" || !o->at("version").isInt64() ||
+            (o->at("version").asInt() != 1 && o->at("version").asInt() != 2) || !o->at("snapshotVersion").isInt64() ||
+            o->at("snapshotVersion").asInt() != 3)
             invalid("Unsupported RTS root schema or version");
         RTSStateSnapshot state;
         decode(o->at("units"), state.units);
@@ -459,7 +459,7 @@ Result<RTSStateSnapshot> RTSStateSnapshot::prepareState(const Value& value) {
             // Migrate only the historical three-field Rules/State and five-field Match rows.
             // Copy the candidate first; failures cannot alter the caller's archive.
             Value migrated = o->at("matches");
-            auto* matches = migrated.getIf<Value::Array>();
+            auto* matches  = migrated.getIf<Value::Array>();
             if (!matches) invalid("Invalid legacy match rows");
             for (auto& match : *matches) {
                 auto* row = match.getIf<Value::Array>();

@@ -4017,3 +4017,11 @@ Crowd::Snapshot 增加 crowd.snapshot v1 encodeState/prepareState，完整覆盖
 ### 2026-11-11：交付范围与 PR
 
 用户明确本次无需执行 Windows 原生验收，按已通过的 Linux/macOS 实现和验证提交至 dev 的 PR。Windows 原生结果保留为未执行记录，不再作为此次提交的阻塞条件；未宣称 Windows 已通过。原有 CI 工作流仍保留相应平台检查。
+
+### 2026-11-11：PR #793 与 dev 的逐项冲突合并
+
+- 六处冲突逐项保留双方责任：action 文档同时保留生成系统保存协议与 dev 的每 tick 约束/guide pack；Crowd 和 Combat 保留双方独立测试；ScriptProvider 保留提前观察 Result、预分配返回句柄及只回滚当前 generation 的事务；Match 创建仍在所有组件初始化成功后发布，新增 Scores/Objectives/Campaign 也纳入完整性检查与只读捕获。
+- dev 新增 Match 比分、任务目标、战役事件/计时器及精确时钟。便携 rts.roots 写出升级为 v2，保留这些状态；读取 v1 时只接纳历史严格行形状并迁移新增状态为显式初值，输入 Value 不被修改。新增 merged Match 往返与 legacy Match 迁移/畸形拒绝回归；没有用忽略新状态来消除冲突。
+- 合并验证中发现 dev 的 audit_cpp_calls 将已 resolve 的告警路径与未 resolve 的根目录比较，macOS /var→/private/var 临时路径导致已有测试丢诊断。canonical 审计入口改为比较双方 resolve 路径；原 8 项回归已通过，完整源码门禁与原生 RTS 测试仍在执行。此前平台全量通过结果保持其版本范围，不充当合并后结果。
+
+- 合并后的最终 `make check` 已通过（base=origin/dev），日志 `/tmp/spawn-pr-merged-final-check.log`；RTS 工厂实际消费者重编成功，82/82 项组合契约通过，包括两项新 Match portable 往返/legacy 迁移，日志 `/tmp/spawn-pr-merged-rts-contracts-final.log`。首次新增用例因默认空投射物快照无效而被正确拒绝，已将夹具改为真实 RTSProjectileSystem 默认快照后重跑全部 82 项，未放宽生产校验。保存了初次失败日志，不将其隐藏或误计通过。适用唯一 codec、显式迁移、原子发布、依赖源码所有权与实际消费者验证规范，无例外。

@@ -1,5 +1,5 @@
 #pragma once
-// Private rts.roots v1 row ledger. Both directions consume the same typed fields;
+// Private rts.roots v2 row ledger. Both directions consume the same typed fields;
 // orders, effects, projectiles and production retain their canonical nested codecs.
 #include <tuple>
 #include <type_traits>
@@ -160,7 +160,8 @@ auto fields(T& v) {
     else if constexpr (std::is_same_v<U, Match::Objectives>)
         return std::tie(v.values);
     else if constexpr (std::is_same_v<U, MissionObjectiveSpec>)
-        return std::tie(v.id, v.kind, v.beneficiaryTeam, v.targetFaction, v.targetSubject, v.archetype, v.resourceType, v.requiredDuration, v.targetValue, v.requiredSubjects, v.endsMatch, v.failsMatch);
+        return std::tie(v.id, v.kind, v.beneficiaryTeam, v.targetFaction, v.targetSubject, v.archetype, v.resourceType,
+                        v.requiredDuration, v.targetValue, v.requiredSubjects, v.endsMatch, v.failsMatch);
     else if constexpr (std::is_same_v<U, MissionObjectiveState>)
         return std::tie(v.spec, v.status, v.completedSequence);
     else if constexpr (std::is_same_v<U, MissionTriggerEventFilter>)
@@ -182,7 +183,8 @@ auto fields(T& v) {
     else if constexpr (std::is_same_v<U, MissionActionLogEntry>)
         return std::tie(v.sequence, v.tick, v.triggerId, v.kind, v.targetId, v.numeric, v.args);
     else if constexpr (std::is_same_v<U, Match::Campaign>)
-        return std::tie(v.triggers, v.monitors, v.timers, v.variables, v.pending, v.actions, v.trackedAlive, v.bridgedEventSequence, v.actionSequence);
+        return std::tie(v.triggers, v.monitors, v.timers, v.variables, v.pending, v.actions, v.trackedAlive,
+                        v.bridgedEventSequence, v.actionSequence);
     else if constexpr (std::is_same_v<U, Match::Events::Event>)
         return std::tie(v.sequence, v.kind, v.faction, v.team, v.reason);
     else if constexpr (std::is_same_v<U, Match::Events>)

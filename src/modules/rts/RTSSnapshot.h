@@ -185,7 +185,7 @@ struct RTSStateSnapshot {
     std::vector<RTSFactionSnapshot> factions;
     std::vector<RTSMatchSnapshot> matches;
     RTSProjectileSystemSnapshot projectiles;
-    /** @brief Encode all native v3 root facts and stable relationships as rts.roots v1.
+    /** @brief Encode all native v3 root facts and stable relationships as rts.roots v2.
      * @return Owning value, or unsupported native version / invalid or nonportable facts.
      * @remarks External attributes, weapons, Crowd, clocks and providers remain separate joined participants.
      * @ownership Read-only owner-thread save boundary; no ECS, callbacks or services retained/invoked.
@@ -193,10 +193,10 @@ struct RTSStateSnapshot {
      * @throws std::bad_alloc Source and live worlds remain unchanged.
      */
     [[nodiscard]] EVENGINE_API_DOMAINS Result<Value> encodeState() const;
-    /** @brief Admit strict initial rts.roots v1 with canonical nested codecs and closed typed root relationships.
+    /** @brief Admit rts.roots v2 or migrate strict v1 with canonical nested codecs and closed typed root relationships.
      * @param value Borrowed only during this synchronous CPU call; returned facts own all data.
      * @return Detached native v3 roots, or unknown fields/version, invalid values and broken relationships.
-     * @remarks Initial wire v1 has no migration; native v1/v2 remain readable through native rebuild only.
+     * @remarks Wire v1 migrates missing Match state to defaults; native v1/v2 use native rebuild only.
      * Does not create entities, evaluate policies, replay events or publish a world.
      * @cost Validates and copies all roots, nested state and relationship indices per explicit load.
      * @throws std::bad_alloc Input and live worlds remain unchanged.
