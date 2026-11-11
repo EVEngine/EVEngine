@@ -133,12 +133,20 @@ Result<void> Graphics::setMesh3DPbrSurface(const PbrSurface* surface) {
 bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, bool canvasTarget,
                            Mesh3dDraw& draw, GpuMesh& mesh) {
     const auto& surface = *draw.pbrSurface;
-    const bool environment = draw.environment && gpuForTexture(draw.environment) &&
-                             gpuForTexture(draw.environment)->isCube;
-    const bool shadows = draw.shadows.active && draw.shadowReceive && shadowDepthArray;
+    const bool  gbuffer = draw.gbufferClip.has_value();
+    const bool  environment =
+        !gbuffer && draw.environment && gpuForTexture(draw.environment) && gpuForTexture(draw.environment)->isCube;
+    const bool             shadows = !gbuffer && draw.shadows.active && draw.shadowReceive && shadowDepthArray;
     const PbrVariantLimits limits{caps.maxSampledTexturesPerShaderStage(),
                                   caps.maxSamplersPerShaderStage()};
-    auto planned = planPbrVariant(surface, environment, shadows, limits);
+    auto                   evaluationSurface = surface;
+    if (gbuffer) {
+        // Specular color, anisotropy and clearcoat remain on the forward path;
+        // the five MRTs represent the core surface plus scalar specular weight.
+        for (size_t slot = size_t(PbrTextureSlot::SpecularColor); slot < evaluationSurface.textures.size(); ++slot)
+            evaluationSurface.textures[slot].texture = nullptr;
+    }
+    auto planned = planPbrVariant(evaluationSurface, environment, shadows, limits);
     if (!planned) throw Exception("%s", planned.error()->message().c_str());
     const auto& plan = planned.value();
 
@@ -150,15 +158,15 @@ bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     const auto cull = surface.cullMode == PbrCullMode::Inherit
                           ? (draw.doubleSided ? PbrCullMode::None : PbrCullMode::Back)
                           : surface.cullMode;
-    const bool alphaToCoverage = surface.alphaToCoverage && draw.surfaceMode == SurfaceMode::Masked;
+    const bool      alphaToCoverage = !gbuffer && surface.alphaToCoverage && draw.surfaceMode == SurfaceMode::Masked;
     const std::uint32_t samples = canvasTarget ? 1u : sceneColorSamples;
-    const auto raster = rasterKey(blend, depthWrite, cull, alphaToCoverage);
+    const auto          raster      = rasterKey(blend, depthWrite, cull, alphaToCoverage) | (gbuffer ? 256u : 0u);
     auto found = std::find_if(resources.pipelines.begin(), resources.pipelines.end(), [&](const auto& candidate) {
         return candidate.plan == plan && candidate.format == format && candidate.samples == samples &&
                candidate.raster == raster;
     });
     if (found == resources.pipelines.end()) {
-        auto source = specializePbrVariantSources(plan);
+        auto                   source = specializePbrVariantSources(plan, gbuffer);
         wgpu::ShaderSourceWGSL vertexWgsl{};
         vertexWgsl.code = source.vertex.c_str();
         wgpu::ShaderModuleDescriptor vertexDescriptor{};
@@ -213,8 +221,11 @@ bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         wgpu::FragmentState fragmentState{};
         fragmentState.module = fragment;
         fragmentState.entryPoint = "main";
-        fragmentState.targetCount = 1;
-        fragmentState.targets = &target;
+        std::array<wgpu::ColorTargetState, 5> targets;
+        targets.fill(target);
+        if (gbuffer) targets[4].format = wgpu::TextureFormat::RGBA16Float;
+        fragmentState.targetCount = gbuffer ? 5u : 1u;
+        fragmentState.targets     = targets.data();
         wgpu::DepthStencilState depth{};
         depth.format = wgpu::TextureFormat::Depth32Float;
         depth.depthWriteEnabled = depthWrite ? wgpu::OptionalBool::True : wgpu::OptionalBool::False;
@@ -253,6 +264,10 @@ bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
          draw.lighting, draw.metallic, draw.roughness, surfaceCode, draw.alphaCutoff,
          environment ? draw.environmentIntensity : 0.f, skinCount});
 
+    if (gbuffer) {
+        uniform.mvp                 = draw.gbufferMvp;
+        uniform.lights[0].posRadius = *draw.gbufferClip;
+    }
     const auto vertexCount = std::size_t(mesh.vertexCount);
     std::vector<float> uv(vertexCount * 22u, 0.f);
     for (std::size_t slot = 0; slot < surface.textures.size(); ++slot) {
@@ -353,7 +368,7 @@ bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     addBuffer(0, arena.buffer, uniformOffset, sizeof(uniform));
     addBuffer(2, attributeBuffer, 0, attributes.size() * sizeof(float));
     addBuffer(3, skinBuffer, 0, skinBuffer.GetSize());
-    addBuffer(6, arena.buffer, shadowOffset, sizeof(shadow));
+    if (!gbuffer) addBuffer(6, arena.buffer, shadowOffset, sizeof(shadow));
 
     const auto samplerFor = [&](const PbrTextureBinding& binding) -> const wgpu::Sampler& {
         const SamplerKey key{binding.wrapS, binding.wrapT, binding.minFilter, binding.magFilter};

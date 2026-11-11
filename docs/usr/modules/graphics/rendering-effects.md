@@ -26,6 +26,14 @@ if (gb.isValid()) {
 }
 ```
 
+GBuffer 对启用完整 PBR 的材质复用前向材质求值：底色与自发光按绑定的 sRGB 设置解码，
+每张贴图独立使用 UV 集、偏移、缩放、旋转及采样器；法线贴图、蒙皮与 alpha cutoff 同样生效。
+`pbrParams` 的 RGBA 分别为金属度（贴图 B × 因子）、粗糙度（贴图 G × 因子）、
+AO（贴图 R 与强度混合）和镜面强度（贴图 A × 因子）。`albedo.a` 仍保存线性深度。
+`emissive` 使用 RGBA16F 保存线性 HDR 自发光；RGBA8 截图读回将其钳制到 0..1。
+这些规则在 Vulkan 与 WebGPU 上使用同一份材质 shader。镜面颜色、各向异性、清漆等
+扩展的光照仍由前向路径完成，现有五个 GBuffer 附件不编码这些扩展。
+
 **光照模式（LightingMode）**：不透明核心 PBR 可选 Clustered Deferred。
 
 | API | 作用 |

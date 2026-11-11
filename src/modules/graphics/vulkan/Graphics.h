@@ -993,16 +993,15 @@ public:
     /** @brief Begins g buffer pass. */
     void beginGBufferPass(int width, int height) override;
     /** @brief Draws mesh g buffer. */
-    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                         float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
-                         float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
-                         float roughness = 0.45f, float metallic = 0.f) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                         Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                         float tintA = 1.f) override;
     /** @brief Draws mesh g buffer alpha. */
-    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                              float farZ, Texture *albedo = nullptr, float tintR = 1.f,
-                              float tintG = 1.f, float tintB = 1.f, float motionX = 0.f,
-                              float motionY = 0.f, float roughness = 0.45f,
-                              float metallic = 0.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                              Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                              float tintA = 1.f) override;
     /** @brief Ends g buffer pass. */
     void endGBufferPass() override;
 
@@ -1174,7 +1173,9 @@ private:
     std::unique_ptr<PbrResources, void (*)(PbrResources*)> pbrResources_{nullptr, &deletePbrResources};
     std::optional<PbrSurface>                              pbrSurface_;
     void                                                   destroyPbrResources();
-    void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
+    void                                                   destroyPbrGBufferResources();
+    struct GBufferDraw;
+    void drawPbrMesh(Mesh *mesh, const glm::mat4 &model, const Color &tint, GBufferDraw *gbuffer = nullptr);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void                                                   createDeferredLightingPipeline();
@@ -1877,6 +1878,14 @@ private:
         Mesh *mesh = nullptr;
         Texture *albedo = nullptr;
         GBufferPush push{};
+        // Immutable frame-slot resources prepared on the render thread; workers only bind them.
+        vk::Pipeline                   pbrPipeline{};
+        vk::PipelineLayout             pbrLayout{};
+        vk::DescriptorSet              pbrSet{};
+        vk::Buffer                     pbrUv{};
+        std::array<vk::DeviceSize, 11> pbrUvOffsets{};
+        glm::vec4                      pbrClip{};
+        glm::vec2                      pbrFactors{};
         bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
         vk::DescriptorSet skinSet{};
         uint32_t skinUboOffset = 0;

@@ -654,6 +654,7 @@ void Graphics::destroyShadowResources() {
 
 void Graphics::destroyGBufferResources() {
     resetDeferredFrameGraphs();
+    destroyPbrGBufferResources();
     gbufferPassActive = false;
     gbufferPending = false;
     gbufferPassDraws.clear();
@@ -946,7 +947,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
         slot.depthColor = device.createColorTarget(w, h, colorFmt);
         slot.albedo = device.createColorTarget(w, h, colorFmt);
         slot.pbrParams  = device.createColorTarget(w, h, colorFmt);
-        slot.emissive   = device.createColorTarget(w, h, colorFmt);
+        slot.emissive   = device.createColorTarget(w, h, vk::Format::eR16G16B16A16Sfloat);
         slot.visID = device.createColorTarget(w, h, visIDFmt);
         slot.visBary = device.createColorTarget(w, h, visBaryFmt);
         slot.depth = device.createDepthTarget(w, h, depthFmt, true);
@@ -958,7 +959,7 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
             .addSampledColorAttachment(colorFmt)
             .addSampledColorAttachment(colorFmt)
             .addSampledColorAttachment(colorFmt)
-            .addSampledColorAttachment(colorFmt)
+            .addSampledColorAttachment(vk::Format::eR16G16B16A16Sfloat)
             .addSampledDepthAttachment(depthFmt)
             .addSubpass(vkb::SubpassBuilder()
                             .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
