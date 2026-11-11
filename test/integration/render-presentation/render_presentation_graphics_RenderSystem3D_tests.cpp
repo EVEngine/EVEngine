@@ -2982,9 +2982,11 @@ TEST_CASE("graphics.sky authored wisps composite into the shared capture path") 
     const auto authoredSunColor = layer.sunDiskColor;
     layer.sunDiskColor          = {0, 0, 0};
     const auto sameStateCloud   = render(&layer);
+    layer.sunDiskColor          = {12345, 23456, 34567};
+    const auto opacityProbe     = render(&layer);
     layer.sunDiskColor          = authoredSunColor;
-    std::fprintf(stderr, "sky opaque capture: cloud=%g obscured=%g same-state=%g\n", cloud.r, obscuredSun.r,
-                 sameStateCloud.r);
+    std::fprintf(stderr, "sky opaque capture: cloud=%g obscured=%g same-state=%g probe=(%g,%g,%g)\n", cloud.r,
+                 obscuredSun.r, sameStateCloud.r, opacityProbe.r, opacityProbe.g, opacityProbe.b);
     // HDR readback is FP16: allow one quantization step near the 2.3 cloud value.
     REQUIRE(std::abs(obscuredSun.r - cloud.r) < .003f);
     layer.sunDiskShape[0] = 0;
