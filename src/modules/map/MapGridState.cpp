@@ -99,8 +99,8 @@ void decode(const Value& payload, State& state) {
         l.revision       = counter(a[2]);
         auto&       c    = l.config;
         const auto& g    = tuple(a[1], 12);
-        c.mapW           = integer(g[0], 0, maxCells);
-        c.mapH           = integer(g[1], 0, maxCells);
+        c.mapW           = static_cast<int>(integer(g[0], 0, maxCells));
+        c.mapH           = static_cast<int>(integer(g[1], 0, maxCells));
         const auto count = std::int64_t(c.mapW) * c.mapH;
         if (count > maxCells) throw Invalid("Grid cell limit exceeded");
         c.tileW         = number(g[2]);
@@ -118,21 +118,21 @@ void decode(const Value& payload, State& state) {
         const auto& terrain = array(a[4], maxCells);
         if (cells.size() != static_cast<std::size_t>(count) || terrain.size() != cells.size())
             throw Invalid("Grid cell shape mismatch");
-        for (const auto& v : cells) l.gids.push_back(integer(v, 0, UINT32_MAX));
-        for (const auto& v : terrain) l.terrain.push_back(integer(v, INT32_MIN, INT32_MAX));
+        for (const auto& v : cells) l.gids.push_back(static_cast<std::uint32_t>(integer(v, 0, UINT32_MAX)));
+        for (const auto& v : terrain) l.terrain.push_back(static_cast<int>(integer(v, INT32_MIN, INT32_MAX)));
         std::set<int> profileKeys, familyKeys;
         for (const auto& v : array(a[5])) {
             const auto&             p = tuple(v, 9);
             typename State::Profile r;
-            r.gid        = integer(p[0], 1, INT32_MAX);
-            r.footprintW = integer(p[1], 1, INT32_MAX);
-            r.footprintH = integer(p[2], 1, INT32_MAX);
+            r.gid        = static_cast<int>(integer(p[0], 1, INT32_MAX));
+            r.footprintW = static_cast<int>(integer(p[1], 1, INT32_MAX));
+            r.footprintH = static_cast<int>(integer(p[2], 1, INT32_MAX));
             r.walkable   = boolean(p[3]);
             r.opaque     = boolean(p[4]);
             r.cost       = number(p[5]);
-            r.enter      = integer(p[6], 0, 255);
-            r.exit       = integer(p[7], 0, 255);
-            r.flags      = integer(p[8], 0, UINT32_MAX);
+            r.enter      = static_cast<std::uint8_t>(integer(p[6], 0, 255));
+            r.exit       = static_cast<std::uint8_t>(integer(p[7], 0, 255));
+            r.flags      = static_cast<std::uint32_t>(integer(p[8], 0, UINT32_MAX));
             if (r.cost <= 0 || !profileKeys.insert(r.gid).second)
                 throw Invalid("Invalid or duplicate navigation profile");
             l.profiles.push_back(r);
