@@ -133,7 +133,7 @@ public:
     [[nodiscard]] Result<ecs::EntityHandle> create();
 
 private:
-    friend Result<void> initializeMemberActor(RPGActor&, const EncounterMemberDefinition&);
+    friend EVENGINE_API_PLATFORM Result<void> initializeMemberActor(RPGActor&, const EncounterMemberDefinition&);
     struct Impl;
     explicit PreparedMemberActor(std::unique_ptr<Impl> impl);
     [[nodiscard]] static Result<PreparedMemberActor> prepareWithContent(const EncounterMemberDefinition&    member,

@@ -33,7 +33,7 @@ public:
 
 private:
     SubjectRef                       subject_;
-    friend Result<void>              bindActorIdentity(RPGActor&, SubjectRef);
-    friend std::optional<SubjectRef> actorSubject(const RPGActor&) noexcept;
+    friend EVENGINE_API_PLATFORM Result<void> bindActorIdentity(RPGActor&, SubjectRef);
+    friend EVENGINE_API_PLATFORM std::optional<SubjectRef> actorSubject(const RPGActor&) noexcept;
 };
 }  // namespace eve::rpg

@@ -1163,11 +1163,17 @@ jobs:
       - name: Install fuzz toolchain
         timeout-minutes: 5
         run: |
+          # Match the native lanes: use the canonical mirror instead of image mirror indirection.
+          # Keep Ubuntu signature checks and fail if any required index cannot refresh.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           # Only Ubuntu indexes are needed for this toolchain.
           test -s /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update \
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
-            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
+            -o APT::Update::Error-Mode=any
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
       - name: Setup C/C++ compilation cache

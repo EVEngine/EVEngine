@@ -4048,3 +4048,15 @@ Crowd::Snapshot 增加 crowd.snapshot v1 encodeState/prepareState，完整覆盖
 - Windows 的命名空间声明虽已带 DLL 标注，friend 重声明仍无标注；现在 friend 与命名空间声明一致使用 EVENGINE_API_FOUNDATION，保持私有构造权限和原 DLL/API 所有者，不关闭 C4273 或 warnings-as-errors。
 - WebGPU 的 canonical DataModule.cpp 因 Poco 被平台源规则排除，恰好也包含 Map 使用的纯二进制 codec 定义。将原有 free codec/压缩/hash 实现原样迁入同一 data 模块的 DataCodec.cpp，纯声明归 DataCodec.h，DataModule.h 重导出同一声明；TileConfig 改用纯头。没有第二实现、平台替代头或放开 Poco 源排除。迁移前后规范化代码一致；本机纯消费者直接编译这些 canonical 源，在不链接 Poco/Squirrel 下通过 hex/base64、lz4/zlib/gzip/deflate 及 SHA256 验证，依赖检查仅见系统 zlib/libc++/libSystem。原始证据 `/tmp/spawn-pure-codec-{build,test}.log`。
 - 本批完整 make check（origin/dev）已通过，日志 `/tmp/spawn-ci-97d48-fix-check.log`；工作流、Windows OBJECT evidence 门禁、效果静态断言和全部测试未改。最新提交的 Linux Debug、Windows Debug/OBJECT 和 WebGPU/SDK 仍需 CI/Release 实际验证。适用唯一实现、显式借用、组导出一致性与平台裁剪规范，无例外。
+
+### 2026-11-11：head 499c15ef7 的后续 CI 修复
+
+重新读取 run 43024609662 的 Windows 130538794682、Android 130538794522、Linux 130538794411、fuzz 130538794637，以及 Release run 43024609694 Android SDK 130546315746 的原始日志。Windows 已越过 Spawn 编译函数声明，当前 C4273 指向 ActorIdentity.h 的 bindActorIdentity/actorSubject friend 重声明；所属同族 initializeMemberActor 也有同样缺失，三者统一使用已有 EVENGINE_API_PLATFORM，不改变 DLL 所有者或接口。
+
+Android Debug/SDK 均编译完成后在最终 libmain.so 链接失败，未定义符号是 SpawnExportPanel 泛型 action 回调内局部 Guard 的析构。将同一 RAII 守卫移到该 .cpp 匿名命名空间，仍在同一回调作用域内设置/复位 busy，保留异常退出、重入和 stale/retired 控制。原 Mac 已安装 NDK26 的尝试编译先遇旧标准库不支持现有身份数组三路比较，未产生面板验证结果；没有为旧工具链修改身份逻辑或宣称验证了 CI 的 NDK27。记录 `/tmp/spawn-android-panel-before.log`。
+
+Linux 尚未进入编译：apt 更新在三轮 120 秒内未完成，之后 sccache 缺失是次生错误；fuzz 则有明确 Temporary failure resolving azure.archive.ubuntu.com 并在 5 分钟安装步超时。fuzz 采用其他原生通道已有的官方镜像归一化，增加有界传输超时并严格要求所有索引刷新成功；未更改签名验证、测试、安全检查或时限。Linux 本身已有同样官方镜像与有界重试，需新 runner 的实际执行，不能当作源代码编译失败。WebGPU Debug 与 WebGPU Release SDK 在本 head 已通过，上一轮 canonical codec 修复不再以旧的失败记录代表当前状态。
+
+本轮 make check（origin/dev）与 YAML/bash 语法检查已通过，原始日志 `/tmp/spawn-ci-499-fix-check.log`；实际编辑器消费者及契约仍在验证，最新原生 CI/Release 结果待后续修复提交确认。无检查削弱或架构例外。
+
+本轮终态：原生编辑器目标重编成功，27/27 项所属契约通过（含导出准备/失败重试、stale/retired 控制与宿主生命周期），日志 `/tmp/spawn-ci-499-editor-{build,tests}.log`；完整源码门禁和 YAML/bash 语法检查通过。未将本机 NDK26 未能完成的尝试计为 Android27 通过；后续新 head 的原生 CI/Release 仍需实际结果。

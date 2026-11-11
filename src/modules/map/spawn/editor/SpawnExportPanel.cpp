@@ -23,16 +23,18 @@ struct State {
         errors.swap(next);
     }
 };
+// Keep the guard's destructor outside the generic callback specialization.
+struct BusyGuard {
+    bool& busy;
+    explicit BusyGuard(bool& value) : busy(value) { busy = true; }
+    ~BusyGuard() { busy = false; }
+};
 template <class Callback>
 auto action(const std::shared_ptr<State>& state, Callback callback) {
     return [state, display = state->display, revision = state->form->view().revision(),
             sourceRevision = state->form->sourceRevision(), callback = std::move(callback)](auto&&... args) {
         if (state->closed || state->busy) return;
-        struct Guard {
-            bool& busy;
-            explicit Guard(bool& value) : busy(value) { busy = true; }
-            ~Guard() { busy = false; }
-        } guard(state->busy);
+        BusyGuard guard(state->busy);
         if (display != state->display || revision != state->form->view().revision() ||
             sourceRevision != state->form->sourceRevision()) {
             state->show(Result<void>::failure(
