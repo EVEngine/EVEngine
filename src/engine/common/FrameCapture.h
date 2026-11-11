@@ -41,7 +41,17 @@ enum class FrameCapturePhase : uint8_t {
     Released
 };
 /** @brief CPU storage encoding; no GPU object escapes the provider. */
-enum class FramePixelFormat : uint8_t { Rgba8, Bgra8, Depth32Float };
+enum class FramePixelFormat : uint8_t { Rgba8, Bgra8, Depth32Float, Rgba16Float };
+/** @brief Packed CPU bytes per pixel; pure value query, callable on any thread. */
+[[nodiscard]] constexpr size_t framePixelBytes(FramePixelFormat format) {
+    switch (format) {
+        case FramePixelFormat::Rgba8:
+        case FramePixelFormat::Bgra8:
+        case FramePixelFormat::Depth32Float: return 4;
+        case FramePixelFormat::Rgba16Float: return 8;
+    }
+    return 0;
+}
 /** @brief Stable protocol spelling of an attachment. */
 [[nodiscard]] EVENGINE_API_FOUNDATION std::string_view frameAttachmentName(FrameAttachment attachment);
 /** @brief Validate a protocol attachment name without inventing a resource. */

@@ -31,6 +31,8 @@ GBuffer 对启用完整 PBR 的材质复用前向材质求值：底色与自发�
 `pbrParams` 的 RGBA 分别为金属度（贴图 B × 因子）、粗糙度（贴图 G × 因子）、
 AO（贴图 R 与强度混合）和镜面强度（贴图 A × 因子）。`albedo.a` 仍保存线性深度。
 `emissive` 使用 RGBA16F 保存线性 HDR 自发光；RGBA8 截图读回将其钳制到 0..1。
+原生 frame capture 则保留每像素 8 字节的 `RGBA16_SFLOAT` 数据，像素查询返回未钳制的浮点值，
+`hdrExposure` 预览按曝光映射显示；捕获预算与快照校验按实际格式计算。
 这些规则在 Vulkan 与 WebGPU 上使用同一份材质 shader。镜面颜色、各向异性、清漆等
 扩展的光照仍由前向路径完成，现有五个 GBuffer 附件不编码这些扩展。
 

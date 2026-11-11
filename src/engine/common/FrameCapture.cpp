@@ -207,7 +207,8 @@ Result<void> FrameCaptureStore::complete(std::string_view token, FrameCaptureSna
                 return failure<void>("AttachmentUnavailable");
             continue;
         }
-        if (!b.width || !b.height || uint64_t(b.width) * b.height * 4 != b.bytes->size())
+        if (!framePixelBytes(b.format) || !b.width || !b.height ||
+            uint64_t(b.width) * b.height * framePixelBytes(b.format) != b.bytes->size())
             return failure<void>("InvalidCaptureStorage");
         if (storage.insert(b.bytes.get()).second) bytes += b.bytes->size();
     }
