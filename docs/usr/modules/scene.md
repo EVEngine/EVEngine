@@ -6,7 +6,8 @@
 通过 `eve_scene_search_publish` 构建 hnswlib 索引，再用 `eve_scene_search` 做精确空间过滤和近似语义检索。
 `eve_scene_search_status` 返回实时位置、方向基底与当前索引。移动不重算 embedding；语义元数据或节点集合变化需要刷新。
 省略查询向量时无需模型。Python `--serve` 提供接受自然文本的 MCP 工具，并以空间谓词和相对坐标帮助调用模型解释方位。
-完整运行方式和边界见[语义搜索示例](../../../examples/semantic-scene-search/README.md)。
+从安装模型到自然文本 MCP 接入、参照消歧和空间查询，见[场景语义搜索教程](scene/semantic-search.md)。
+可运行场景见[语义搜索示例](../../../examples/semantic-scene-search/README.md)。
 
 ## AI 原生作者文档
 

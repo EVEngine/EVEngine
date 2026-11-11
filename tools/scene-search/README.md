@@ -1,5 +1,8 @@
 # 本地模型到 C++ 场景查询
 
+初次使用请从[完整教程](../../docs/usr/modules/scene/semantic-search.md)开始；
+给调用模型的操作规范见 [eve-scene-search skill](../../.cursor/skills/eve-scene-search/SKILL.md)。
+
 `scene_search.py` 是客户端：从引擎获取真实场景快照，在独立 Python 进程执行实际模型推理，
 向引擎发布向量，C++ 用 hnswlib 构建一个包含各对象的索引，查询复用该索引。Python 不维护世界、不做候选排序。
 模型未安装或离线缓存缺失时明确失败，不用关键词或随机向量冒充 embedding。

@@ -32,5 +32,7 @@ Linux 对应 `make run/linux-debug`；无 GPU 的 CI 按根 AGENTS.md 配置 Lav
 以及通过正式场景命令注入移动后复用同一索引并按新位置过滤。移动验证最后恢复原始节点。
 删除、包围盒内、上下前后、候选窗口与几何变化使分页失效、宿主销毁/重建在 `scene.search.*` C++ 用例覆盖。
 
+第一次接入请阅读[完整教程](../../docs/usr/modules/scene/semantic-search.md)；
+给调用模型的操作规范见 [eve-scene-search skill](../../.cursor/skills/eve-scene-search/SKILL.md)。
 更多边界与协议见 [客户端](../../tools/scene-search/README.md) 和
 [设计与模块契约](../../docs/dev/2026-11-11-scene-semantic-search.md)。
