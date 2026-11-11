@@ -55,7 +55,10 @@ void main() {
             lunarXAxis,lunarScaleIntensity.x,lunarPhase,atmosphere.moonDiskShape.w,atmosphere.moonDiskGlow.xy);
         lunar.rgb*=atmosphere.moonDiskColor.rgb*lunarScaleIntensity.y;
     }
-    vec3 composed = mix(skyViewRadiance(direction)*skyScale+(solar+stars)*(1-lunar.a)+lunar.rgb,radiance,alpha)+glow;
+    vec3 composed = radiance;
+    if (alpha != 1.0)
+        composed = mix(skyViewRadiance(direction)*skyScale+(solar+stars)*(1-lunar.a)+lunar.rgb,radiance,alpha);
+    composed += glow;
     composed = skyMaterialContrast(composed,cycleContrast);
     color = vec4(applyHeightFogColor(composed,direction,cycleFogBase),1);
 }

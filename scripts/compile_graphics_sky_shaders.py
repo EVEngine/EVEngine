@@ -13,7 +13,7 @@ import utf8_stdio
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def compile_header(programs: list[tuple[Path, str]], target: Path) -> None:
+def compile_header(programs: list[tuple[Path, str]], target: Path, words_per_line: int = 8) -> None:
     lines = [
         "#pragma once",
         "#include <cstdint>",
@@ -34,8 +34,8 @@ def compile_header(programs: list[tuple[Path, str]], target: Path) -> None:
             if not words or words[0] != 0x07230203:
                 raise ValueError("Invalid SPIR-V magic")
             lines.append(f"inline const std::vector<uint32_t> {name}{{")
-            for offset in range(0, len(words), 8):
-                lines.append("    " + ", ".join(f"0x{word:08x}u" for word in words[offset : offset + 8]) + ",")
+            for offset in range(0, len(words), words_per_line):
+                lines.append("    " + ", ".join(f"0x{word:08x}u" for word in words[offset : offset + words_per_line]) + ",")
             lines.append("};")
     generated = "\n".join(lines) + "\n"
     if not target.exists() or target.read_text(encoding="utf-8") != generated:
@@ -58,6 +58,7 @@ def main() -> None:
         [(ROOT / f"src/modules/graphics/shaders/sky_wisps.{stage}", f"sky_wisps_{stage}")
          for stage in ("vert", "frag")],
         ROOT / "src/modules/graphics/sky/SkyWispsSpv.h",
+        words_per_line=9,
     )
 
 
