@@ -820,6 +820,12 @@ public:
     /** @brief Draws mesh shader. */
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
+    /** @brief Native ordinary-material batching; see Graphics ownership and frame-fence contract. */
+    [[nodiscard]] bool supportsMeshInstancing() const override { return initialized; }
+    /** @brief Copy borrowed transforms into frame-owned storage and record one ordinary-material draw. */
+    [[nodiscard]] Result<void> drawMeshInstances(Mesh &mesh, std::span<const glm::mat4> models,
+                                                 OptionalRef<Texture> texture, const Color &tint) override;
+
     /** @brief Draws mesh shader instances. */
     [[nodiscard]] Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
                                                        const Color &tint, std::uint32_t first,
@@ -1142,7 +1148,7 @@ public:
 
 private:
     void drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint, Shader *shader,
-                             std::uint32_t first, std::uint32_t count);
+                             std::uint32_t first, std::uint32_t count, std::span<const glm::mat4> models);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;
 
