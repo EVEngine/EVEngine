@@ -46,6 +46,245 @@ bool approx(float a, float b, float eps = 1e-3f) { return std::fabs(a - b) < eps
 
 }  // namespace
 
+CrowdField fieldWireRoundTrip(const CrowdField& source) {
+    const auto text = source.encodeState().expect("complete field").toJson().expect("field bytes");
+    auto       restored =
+        CrowdField::prepareState(eve::Value::fromJson(text).expect("owning field file")).expect("admit field");
+    REQUIRE_EQ(restored.encodeState().expect("repeat field").toJson().expect("repeat bytes"), text);
+    REQUIRE(restored.state() == source.state());
+    REQUIRE_EQ(restored.revision(), source.revision());
+    REQUIRE_EQ(restored.inputRevision(), source.inputRevision());
+    REQUIRE_EQ(restored.builtRevision(), source.builtRevision());
+    return restored;
+}
+TEST_CASE("crowd.fieldArchive.preservesUnconfiguredUnbuiltReadyStaleAndRetainedStorage") {
+    CrowdField field;
+    auto       empty = fieldWireRoundTrip(field);
+    REQUIRE(!empty.valid());
+    field.resize(9, 7, 3, -4, 5);
+    field.setGoal(8, 6);
+    field.addGoal(0, 6);
+    field.setBlocked(4, 3, true);
+    field.setCellCost(3, 2, 7);
+    auto unbuilt = fieldWireRoundTrip(field);
+    REQUIRE(!unbuilt.isBuilt());
+    field.build();
+    auto ready = fieldWireRoundTrip(field);
+    REQUIRE(ready.isBuilt());
+    for (int y = 0; y < 7; ++y)
+        for (int x = 0; x < 9; ++x) {
+            REQUIRE_EQ(ready.costAtCell(x, y), field.costAtCell(x, y));
+            float ax, ay, bx, by;
+            ready.flowAtCell(x, y, ax, ay);
+            field.flowAtCell(x, y, bx, by);
+            REQUIRE_EQ(ax, bx);
+            REQUIRE_EQ(ay, by);
+        }
+    float ax, ay, bx, by;
+    ready.flowAtWorld(2, 8, ax, ay);
+    field.flowAtWorld(2, 8, bx, by);
+    REQUIRE_EQ(ax, bx);
+    REQUIRE_EQ(ay, by);
+    field.setCellCost(2, 2, 11);
+    auto stale = fieldWireRoundTrip(field);
+    REQUIRE(stale.state() == FieldState::Stale);
+    REQUIRE(stale.integration() == field.integration());
+    REQUIRE(stale.flowX() == field.flowX());
+    REQUIRE(stale.flowY() == field.flowY());
+    field.build();
+    stale.build();
+    REQUIRE_EQ(stale.encodeState().expect("continued").toJson().expect("continued bytes"),
+               field.encodeState().expect("source continued").toJson().expect("source bytes"));
+    field.clear();
+    auto cleared = fieldWireRoundTrip(field);
+    REQUIRE(!cleared.valid());
+    const auto  clearedState = cleared.encodeState().expect("retained buffers");
+    const auto& buffers      = *clearedState.getIf<eve::Value::Object>()->at("buffers").getIf<eve::Value::Array>();
+    REQUIRE(buffers[0].getIf<eve::Value::Array>()->at(0).asString() != "0");
+    REQUIRE(buffers[6].getIf<eve::Value::Array>()->at(0).asString() != "0");
+    field.resize(2, 1, 1, 0, 0);
+    auto shrunk = fieldWireRoundTrip(field);
+    REQUIRE_EQ(shrunk.getWidth(), 2);  // Old inert cursor/capacities are not reset on resize.
+}
+TEST_CASE("crowd.fieldArchive.rejectsMalformedBuffersVersionsRevisionsAndUnsafeWorkFacts") {
+    using eve::Value;
+    CrowdField source;
+    source.resize(4, 3, 1, 0, 0);
+    source.setGoal(3, 2);
+    source.build();
+    const auto value  = source.encodeState().expect("field");
+    auto       refuse = [&](auto edit) {
+        auto bad = value;
+        edit(bad);
+        REQUIRE(!CrowdField::prepareState(bad).ok());
+    };
+    auto buffers = [](Value& value) -> Value::Array& {
+        return *value.getIf<Value::Object>()->at("buffers").getIf<Value::Array>();
+    };
+    auto data = [&](Value& value, int slot) -> Value::Array& {
+        return *buffers(value)[slot].getIf<Value::Array>()->at(1).getIf<Value::Array>();
+    };
+    refuse([](Value& v) { v.set("unknown", false); });
+    refuse([](Value& v) { v.set("version", 2); });
+    refuse([](Value& v) { v.set("algorithm", 99); });
+    refuse([](Value& v) { v.getIf<Value::Object>()->at("geometry").getIf<Value::Array>()->at(0) = 4194304; });
+    refuse([](Value& v) { v.getIf<Value::Object>()->at("geometry").getIf<Value::Array>()->at(2) = -1; });
+    refuse([](Value& v) { v.getIf<Value::Object>()->at("revisions").getIf<Value::Array>()->at(0) = "01"; });
+    refuse([](Value& v) { v.getIf<Value::Object>()->at("revisions").getIf<Value::Array>()->at(1) = "999"; });
+    refuse([](Value& v) { v.getIf<Value::Object>()->at("revisions").getIf<Value::Array>()->at(2) = "999"; });
+    refuse([](Value& v) { v.set("flowCursor", -1); });
+    refuse([](Value& v) { v.set("flowCursor", 0); });
+    refuse([](Value& v) { v.set("built", 1); });
+    refuse([&](Value& v) { buffers(v).pop_back(); });
+    refuse([&](Value& v) { buffers(v)[0].getIf<Value::Array>()->at(0) = "0"; });
+    refuse([&](Value& v) { buffers(v)[0].getIf<Value::Array>()->at(0) = "18446744073709551615"; });
+    refuse([&](Value& v) { data(v, 0).pop_back(); });
+    refuse([&](Value& v) { data(v, 1).push_back(1); });
+    refuse([&](Value& v) { data(v, 0)[0] = -1; });
+    refuse([&](Value& v) { data(v, 2)[0] = -1; });
+    refuse([&](Value& v) { data(v, 3)[0] = 2; });
+    refuse([&](Value& v) { data(v, 4)[0] = std::numeric_limits<double>::infinity(); });
+    refuse([&](Value& v) { data(v, 0)[0] = std::numeric_limits<double>::max(); });
+    refuse([&](Value& v) { data(v, 5).push_back(0); });
+    refuse([&](Value& v) { buffers(v)[5] = Value::Array{"4", Value::Array{3, 2, 3, 2}}; });
+    refuse([&](Value& v) { buffers(v)[5] = Value::Array{"2", Value::Array{4, 2}}; });
+    refuse([&](Value& v) { buffers(v)[6] = Value::Array{"1", Value::Array{Value::Array{0, 12}}}; });
+    refuse([&](Value& v) { buffers(v)[6] = Value::Array{"2", Value::Array{Value::Array{2, 1}, Value::Array{1, 2}}}; });
+    REQUIRE_EQ(source.encodeState().expect("source unchanged").toJson().expect("bytes"),
+               value.toJson().expect("original"));
+    CrowdField invalid;
+    invalid.resize(1, 1, 1, 0, 0);
+    invalid.setCellCost(0, 0, std::numeric_limits<float>::infinity());
+    REQUIRE(!invalid.encodeState().ok());
+}
+TEST_CASE("crowd.snapshot.persistentMotionCacheAliasesAndRegistryContinueAfterSourceRetirement") {
+    using namespace eve;
+    std::optional<Crowd::Snapshot> saved;
+    AgentRef                       old;
+    AgentState                     expected;
+    std::uint64_t                  bytes = 0;
+    {
+        Crowd source;
+        source.resizeField(8, 6, 1, 0, 0);
+        source.setDefaultSpeed(2);
+        source.setSeparationWeight(0);
+        source.setWanderWeight(.25f);
+        auto work = source.prepareFlowBuild(7, 5).expect("real build");
+        while (work.state() == Crowd::FlowBuildState::Pending) source.advanceFlowBuild(work, 3).expect("real budget");
+        auto      lease  = source.acquireFlowField(std::move(work)).expect("shared field");
+        const int first  = source.addNamedAgent("first", 1.5, 1.5, 0, .1f),
+                  second = source.addNamedAgent("second", 3.5, 1.5, 0, .1f);
+        old              = source.agentRef(first).expect("source identity");
+        AgentUpdate a, b;
+        a.reference = old;
+        a.flow      = lease;
+        b.reference = source.agentRef(second).expect("other");
+        b.flow      = lease;
+        source.updateAgents({{a, b}}).expect("two pins to one field");
+        auto retired = source.agentRef(source.addNamedAgent("retired", 5.5, 1.5, 0, .1f)).expect("retired identity");
+        source.removeAgents({{retired}}).expect("registry hole");
+        source.advance({SimulationTick(1), Duration(10000000), {}}).expect("source frame");
+        bytes           = source.getFlowCacheStatus().residentBytes;
+        const auto text = source.captureSnapshot()
+                              .expect("freeze")
+                              .encodeState()
+                              .expect("encode graph")
+                              .toJson()
+                              .expect("file bytes");
+        saved.emplace(Crowd::Snapshot::prepareState(Value::fromJson(text).expect("owning file")).expect("read graph"));
+        REQUIRE_EQ(saved->encodeState().expect("repeat graph").toJson().expect("repeat bytes"), text);
+        REQUIRE(!saved->requestReference(0, 1).ok());
+        source.advance({SimulationTick(2), Duration(10000000), {}}).expect("expected next frame");
+        expected = source.readAgent(old).expect("expected motion");
+    }
+    Crowd first, second;
+    first.commitRestore(first.prepareRestore(*saved).expect("first candidate")).expect("first publish");
+    second.commitRestore(second.prepareRestore(*saved).expect("second candidate")).expect("second publish");
+    REQUIRE(!first.isAgentAlive(old));
+    REQUIRE_EQ(first.getFlowCacheStatus().entries, std::size_t(1));
+    REQUIRE_EQ(first.getFlowCacheStatus().residentBytes, bytes);
+    const auto rebound = first.resolveNamedAgent("first").expect("new reference");
+    REQUIRE(!second.isAgentAlive(rebound));
+    first.advance({SimulationTick(2), Duration(10000000), {}}).expect("resume");
+    const auto actual = first.readAgent(rebound).expect("actual motion");
+    REQUIRE_EQ(actual.x, expected.x);
+    REQUIRE_EQ(actual.y, expected.y);
+    REQUIRE_EQ(actual.vx, expected.vx);
+    REQUIRE(!first.configureFlowCache(0).ok());
+    for (const char* name : {"first", "second"}) {
+        AgentUpdate update;
+        update.reference = first.resolveNamedAgent(name).expect("release own alias");
+        update.flow      = FlowLease{};
+        first.updateAgents({{update}}).expect("unbind");
+    }
+    first.configureFlowCache(0).expect("all own pins gone");
+    REQUIRE(!second.configureFlowCache(0).ok());
+    REQUIRE_EQ(second.getFlowCacheStatus().residentBytes, bytes);
+    const auto added = first.agentRef(first.addAgent(6, 4, 0, .1f)).expect("continue registry allocation");
+    REQUIRE_EQ(added.handle.index(), 2u);
+    REQUIRE_EQ(added.handle.generation(), 2u);
+}
+TEST_CASE("crowd.snapshot.persistentRejectsCorruptGraphsIdentitiesWorkAndUnsupportedAccounting") {
+    using namespace eve;
+    Crowd source;
+    source.resizeField(4, 3, 1, 0, 0);
+    source.addNamedAgent("saved", 1.5, 1.5, 0, .1f);
+    auto work = source.prepareFlowBuild(3, 2).expect("build");
+    while (work.state() == Crowd::FlowBuildState::Pending) source.advanceFlowBuild(work, 100).expect("finish");
+    auto        lease = source.acquireFlowField(std::move(work)).expect("lease");
+    AgentUpdate update;
+    update.reference = source.agentRef(0).expect("agent");
+    update.flow      = lease;
+    source.updateAgents({{update}}).expect("pin");
+    const auto snapshot = source.captureSnapshot().expect("freeze");
+    const auto value    = snapshot.encodeState().expect("value");
+    auto       edit     = [&](auto modify) {
+        auto bad = value;
+        modify(bad);
+        REQUIRE(!Crowd::Snapshot::prepareState(bad).ok());
+    };
+    auto root  = [](Value& v) -> Value::Object& { return *v.getIf<Value::Object>(); };
+    auto agent = [&](Value& v) -> Value::Array& {
+        return *root(v).at("agents").getIf<Value::Array>()->front().getIf<Value::Array>();
+    };
+    auto cache = [&](Value& v) -> Value::Array& { return *root(v).at("cache").getIf<Value::Array>(); };
+    edit([](Value& v) { v.set("unknown", true); });
+    edit([](Value& v) { v.set("version", 2); });
+    edit([&](Value& v) { cache(v)[2].getIf<Value::Array>()->at(0) = 1; });
+    edit([&](Value& v) { cache(v)[0] = "0"; });
+    edit([&](Value& v) { cache(v)[1] = "1"; });
+    edit([&](Value& v) { cache(v)[3].getIf<Value::Array>()->front().getIf<Value::Array>()->at(0) = "99"; });
+    edit([&](Value& v) { cache(v)[3].getIf<Value::Array>()->front().getIf<Value::Array>()->at(4) = "0"; });
+    edit([&](Value& v) {
+        root(v).at("nodes").getIf<Value::Array>()->push_back(root(v).at("nodes").getIf<Value::Array>()->front());
+    });
+    edit([&](Value& v) {
+        auto& entries                     = *cache(v)[3].getIf<Value::Array>();
+        auto  copy                        = entries.front();
+        copy.getIf<Value::Array>()->at(3) = "2";
+        entries.push_back(std::move(copy));
+        cache(v)[1] = "3";
+    });
+    edit([&](Value& v) { agent(v)[6] = -1; });
+    edit([&](Value& v) { agent(v)[10] = 99; });
+    edit([&](Value& v) { agent(v)[16].getIf<Value::Array>()->at(3) = "99"; });
+    edit([&](Value& v) { agent(v)[21].getIf<Value::Array>()->at(1) = "0"; });
+    edit([&](Value& v) { root(v).at("registry").getIf<Value::Array>()->at(1) = Value::Array{}; });
+    edit([&](Value& v) { root(v).at("registry").getIf<Value::Array>()->at(2) = Value::Array{0}; });
+    edit([&](Value& v) { root(v).at("clock").getIf<Value::Array>()->at(1) = -1; });
+    edit([&](Value& v) { root(v).at("settings").getIf<Value::Array>()->at(19) = "0"; });
+    REQUIRE_EQ(snapshot.encodeState().expect("source unchanged").toJson().expect("wire"),
+               value.toJson().expect("original wire"));
+    Crowd target;
+    target
+        .commitRestore(
+            target.prepareRestore(Crowd::Snapshot::prepareState(value).expect("retry parse")).expect("retry prepare"))
+        .expect("retry publish");
+    REQUIRE_EQ(target.getAgentCount(), 1);
+    Crowd::Snapshot empty;
+    REQUIRE(!empty.encodeState().ok());
+    REQUIRE(!empty.requestReference(0, 1).ok());
+}
 TEST_CASE("crowd.field.spec.costReachabilityAndSampling") {
     SUB_CASE("open field reaches goal with monotonically lower costs and zero flow at goal") {
         CrowdField field;
@@ -1231,6 +1470,85 @@ TEST_CASE("crowd.cache.unleasedSnapshotRecordsDoNotPinCurrentEviction") {
     CHECK(restored.value().generation() != 0);
 }
 
+TEST_CASE("crowd.snapshot.selectedFlowPinsAreIndependentOfSourceAndFrozenAgentLeases") {
+    using namespace eve;
+    Crowd source;
+    source.resizeField(5, 1, 1.f, 0.f, 0.f);
+    source.setDefaultSpeed(2.f);
+    source.setSeparationWeight(0.f);
+    auto        lease = build(source, {{4, 0}});
+    const auto  agent = source.agentRef(source.addNamedAgent("moving", .5f, .5f, 0.f, .1f)).takeValue();
+    AgentUpdate update;
+    update.reference = agent;
+    update.flow      = lease;
+    REQUIRE(source.updateAgents({{update}}).ok());
+    REQUIRE(source.advance({SimulationTick(1), Duration(10000000), {}}).ok());
+    auto saved = source.captureSnapshot().takeValue();
+    REQUIRE(source.advance({SimulationTick(2), Duration(10000000), {}}).ok());
+    const auto expected = source.readAgent(agent).takeValue();
+    update.flow         = FlowLease{};
+    REQUIRE(source.updateAgents({{update}}).ok());
+    lease = {};
+    REQUIRE(source.configureFlowCache(0).ok());
+    REQUIRE_EQ(source.getFlowCacheStatus().entries, std::size_t(0));
+    Crowd restored;
+    REQUIRE(restored.commitRestore(restored.prepareRestore(saved).takeValue()).ok());
+    const auto rebound = restored.resolveNamedAgent("moving").takeValue();
+    REQUIRE(!restored.configureFlowCache(0).ok());
+    REQUIRE(restored.advance({SimulationTick(2), Duration(10000000), {}}).ok());
+    const auto actual = restored.readAgent(rebound).takeValue();
+    CHECK_EQ(actual.x, expected.x);
+    CHECK_EQ(actual.vx, expected.vx);
+    update.reference = rebound;
+    REQUIRE(restored.updateAgents({{update}}).ok());
+    REQUIRE(restored.configureFlowCache(0).ok());
+    REQUIRE_EQ(restored.getFlowCacheStatus().entries, std::size_t(0));
+    Crowd again;
+    REQUIRE(again.commitRestore(again.prepareRestore(saved).takeValue()).ok());
+    REQUIRE(!again.configureFlowCache(0).ok());
+}
+
+TEST_CASE("crowd.snapshot.externalSourceLeaseDoesNotPinRestoredCache") {
+    Crowd source, restored;
+    source.resizeField(3, 1, 1.f, 0.f, 0.f);
+    auto lease = build(source, {{2, 0}});
+    auto saved = source.captureSnapshot().takeValue();
+    REQUIRE(restored.commitRestore(restored.prepareRestore(saved).takeValue()).ok());
+    REQUIRE(restored.configureFlowCache(0).ok());
+    REQUIRE(!source.configureFlowCache(0).ok());
+    REQUIRE(source.sampleFlowField(lease, .5f, .5f).ok());
+    REQUIRE_EQ(source.getFlowCacheStatus().entries, std::size_t(1));
+}
+
+TEST_CASE("crowd.snapshot.twoRestoredWorldsHaveIndependentSelectedFlowPins") {
+    Crowd::Snapshot saved;
+    {
+        Crowd source;
+        source.resizeField(3, 1, 1.f, 0.f, 0.f);
+        auto        lease = build(source, {{2, 0}});
+        AgentUpdate update;
+        update.reference = source.agentRef(source.addNamedAgent("moving", .5f, .5f, 0.f, .1f)).takeValue();
+        update.flow      = lease;
+        REQUIRE(source.updateAgents({{update}}).ok());
+        update.reference = source.agentRef(source.addNamedAgent("companion", 1.5f, .5f, 0.f, .1f)).takeValue();
+        REQUIRE(source.updateAgents({{update}}).ok());
+        saved = source.captureSnapshot().takeValue();
+    }
+    Crowd first, second;
+    REQUIRE(first.commitRestore(first.prepareRestore(saved).takeValue()).ok());
+    REQUIRE(second.commitRestore(second.prepareRestore(saved).takeValue()).ok());
+    AgentUpdate update;
+    update.reference = first.resolveNamedAgent("moving").takeValue();
+    update.flow      = FlowLease{};
+    REQUIRE(first.updateAgents({{update}}).ok());
+    REQUIRE(!first.configureFlowCache(0).ok());
+    update.reference = first.resolveNamedAgent("companion").takeValue();
+    REQUIRE(first.updateAgents({{update}}).ok());
+    REQUIRE(first.configureFlowCache(0).ok());
+    REQUIRE(!second.configureFlowCache(0).ok());
+    CHECK(second.readAgent(second.resolveNamedAgent("moving").takeValue()).value().flowGeneration != 0);
+}
+
 TEST_CASE("crowd.cache.interpolationDoesNotMakeBlockedContainingCellReachable") {
     Crowd crowd;
     crowd.resizeField(3, 3, 1.f, 0.f, 0.f);
@@ -2356,3 +2674,293 @@ TEST_CASE("crowd.ties.namedWanderIsIndependentOfCreationOrder") {
     CHECK_EQ(replayed.heading, expected.heading);
 }
 }  // namespace test_crowd_ties_runtime
+
+namespace test_crowd_restore_preview {
+using namespace eve;
+using namespace eve::crowd;
+TEST_CASE("crowd.snapshot.preparedReferencesPublishOnlyWithTheirPlan") {
+    Crowd      source, target, foreign;
+    const auto removed = source.addAgent(100.f, 100.f, 0.f, .5f);
+    REQUIRE(source.addNamedAgent("saved", 3.f, 7.f, .25f, .5f) >= 0);
+    REQUIRE(source.removeAgent(removed));
+    auto snapshot = source.captureSnapshot().takeValue();
+    auto plan     = target.prepareRestore(snapshot).takeValue();
+    CHECK_EQ(plan.agentCount(), 1u);
+    REQUIRE(!plan.inspectAgent(1).ok());
+    auto entry = plan.inspectAgent(0).takeValue();
+    CHECK_EQ(entry.state.x, 3.f);
+    CHECK_EQ(entry.state.y, 7.f);
+    CHECK(!target.isAgentAlive(entry.reference));
+    CHECK(!source.isAgentAlive(entry.reference));
+    REQUIRE(!foreign.commitRestore(std::move(plan)).ok());
+    CHECK_EQ(plan.agentCount(), 1u);
+    auto moved = std::move(plan);
+    CHECK_EQ(plan.agentCount(), 0u);
+    REQUIRE(!plan.inspectAgent(0).ok());
+    REQUIRE(target.commitRestore(std::move(moved)).ok());
+    CHECK_EQ(moved.agentCount(), 0u);
+    REQUIRE(!moved.inspectAgent(0).ok());
+    REQUIRE(target.isAgentAlive(entry.reference));
+    CHECK_EQ(target.readAgent(entry.reference).value().x, entry.state.x);
+    auto abandoned = target.prepareRestore(snapshot).takeValue();
+    auto unused    = abandoned.inspectAgent(0).takeValue().reference;
+    abandoned      = Crowd::RestorePlan{};
+    CHECK(!target.isAgentAlive(unused));
+    CHECK(target.isAgentAlive(entry.reference));
+}
+}  // namespace test_crowd_restore_preview
+
+namespace test_crowd_external_navigation_restore {
+using namespace eve;
+using namespace eve::crowd;
+namespace {
+// Deterministic test digest; no security claim.
+Result<ContentId> navigationDigest(std::string_view text) {
+    std::uint64_t value = 14695981039346656037ULL;
+    for (unsigned char byte : text) value = (value ^ byte) * 1099511628211ULL;
+    ContentId::Bytes bytes{};
+    for (auto& byte : bytes) {
+        value = value * 6364136223846793005ULL + 1;
+        byte  = std::uint8_t(value >> 32);
+    }
+    return Result<ContentId>::success(ContentId(bytes));
+}
+Crowd::NavigationCapture wireNavigation(Crowd::Snapshot& snapshot, const Crowd::NavigationCapture& capture) {
+    const auto epoch = *PersistentId::parse("b5b2369c-f9c3-4663-8c96-3e1a5d2ffabe");
+    auto       envelope =
+        capture.seal(epoch, Revision(3), SimulationTick(12), navigationDigest).expect("seal external navigation");
+    auto text         = serializeSnapshotEnvelope(envelope).expect("write external navigation file");
+    auto decoded      = parseSnapshotEnvelope(text, navigationDigest).expect("read external navigation file");
+    auto backendValue = snapshot.encodeState().expect("write backend");
+    snapshot          = Crowd::Snapshot::prepareState(backendValue).expect("read independent backend");
+    return snapshot.parseNavigation(std::move(decoded), epoch, navigationDigest).expect("bind navigation to backend");
+}
+void finish(Crowd& crowd, Crowd::FlowBuildPlan& plan) {
+    while (plan.state() == Crowd::FlowBuildState::Pending)
+        crowd.advanceFlowBuild(plan, 1000000).expect("canonical native navigation finish");
+}
+}  // namespace
+TEST_CASE("crowd.snapshot.externalNavigationResumesWorkAndPreservesAdmissionCapacity") {
+    auto source = std::make_unique<Crowd>();
+    source->resizeField(32, 32, 1.f, 0.f, 0.f);
+    auto pending = source->prepareFlowBuild(31, 31).takeValue();
+    while (source->advanceFlowBuild(pending, 1).takeValue().directionCells == 0) {
+    }
+    auto leasePlan = source->prepareFlowBuild(1, 1).takeValue();
+    finish(*source, leasePlan);
+    auto             lease    = source->acquireFlowField(std::move(leasePlan)).takeValue();
+    auto             snapshot = source->captureSnapshot().takeValue();
+    const std::array views{Crowd::NavigationWorkView{std::cref(pending), std::cref(lease)}};
+    auto             captured = snapshot.captureNavigation(views).takeValue();
+    captured                  = wireNavigation(snapshot, captured);
+    REQUIRE_EQ(captured.size(), std::size_t(1));
+    std::vector<Crowd::FlowBuildProgress> expected;
+    while (pending.state() == Crowd::FlowBuildState::Pending)
+        expected.push_back(source->advanceFlowBuild(pending, 3).takeValue());
+    auto       completedLease = source->acquireFlowField(std::move(pending)).takeValue();
+    const auto bytes          = source->getFlowCacheStatus().residentBytes;
+    const auto sample         = source->sampleFlowField(lease, 3.5f, 3.5f).takeValue();
+    source.reset();
+    Crowd target;
+    auto  candidate = target.prepareRestore(snapshot).takeValue();
+    auto  restored  = candidate.prepareNavigation(captured).takeValue();
+    REQUIRE(!target.advanceFlowBuild(restored[0].plan, 1).ok());
+    REQUIRE(!target.sampleFlowField(restored[0].lease, 3.5f, 3.5f).ok());
+    target.commitRestore(std::move(candidate)).expect("native navigation backend publication");
+    const auto actualSample = target.sampleFlowField(restored[0].lease, 3.5f, 3.5f).takeValue();
+    CHECK_EQ(actualSample.direction.x, sample.direction.x);
+    CHECK_EQ(actualSample.direction.y, sample.direction.y);
+    for (const auto& progress : expected) {
+        const auto actual = target.advanceFlowBuild(restored[0].plan, 3).takeValue();
+        CHECK(actual.state == progress.state);
+        CHECK_EQ(actual.heapPops, progress.heapPops);
+        CHECK_EQ(actual.directionCells, progress.directionCells);
+    }
+    auto next = target.acquireFlowField(std::move(restored[0].plan)).takeValue();
+    CHECK_EQ(target.getFlowCacheStatus().residentBytes, bytes);
+    REQUIRE(!candidate.prepareNavigation(captured).ok());
+}
+TEST_CASE("crowd.snapshot.externalNavigationUsesExactSnapshotAndIndependentCandidatePins") {
+    Crowd source;
+    source.resizeField(5, 5, 1.f, 0.f, 0.f);
+    auto work = source.prepareFlowBuild(4, 4).takeValue();
+    finish(source, work);
+    auto        lease = source.acquireFlowField(std::move(work)).takeValue();
+    const auto  ref   = source.agentRef(source.addNamedAgent("selected", 1.5f, 1.5f, 0.f, .1f)).takeValue();
+    AgentUpdate update;
+    update.reference = ref;
+    update.flow      = lease;
+    source.updateAgents({{update}}).expect("canonical agent selection");
+    auto             snapshot = source.captureSnapshot().takeValue();
+    const std::array views{Crowd::NavigationWorkView{std::cref(work), std::cref(lease)}};
+    auto             capture = snapshot.captureNavigation(views).takeValue();
+    Crowd            first, second;
+    auto             a     = first.prepareRestore(snapshot).takeValue();
+    auto             b     = second.prepareRestore(snapshot).takeValue();
+    auto             wrong = second.prepareRestore(source.captureSnapshot().takeValue()).takeValue();
+    REQUIRE(!wrong.prepareNavigation(capture).ok());
+    auto one     = a.prepareNavigation(capture).takeValue();
+    auto aliases = a.prepareNavigation(capture).takeValue();
+    auto two     = b.prepareNavigation(capture).takeValue();
+    first.commitRestore(std::move(a)).expect("first independent backend");
+    second.commitRestore(std::move(b)).expect("second independent backend");
+    REQUIRE(!first.sampleFlowField(two[0].lease, 1.5f, 1.5f).ok());
+    first.clearAgents();
+    one.clear();
+    REQUIRE(!first.configureFlowCache(0).ok());
+    aliases.clear();
+    REQUIRE(first.configureFlowCache(0).ok());
+    REQUIRE(second.sampleFlowField(two[0].lease, 1.5f, 1.5f).ok());
+    second.clearAgents();
+    two.clear();
+    REQUIRE(second.configureFlowCache(0).ok());
+    REQUIRE(source.sampleFlowField(lease, 1.5f, 1.5f).ok());
+}
+TEST_CASE("crowd.snapshot.externalNavigationPreservesStaleForeignAndEmptyStates") {
+    Crowd source, foreign;
+    source.resizeField(5, 5, 1.f, 0.f, 0.f);
+    foreign.resizeField(5, 5, 1.f, 0.f, 0.f);
+    auto pending = source.prepareFlowBuild(4, 4).takeValue();
+    auto other   = foreign.prepareFlowBuild(4, 4).takeValue();
+    finish(source, pending);
+    auto lease = source.acquireFlowField(std::move(pending)).takeValue();
+    auto stale = source.prepareFlowBuild(3, 3).takeValue();
+    source.setBlocked(0, 0, true);
+    Crowd::FlowBuildPlan empty;
+    FlowLease            unbound;
+    const std::array     views{Crowd::NavigationWorkView{std::cref(stale), std::cref(lease)},
+                           Crowd::NavigationWorkView{std::cref(other), std::cref(unbound)},
+                           Crowd::NavigationWorkView{std::cref(empty), std::cref(unbound)}};
+    auto                 snapshot = source.captureSnapshot().takeValue();
+    auto                 capture  = snapshot.captureNavigation(views).takeValue();
+    capture                       = wireNavigation(snapshot, capture);
+    Crowd target;
+    auto  candidate = target.prepareRestore(snapshot).takeValue();
+    auto  restored  = candidate.prepareNavigation(capture).takeValue();
+    target.commitRestore(std::move(candidate)).expect("stale facts publication");
+    REQUIRE(target.advanceFlowBuild(restored[0].plan, 1).takeValue().state == Crowd::FlowBuildState::Cancelled);
+    REQUIRE(!target.sampleFlowField(restored[0].lease, 1.5f, 1.5f).ok());
+    REQUIRE(!target.advanceFlowBuild(restored[1].plan, 1).ok());
+    REQUIRE(!foreign.advanceFlowBuild(restored[1].plan, 1).ok());
+    REQUIRE(restored[2].plan.state() == Crowd::FlowBuildState::Cancelled);
+    Crowd::Snapshot absent;
+    REQUIRE(!absent.captureNavigation(views).ok());
+}
+TEST_CASE("crowd.snapshot.externalNavigationDigestMayRetireSourceWrappers") {
+    Crowd source;
+    source.resizeField(4, 4, 1.f, 0.f, 0.f);
+    auto                                    pending = source.prepareFlowBuild(3, 3).takeValue();
+    FlowLease                               empty;
+    const std::array                        views{Crowd::NavigationWorkView{std::cref(pending), std::cref(empty)}};
+    std::optional<Crowd::Snapshot>          backend(source.captureSnapshot().takeValue());
+    std::optional<Crowd::NavigationCapture> captured(backend->captureNavigation(views).takeValue());
+    const auto                              backendValue = backend->encodeState().takeValue();
+    const auto                              epoch        = *PersistentId::parse("b5b2369c-f9c3-4663-8c96-3e1a5d2ffabe");
+    int                                     calls        = 0;
+    const SnapshotHashProvider              retiringSeal = [&](std::string_view bytes) {
+        ++calls;
+        captured.reset();
+        backend.reset();
+        return navigationDigest(bytes);
+    };
+    auto envelope = captured->seal(epoch, Revision(2), SimulationTick(0), retiringSeal).takeValue();
+    REQUIRE_EQ(calls, 2);
+    REQUIRE(!captured);
+    REQUIRE(!backend);
+    backend.emplace(Crowd::Snapshot::prepareState(backendValue).takeValue());
+    auto candidateSource = std::move(*backend);
+    backend.emplace(Crowd::Snapshot::prepareState(backendValue).takeValue());
+    const auto matchingSource = *backend;
+    // The parse wrapper may disappear during verification; its immutable state remains owned locally.
+    const SnapshotHashProvider retiringParse = [&](std::string_view bytes) {
+        backend.reset();
+        return navigationDigest(bytes);
+    };
+    auto parsed = backend->parseNavigation(envelope, epoch, retiringParse).takeValue();
+    REQUIRE(!backend);
+    Crowd target;
+    auto  wrong = target.prepareRestore(candidateSource).takeValue();
+    REQUIRE(!wrong.prepareNavigation(parsed).ok());
+    auto correct = target.prepareRestore(matchingSource).takeValue();
+    auto work    = correct.prepareNavigation(parsed).takeValue();
+    target.commitRestore(std::move(correct)).expect("publish after parser wrapper retirement");
+    REQUIRE(target.advanceFlowBuild(work[0].plan, 1).ok());
+    CHECK_EQ(parsed.size(), 1u);
+}
+TEST_CASE("crowd.snapshot.externalNavigationRejectsCorruptWorkAndUnavailableDigest") {
+    Crowd source;
+    source.resizeField(4, 4, 1.f, 0.f, 0.f);
+    auto             pending = source.prepareFlowBuild(3, 3).takeValue();
+    FlowLease        empty;
+    const std::array views{Crowd::NavigationWorkView{std::cref(pending), std::cref(empty)}};
+    auto             backend  = source.captureSnapshot().takeValue();
+    auto             captured = backend.captureNavigation(views).takeValue();
+    const auto       epoch    = *PersistentId::parse("b5b2369c-f9c3-4663-8c96-3e1a5d2ffabe");
+    const auto       envelope = captured.seal(epoch, Revision(2), SimulationTick(0), navigationDigest).takeValue();
+    const SnapshotHashProvider unavailable = [](std::string_view) {
+        return Result<ContentId>::failure(Diagnostic::error(DiagnosticCode::Failed, "digest unavailable"));
+    };
+    REQUIRE(!captured.seal(epoch, Revision(2), SimulationTick(0), unavailable).ok());
+    REQUIRE(!backend.parseNavigation(envelope, epoch, unavailable).ok());
+    for (int kind = 0; kind < 3; ++kind) {
+        auto  payload = envelope.payload;
+        auto& root    = *payload.getIf<Value::Object>();
+        if (kind == 0) root.emplace("unknown", true);
+        if (kind == 1) {
+            auto& rows = *root.at("work").getIf<Value::Array>();
+            auto& plan = *(*rows[0].getIf<Value::Array>())[0].getIf<Value::Array>();
+            plan[0]    = int(Crowd::FlowBuildState::Ready);  // Incomplete field cannot become completed work.
+        }
+        if (kind == 2) {
+            auto& rows  = *root.at("work").getIf<Value::Array>();
+            auto& lease = *(*rows[0].getIf<Value::Array>())[1].getIf<Value::Array>();
+            lease[0]    = Value::Array{0};  // Cache generation does not exist.
+        }
+        auto corrupt = makeSnapshotEnvelope(envelope.type, envelope.schema, envelope.schemaVersion, epoch,
+                                            envelope.revision, envelope.tick, std::move(payload), navigationDigest)
+                           .takeValue();
+        REQUIRE(!backend.parseNavigation(std::move(corrupt), epoch, navigationDigest).ok());
+    }
+    CHECK_EQ(backend.parseNavigation(envelope, epoch, navigationDigest).takeValue().size(), 1u);
+}
+TEST_CASE("crowd.snapshot.externalNavigationPersistentBackendMismatch") {
+    Crowd source;
+    source.resizeField(4, 4, 1.f, 0.f, 0.f);
+    auto             plan = source.prepareFlowBuild(3, 3).takeValue();
+    FlowLease        empty;
+    const std::array views{Crowd::NavigationWorkView{std::cref(plan), std::cref(empty)}};
+    auto             snapshot = source.captureSnapshot().takeValue();
+    auto             capture  = snapshot.captureNavigation(views).takeValue();
+    const auto       epoch    = *PersistentId::parse("b5b2369c-f9c3-4663-8c96-3e1a5d2ffabe");
+    auto             envelope = capture.seal(epoch, Revision(1), SimulationTick(0), navigationDigest).takeValue();
+    source.setBlocked(0, 0, true);
+    auto wrong = source.captureSnapshot().takeValue();
+    REQUIRE(!wrong.parseNavigation(envelope, epoch, navigationDigest).ok());
+    REQUIRE(!capture.seal(epoch, Revision(0), SimulationTick(0), navigationDigest).ok());
+    envelope.schemaVersion = SchemaVersion(2);
+    auto resealed          = makeSnapshotEnvelope(envelope.type, envelope.schema, envelope.schemaVersion, epoch,
+                                                  envelope.revision, envelope.tick, envelope.payload, navigationDigest)
+                        .takeValue();
+    REQUIRE(!snapshot.parseNavigation(std::move(resealed), epoch, navigationDigest).ok());
+    auto restored = wireNavigation(snapshot, capture);
+    CHECK_EQ(restored.size(), 1u);
+}
+TEST_CASE("crowd.snapshot.externalNavigationRejectsLeasePublishedAfterBackendCapture") {
+    Crowd source;
+    source.resizeField(8, 8, 1.f, 0.f, 0.f);
+    auto old  = source.captureSnapshot().takeValue();
+    auto plan = source.prepareFlowBuild(7, 7).takeValue();
+    finish(source, plan);
+    auto             lease = source.acquireFlowField(std::move(plan)).takeValue();
+    const std::array views{Crowd::NavigationWorkView{std::cref(plan), std::cref(lease)}};
+    REQUIRE(!old.captureNavigation(views).ok());
+    REQUIRE(source.sampleFlowField(lease, 1.5f, 1.5f).ok());
+    auto  current  = source.captureSnapshot().takeValue();
+    auto  captured = current.captureNavigation(views).takeValue();
+    Crowd target;
+    auto  candidate = target.prepareRestore(current).takeValue();
+    auto  restored  = candidate.prepareNavigation(captured).takeValue();
+    target.commitRestore(std::move(candidate)).expect("closed external lease publication");
+    REQUIRE(target.sampleFlowField(restored[0].lease, 1.5f, 1.5f).ok());
+}
+}  // namespace test_crowd_external_navigation_restore

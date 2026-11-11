@@ -50,8 +50,11 @@ const eve::Value* objectField(const eve::Value::Object& object, std::string_view
 
 eve::Result<settlement::SettlementRequest> makeStatusTickSettlementRequest(
     const StatusTickEvent& tick, SubjectRef source, SubjectRef target, SimulationTick simulationTick) {
-    if (tick.actor == nullptr || tick.effectId.empty() || tick.instanceId <= 0 || tick.stacks <= 0)
+    if (tick.actor.presence() == ActorEventPresence::None || tick.effectId.empty() || tick.instanceId <= 0 ||
+        tick.stacks <= 0)
         return requestFailure(eve::DiagnosticCode::InvalidArgument, "RPG status tick identity is invalid", "tick");
+    if (!tick.actor.resolve())
+        return requestFailure(eve::DiagnosticCode::StaleHandle, "RPG status tick actor has retired", "tick.actor");
     if (!target.isValid())
         return requestFailure(eve::DiagnosticCode::InvalidArgument, "RPG status tick target must be valid", "target");
     const EffectDefinition* definition = EffectRegistry::find(tick.effectId);

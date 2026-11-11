@@ -72,6 +72,49 @@ class ProfileSmokeRunnerTests(unittest.TestCase):
                                  ["ctest", "--test-dir", str(directory), "--no-tests=error",
                                   "--output-on-failure", "-R", "^bake.render."])
 
+    def test_spawn_core_profiles_require_real_process_isolated_contracts(self):
+        for profile in ("spawn-core-only", "spawn-content-only", "spawn-rpg-only"):
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary) / profile
+                directory.mkdir()
+                for name in ("eve_capability_present_check", "eve_capability_absent_check"):
+                    self.make_binary(directory, name)
+                args = argparse.Namespace(build_root=temporary)
+                command = ["ctest", "--test-dir", str(directory / "profile/spawn"),
+                           "--no-tests=error", "--output-on-failure"]
+                with mock.patch.object(profile_matrix, "run_command") as run:
+                    profile_matrix.run_smoke(args, profile)
+                    self.assertEqual(run.call_args_list[-1].args[0], command)
+
+                def fail_contracts(actual, cwd):
+                    if actual[0] == "ctest":
+                        raise subprocess.CalledProcessError(1, actual)
+
+                with mock.patch.object(profile_matrix, "run_command", side_effect=fail_contracts):
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        profile_matrix.run_smoke(args, profile)
+
+    def test_map_runtime_requires_real_contracts_then_smokes_matching_examples(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            profile = "spawn-map-rts-runtime"
+            directory = Path(temporary) / profile
+            directory.mkdir()
+            for name in ("eve_capability_present_check", "eve_capability_absent_check"):
+                self.make_binary(directory, name)
+            args = argparse.Namespace(build_root=temporary)
+            with mock.patch.object(profile_matrix, "run_command") as run:
+                with self.assertRaisesRegex(RuntimeError, "native host missing"):
+                    profile_matrix.run_smoke(args, profile)
+                self.assertTrue(any("profile/rts_spawn" in " ".join(call.args[0]) for call in run.call_args_list))
+            host = directory / "src/engine"
+            host.mkdir(parents=True)
+            self.make_binary(host, "eve.exe" if os.name == "nt" else "eve")
+            with mock.patch.object(profile_matrix, "run_command") as run:
+                profile_matrix.run_smoke(args, profile)
+                self.assertEqual(run.call_args_list[-1].args[0],
+                    ["bash", "scripts/smoke_examples.sh", "spawn-rts-reinforcements"])
+                self.assertEqual(run.call_args_list[-1].kwargs["env"]["EVE"], str(host / ("eve.exe" if os.name == "nt" else "eve")))
+
     def test_exe_playback_failure_propagates(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary) / "physics-bake-only"

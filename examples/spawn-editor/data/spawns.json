@@ -1,0 +1,93 @@
+{
+  "schema": "eve.map-spawns",
+  "version": 1,
+  "map": "forest",
+  "budgets": [
+    {
+      "id": "hostiles",
+      "alive_limit": 8
+    }
+  ],
+  "instances": [
+    {
+      "id": "wolf-camp",
+      "template": {
+        "type": "spawn.template",
+        "id": "wolves"
+      },
+      "region": {
+        "kind": "circle",
+        "space": "world2d",
+        "center": [
+          320,
+          224
+        ],
+        "radius": 100
+      },
+      "activation": {
+        "kind": "map_loaded"
+      },
+      "inactive_policy": "pause",
+      "unload_policy": "persist"
+    },
+    {
+      "id": "alarm-camp",
+      "template": {
+        "type": "spawn.template",
+        "id": "wolves"
+      },
+      "region": {
+        "kind": "circle",
+        "space": "world2d",
+        "center": [
+          500,
+          224
+        ],
+        "radius": 50
+      },
+      "activation": {
+        "kind": "event",
+        "event": "camp.alarm"
+      },
+      "inactive_policy": "pause",
+      "unload_policy": "persist",
+      "overrides": {
+        "population": {
+          "target_alive": 2,
+          "initial_population": 2,
+          "alive_limit": 2
+        }
+      }
+    },
+    {
+      "id": "nearby-camp",
+      "template": {
+        "type": "spawn.template",
+        "id": "wolves"
+      },
+      "region": {
+        "kind": "circle",
+        "space": "world2d",
+        "center": [
+          90,
+          224
+        ],
+        "radius": 40
+      },
+      "activation": {
+        "kind": "player_proximity",
+        "enter_distance": 25,
+        "exit_distance": 50
+      },
+      "inactive_policy": "pause",
+      "unload_policy": "persist",
+      "overrides": {
+        "population": {
+          "target_alive": 2,
+          "initial_population": 2,
+          "alive_limit": 2
+        }
+      }
+    }
+  ]
+}

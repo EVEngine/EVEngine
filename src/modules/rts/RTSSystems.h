@@ -683,12 +683,34 @@ struct RTSProjectilePayloadSnapshot {
     bool blockedByObstacles = false;
     std::vector<std::string> requiredTargetTags;
     std::vector<std::string> excludedTargetTags;
+    SubjectRef
+        trajectoryTarget;  ///< Backend homing/trajectory binding, independent of observer-tracked payload target.
 };
 
 /** @brief Complete in-flight RTS projectile state with stable gameplay relationships. */
 struct RTSProjectileSystemSnapshot {
     weapon::ProjectileRuntimeSnapshot runtime;
     std::vector<RTSProjectilePayloadSnapshot> payloads;
+    /** @brief Validate portable pool/payload closure without constructing entities or binding target handles.
+     * @return Invalid trajectory, duplicate/missing payload or invalid stable relationship/value diagnostics.
+     * @thread CPU inspection; no callbacks, services or live mutations.
+     * @cost Scans the complete pool and indexes payload keys per explicit checkpoint admission.
+     */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> validate() const;
+    /** @brief Encode complete rts.projectiles v1 CPU data, including observer and empty-slot generations.
+     * @return Owning value or invalid facts; native target handles must have been removed by capture.
+     * @remarks Initial v1 has no migration; no process pointer, owner nonce or ECS handle is encoded.
+     * @thread CPU save only; no callbacks or services.
+     * @cost Copies all slot and payload data per explicit root save.
+     */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<Value> encodeState() const;
+    /** @brief Admit strict portable pool/payload data without resolving subjects or creating a runtime.
+     * @return Owning snapshot or unknown schema/version/fields, invalid counters and closure diagnostics.
+     * @thread CPU admission; no callbacks, services or mutation of the borrowed input.
+     * @cost Validates and copies the complete pool/payload graph per explicit root load.
+     * @throws std::bad_alloc No live state changed.
+     */
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<RTSProjectileSystemSnapshot> prepareState(const Value& value);
 };
 
 /** @brief Resolve one stable RTS subject while restoring projectile relationships. */
@@ -713,7 +735,12 @@ public:
     [[nodiscard]] std::size_t activeCount() const noexcept { return runtime_.activeCount(); }
     /** @brief Capture shared trajectories and stable RTS damage payloads. */
     [[nodiscard]] RTSProjectileSystemSnapshot snapshot() const;
-    /** @brief Validate and atomically restore shared trajectories plus RTS payloads. */
+    /** @brief Validate and atomically restore shared trajectories plus RTS payloads, binding homing targets first.
+     * @ownership Copies snapshot facts before resolver calls; retains no resolver. Returned entities must remain
+     * alive in the same owner world through this call; callbacks must keep this system alive and quiescent.
+     * @thread Owner thread outside Views; no callbacks occur while holding a lock.
+     * @cost Copies all trajectories/payloads and resolves their stable roots once per explicit restore attempt.
+     */
     [[nodiscard]] Result<void> restore(const RTSProjectileSystemSnapshot& snapshot,
                                        const ProjectileSubjectResolver& resolver);
 

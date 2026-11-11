@@ -300,6 +300,7 @@ private:
 std::string numberToString(const Node& n) {
     if (n.hasInt64) return std::to_string(n.intVal);
     std::ostringstream os;
+    os.exceptions(std::ios::badbit | std::ios::failbit);
     os << n.numberVal;
     return os.str();
 }
@@ -533,6 +534,7 @@ bool appendCanonicalJson(const eve::Value& value, std::string& output) {
                 if (number.find_first_of(".eE") == std::string_view::npos) output += ".0";
 #else
                 std::ostringstream stream;
+                stream.exceptions(std::ios::badbit | std::ios::failbit);
                 stream.imbue(std::locale::classic());
                 stream.precision(std::numeric_limits<double>::max_digits10);
                 stream << current;

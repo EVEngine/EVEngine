@@ -128,11 +128,14 @@ const char* weaponEventTypeName(WeaponEventType type) {
 
 WeaponEntity* WeaponEntity::createWeapon() {
     WeaponEntity* w = WeaponEntity::create();
-    w->identity();
-    w->definition();
-    w->definitionBinding();
-    w->state();
-    w->aim();
+    auto          unpublished =
+        std::unique_ptr<WeaponEntity, void (*)(WeaponEntity*)>(w, [](WeaponEntity* value) { value->release(); });
+    (void)*w->identity();
+    (void)*w->definition();
+    (void)*w->definitionBinding();
+    (void)*w->state();
+    (void)*w->aim();
+    unpublished.release();
     return w;
 }
 
@@ -154,8 +157,12 @@ WeaponRigEntity* WeaponRigEntity::createRig() {
 
 AmmoPoolEntity* AmmoPoolEntity::createPool() {
     AmmoPoolEntity* p = AmmoPoolEntity::create();
-    p->identity();
-    p->state();
+    auto            unpublished =
+        std::unique_ptr<AmmoPoolEntity, void (*)(AmmoPoolEntity*)>(p, [](AmmoPoolEntity* value) { value->release(); });
+    (void)*p->identity();
+    (void)*p->state();
+    (void)*p->lifetime();
+    unpublished.release();
     return p;
 }
 
@@ -369,11 +376,14 @@ void Weapon::rigSetPose(WeaponRigEntity* rig, float px, float py, float pz, floa
 // ---------------------------------------------------------------------------
 
 AmmoPoolEntity* Weapon::newAmmoPool(const std::string& id, const std::string& ammoType, int max) {
-    AmmoPoolEntity* p  = AmmoPoolEntity::createPool();
-    p->identity()->id   = id.empty() ? ("ammo#" + std::to_string(nextInstance_++)) : id;
+    AmmoPoolEntity* p = AmmoPoolEntity::createPool();
+    auto            unpublished =
+        std::unique_ptr<AmmoPoolEntity, void (*)(AmmoPoolEntity*)>(p, [](AmmoPoolEntity* value) { value->release(); });
+    p->identity()->id       = id.empty() ? ("ammo#" + std::to_string(nextInstance_++)) : id;
     p->identity()->ammoType = ammoType;
-    p->state()->max     = max;
+    p->state()->max         = max;
     pools_.push_back(ecs::handle_of(p));
+    unpublished.release();
     return p;
 }
 
@@ -390,15 +400,17 @@ int Weapon::ammoPoolGetCount(AmmoPoolEntity* pool) { return pool == nullptr ? 0 
 
 bool Weapon::bindAmmoPool(WeaponEntity* w, AmmoPoolEntity* pool) {
     if (w == nullptr || pool == nullptr) return false;
-    w->state()->ammoPool = pool;
+    auto link = AmmoPoolLink::bind(*w, *pool);
+    if (!link) return false;
+    w->state()->ammoPool = std::move(link).takeValue();
     return true;
 }
 
 void Weapon::unbindAmmoPool(WeaponEntity* w) {
-    if (w != nullptr) w->state()->ammoPool = nullptr;
+    if (w != nullptr) w->state()->ammoPool.reset();
 }
 
-AmmoPoolEntity* Weapon::getAmmoPool(WeaponEntity* w) { return w == nullptr ? nullptr : w->state()->ammoPool; }
+AmmoPoolEntity* Weapon::getAmmoPool(WeaponEntity* w) { return w == nullptr ? nullptr : w->state()->ammoPool.resolve(); }
 
 // ---------------------------------------------------------------------------
 // 挂点操作
@@ -680,11 +692,11 @@ void Weapon::expose(ssq::Table& table) {
         const WeaponDefinition* d = w != nullptr ? w->definition()->def : nullptr;
         return d != nullptr ? d->zoomFov : 0.f;
     });
-    wCls.addFunc("getAmmoPool",
-                 [](WeaponEntity* w) -> AmmoPoolEntity* { return w != nullptr ? w->state()->ammoPool : nullptr; });
-    wCls.addFunc("getStage", [](WeaponEntity* w) -> std::string {
-        return w ? attackStageName(w->state()->stage) : std::string{};
+    wCls.addFunc("getAmmoPool", [](WeaponEntity* w) -> AmmoPoolEntity* {
+        return w != nullptr ? w->state()->ammoPool.resolve() : nullptr;
     });
+    wCls.addFunc("getStage",
+                 [](WeaponEntity* w) -> std::string { return w ? attackStageName(w->state()->stage) : std::string{}; });
     wCls.addFunc("isReloading", [](WeaponEntity* w) -> bool { return w != nullptr && w->state()->resource.reloading; });
     wCls.addFunc("getCooldown", [](WeaponEntity* w) -> float { return w ? w->state()->cooldown : 0.f; });
     wCls.addFunc("getYaw", [](WeaponEntity* w) -> float { return w ? w->aim()->yaw : 0.f; });

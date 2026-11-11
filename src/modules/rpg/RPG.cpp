@@ -294,7 +294,8 @@ int RPG::getLevelUpEventCount() const { return int(levelUps_.size()); }
 
 RPGActor *RPG::getLevelUpEventActor(int index) const {
     if (index < 0 || size_t(index) >= levelUps_.size()) return nullptr;
-    return levelUps_[size_t(index)].actor;
+    auto actor = levelUps_[size_t(index)].actor.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 int RPG::getLevelUpEventPreviousLevel(int index) const {
@@ -308,10 +309,12 @@ int RPG::getLevelUpEventNewLevel(int index) const {
 }
 
 int RPG::getVitalsEventCount() const { return int(vitals_.size()); }
+std::span<const VitalsEvent> RPG::vitalsEvents() const noexcept { return vitals_; }
 
 RPGActor *RPG::getVitalsEventActor(int index) const {
     if (index < 0 || size_t(index) >= vitals_.size()) return nullptr;
-    return vitals_[size_t(index)].actor;
+    auto actor = vitals_[size_t(index)].actor.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 std::string RPG::getVitalsEventResource(int index) const {
@@ -537,7 +540,8 @@ int RPG::getTickEventCount() const { return int(ticks_.size()); }
 
 RPGActor *RPG::getTickEventActor(int index) const {
     if (index < 0 || size_t(index) >= ticks_.size()) return nullptr;
-    return ticks_[size_t(index)].actor;
+    auto actor = ticks_[size_t(index)].actor.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 int RPG::getTickEventInstanceId(int index) const {
@@ -564,7 +568,8 @@ int RPG::getStatusChangeEventCount() const { return int(changes_.size()); }
 
 RPGActor *RPG::getStatusChangeEventActor(int index) const {
     if (index < 0 || size_t(index) >= changes_.size()) return nullptr;
-    return changes_[size_t(index)].actor;
+    auto actor = changes_[size_t(index)].actor.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 int RPG::getStatusChangeEventInstanceId(int index) const {
@@ -601,12 +606,14 @@ int RPG::getCastEventCount() const { return int(casts_.size()); }
 
 RPGActor *RPG::getCastEventCaster(int index) const {
     if (index < 0 || size_t(index) >= casts_.size()) return nullptr;
-    return casts_[size_t(index)].caster;
+    auto actor = casts_[size_t(index)].caster.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 RPGActor *RPG::getCastEventTarget(int index) const {
     if (index < 0 || size_t(index) >= casts_.size()) return nullptr;
-    return casts_[size_t(index)].target;
+    auto actor = casts_[size_t(index)].target.resolve();
+    return actor ? &actor->get() : nullptr;
 }
 
 std::string RPG::getCastEventSkillId(int index) const {

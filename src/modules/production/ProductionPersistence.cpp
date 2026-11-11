@@ -1,16 +1,45 @@
 #include "production/Production.h"
 
-#include "common/Json.h"
 #include <algorithm>
+#include <charconv>
 #include <exception>
 #include <functional>
-#include <iomanip>
+#include <limits>
 #include <set>
-#include <sstream>
+#include <system_error>
+#include <type_traits>
 #include <utility>
+#include "common/Json.h"
 
 namespace eve::production {
 namespace {
+
+// Snapshot writes must propagate allocation failure, rather than publishing a partial stream buffer.
+class SnapshotText {
+public:
+    SnapshotText& operator<<(std::string_view value) {
+        text_.append(value);
+        return *this;
+    }
+    SnapshotText& operator<<(char value) {
+        text_.push_back(value);
+        return *this;
+    }
+    template <class T>
+        requires(std::is_integral_v<T> && !std::is_same_v<T, bool>)
+    SnapshotText& operator<<(T value) {
+        char buffer[3 * sizeof(T) + 3];
+        static_assert(sizeof(buffer) >= std::numeric_limits<T>::digits10 + 3);
+        const auto result = std::to_chars(std::begin(buffer), std::end(buffer), value);
+        if (result.ec != std::errc{}) throw std::system_error(std::make_error_code(result.ec));
+        text_.append(buffer, result.ptr);
+        return *this;
+    }
+    std::string finish() && { return std::move(text_); }
+
+private:
+    std::string text_;
+};
 
 template <class T>
 eve::Result<T> persistenceFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
@@ -127,7 +156,7 @@ bool parseEventKind(const std::string& name, ProductionEventKind& kind) {
 }  // namespace
 
 eve::Result<std::string> WorkQueue::snapshot() const {
-    std::ostringstream out;
+    SnapshotText out;
     const auto refundName = [](RefundPolicy policy) {
         if (policy == RefundPolicy::None) return "none";
         if (policy == RefundPolicy::Proportional) return "proportional";
@@ -262,7 +291,8 @@ eve::Result<std::string> WorkQueue::snapshot() const {
             << ",\"state\":" << quote(taskStateName(t.state))
             << ",\"totalCycles\":" << t.repeat.totalCycles << '}';
     }
-    return eve::Result<std::string>::success(out.str() + "]}");
+    out << "]}";
+    return eve::Result<std::string>::success(std::move(out).finish());
 }
 
 eve::Result<void> WorkQueue::restore(std::string_view json) {
@@ -417,9 +447,11 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
                                                        "definition generation has no definition", "tasks.definition");
             }
             auto reservation = eve::Value::fromJson(canonicalJson(value.get("reservation")));
+            if (!reservation || !reservation.value().isObject())
+                return persistenceFailure<void>(eve::DiagnosticCode::ParseError,
+                                                "invalid reservation or settlement payload", "tasks");
             auto settlementPayload = eve::Value::fromJson(canonicalJson(value.get("settlementPayload")));
-            if (!reservation || !settlementPayload || !reservation.value().isObject() ||
-                !settlementPayload.value().isObject())
+            if (!settlementPayload || !settlementPayload.value().isObject())
                 return persistenceFailure<void>(eve::DiagnosticCode::ParseError,
                                                        "invalid reservation or settlement payload", "tasks");
             task->reservation = std::move(reservation).takeValue();

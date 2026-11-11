@@ -58,6 +58,21 @@ struct RTSEffectUpdate {
 struct RTSEffectSnapshot {
     effects::EffectContainer effects;
     RTSEffectTarget          target;
+    /** @brief Encode the canonical lifecycle container and exact RTS settlement target as rts.effects v1.
+     * @return Owning value or common lifecycle/RTS target validation errors; no events are replayed.
+     * @ownership Retains no entity, world or service. Read-only owner-thread call; no callbacks.
+     * @cost Copies every active effect, payload and retained lifecycle event once per explicit save.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<Value> encodeState() const;
+    /** @brief Admit strict initial v1 using the canonical lifecycle codec and RTS executor validation.
+     * @return Detached facts or malformed/unknown fields/versions and invalid settlement target.
+     * @remarks No migration in initial v1; restoring through the adapter does not repeat settlement.
+     * @ownership Returned values outlive input. Pure CPU admission with no callbacks/providers.
+     * @cost Copies all lifecycle facts once per explicit load; no ECS or simulation work.
+     * @throws std::bad_alloc Input and live worlds remain unchanged.
+     */
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<RTSEffectSnapshot> prepareState(const Value& value);
 };
 
 /** @brief RTS executor for morale, suppression and production-lock semantics. */

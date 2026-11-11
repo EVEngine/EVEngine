@@ -14,7 +14,10 @@
 #include "rpg/RPGActor.h"
 #include "rpg/SkillAction.h"
 #include "rpg/SkillCondition.h"
+#include "rpg/SkillConditionBindings.h"
 #include "rpg/SkillConditionCodec.h"
+#include "rpg/SkillContent.h"
+#include "rpg/SkillDefinitionRuntime.h"
 
 // Skill.cpp
 namespace eve::rpg {
@@ -77,6 +80,35 @@ std::unordered_map<std::string, SkillDefinition>& table() {
 
 eve::definitions::DefinitionRegistry& SkillRegistry::definitionRegistry() { return canonicalSkillRegistry(); }
 
+eve::Result<eve::definitions::Definition> SkillRegistry::captureDefinition(std::string_view id) {
+    using R = eve::Result<eve::definitions::Definition>;
+    if (auto content = SkillContentScope::current()) {
+        auto source = content->get().source(id);
+        if (!source) return R::failure(source.status());
+        return R::success(source.value().get());
+    }
+    const auto  key    = std::string(id);
+    const auto* actual = find(key);
+    if (!actual)
+        return R::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Gameplay skill is absent", key));
+    auto source = canonicalSkillRegistry().resolve("rpg.skill", key);
+    if (!source) return R::failure(source.status());
+    auto encoded = canonicalJson(*actual);
+    if (!encoded) return R::failure(encoded.status());
+    auto expected = eve::Value::fromJson(encoded.value());
+    if (!expected) return R::failure(expected.status());
+    auto typed = SkillDefinitionRuntime::prepareCaptured(source.value().get());
+    if (!typed) return R::failure(typed.status());
+    auto projected = canonicalJson(typed.value());
+    if (!projected) return R::failure(projected.status());
+    auto recorded = eve::Value::fromJson(projected.value());
+    if (!recorded) return R::failure(recorded.status());
+    if (recorded.value() != expected.value())
+        return R::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                 "Canonical skill record differs from its gameplay projection", key));
+    return R::success(source.value().get());
+}
+
 void SkillRegistry::registerSkill(const SkillDefinition& def) {
     if (def.id.empty()) return;
     auto json = canonicalJson(def);
@@ -96,6 +128,11 @@ void SkillRegistry::registerSkill(const SkillDefinition& def) {
 }
 
 const SkillDefinition* SkillRegistry::find(const std::string& id) {
+    if (auto content = SkillContentScope::current()) {
+        auto definition = content->get().definition(id);
+        if (!definition) return nullptr;
+        return &definition.value().get();
+    }
     auto& t  = table();
     auto  it = t.find(id);
     return it == t.end() ? nullptr : &it->second;
@@ -317,9 +354,19 @@ std::optional<eve::Value> skillValue(const RPGActor* actor, const SkillDefinitio
 
 }  // namespace
 
+namespace {
+void useActorConditionBindings(const RPGActor* actor, SkillConditionQueries& queries) {
+    if (!queries.bindings && actor) {
+        const auto skills = const_cast<RPGActor*>(actor)->skills();
+        if (skills.has()) queries.bindings = skills->conditionBindings;
+    }
+}
+}  // namespace
 SkillConditionContext::SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition,
                                              SkillConditionQueries queries)
-    : actor_(actor), definition_(&definition), queries_(std::move(queries)) {}
+    : actor_(actor), definition_(&definition), queries_(std::move(queries)) {
+    useActorConditionBindings(actor_, queries_);
+}
 
 std::optional<eve::Value> SkillConditionContext::value(std::string_view key) const {
     if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
@@ -347,6 +394,7 @@ std::optional<eve::Value> SkillConditionContext::value(std::string_view key) con
 
 std::optional<condition::ConditionResult> SkillConditionContext::policy(std::string_view  name,
                                                                         const eve::Value& arguments) const {
+    if (queries_.bindings) return queries_.bindings->evaluate(name, arguments, actor_);
     if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             if (!queries_.authority) return std::optional<bool>{};
             return queries_.authority(scope);
@@ -360,6 +408,11 @@ std::optional<condition::ConditionResult> SkillConditionContext::policy(std::str
 condition::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
                                                            const condition::Condition& condition,
                                                            SkillConditionQueries       queries) {
+    useActorConditionBindings(actor, queries);
+    if (queries.bindings) {
+        auto bound = validateSkillConditionBindings(condition, queries.bindings.get());
+        if (!bound) return condition::ConditionResult::failed(condition::ConditionReasonCode::PolicyUnavailable);
+    }
     SkillConditionContext context(actor, definition, std::move(queries));
     return condition.evaluate(context);
 }

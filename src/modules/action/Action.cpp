@@ -3,6 +3,7 @@
 #include "transaction/AtomicResourcePayment.h"
 
 #include <algorithm>
+#include <exception>
 #include <limits>
 #include <string>
 #include <utility>
@@ -111,6 +112,9 @@ Result<void> ActionDefinition::validate() const {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action phase durations must be non-negative", "timing"));
 
     switch (targetingMode) {
+        default:
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Unknown action targeting mode", "targetingMode"));
         case TargetingMode::None:
         case TargetingMode::Explicit:
             if (targetingSpec)
@@ -151,27 +155,41 @@ Result<void> ActionDefinition::validate() const {
 }
 
 Result<void> ActionRequest::validate(const ActionDefinition& definition) const {
+    if ((sourceSubject && !sourceSubject->isValid()) ||
+        (!targetSubjects.empty() && targetSubjects.size() != targetEntities.size()) ||
+        std::any_of(targetSubjects.begin(), targetSubjects.end(),
+                    [](SubjectRef subject) { return !subject.isValid(); }))
+        return failure(DiagnosticCode::InvalidArgument, "Invalid stable action entity correspondence", "subjects");
     auto definitionValid = definition.validate();
     if (!definitionValid) return failureFrom(definitionValid.status());
     if (actionId != definition.id)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action request id does not match its definition", "actionId"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "action request id does not match its definition", "actionId"));
 
     switch (definition.targetingMode) {
         case TargetingMode::None:
             if (!targetEntities.empty() || targetingQuery)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "a non-targeted action cannot carry target selection", "targets"));
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "a non-targeted action cannot carry target selection", "targets"));
             break;
         case TargetingMode::Explicit:
             if (targetEntities.empty())
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "an Explicit action requires at least one target", "targetEntities"));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                               "an Explicit action requires at least one target",
+                                                               "targetEntities"));
             if (targetingQuery)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Explicit actions cannot carry a targeting query", "targetingQuery"));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "Explicit actions cannot carry a targeting query",
+                                                               "targetingQuery"));
             break;
         case TargetingMode::Query:
             if (!targetingQuery)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "a Query action requires a targeting query", "targetingQuery"));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                               "a Query action requires a targeting query",
+                                                               "targetingQuery"));
             if (!targetEntities.empty())
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Query actions cannot carry explicit targets", "targetEntities"));
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "Query actions cannot carry explicit targets", "targetEntities"));
             {
                 auto valid = targetingQuery->validate();
                 if (!valid) return failureFrom(valid.status());
@@ -199,6 +217,10 @@ Result<ActionExecutionId> ActionRuntime::nextExecutionId() {
 }
 
 Result<ActionExecutionId> ActionRuntime::submit(ActionDefinition definition, ActionRequest request) {
+    if (faulted_ || snapshotting_)
+        return failureFrom<ActionExecutionId>(Status::failure(
+            StatusCode::Conflict, Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                    "Action runtime requires explicit recovery or is freezing")));
     auto definitionValid = definition.validate();
     if (!definitionValid) return Result<ActionExecutionId>::failure(definitionValid.status());
     auto requestValid = request.validate(definition);
@@ -347,13 +369,21 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
         if (!committed) {
             auto rolledBack = services_.resources->rollback(*reservation);
             if (!rolledBack) {
-                rolledBack.ignore("commit failed and rollback also failed; commit diagnostic retained");
+                // The provider still owns an unresolved reservation. Do not
+                // allow another tick or a coherent-looking checkpoint.
+                faulted_ = true;
+                if (stagedEffect) stagedEffect->rollback();
+                auto        diagnostics         = committed.diagnostics();
+                const auto& rollbackDiagnostics = rolledBack.diagnostics();
+                diagnostics.insert(diagnostics.end(), rollbackDiagnostics.begin(), rollbackDiagnostics.end());
+                return failureFrom(Status(StatusCode::Failed, std::move(diagnostics)));
             }
             if (stagedEffect) stagedEffect->rollback();
             return failureFrom(committed.status());
         }
         auto receipt       = std::move(committed).takeValue();
-        execution.receipt_ = std::move(receipt);
+        execution.receipt_ = ActionResourceReceiptAudit{receipt.account.value(), receipt.id, receipt.reservation,
+                                                        receipt.operation, std::move(receipt.cost)};
     }
 
     if (stagedEffect) {
@@ -471,6 +501,20 @@ void ActionRuntime::failExecution(ActionExecution& execution, Status status, Sim
 }
 
 Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTick tick, Duration delta) {
+    if (faulted_ || advancing_ || snapshotting_)
+        return failureFrom<ActionAdvance>(Status::failure(
+            StatusCode::Conflict,
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "Action runtime is freezing or restoring")));
+    advancing_ = true;
+    struct ResetAdvance {
+        bool& advancing;
+        bool& faulted;
+        int   exceptions = std::uncaught_exceptions();
+        ~ResetAdvance() {
+            if (std::uncaught_exceptions() > exceptions) faulted = true;
+            advancing = false;
+        }
+    } resetAdvance{advancing_, faulted_};
     ActionExecution* execution = find(id);
     if (execution == nullptr) return Result<ActionAdvance>::failure(notFoundStatus());
     if (delta.nanoseconds() < 0)
@@ -638,6 +682,10 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
 
 Result<void> ActionRuntime::setSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex,
                                                      Duration targetDuration) {
+    if (faulted_ || snapshotting_)
+        return failureFrom<void>(Status::failure(
+            StatusCode::Conflict, Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                    "Action runtime requires explicit recovery or is freezing")));
     ActionExecution* execution = find(id);
     if (execution == nullptr) return Result<void>::failure(notFoundStatus());
     if (!execution->definition_.timeline)
@@ -657,6 +705,10 @@ Result<void> ActionRuntime::setSectionTimingOverride(ActionExecutionId id, std::
 }
 
 Result<void> ActionRuntime::clearSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex) {
+    if (faulted_ || snapshotting_)
+        return failureFrom<void>(Status::failure(
+            StatusCode::Conflict, Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                    "Action runtime requires explicit recovery or is freezing")));
     ActionExecution* execution = find(id);
     if (execution == nullptr) return Result<void>::failure(notFoundStatus());
     if (!execution->definition_.timeline)
@@ -682,6 +734,10 @@ Result<double> ActionRuntime::sectionProgress(ActionExecutionId id, std::size_t 
 }
 
 Result<void> ActionRuntime::cancel(ActionExecutionId id, SimulationTick tick) {
+    if (faulted_ || snapshotting_)
+        return failureFrom<void>(Status::failure(
+            StatusCode::Conflict, Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                    "Action runtime requires explicit recovery or is freezing")));
     ActionExecution* execution = find(id);
     if (execution == nullptr) return Result<void>::failure(notFoundStatus());
     if (execution->phase_ == ActionPhase::Completed)
@@ -699,6 +755,7 @@ Result<void> ActionRuntime::cancel(ActionExecutionId id, SimulationTick tick) {
 }
 
 void ActionRuntime::clear() noexcept {
+    faulted_ = false;
     executions_.clear();
     nextId_ = ActionExecutionId{1};
 }

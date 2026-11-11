@@ -4,6 +4,7 @@
 // UI. DevTools consumes this without depending on the ui module.
 
 #include "common/Export.h"
+#include "common/Result.h"
 
 #include <string>
 
@@ -39,6 +40,21 @@ public:
      * @return Compact acknowledgement JSON, or an error string beginning with `error:`.
      */
     virtual std::string click(const std::string& host, const std::string& widget) = 0;
+
+    /** @brief Replace one editable text widget value and queue its normal text-change event.
+     * @param host Optional exact host name; duplicate matching widgets reject.
+     * @param widget InputText or SearchField id in a visible, enabled host/tree.
+     * @param text Owning complete replacement; empty clears the field. No SDL text chunk truncation.
+     * @return Success means queued, not applied to a document. Missing/ambiguous/hidden/disabled/read-only widgets
+     * reject.
+     * @ownership Input strings are call-only borrows/owning values; the queued event owns its payload and weak world
+     * witness.
+     * @thread UI owner thread, outside Views. No callbacks during this call; normal dispatch performs callbacks later.
+     * @remarks World/tree retirement before dispatch drops the event. This does not bypass form validation/history.
+     * @cost Linear semantic search and text copying per explicit edit; no per-frame lookup.
+     */
+    [[nodiscard]] virtual Result<void> setText(const std::string& host, const std::string& widget,
+                                               std::string text) = 0;
 };
 
 }  // namespace eve

@@ -4,11 +4,13 @@
 
 #include "common/LifetimeWitness.h"
 #include "common/Module.h"
+#include "common/Snapshot.h"
 #include "common/Time.h"
 #include "crowd/CrowdField.h"
 #include "crowd/CrowdTypes.h"
 
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -265,6 +267,9 @@ struct SpawnReceipt {
  */
 class EVENGINE_API_FOUNDATION Crowd : public Module {
     struct Impl;
+    struct SnapshotData;
+    struct RestoreData;
+    struct NavigationData;
 
 public:
     /** @brief Move-only prepared terrain/navigation publication. */
@@ -382,15 +387,143 @@ public:
      */
     [[nodiscard]] Result<FlowSample> sampleFlowField(const FlowLease& lease, float x, float y) const;
 
-    /** @brief Immutable in-process checkpoint; not a persistent or cross-process format. */
+    /** @brief Borrowed pair of external navigation state; both references last only for capture. */
+    struct NavigationWorkView {
+        std::reference_wrapper<const FlowBuildPlan> plan;
+        std::reference_wrapper<const FlowLease>     lease;
+    };
+    /** @brief Owned native external work, usable only with its restored backend owner.
+     * @ownership Owns unpublished plan storage and an independent cache pin; no provider or source owner retained. */
+    struct NavigationWork {
+        FlowBuildPlan plan;
+        FlowLease     lease;
+    };
+    class Snapshot;
+    class EVENGINE_API_FOUNDATION RestorePlan;
+    /** @brief Immutable external navigation facts bound to one detached backend snapshot.
+     * @ownership Owns native work and shares detached snapshot facts; never retains a live Crowd or external pin.
+     * @thread Owner-thread capture; detached inspection invokes no callbacks. crowd:navigation v1 has no VM state.
+     */
+    class EVENGINE_API_FOUNDATION NavigationCapture {
+    public:
+        /** @brief Release detached facts. */
+        ~NavigationCapture();
+        /** @brief Transfer detached facts. */
+        NavigationCapture(NavigationCapture&&) noexcept;
+        /** @brief Replace detached facts. */
+        NavigationCapture& operator=(NavigationCapture&&) noexcept;
+        NavigationCapture(const NavigationCapture&)            = delete;
+        NavigationCapture& operator=(const NavigationCapture&) = delete;
+        /** @brief Native work row count; zero after move. */
+        [[nodiscard]] std::size_t size() const noexcept;
+        /** @brief Validate ordered caller goal sets against all retained plan and lease fields.
+         * @return Count, goal or field mismatch failure; empty/not-yet-started work has no field to compare.
+         * @ownership Borrows sets for this call only. @thread CPU inspection; no callbacks or publication.
+         * @cost Canonicalizes each retained goal set once per explicit checkpoint admission.
+         */
+        [[nodiscard]] Result<void> validateGoalSets(std::span<const std::vector<FlowGoal>> sets) const;
+        /** @brief Seal complete external work bound by digest to its canonical backend snapshot.
+         * @param epoch Non-nil joint save identity; revision is nonzero and tick is caller-coordinated.
+         * @param hash Synchronous injected digest provider; never retained.
+         * @return Owning eve.crowd-navigation / crowd:navigation v1 envelope; no old owner or pin serialized.
+         * @remarks Copies backend/work facts before hash callbacks. Initial v1 limits work to 100K rows.
+         * @thread CPU save only; caller synchronizes moves. No graph advancement or live publication.
+         * @cost Copies complete backend and external retained work/field data once per explicit save.
+         * @throws std::bad_alloc Source and live backends remain unchanged.
+         */
+        [[nodiscard]] Result<SnapshotEnvelope> seal(PersistentId epoch, Revision revision, SimulationTick tick,
+                                                    const SnapshotHashProvider& hash) const;
+
+
+    private:
+        friend class Crowd;
+        friend class Snapshot;
+        friend class RestorePlan;
+        explicit NavigationCapture(std::unique_ptr<NavigationData> data);
+        std::unique_ptr<NavigationData> data_;
+    };
+    /** @brief Immutable agent/field/request-registry checkpoint; crowd.snapshot v1 admits detached CPU facts. */
     class Snapshot {
         friend class Crowd;
-        std::shared_ptr<const Impl> state_;
+        std::shared_ptr<const SnapshotData> state_;
+
+    public:
+        /** @brief Encode complete agent, registry, field/cache graph, clock/settings and request work as v1.
+         * @return Owning crowd.snapshot data; no owner nonce, pointer, pin or scheduler is serialized.
+         * @thread Immutable CPU save; caller synchronizes moves. No callbacks or simulation work.
+         * @cost Copies all agents and retained field/request/cache storage per explicit checkpoint.
+         * @throws std::bad_alloc Source and live backends remain unchanged.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> encodeState() const;
+        /** @brief Admit strict crowd.snapshot v1 with fresh detached reference scope and no live publication.
+         * @param value Synchronous borrowed data; result independently owns complete admitted facts.
+         * @return CPU snapshot or unknown version/fields, invalid graphs/indices/state or storage ABI mismatch.
+         * @remarks Initial v1 has no implicit migration. Scratch, scheduler and work reports follow native
+         * prepareRestore reset semantics. Actual owner renewal/publication still requires a RestorePlan.
+         * @thread Pure CPU admission; no callbacks, clocks, RNG or services.
+         * @cost Validates/copies all retained backend/request/field storage per explicit load.
+         * @throws std::bad_alloc Input and live backends remain unchanged.
+         */
+        [[nodiscard]] static EVENGINE_API_FOUNDATION Result<Snapshot> prepareState(const Value& value);
+        /** @brief Copy canonical CPU frame with historical references scoped only to this snapshot.
+         * @return Owning frame or empty snapshot failure; parsed snapshots never address the retired source backend.
+         * @ownership Retains no source pointers. @thread Immutable CPU inspection, no callbacks.
+         * @cost Copies every agent once per explicit checkpoint inspection.
+         * @throws std::bad_alloc No source or live backend changed.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<AgentFrame> frame() const;
+        /** @brief Resolve a stable named key into this snapshot's historical agent scope.
+         * @return Snapshot-qualified reference or absent/empty failure; not proof of live membership.
+         * @ownership Borrows key only during call. @thread Immutable CPU inspection, no callbacks. */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<AgentRef> resolveNamedAgent(const std::string& key) const;
+        /** @brief Validate bounds of a goal set for one nonzero historical input revision.
+         * @param goals Borrowed goal coordinates, 1..1024 entries. @param inputRevision Historical input revision.
+         * @return Bounds/shape failure for current input; NoOp for a retained stale input, never live authority.
+         * @remarks Stale work is preserved until native owner/input reconciliation, without projecting to a new grid.
+         * @thread Immutable CPU inspection, no callbacks. @ownership Retains no span.
+         * @cost Canonicalizes a bounded goal set once per explicit checkpoint admission.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateGoalSet(std::span<const FlowGoal> goals,
+                                                                           std::uint64_t inputRevision) const;
+        /** @brief Historical scope, zero for empty; native captures retain source scope, parsed snapshots use a fresh
+         * scope.
+         * @thread Immutable CPU inspection; no callbacks. */
+        [[nodiscard]] EVENGINE_API_FOUNDATION std::uint64_t referenceScope() const noexcept;
+        /** @brief Resolve a saved registry correspondence into this snapshot's historical reference scope.
+         * @return Qualified source for RestorePlan::remapFlowRequest, or absent/released/generation failure.
+         * @remarks Does not issue a live request; references from a parsed snapshot cannot address any old Crowd.
+         * @thread Owner thread, no callbacks. @ownership Value only; publication requires the matching plan.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<FlowRequestRef> requestReference(std::uint32_t index,
+                                                                                      std::uint32_t generation) const;
+
+        /** @brief Freeze external work against this exact backend snapshot without keeping its live owners.
+         * @return Owning work or empty snapshot failure; stale plan/input/lease state is preserved, not repaired.
+         * @ownership Input references are borrowed only for the call; copies retain no source cache pin.
+         * @thread Owner thread at the same quiescent boundary as this snapshot; no callbacks or graph advancement.
+         * @cost Copies all pending grids/heaps and retained capacities per explicit checkpoint.
+         * @throws std::bad_alloc Nothing was published; capture can retry.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<NavigationCapture> captureNavigation(
+            std::span<const NavigationWorkView> work) const;
+        /** @brief Admit versioned external work into this exact detached backend scope after digest matching.
+         * @param snapshot Owned envelope; epoch must match its nonnil save identity.
+         * @param hash Synchronous injected verifier; never retained.
+         * @return Detached work or unknown version/fields, boundary/digest/graph/phase inconsistency.
+         * @remarks Initial v1 has no implicit migration; plan/lease data uses the backend's canonical codecs.
+         * Matching content is explicitly rebound to this scope; native prepare still requires this same snapshot.
+         * @ownership Retains immutable backend data, no live provider or source owner/pin.
+         * @thread CPU admission only, no graph work, simulation advance or publication.
+         * @cost Validates backend digest and copies complete retained external work per explicit load.
+         * @throws std::bad_alloc Input and live backends remain unchanged.
+         */
+        [[nodiscard]] EVENGINE_API_FOUNDATION Result<NavigationCapture> parseNavigation(
+            SnapshotEnvelope snapshot, PersistentId epoch, const SnapshotHashProvider& hash) const;
     };
     /** @brief Prepared restore workspace; owns allocations until commit or destruction. */
     class EVENGINE_API_FOUNDATION RestorePlan {
         friend class Crowd;
-        std::unique_ptr<Impl> state_;
+        std::unique_ptr<RestoreData> state_;
         std::uint64_t         targetOwner_ = 0;
 
     public:
@@ -402,17 +535,47 @@ public:
         RestorePlan(RestorePlan&&) noexcept;
         /** @brief Transfer one-use restore ownership. */
         RestorePlan& operator=(RestorePlan&&) noexcept;
+        /** @brief Candidate backend owner epoch; zero when empty or consumed, not proof of live publication. */
+        [[nodiscard]] std::uint64_t owner() const noexcept;
+        /** @brief Return the prepared native frame row count; zero when empty or consumed.
+         * @thread Simulation owner thread; no callbacks or live world mutation. */
+        [[nodiscard]] std::size_t agentCount() const noexcept;
+        /** @brief Inspect one prepared native frame row without publishing its agent.
+         * @param row Dense snapshot row, not a persistent identity.
+         * @return Owning state and anticipated reference, or failure for an empty plan or invalid row.
+         * @remarks The reference becomes live only after this plan commits to its original target.
+         * Moving the plan preserves the reference; cancellation never makes it live.
+         * @thread Simulation owner thread; no callbacks or live world mutation. */
+        [[nodiscard]] Result<AgentFrameEntry> inspectAgent(std::size_t row) const;
+        /** @brief Remap an occupied source request into this unpublished restore candidate.
+         * @param source Exact owner/index/generation from the captured native request token.
+         * @return New owner-qualified reference or empty-plan, foreign, released or stale-generation failure.
+         * @remarks The returned reference is usable only after this candidate commits to its original Crowd.
+         * Other candidates get distinct owners. Does not revive released entries or publish VM tokens.
+         * @ownership Value only; no source world or VM retained. @thread Owner thread; no callbacks.
+         */
+        [[nodiscard]] Result<FlowRequestRef> remapFlowRequest(FlowRequestRef source) const;
+        /** @brief Prepare external plans/leases for this exact unpublished backend candidate.
+         * @return Owning rows or empty/foreign snapshot failure; no live backend is modified.
+         * @ownership Returned work owns native storage and pins, becoming usable only after this candidate commits.
+         * Stale source inputs remain stale; foreign source owners are not granted the candidate's identity.
+         * @thread Owner thread, no callbacks or graph work. Failure preserves this candidate for retry.
+         * @cost Copies all pending grids/heaps and stages bounded cache metadata once per restore attempt.
+         * @throws std::bad_alloc No candidate cache metadata was published; the same attempt can retry.
+         */
+        [[nodiscard]] Result<std::vector<NavigationWork>> prepareNavigation(const NavigationCapture& captured);
         RestorePlan(const RestorePlan&)            = delete;
         RestorePlan& operator=(const RestorePlan&) = delete;
     };
     /** @brief Copy authoritative runtime state and clock into an owning checkpoint.
-     * @return Immutable in-process state; no borrowed arrays or pointers.
+     * @return Immutable native state, including retained request work/leases/generations; no VM tables or source owner.
      * @thread Simulation owner thread. @reentrancy No callbacks.
      * @cost Copies all agent/field storage; amortize at explicit checkpoint boundaries.
      */
     [[nodiscard]] Result<Snapshot> captureSnapshot() const;
     /** @brief Allocate complete restored state and fresh handle ownership before publication.
-     * @return One-use plan targeted at this Crowd; previous AgentRef values become stale on commit.
+     * @return One-use plan targeted at this Crowd; previous agent/request references become stale on commit.
+     * @remarks Remap retained source request identities through the candidate before publishing script state.
      * @thread Simulation owner thread. @reentrancy No callbacks.
      * @cost Copies snapshot storage once; prepare before cross-domain observable mutation.
      */
@@ -815,7 +978,50 @@ private:
     friend Result<FlowLease> resolveFlowRequestLease(Crowd& crowd, const ssq::Table& token);
     struct NavigationRequests;
     std::unique_ptr<NavigationRequests> navigationRequests_;
-    void                                clearNavigationRequests() noexcept;
+    /** @brief Clone exact native plan facts, including capacity used by cache admission.
+     * @ownership Borrows source only for the call; returns independent CPU work.
+     * @cost Copies all grid/heap storage per explicit snapshot or restoration attempt. */
+    static FlowBuildPlan cloneFlowBuildPlan(const FlowBuildPlan& source);
+    /** @brief Copy optional request state without retaining source storage.
+     * @ownership Source is nullable and borrowed only during this owner-thread call; no callbacks.
+     * @cost Clones all grid-sized pending fields once per explicit snapshot/restore attempt. */
+    static std::unique_ptr<NavigationRequests> cloneNavigationRequests(const NavigationRequests* source);
+    /** @brief Classify completed work using canonical goal reachability; no allocation or callbacks. */
+    [[nodiscard]] static FlowBuildState classifyCompletedFlow(const CrowdField& field);
+    /** @brief Canonical owner-relative plan data kernel; no authority is issued.
+     * @cost Copies all retained plan storage per explicit save. */
+    [[nodiscard]] static Result<Value> encodeArchivePlan(const FlowBuildPlan& plan, std::uint64_t owner);
+    /** @brief Canonical detached plan admission; source scope is not a live backend.
+     * @cost Copies and validates all retained plan storage per explicit load. */
+    [[nodiscard]] static Result<FlowBuildPlan> prepareArchivePlan(const Value& value, std::uint64_t owner);
+    /** @brief Encode shared lease metadata with a caller-owned field reference projection.
+     * @cost Copies lease/reference data per explicit save. */
+    [[nodiscard]] static Result<Value> encodeArchiveLease(const FlowLease& lease, std::uint64_t owner, Value field);
+    /** @brief Admit lease metadata against a role-validated field; no pins or live permissions created.
+     * @cost Copies metadata and shared field ownership per explicit load. */
+    [[nodiscard]] static Result<FlowLease> prepareArchiveLease(const Value& value, std::uint64_t owner,
+                                                               std::shared_ptr<const CrowdField> field);
+    /** @brief Validate external work goal correspondences without live authorization.
+     * @cost Canonicalizes retained goal sets once per checkpoint admission. */
+    [[nodiscard]] static Result<void> validateNavigationGoals(const NavigationCapture&               capture,
+                                                              std::span<const std::vector<FlowGoal>> sets);
+    /** @brief Canonical external work writer; no live source retained.
+     * @cost Copies complete backend and retained external work per save. */
+    [[nodiscard]] static Result<SnapshotEnvelope> sealNavigationState(const NavigationCapture& capture,
+                                                                      PersistentId epoch, Revision revision,
+                                                                      SimulationTick              tick,
+                                                                      const SnapshotHashProvider& hash);
+    /** @brief Canonical external work admission into an explicit backend scope.
+     * @cost Verifies backend identity and copies retained external work per load. */
+    [[nodiscard]] static Result<NavigationCapture> parseNavigationState(const Snapshot& backend, SnapshotEnvelope value,
+                                                                        PersistentId                epoch,
+                                                                        const SnapshotHashProvider& hash);
+    /** @brief Canonical detached snapshot writer; owns output, no world or callbacks retained.
+     * @cost Copies complete backend/request/field storage per explicit save. */
+    [[nodiscard]] static Result<Value> encodeSnapshotState(const Snapshot& snapshot);
+    /** @brief Canonical detached snapshot reader; creates no live backend.
+     * @cost Validates and copies complete backend/request/field storage per explicit load. */
+    [[nodiscard]] static Result<Snapshot> prepareSnapshotState(const Value& value);
     enum class ClockAuthority { Compatibility, External };
     [[nodiscard]] Result<void>       checkClock(const CrowdStep& step, ClockAuthority authority) const;
     [[nodiscard]] Result<StepReport> advanceInternal(const CrowdStep& step, ClockAuthority authority);

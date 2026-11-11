@@ -3,6 +3,7 @@
 
 
 #include "common/BorrowedRef.h"
+#include "common/LifetimeWitness.h"
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/SensingQuery.h"
@@ -32,6 +33,8 @@ namespace eve::sensing {
 
 class ILineOfSightQuery;
 class EnvironmentQueryPlan;
+class SensingCapture;
+class PreparedSensingRestore;
 struct EnvironmentRequest;
 struct EnvironmentServices;
 struct EnvironmentQueryResult;
@@ -187,6 +190,8 @@ struct CandidateCollection {
 /** @brief Mirrored world positions and query composition; consumers decide gameplay actions from results. */
 class EVENGINE_API_PLATFORM SensingWorld {
 public:
+    /** @brief Ordered authoritative facts with allocation-free heterogeneous identity lookup. */
+    using SubjectMap = std::map<std::string, Subject, std::less<>>;
     /** @brief Inserts actual XYZ coordinates and metadata; owns copies, no retained arguments.
      * @return InvalidArgument for nonfinite positions or an empty id; failure leaves facts unchanged.
      * @thread Simulation thread; invokes no callbacks. Cost is one fact and its index entry.
@@ -196,7 +201,10 @@ public:
     /** @brief Compatibility-only XY insertion; delegates to upsertPosition with Z zero. */
     [[nodiscard]] eve::Result<void> upsert(std::string_view id, float x, float y, std::string_view faction,
                                            std::string_view tagsCsv, std::string_view visibleToCsv);
-    /** @brief Removes mirrored facts, or returns NotFound when the id is absent. */
+    /** @brief Removes mirrored facts, or returns NotFound without changing facts/results when absent.
+     * @ownership Borrows id for this call. Successful removal allocates no memory, including indexed worlds.
+     * @thread Simulation owner thread. @reentrancy No callbacks.
+     */
     [[nodiscard]] eve::Result<void> remove(std::string_view id);
     /**
      * @brief Replaces logical zone membership for an existing subject.
@@ -311,21 +319,43 @@ public:
     std::string snapshotJson() const;
     /** @brief Restores a snapshot transactionally. */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
+    /** @brief Freeze authoritative subjects and exact index policy, excluding query/debug scratch.
+     * @ownership Output owns facts only, never this world or providers. @thread Owner thread, outside callbacks.
+     * @return Detached facts or inconsistent index-policy failure; no callbacks, rebuild or source mutation.
+     * @cost Copies all subject metadata once per explicit checkpoint attempt.
+     * @throws std::bad_alloc Copy allocation failed without source mutation.
+     */
+    [[nodiscard]] Result<SensingCapture> capture() const;
+    /** @brief Publish a completely prepared native world without allocation or callbacks.
+     * @return Applied, or unchanged target/token if the token is empty or consumed.
+     * @thread Owner thread, outside world operations/provider callbacks; invalidates borrowed query results.
+     * @cost Retires old subject/index storage once per publication; new storage was built during preparation.
+     */
+    [[nodiscard]] Result<void> restore(PreparedSensingRestore&& prepared);
 
     /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
-    [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
+    [[nodiscard]] const SubjectMap& subjects() const noexcept { return subjects_; }
 
+    /** @brief Construct independent storage and a physical-instance lifetime record. */
     SensingWorld();
     /** @brief Sensing world. */
     ~SensingWorld();
     SensingWorld(const SensingWorld&) = delete;
     SensingWorld& operator=(const SensingWorld&) = delete;
-    /** @brief Sensing world. */
-    SensingWorld(SensingWorld&&) noexcept;
-    /** @brief Operator =. */
+    /** @brief Move state into a new physical instance; allocation failure preserves source.
+     * @throws std::bad_alloc Lifetime record allocation failed before moving state.
+     */
+    SensingWorld(SensingWorld&&);
+    /** @brief Move state while preserving both physical-instance lifetime records. */
     SensingWorld& operator=(SensingWorld&&) noexcept;
 
+    /** @brief Observe this physical instance, including across state replacement; owner-thread only. */
+    [[nodiscard]] LifetimeWitness lifetimeWitness() const noexcept;
+
 private:
+    friend class PreparedSensingRestore;
+    /** @brief Publish canonical prepared storage and invalidate this world's transient query cache. */
+    void               publishPrepared(SensingWorld&& prepared) noexcept;
     [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
     void               publishResults(std::vector<RankedCandidate> ranked);
     void               clearSpatialIndex();
@@ -336,7 +366,7 @@ private:
     [[nodiscard]] bool trySpatialBroadphase(const QueryOrigin& origin, const QuerySpec& spec,
                                             std::vector<const Subject*>& out) const;
 
-    std::map<std::string, Subject> subjects_;
+    SubjectMap                     subjects_;
     std::vector<Candidate>         results_;
 
     std::unique_ptr<eve::spatial::SpatialHash2D> spatialIndex_;
@@ -361,6 +391,7 @@ private:
     };
     LastQueryDebug lastQuery_;
     std::string    lastEnvironmentQuery_ = "null";
+    LifetimeOwner  lifetime_;
 };
 
 /** @brief Handle domain for module-owned sensing worlds. */

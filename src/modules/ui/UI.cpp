@@ -358,7 +358,9 @@ void UI::dispatchEvents() {
     const std::vector<UIEvent> events = UISystem::pendingEvents();
     UISystem::dispatchEvents();
     for (const auto &ev : events) {
-        if (!UIHost::resolve(ev.host)) continue;
+        if (!ev.worldLifetime.isAlive()) continue;
+        auto host = UIHost::resolve(ev.host);
+        if (!host || host->get().tree()->generation != ev.treeGeneration) continue;
         fireScriptHandlers(ev);
     }
 }

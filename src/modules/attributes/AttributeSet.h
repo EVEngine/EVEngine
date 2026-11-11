@@ -1,8 +1,16 @@
 #pragma once
+/** @file AttributeSet.h
+ * @brief attributes module-interface: canonical attribute facts and unpublished restore preparation.
+ * @remarks Live sets expose IStateQuery/IStateMutation; prepared copies register no capabilities.
+ * ECS owners retain their sets; preparation creates no entities or Links. No events, script bindings or tool
+ * endpoints are added by staging. Prepared state is unpublished; the attributes.set v1 value codec preserves canonical
+ * facts. Domain owners still join projection metadata, policy implementations and world lifetimes.
+ */
 #include "common/Export.h"
 
 
 #include "common/Result.h"
+#include "common/Value.h"
 
 #include <cstdint>
 #include <functional>
@@ -63,14 +71,35 @@ struct ParsedAttributeOperation {
 [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<ParsedAttributeOperation> parseAttributeOperation(
     std::string_view operation, double value);
 
-/** @brief Registry for explicitly named custom attribute policies. */
+/** @brief Registry owning explicitly named custom attribute policies and their optional implementation revision.
+ * @thread Owner thread only; callbacks must not mutate this registry during apply. No locks are held.
+ * @remarks Revisions are publisher assertions about the actual callback, not hashes inferred from std::function.
+ * Persistent callers must compare the expected revision and reject absent/unversioned implementations.
+ */
 class EVENGINE_API_FOUNDATION AttributeOperationRegistry {
 public:
     using Function = std::function<double(double current, double value)>;
 
     /** @brief Register or replace a named policy; calls execute on the caller thread. */
     void registerOperation(const std::string& policyId, Function function);
-    /** @brief Remove a named policy. */
+    /** @brief Atomically install an owning callback together with its publisher-declared immutable revision.
+     * @param policyId Logical operation name; must be nonempty.
+     * @param revision Stable implementation revision (for example a build/source digest), not a runtime generation.
+     * @param function Owned executable implementation; must be nonempty. Never invoked during registration.
+     * @return Success, or InvalidArgument without replacing the previous callback/revision.
+     * @remarks The publisher must change revision when behavior changes. Legacy registration deliberately removes
+     * revision identity. Independent registry copies own independent records. Querying does not execute callbacks.
+     * @throws std::bad_alloc Allocation failed; the previous record remains intact.
+     */
+    [[nodiscard]] Result<void> registerVersionedOperation(const std::string& policyId, std::string revision,
+                                                          Function function);
+    /** @brief Copy the actual installed callback's declared revision without executing it.
+     * @return Owning revision, NotFound for absent operations, or Unsupported for legacy/unversioned registrations.
+     * @ownership Returned text is independent of registry replacement/destruction.
+     * @throws std::bad_alloc Output allocation failed; registry is unchanged.
+     */
+    [[nodiscard]] Result<std::string> implementationRevision(const std::string& policyId) const;
+    /** @brief Remove a named policy and its revision. */
     void unregisterOperation(const std::string& policyId);
     /** @brief Return whether a policy is registered. */
     bool has(const std::string& policyId) const;
@@ -83,7 +112,12 @@ public:
     void unregisterOp(const std::string& policyId);
 
 private:
-    std::unordered_map<std::string, Function> operations_;
+    struct Operation {
+        Function    function;
+        std::string revision;
+    };
+    void                                       install(const std::string& policyId, Operation operation);
+    std::unordered_map<std::string, Operation> operations_;
 };
 
 /**
@@ -154,6 +188,34 @@ struct AttributeValue {
 [[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(
     const AttributeValue& attribute, const AttributeOperationRegistry* customOperations = nullptr);
 
+class AttributeSet;
+/** @brief Owning unpublished attribute candidate; destruction cancels locally without capability registration.
+ * @ownership Owns a detached canonical AttributeSet; no source/target pointers are retained.
+ * @thread Owner-thread use; no callbacks during staging or commit.
+ */
+class EVENGINE_API_FOUNDATION PreparedAttributeSet {
+public:
+    /** @brief Release unpublished data. */
+    ~PreparedAttributeSet();
+    /** @brief Transfer unpublished data. */
+    PreparedAttributeSet(PreparedAttributeSet&&) noexcept;
+    /** @brief Cancel this candidate and transfer another. */
+    PreparedAttributeSet& operator=(PreparedAttributeSet&&) noexcept;
+    PreparedAttributeSet(const PreparedAttributeSet&)            = delete;
+    PreparedAttributeSet& operator=(const PreparedAttributeSet&) = delete;
+    /** @brief Borrow the canonical candidate until move, destruction or commit; no implicit publication. */
+    [[nodiscard]] const AttributeSet& view() const noexcept;
+    /** @brief Edit a base value in unpublished data using the canonical setter.
+     * @cost Expected constant lookup plus allocation for a new attribute, per edited field.
+     */
+    void setBase(const AttributeId& attribute, double value);
+
+private:
+    friend class AttributeSet;
+    explicit PreparedAttributeSet(std::unique_ptr<AttributeSet> candidate) noexcept;
+    std::unique_ptr<AttributeSet> candidate_;
+};
+
 class AttributeSetStateAdapter;
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */
@@ -171,6 +233,44 @@ public:
     AttributeSet(AttributeSet&& other) noexcept;
     /** @brief Move-assign a set while rebuilding its internal borrowed enumeration view. */
     AttributeSet& operator=(AttributeSet&& other) noexcept;
+
+    /** @brief Prepare empty unpublished canonical values for a new domain object.
+     * @return Owning candidate with no subject, attributes, modifiers or capability registrations.
+     * @thread Owner thread; no callbacks or locks.
+     * @cost One owning candidate allocation, once per new object preparation.
+     */
+    [[nodiscard]] static PreparedAttributeSet prepareEmpty();
+    /** @brief Copy canonical values into an opaque candidate without registering world-state capabilities.
+     * @return Owning unpublished candidate; source remains unchanged and need not outlive the result.
+     * @cost Linear in attributes and modifiers with owning allocation, once per restore preparation.
+     * @thread Owner thread; source must remain stable for this call. No callbacks or locks.
+     */
+    [[nodiscard]] PreparedAttributeSet prepareCopy() const;
+    /** @brief Encode attributes.set v1 canonical values, exact modifiers and allocation watermarks.
+     * @return Owning versioned value or invalid/nonfinite state diagnostics; source caches and adapters unchanged.
+     * @remarks Derived cache/order pointers are excluded. Custom policy ids are declarations, not execution
+     * authorization; domain restoration must admit matching external implementation revisions separately.
+     * @thread Stable source on owner thread; no policies, callbacks or capability operations.
+     * @cost Sorts attribute ids and copies value/modifier-sized facts per explicit persistent encoding.
+     */
+    [[nodiscard]] Result<Value> encodeState() const;
+    /** @brief Admit strict attributes.set v1 into detached canonical storage without renumbering modifiers.
+     * @param state Borrowed versioned value only during this call; all accepted facts are copied.
+     * @return Unpublished candidate or version/field/identity/range/counter diagnostics; no live set is changed.
+     * @remarks Unknown fields/versions reject, with no implicit migration. Derived caches start dirty and are
+     * computed only on later explicit value queries; no custom policies run. Publication owner must check subject,
+     * physical lifetime and external implementation bindings before commitPrepared.
+     * @thread Owner thread, outside callbacks; no adapter registration.
+     * @cost Copies and indexes all attribute/modifier facts once per explicit admission.
+     */
+    [[nodiscard]] static Result<PreparedAttributeSet> prepareState(const Value& state);
+
+    /** @brief Consume a non-moved candidate and replace values without callbacks or allocation.
+     * @remarks Retains this set's subject and existing capability adapter; does not publish a detached target.
+     * Candidate validation and target lifetime/phase checks belong to the owning restore transaction.
+     * @thread Owner thread outside iteration/callbacks; no reentry. Candidate must not have been consumed.
+     */
+    void commitPrepared(PreparedAttributeSet&& candidate) noexcept;
 
     /** @brief Stable game-defined id of the entity or object owning this set. */
     const std::string& subject() const;
@@ -226,6 +326,9 @@ public:
     std::string attributeAt(int index) const;
 
 private:
+    struct DetachedCopyTag {};
+    explicit AttributeSet(DetachedCopyTag);
+    AttributeSet(const AttributeSet& other, DetachedCopyTag);
     void rebuildOrder() const;
     static bool isValidOperation(const AttributeModifier& modifier) noexcept;
     void        publishWorldAdapter();

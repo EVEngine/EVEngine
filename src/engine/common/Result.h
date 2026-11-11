@@ -180,7 +180,11 @@ class [[nodiscard("Result must be checked or explicitly ignored")]] Result : pri
     friend class Result;
 
 public:
-    /** @brief Construct a successful result owning `value`. */
+    /**
+     * @brief Construct a successful result owning `value`.
+     * @remarks Payload construction may throw. Observation responsibility starts
+     *          only after the complete Result exists; failed construction leaves none.
+     */
     static Result success(T value) { return Result(Status::success(), std::optional<T>(std::move(value))); }
 
     /** @brief Construct a successful result with an explicit non-error status. */
@@ -437,7 +441,12 @@ public:
     }
 
 private:
-    Result(Status status, std::optional<T> value) : status_(std::move(status)), value_(std::move(value)) {}
+    Result(Status status, std::optional<T> value)
+        : detail::ResultObservation(detail::ResultObservation::InactiveTag{}),
+          status_(std::move(status)),
+          value_(std::move(value)) {
+        requireObservation();
+    }
 
     Status           status_;
     std::optional<T> value_;

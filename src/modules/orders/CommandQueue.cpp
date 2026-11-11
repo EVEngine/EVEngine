@@ -170,6 +170,7 @@ std::string CommandQueue::create(const std::string& kind, int priority, double t
     if (kind.empty()) return {};
     Order              order;
     std::ostringstream id;
+    id.exceptions(std::ios::badbit | std::ios::failbit);
     id << "order-" << std::setw(16) << std::setfill('0') << nextId_++;
     order.id             = id.str();
     order.kind           = kind;
@@ -184,8 +185,9 @@ std::string CommandQueue::create(const std::string& kind, int priority, double t
         transition(orders_[index], OrderState::Active, {});
     } else {
         queued_.push_back(index);
-        std::stable_sort(queued_.begin(), queued_.end(),
-                         [this](size_t a, size_t b) { return orders_[a].priority > orders_[b].priority; });
+        if (queued_.size() > 1)
+            std::stable_sort(queued_.begin(), queued_.end(),
+                             [this](size_t a, size_t b) { return orders_[a].priority > orders_[b].priority; });
         if (active_ == noIndex) activateNext();
     }
     return orders_[index].id;

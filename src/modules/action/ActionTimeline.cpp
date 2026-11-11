@@ -133,10 +133,10 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
             section.blendOutCurve = ActionBlendCurve::EaseInOut;
         } else {
             auto blendOut = intField(value, "blendOutNs", path + ".blendOutNs");
-            auto blendInCurve = stringField(value, "blendInCurve", path + ".blendInCurve");
-            auto blendOutCurve = stringField(value, "blendOutCurve", path + ".blendOutCurve");
             if (!blendOut) return Result<ActionAnimationSection>::failure(blendOut.status());
+            auto blendInCurve = stringField(value, "blendInCurve", path + ".blendInCurve");
             if (!blendInCurve) return Result<ActionAnimationSection>::failure(blendInCurve.status());
+            auto blendOutCurve = stringField(value, "blendOutCurve", path + ".blendOutCurve");
             if (!blendOutCurve) return Result<ActionAnimationSection>::failure(blendOutCurve.status());
             auto parsedIn = actionBlendCurveFromName(blendInCurve.value());
             auto parsedOut = actionBlendCurveFromName(blendOutCurve.value());
@@ -546,17 +546,25 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
                     Diagnostic::error(DiagnosticCode::InvalidArgument, "expected montage settings object", "montage"));
             const Value* basePlayRate   = field(*montageValue, "basePlayRate");
             auto         looping        = boolField(*montageValue, "looping", "montage.looping");
+            if (!looping) return Result<ActionTimeline>::failure(looping.status());
             auto         footIk         = boolField(*montageValue, "footIk", "montage.footIk");
+            if (!footIk) return Result<ActionTimeline>::failure(footIk.status());
             auto         layer          = intField(*montageValue, "animationLayer", "montage.animationLayer");
+            if (!layer) return Result<ActionTimeline>::failure(layer.status());
             auto         blendIn        = intField(*montageValue, "defaultBlendInNs", "montage.defaultBlendInNs");
+            if (!blendIn) return Result<ActionTimeline>::failure(blendIn.status());
             auto         blendOut       = intField(*montageValue, "defaultBlendOutNs", "montage.defaultBlendOutNs");
+            if (!blendOut) return Result<ActionTimeline>::failure(blendOut.status());
             auto         blendOutOffset = intField(*montageValue, "blendOutOffsetNs", "montage.blendOutOffsetNs");
+            if (!blendOutOffset) return Result<ActionTimeline>::failure(blendOutOffset.status());
             auto rootHorizontal = boolField(*montageValue, "rootMotionHorizontal", "montage.rootMotionHorizontal");
+            if (!rootHorizontal) return Result<ActionTimeline>::failure(rootHorizontal.status());
             auto rootVertical   = boolField(*montageValue, "rootMotionVertical", "montage.rootMotionVertical");
+            if (!rootVertical) return Result<ActionTimeline>::failure(rootVertical.status());
             auto rootRotation   = boolField(*montageValue, "rootMotionRotation", "montage.rootMotionRotation");
-            if (!basePlayRate || (!basePlayRate->isDouble() && !basePlayRate->isInt64()) || !looping || !footIk ||
-                !layer || !blendIn || !blendOut || !blendOutOffset || !rootHorizontal || !rootVertical ||
-                !rootRotation || layer.value() < 0)
+            if (!rootRotation) return Result<ActionTimeline>::failure(rootRotation.status());
+            if (!basePlayRate || (!basePlayRate->isDouble() && !basePlayRate->isInt64()) || layer.value() < 0 ||
+                layer.value() > std::numeric_limits<std::uint32_t>::max())
                 return Result<ActionTimeline>::failure(
                     Diagnostic::error(DiagnosticCode::InvalidArgument, "montage settings are invalid", "montage"));
             candidate.montage.basePlayRate =
@@ -583,15 +591,15 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
         if (!trackValue.isObject())
             return Result<ActionTimeline>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "expected track object", path));
-        auto id       = logicalIdField(trackValue, "id", path + ".id");
-        auto label    = stringField(trackValue, "label", path + ".label");
-        auto kindText = stringField(trackValue, "kind", path + ".kind");
-        auto muted    = boolField(trackValue, "muted", path + ".muted");
-        auto locked   = boolField(trackValue, "locked", path + ".locked");
+        auto id = logicalIdField(trackValue, "id", path + ".id");
         if (!id) return Result<ActionTimeline>::failure(id.status());
+        auto label = stringField(trackValue, "label", path + ".label");
         if (!label) return Result<ActionTimeline>::failure(label.status());
+        auto kindText = stringField(trackValue, "kind", path + ".kind");
         if (!kindText) return Result<ActionTimeline>::failure(kindText.status());
+        auto muted = boolField(trackValue, "muted", path + ".muted");
         if (!muted) return Result<ActionTimeline>::failure(muted.status());
+        auto locked = boolField(trackValue, "locked", path + ".locked");
         if (!locked) return Result<ActionTimeline>::failure(locked.status());
         auto kind = parseActionTrackKind(kindText.value());
         if (!kind) return Result<ActionTimeline>::failure(kind.status());

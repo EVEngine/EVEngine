@@ -22,7 +22,18 @@ namespace eve::ui {
 
 /** @brief UIEvent public API. */
 struct UIEvent {
+    /** @brief Construct an unbound event; dispatch rejects it until given a live host witness. */
+    UIEvent() = default;
+    /** @brief Capture a non-owning world lifetime for a currently live host handle; call-only input borrow. */
+    explicit UIEvent(UIHostHandle source)
+        : host(source), worldLifetime(source.table ? source.table->lifetime() : ecs::TableLifetime{}) {
+        if (auto owner = UIHost::resolve(source)) treeGeneration = owner->get().tree()->generation;
+    }
     UIHostHandle host{};
+    /** @brief Transient world-incarnation witness; no ownership, never serialized. */
+    ecs::TableLifetime worldLifetime;
+    /** @brief Captured canonical tree generation; replacements invalidate queued callbacks. */
+    std::uint64_t treeGeneration = 0;
     std::string hostName;
     std::string nodeId;
     int nodeIndex = -1;

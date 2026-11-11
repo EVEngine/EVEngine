@@ -203,6 +203,27 @@ struct EVENGINE_API_FOUNDATION SettlementResult {
 };
 
 /**
+ * @brief Encode an executable request as settlement.request v1 using the canonical replay payload.
+ * @param request Immutable owning facts, including recorded decisions and an executable derived-chain context.
+ * @return Canonical text or request/serialization diagnostics, without executing or sampling anything.
+ * @remarks Unknown extensions require a new explicit format version; no digest or rule identity is invented.
+ * @thread Calling thread; invokes no callbacks or policies.
+ * @cost Linear validation and encoding in request context, decisions and chain size per explicit save.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> settlementRequestCanonicalJson(
+    const SettlementRequest& request);
+/**
+ * @brief Admit settlement.request v1 through the canonical replay request decoder.
+ * @param json Borrowed only during parsing; returned facts own all strings, context and decisions.
+ * @return Executable request or located version/field/identity/range diagnostics; no world is mutated.
+ * @remarks Strict unknown-field/version policy. Emitted templates with incomplete chain metadata are rejected;
+ * full executable requests are preserved exactly, without synthesizing chain facts or advancing RNG/time.
+ * @thread Calling thread; no services, policy execution or callbacks.
+ * @cost Linear parsing and validation in request context, decisions and chain size per explicit admission.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<SettlementRequest> settlementRequestFromJson(std::string_view json);
+
+/**
  * @brief Serialize the stable semantic fields of a settlement result as canonical JSON.
  * @return Versioned canonical JSON, or a structured serialization failure.
  * @remarks Stream-assigned event identity and sequence are intentionally excluded.
@@ -210,6 +231,17 @@ struct EVENGINE_API_FOUNDATION SettlementResult {
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> settlementResultCanonicalJson(
     const SettlementResult& result);
+
+/**
+ * @brief Admit settlement.result v1 semantic facts using the canonical replay validators and request codec.
+ * @param json Borrowed only during parsing; the result owns all trace, event payload and derived request data.
+ * @return Independent semantic result or schema/version/field/identity/range diagnostics, with no simulation work.
+ * @remarks Unknown fields and versions reject. Event transport identity and sequence are absent from this format;
+ * decoded events retain nil/zero transport metadata. Complete frame saves must preserve those fields separately.
+ * @thread Immutable input on the calling thread; invokes no providers, callbacks or policy stages.
+ * @cost Linear parsing and copying in trace, event payload and derived request size per explicit admission.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<SettlementResult> settlementResultFromJson(std::string_view json);
 
 /**
  * @brief Hash the canonical semantic representation of a settlement result.

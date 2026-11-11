@@ -46,6 +46,37 @@ include("{(ROOT / 'cmake/native_arm64.cmake').as_posix()}")
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("requires a native Windows/Linux ARM64", result.stderr)
 
+    def test_release_linker_policy_does_not_leak_into_dependency_project(self):
+        for project, build_type, expected in (
+            ("EVEngine", "Release", True),
+            ("EVEngine", "Debug", False),
+            ("EVEngineDeps", "Release", False),
+            ("NativeConsumer", "Release", False),
+        ):
+            with self.subTest(project=project, build_type=build_type):
+                result = self.configure(
+                    f"""
+cmake_minimum_required(VERSION 3.21)
+project({project} NONE)
+# Isolate project-policy propagation from the already-covered architecture probe.
+set(CMAKE_HOST_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_HOST_SYSTEM_PROCESSOR aarch64)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+set(CMAKE_CROSSCOMPILING OFF)
+set(CMAKE_BUILD_TYPE {build_type})
+set(EVENGINE_NATIVE_ARM64 ON CACHE BOOL "")
+set(EVENGINE_COMPILER_IS_ARM64 TRUE CACHE INTERNAL "Architecture fixture")
+set(EVENGINE_NATIVE_ARM64_LLD "${{CMAKE_COMMAND}}" CACHE FILEPATH "Linker discovery fixture")
+include("{(ROOT / 'cmake/native_arm64.cmake').as_posix()}")
+get_directory_property(options LINK_OPTIONS)
+if({"NOT " if expected else ""}"-fuse-ld=lld" IN_LIST options)
+    message(FATAL_ERROR "Wrong linker policy for {project}/{build_type}: ${{options}}")
+endif()
+"""
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_dependency_trees_are_separate(self):
         for platform in ("win32", "linux", "macosx"):
             for build_type, suffix in (("Release", ""), ("Debug", "-debug")):

@@ -12,6 +12,7 @@
 #include "common/Result.h"
 #include "common/ServiceInterfaces.h"
 #include "common/config.h"
+#include "filesystem/AtomicTextWriteLease.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
 
@@ -52,8 +53,17 @@ public:
         std::string type;  // file, directory, symlink, other
     };
 
-    Filesystem() { eve::cap::provide<eve::service::IFileSystem>(this); }
-    virtual ~Filesystem() {}
+    /** @brief Create the provider-specific writer marker before publishing the file service. */
+    Filesystem();
+    /** @brief Invalidate write observations and withdraw this exact provider; no file I/O or callbacks. */
+    ~Filesystem() override;
+    Filesystem(const Filesystem &)            = delete;
+    Filesystem &operator=(const Filesystem &) = delete;
+    /** @brief Observe this provider's atomic writer without retaining it or querying global module state.
+     * @return Copyable weak lease; valid until this provider's destruction, never rebound after replacement.
+     * @thread Provider owner thread; no callbacks or allocation.
+     */
+    [[nodiscard]] AtomicTextWriteLease observeAtomicWrites() const noexcept;
 
     bool readFile(const std::string &path, std::vector<uint8_t> &out) override {
         try {
@@ -367,6 +377,7 @@ public:
     virtual std::string getLastWatchRealPath() const = 0;
 
 private:
+    std::shared_ptr<detail::AtomicWriteOwner> atomicWriteOwner_;
     // Should we save external or internal for Android
     bool useExternal = false;
 };  // Filesystem

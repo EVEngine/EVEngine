@@ -13,10 +13,12 @@
 #include "common/Module.h"
 #include "sensing/LineOfSightRouter.h"
 #include "sensing/Sensing.h"
+#include "sensing/SensingCapture.h"
 #include "sensing/TargetingPipeline.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -937,3 +939,193 @@ TEST_CASE("sensing.environment.costSortPreservesScoreAccumulationOrder") {
     }
 }
 }  // namespace test_sensing_environment_query_unit
+
+namespace test_sensing_checkpoint {
+using namespace eve::sensing;
+TEST_CASE("sensing.capture.restoresAllIndexKindsAndExactFactsAfterSourceRetirement") {
+    for (auto kind : std::array{SpatialIndexKind::None, SpatialIndexKind::XY, SpatialIndexKind::XZ,
+                                SpatialIndexKind::YZ, SpatialIndexKind::XYZ}) {
+        std::optional<SensingCapture> frozen;
+        std::string                   json;
+        {
+            SensingWorld source;
+            REQUIRE(source.upsertPosition("alpha", -.125f, 2.5f, 3.75f, "blue", "unit,elite", "player").ok());
+            REQUIRE(source.setZones("alpha", "zone:one,zone:two").ok());
+            REQUIRE(source.upsertPosition("beta", 4, 0, 7, "red", "unit", "").ok());
+            REQUIRE(source.rebuildIndex(kind, 2.5f).ok());
+            QuerySpec spec;
+            spec.maxRange = 20;
+            REQUIRE(source.query({}, spec).ok());
+            const auto priorDebug = source.debugLastQueryJson();
+            json                  = source.snapshotJson();
+            frozen.emplace(source.capture().expect("native facts"));
+            REQUIRE_EQ(source.debugLastQueryJson(), priorDebug);
+            REQUIRE_EQ(frozen->subjects()[0].id, "alpha");
+            REQUIRE_EQ(frozen->subjects()[0].z, 3.75f);
+            REQUIRE(source.remove("alpha").ok());
+        }
+        auto         candidate = PreparedSensingRestore::prepare(*frozen).expect("independent indexed candidate");
+        SensingWorld target;
+        REQUIRE(target.upsert("old", 1, 1, "", "", "").ok());
+        REQUIRE(target.rebuildIndex(SpatialIndexKind::XY, 16).ok());
+        QuerySpec spec;
+        spec.maxRange = 20;
+        REQUIRE(target.query({}, spec).ok());
+        REQUIRE(target.resultAt(0).has_value());
+        target.restore(std::move(candidate)).expect("native publication");
+        REQUIRE(!target.resultAt(0));
+        REQUIRE_EQ(target.snapshotJson(), json);
+        REQUIRE(target.indexKind() == kind);
+        REQUIRE_EQ(target.capture().expect("exact index policy").cellSize(),
+                   kind == SpatialIndexKind::None ? 1.f : 2.5f);
+        REQUIRE_EQ(target.query({}, spec).expect("rebuilt query aliases").size(), std::size_t(2));
+        REQUIRE(!target.restore(std::move(candidate)).ok());
+        REQUIRE_EQ(target.snapshotJson(), json);
+        auto moved = std::move(*frozen);
+        REQUIRE(frozen->subjects().empty());
+        REQUIRE(!frozen->indexKind());
+        REQUIRE_EQ(frozen->cellSize(), 0.f);
+        REQUIRE(!PreparedSensingRestore::prepare(*frozen).ok());
+        REQUIRE(moved.indexKind() == kind);
+    }
+}
+
+TEST_CASE("sensing.capture.independentRestoresDoNotShareFactsOrDerivedIndexAliases") {
+    SensingWorld source;
+    REQUIRE(source.upsertPosition("saved", 1, 2, 3, "blue", "unit", "").ok());
+    REQUIRE(source.rebuildIndex(SpatialIndexKind::XYZ, 4).ok());
+    auto         frozen  = source.capture().expect("source freeze");
+    SensingWorld retired = std::move(source);
+    REQUIRE(!source.capture().ok());
+    REQUIRE(retired.capture().ok());
+    auto         plan  = PreparedSensingRestore::prepare(frozen).expect("first candidate");
+    auto         moved = std::move(plan);
+    SensingWorld first, second;
+    REQUIRE(!first.restore(std::move(plan)).ok());
+    first.restore(std::move(moved)).expect("first publication");
+    second.restore(PreparedSensingRestore::prepare(frozen).expect("second candidate")).expect("second publication");
+    REQUIRE(first.remove("saved").ok());
+    REQUIRE_EQ(second.subjects().size(), std::size_t(1));
+    REQUIRE_EQ(frozen.subjects()[0].x, 1.f);
+    QuerySpec spec;
+    spec.maxRange = 10;
+    REQUIRE_EQ(second.query({}, spec).expect("second index remains valid").size(), std::size_t(1));
+    REQUIRE_EQ(first.query({}, spec).expect("first index removed").size(), std::size_t(0));
+}
+
+TEST_CASE("sensing.capture.physicalLifetimeSurvivesStateMovesAndRejectsAddressReuse") {
+    std::optional<SensingWorld> source;
+    source.emplace();
+    auto original = source->lifetimeWitness();
+    REQUIRE(source->upsert("saved", 1, 2, "", "", "").ok());
+    SensingWorld target(std::move(*source));
+    auto         targetLife = target.lifetimeWitness();
+    REQUIRE(original.isAlive());
+    REQUIRE(targetLife.isAlive());
+    auto frozen = target.capture().expect("moved state");
+    source.reset();
+    REQUIRE(!original.isAlive());
+    source.emplace();
+    REQUIRE(!original.isAlive());
+    auto replacement = source->lifetimeWitness();
+    *source          = std::move(target);
+    REQUIRE(targetLife.isAlive());
+    REQUIRE(replacement.isAlive());
+    source->restore(PreparedSensingRestore::prepare(frozen).expect("independent restore"))
+        .expect("same physical owner publication");
+    REQUIRE(replacement.isAlive());
+    REQUIRE_EQ(source->subjects().size(), std::size_t(1));
+    source.reset();
+    REQUIRE(!replacement.isAlive());
+    REQUIRE(targetLife.isAlive());
+}
+
+// Deterministic test digest only; no security-strength claim.
+eve::Result<eve::ContentId> sensingDigest(std::string_view text) {
+    std::uint64_t state = 14695981039346656037ULL;
+    for (unsigned char byte : text) state = (state ^ byte) * 1099511628211ULL;
+    eve::ContentId::Bytes bytes{};
+    for (auto& byte : bytes) {
+        state = state * 6364136223846793005ULL + 1;
+        byte  = static_cast<std::uint8_t>(state >> 32);
+    }
+    return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+}
+TEST_CASE("sensing.capture.persistentFactsAndAllIndexPoliciesSurviveTextAndSourceRetirement") {
+    using namespace eve;
+    const auto epoch = *PersistentId::parse("01900000-0000-7000-8000-000000000d28");
+    for (auto kind : std::array{SpatialIndexKind::None, SpatialIndexKind::XY, SpatialIndexKind::XZ,
+                                SpatialIndexKind::YZ, SpatialIndexKind::XYZ}) {
+        const std::string id   = "subject\n\t\"";
+        auto              wire = [&] {
+            SensingWorld source;
+            source.upsertPosition(id, .1f, -2.5f, 3.75f, "blue\nteam", "elite,unit", "player").expect("source facts");
+            source.setZones(id, "zone:one,zone:two").expect("source zones");
+            source.rebuildIndex(kind, 2.5f).expect("actual index policy");
+            auto         legacy = source.snapshotJson();
+            SensingWorld legacyTarget;
+            legacyTarget.restoreJson(legacy).expect("canonical world writer escapes control characters");
+            REQUIRE_EQ(legacyTarget.snapshotJson(), legacy);
+            return serializeSnapshotEnvelope(source.capture()
+                                                              .takeValue()
+                                                              .seal(epoch, Revision(4), SimulationTick(7), sensingDigest)
+                                                              .takeValue())
+                .takeValue();
+        }();
+        auto envelope = parseSnapshotEnvelope(wire, sensingDigest).takeValue();
+        auto saved    = SensingCapture::parse(envelope, epoch, sensingDigest).takeValue();
+        REQUIRE(saved.indexKind() == kind);
+        REQUIRE_EQ(saved.cellSize(), kind == SpatialIndexKind::None ? 1.f : 2.5f);
+        REQUIRE_EQ(saved.subjects()[0].id, id);
+        REQUIRE_EQ(saved.subjects()[0].x, .1f);
+        REQUIRE_EQ(saved.subjects()[0].faction, "blue\nteam");
+        REQUIRE_EQ(saved.subjects()[0].zones.size(), std::size_t(2));
+        REQUIRE_EQ(
+            serializeSnapshotEnvelope(saved.seal(epoch, Revision(4), SimulationTick(7), sensingDigest).takeValue())
+                .takeValue(),
+            wire);
+        SensingWorld restored;
+        restored.restore(PreparedSensingRestore::prepare(saved).takeValue()).expect("independent native world");
+        QuerySpec query;
+        query.maxRange = 10;
+        REQUIRE_EQ(restored.query({}, query).takeValue().size(), std::size_t(1));
+        REQUIRE(restored.indexKind() == kind);
+        auto reseal = [&](SnapshotEnvelope value) {
+            return makeSnapshotEnvelope(value.type, value.schema, value.schemaVersion, value.instanceId, value.revision,
+                                        value.tick, std::move(value.payload), sensingDigest)
+                .takeValue();
+        };
+        auto changed = envelope;
+        changed.payload.set("unknown", true);
+        REQUIRE(!SensingCapture::parse(changed, epoch, sensingDigest).ok());
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        changed               = envelope;
+        changed.schemaVersion = SchemaVersion(2);
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        changed = envelope;
+        changed.payload.find("index")->set("kind", 99);
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        changed = envelope;
+        changed.payload.find("index")->set("cell_size", 0);
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        changed = envelope;
+        changed.payload.find("index")->set("extension", true);
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        changed = envelope;
+        changed.payload.find("world")->set("version", 99);
+        REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        if (kind == SpatialIndexKind::None) {
+            changed = envelope;
+            changed.payload.find("index")->set("cell_size", 2);
+            REQUIRE(!SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        }
+        changed = envelope;
+        changed.payload.find("world")->set("extension", true);
+        REQUIRE(SensingCapture::parse(reseal(changed), epoch, sensingDigest).ok());
+        REQUIRE(!SensingCapture::parse(envelope, epoch.child("foreign"), sensingDigest).ok());
+        auto moved = std::move(saved);
+        REQUIRE(!saved.seal(epoch, Revision(4), SimulationTick(7), sensingDigest).ok());
+        REQUIRE(!moved.seal({}, Revision(4), SimulationTick(7), sensingDigest).ok());
+    }
+}
+}  // namespace test_sensing_checkpoint

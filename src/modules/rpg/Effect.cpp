@@ -1,12 +1,13 @@
 #include "rpg/Effect.h"
+#include "rpg/SkillContent.h"
 
-#include "common/Json.h"
+#include "rpg/EffectDefinitionCodec.h"
 
 #include <algorithm>
+#include <type_traits>
+#include <utility>
 
 namespace eve::rpg {
-
-using eve::json::Value;
 
 bool EffectDefinition::hasTag(const std::string &tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
@@ -24,10 +25,22 @@ std::unordered_map<std::string, EffectDefinition> &EffectRegistry::table() {
 
 void EffectRegistry::registerEffect(const EffectDefinition &def) {
     if (def.id.empty()) return;
-    table()[def.id] = def;
+    static_assert(std::is_nothrow_swappable_v<EffectDefinition>);
+    auto  candidate   = def;
+    auto &definitions = table();
+    auto  found       = definitions.find(def.id);
+    if (found == definitions.end())
+        definitions.emplace(def.id, std::move(candidate));
+    else
+        std::swap(found->second, candidate);
 }
 
 const EffectDefinition *EffectRegistry::find(const std::string &id) {
+    if (auto content = SkillContentScope::current()) {
+        auto definition = content->get().effect(id);
+        if (!definition) return nullptr;
+        return &definition.value().get();
+    }
     auto &t = table();
     auto it = t.find(id);
     return it == t.end() ? nullptr : &it->second;
@@ -39,60 +52,29 @@ void EffectRegistry::clear() { table().clear(); }
 
 int EffectRegistry::count() { return int(table().size()); }
 
-namespace {
-
-EffectDefinition parseEffectObject(Value o) {
-    EffectDefinition def;
-    if (!o.isObject()) return def;
-    def.id = o.getString("id");
-    def.durationPolicy = o.getString("durationPolicy", "instant");
-    def.duration = o.getFloat("duration", 0.f);
-    def.period = o.getFloat("period", 0.f);
-    def.stackPolicy = o.getString("stackPolicy", "none");
-    def.maxStacks = o.getInt("maxStacks", 1);
-    def.tags = o.getStringArray("tags");
-    def.extra = o.getStringMap("extra");
-
-    const Value mods = o.get("modifiers");
-    for (size_t i = 0; i < mods.size(); ++i) {
-        const Value mo = mods.at(i);
-        EffectModifierSpec spec;
-        spec.attribute = mo.getString("attribute");
-        spec.op = mo.getString("op", "add");
-        spec.value = mo.getDouble("value", 0.0);
-        spec.priority = mo.getInt("priority", 0);
-        if (!spec.attribute.empty()) def.modifiers.push_back(std::move(spec));
-    }
-    return def;
-}
-
-}  // namespace
-
 int EffectRegistry::loadFromJson(const std::string &json, std::string *error) {
-    std::string err;
-    const eve::json::Document doc = eve::json::Document::parse(json, &err);
-    if (!doc.valid()) {
-        if (error) *error = err.empty() ? "invalid json" : err;
+    auto parsed = eve::Value::fromJson(json);
+    if (!parsed) {
+        if (error) *error = parsed.status().describe();
         return 0;
     }
-
-    const Value root = doc.root();
-    int n = 0;
-    if (root.isArray()) {
-        for (size_t i = 0; i < root.size(); ++i) {
-            EffectDefinition def = parseEffectObject(root.at(i));
-            if (def.id.empty()) continue;
-            registerEffect(def);
-            ++n;
+    int  count = 0;
+    auto admit = [&](const eve::Value &value) {
+        auto decoded = decodeEffectDefinition(value);
+        if (!decoded) {
+            if (error) *error = decoded.status().describe();
+            return;
         }
-    } else if (root.isObject()) {
-        EffectDefinition def = parseEffectObject(root);
-        if (!def.id.empty()) {
-            registerEffect(def);
-            ++n;
-        }
-    }
-    return n;
+        registerEffect(decoded.value());
+        ++count;
+    };
+    if (parsed.value().isArray()) {
+        for (const auto &value : *parsed.value().getIf<eve::Value::Array>()) admit(value);
+    } else
+        admit(parsed.value());
+    return count;
 }
 
 }  // namespace eve::rpg
+
+#include "rpg/EffectDefinitionCodec.inl"

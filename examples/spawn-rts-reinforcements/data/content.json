@@ -1,0 +1,4 @@
+{
+  "weapons": [{"id": "rifle", "damageType": "normal", "damage": 10, "range": 3, "cooldown": 0.5, "projectileSpeed": 0, "magazineSize": 1000}],
+  "units": [{"id": "reinforcement", "weaponType": "rifle", "health": 40, "speed": 3, "radius": 0.35}]
+}

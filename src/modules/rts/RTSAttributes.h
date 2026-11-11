@@ -45,7 +45,10 @@ public:
         eve::attributes::AttributeOperation operation, double value,
         eve::attributes::ModifierPriority priority = eve::attributes::priority::runtime);
 
-    /** @brief Capture selected unit combat stats with owner generation and revision. */
+    /** @brief Read existing initialized combat stats with owner generation/revision; never seeds or repairs state.
+     * @thread Owner thread outside Views; rejects missing, uninitialized or foreign-owned projections.
+     * @cost Copies selected bases/modifiers once per explicit checkpoint.
+     */
     [[nodiscard]] static eve::Result<eve::attributes::AttributeProjectionSnapshot> snapshot(Unit& unit);
 
     /** @brief Restore selected unit combat stats after owner/revision checks. */

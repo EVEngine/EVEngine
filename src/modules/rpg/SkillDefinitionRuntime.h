@@ -42,6 +42,19 @@ struct SkillRuntimeState {
 class EVENGINE_API_PLATFORM SkillDefinitionRuntime final {
 public:
     /**
+     * @brief Admit an exact archived rpg.skill/v1 record using the canonical typed codec, without publication.
+     * @param source Synchronous immutable borrow; type, logical key, version and nonzero generation are checked.
+     * @return Owning skill facts, independent of the record and all live registries; no latest-content fallback.
+     * @ownership The result owns strings, condition tree and resource costs. Effect IDs remain unresolved references.
+     * @thread Content owner thread; no callbacks, entity creation or registry mutation.
+     * @remarks Optional payload id must match the record key. Existing v1 unknown fields are ignored;
+     * absent optional fields retain canonical defaults. This does not publish or resolve effect definitions.
+     * @cost Full JSON parse and typed field allocation per archived revision; share admitted immutable content.
+     * @throws std::bad_alloc Allocation failed without changing live state.
+     */
+    [[nodiscard]] static eve::Result<SkillDefinition> prepareCaptured(const eve::definitions::Definition& source);
+
+    /**
      * @brief Create a runtime from a generation-qualified common definition.
      * @param registry Borrowed registry containing a `rpg.skill:<name>` entry.
      * @param definition Logical skill definition reference.

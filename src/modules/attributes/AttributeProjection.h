@@ -23,6 +23,8 @@
 #include <vector>
 
 namespace eve::attributes {
+class AttributeProjectionCapture;
+class PreparedAttributeProjection;
 
 /** @brief One base value captured by an attribute projection snapshot. */
 struct AttributeSnapshotBase {
@@ -123,6 +125,28 @@ public:
      * @return Conflict/stale failure leaves every observable value unchanged.
      */
     [[nodiscard]] Result<void> restore(const AttributeProjectionSnapshot& snapshot, Revision expectedRevision);
+    /** @brief Freeze full canonical native state without retaining the source owner or evaluating policies.
+     * @return Owning facts or stale/View owner rejection; source world must outlive this synchronous call.
+     * @thread Owner thread outside Views/callbacks; no capability registration.
+     * @cost Copies all values/modifiers and internal sequence counters once per checkpoint.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] Result<AttributeProjectionCapture> capture() const;
+    /** @brief Check exact native candidate admission without publishing or consuming it.
+     * @ownership Borrows candidate and actual target owner synchronously; caller keeps its Table alive.
+     * @return Success or the same owner/View/subject/consumption rejection as native restore.
+     * @thread Owner thread outside callbacks; no policy calls or allocation on successful validation.
+     */
+    [[nodiscard]] Result<void> validateRestore(const PreparedAttributeProjection& prepared,
+                                               ecs::EntityHandle                  owner) const;
+    /** @brief Consume exact native facts, binding to the caller's live owner without reseeding or revision advance.
+     * @ownership Caller owns the target projection/owner and keeps its Table alive for this call.
+     * @return Applied or consumed, stale, View, subject or bound-incarnation conflict; rejection preserves
+     * token/target.
+     * @thread Owner thread outside Views/callbacks; no policy calls or capability registration.
+     * @cost Retires previous native values once per publication; success allocates no storage.
+     */
+    [[nodiscard]] Result<void> restore(PreparedAttributeProjection&& prepared, ecs::EntityHandle owner);
 
 private:
     [[nodiscard]] Result<void> advanceRevision();

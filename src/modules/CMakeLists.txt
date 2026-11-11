@@ -4,15 +4,10 @@
 
 include(${CMAKE_SOURCE_DIR}/cmake/shader_asset_validation.cmake)
 
-# --- sources that follow an optional dependency ------------------------------
-# graphics/Font.cpp is the only bridge from graphics into the font module, so it
-# comes out with font. (The Emscripten build already excluded it by name; the
-# rule is now the same everywhere.)
-
+# Graphics always requires font via the canonical manifest; keep its text/atlas implementation complete.
 eve_module_enabled(font _has_font)
-if(NOT _has_font)
-  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES Font.cpp)
-endif()
+
+# --- sources that follow an optional dependency ------------------------------
 
 # weather::Snow applies SnowField onto procgen::Heightmap. Without procgen the
 # precipitation Weather surface stays, but Snow sources and the boot slot drop

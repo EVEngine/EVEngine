@@ -197,7 +197,8 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
     runs-on: windows-latest
     # Vulkan build and unit tests; Dawn has its own independent job.
-    timeout-minutes: 240
+    # Includes SHARED consumers and a trimmed OBJECT Debug allocation-contract lane.
+    timeout-minutes: 330
     env:
       CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
       CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
@@ -324,6 +325,78 @@ jobs:
         run: >-
           make test/ci-win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Build Windows SHARED Spawn contract consumers
+        timeout-minutes: 30
+        run: |
+          cmake/with-msvc.cmd cmake.exe -S . -B build/win32-debug -DEVENGINE_BUILD_PROFILE_CHECKS=ON
+          grep -q '^EVENGINE_MODULE_LINKAGE:STRING=SHARED' build/win32-debug/CMakeCache.txt
+          cmake/with-msvc.cmd cmake.exe --build build/win32-debug --config Debug --parallel 4 \
+            --target eve_spawn_check eve_map_spawn_contracts eve_rts_spawn_contracts \
+              eve_spawn_editing_check eve_spawn_editor_check
+
+      - name: Run Windows SHARED Spawn contract consumers
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          # Group DLLs and their third-party runtime are staged at this root.
+          export PATH="$PWD/build/win32-debug:$PATH"
+          cmake/with-msvc.cmd ctest.exe --test-dir build/win32-debug/profile/spawn -C Debug --no-tests=error \
+            --output-on-failure -R '^profile[.]spawn[.]capabilityShutdown$'
+          for suite in spawn map_spawn rts_spawn spawn_editing spawn_editor; do
+            cmake/with-msvc.cmd ctest.exe --test-dir "build/win32-debug/profile/$suite" -C Debug \
+              --no-tests=error --output-on-failure
+          done
+          EVE="$PWD/build/win32-debug/src/engine/eve.exe" MIN_RUN_SECONDS=2 RUN_SECONDS=8 \
+            cmake/with-msvc.cmd bash.exe scripts/smoke_examples.sh spawn-rpg-camp spawn-rpg-waves spawn-rts-reinforcements
+
+      - name: Build Windows OBJECT Debug Spawn profile
+        timeout-minutes: 35
+        env:
+          PROFILE: spawn-rpg-only
+          PROFILE_PLATFORM: win32
+          PROFILE_BUILD_ROOT: ${{ runner.temp }}/spawn-windows-object
+          PROFILE_JOBS: 4
+        run: |
+          # Use the canonical dependency prefix from the host build, with forward
+          # slashes so profile_matrix's command parser preserves Windows paths.
+          prefix="$(cygpath -m '${{ steps.third-party-cache.outputs.prefix }}')"
+          export PROFILE_CMAKE_COMMAND="cmake.exe -DEVENGINE_MODULE_LINKAGE=OBJECT -DEVENGINE_ENABLE_STRICT_WARNINGS=ON -DEVENGINE_COMPILER_CACHE=SCCACHE \
+            \"-DEVENGINE_THIRD_PARTY_BINARY_DIR=$prefix\" -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF"
+          cmake/with-msvc.cmd make.exe profile/configure
+          grep -q '^EVENGINE_MODULE_LINKAGE:STRING=OBJECT' "$PROFILE_BUILD_ROOT/$PROFILE/CMakeCache.txt"
+          cmake/with-msvc.cmd make.exe profile/build
+
+      - name: Run Windows OBJECT Debug Spawn profile
+        timeout-minutes: 10
+        env:
+          PROFILE: spawn-rpg-only
+          PROFILE_PLATFORM: win32
+          PROFILE_BUILD_ROOT: ${{ runner.temp }}/spawn-windows-object
+        run: cmake/with-msvc.cmd make.exe profile/smoke
+
+      - name: Upload Windows OBJECT Debug Spawn profile evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-contracts-windows-object-debug
+          path: |
+            ${{ runner.temp }}/spawn-windows-object/spawn-rpg-only/CMakeCache.txt
+            ${{ runner.temp }}/spawn-windows-object/spawn-rpg-only/profile/spawn/Testing/Temporary/*.log
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Windows SHARED Spawn contract evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-contracts-windows-shared
+          path: |
+            build/win32-debug/CMakeCache.txt
+            build/win32-debug/profile/**/Testing/Temporary/*.log
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload Windows test failure diagnostics
         if: failure()

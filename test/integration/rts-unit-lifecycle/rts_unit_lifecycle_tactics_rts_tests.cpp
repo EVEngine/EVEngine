@@ -2675,6 +2675,150 @@ TEST_CASE("rts.rootSnapshotRestoresStableRelationshipsAndRejectsTopologyMismatch
     CHECK_EQ(unit->motion()->x, 42.0f);
 }
 
+TEST_CASE("rts.rootSnapshot.projectileFileRestoresHomingAndObserverAfterSourceRetirement") {
+    using namespace eve;
+    const auto                id         = *PersistentId::parse("01900000-0000-7000-8000-000000000e21");
+    const auto                factionId  = SubjectRef::fromPersistentId(id.child("faction"));
+    const auto                targetId   = SubjectRef::fromPersistentId(id.child("target"));
+    const auto                observerId = SubjectRef::fromPersistentId(id.child("observer"));
+    std::weak_ptr<ecs::Table> witness;
+    std::string               wire;
+    std::vector<std::string>  expected;
+    auto                      setup = [&]() {
+        auto* faction         = Faction::createFaction(factionId);
+        auto* target          = Unit::createUnit(targetId);
+        target->motion()->x   = 9;
+        target->motion()->y   = 4;
+        auto* observer        = Unit::createUnit(observerId);
+        observer->motion()->x = -4;
+        observer->motion()->y = -4;
+        return std::tuple{faction, target, observer};
+    };
+    {
+        auto world = std::make_shared<ecs::Table>();
+        witness    = world;
+        ecs::ScopedTable scope(*world);
+        auto [faction, target, observer] = setup();
+        weapon::ProjectileRuntime pool;
+        pool.configurePool(2).expect("homing pool");
+        weapon::ProjectileDefinition def;
+        def.id                                  = *LogicalId::fromParts("projectile", "saved-flight");
+        def.mode                                = weapon::ProjectileMode::Homing;
+        def.speed                               = 4;
+        def.maxTurnRateDegrees                  = 90;
+        def.lifetime                            = Duration(3000000000);
+        const auto                       handle = pool.spawn(def, {{}, {1, 0, 0}, ecs::handle_of(target)}).takeValue();
+        rts::RTSProjectileSystemSnapshot snapshot;
+        snapshot.runtime = pool.snapshot();
+        snapshot.runtime.slots[handle.slot].state->target.reset();
+        snapshot.runtime.slots[1].generation = UINT32_MAX;
+        rts::RTSProjectilePayloadSnapshot payload;
+        payload.key                       = handle.packedKey();
+        payload.source                    = SubjectRef::fromPersistentId(id.child("retired-source"));
+        payload.faction                   = factionId;
+        payload.target                    = targetId;
+        payload.trajectoryTarget          = targetId;
+        payload.observer                  = observerId;
+        payload.targetPoint               = {9, 4};
+        payload.targetHeight              = 1;
+        payload.damageType                = "damage.physical";
+        payload.damage                    = 7;
+        payload.radius                    = .2f;
+        payload.splashMinimumDamageFactor = .3f;
+        payload.requiredTargetTags        = {"targetable"};
+        payload.excludedTargetTags        = {"immune"};
+        payload.blockedByObstacles        = true;
+        snapshot.payloads.push_back(payload);
+        wire                                  = snapshot.encodeState().takeValue().toJson().takeValue();
+        auto leaked                           = snapshot;
+        leaked.runtime.slots[0].state->target = ecs::handle_of(target);
+        REQUIRE(!leaked.encodeState().ok());
+        rts::RTSProjectileSystem source;
+        source
+            .restore(snapshot,
+                     [&](SubjectRef ref) -> ecs::Entity* {
+                         if (ref == factionId) return faction;
+                         if (ref == targetId) return target;
+                         if (ref == observerId) return observer;
+                         return nullptr;
+                     })
+            .expect("native homing target rebind");
+        combat::DamageRuntime damage;
+        for (std::uint64_t tick = 1; tick <= 4; ++tick) {
+            source.step({SimulationTick(tick), Duration(100000000)}, damage).expect("source homing continuation");
+            const auto observed = source.snapshot();
+            CHECK(!observed.payloads[0].target.isValid());
+            CHECK(!observed.payloads[0].observer.isValid());
+            CHECK(observed.payloads[0].trajectoryTarget == targetId);
+            expected.push_back(observed.encodeState().takeValue().toJson().takeValue());
+        }
+        target->release();
+        observer->release();
+        faction->release();
+    }
+    REQUIRE(witness.expired());
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    auto [faction, target, observer] = setup();
+    std::optional<rts::RTSProjectileSystemSnapshot> decoded(
+        rts::RTSProjectileSystemSnapshot::prepareState(Value::fromJson(wire).takeValue()).takeValue());
+    REQUIRE(decoded->payloads[0].observer == observerId);
+    CHECK_EQ(decoded->runtime.capacity, 2u);
+    CHECK_EQ(decoded->runtime.slots[1].generation, UINT32_MAX);
+    rts::RTSProjectileSystem restored;
+    restored
+        .restore(*decoded,
+                 [&](SubjectRef ref) -> ecs::Entity* {
+                     decoded.reset();
+                     if (ref == factionId) return faction;
+                     if (ref == targetId) return target;
+                     if (ref == observerId) return observer;
+                     return nullptr;
+                 })
+        .expect("own facts before resolver retires input");
+    REQUIRE(!decoded);
+    combat::DamageRuntime damage;
+    for (std::uint64_t tick = 1; tick <= 4; ++tick) {
+        restored.step({SimulationTick(tick), Duration(100000000)}, damage).expect("file homing continuation");
+        CHECK_EQ(restored.snapshot().encodeState().takeValue().toJson().takeValue(), expected[tick - 1]);
+        if (tick == 1) {
+            auto untracked =
+                rts::RTSProjectileSystemSnapshot::prepareState(Value::fromJson(expected[0]).takeValue()).takeValue();
+            restored
+                .restore(untracked,
+                         [&](SubjectRef ref) -> ecs::Entity* {
+                             if (ref == factionId) return faction;
+                             if (ref == targetId) return target;
+                             if (ref == observerId) return observer;
+                             return nullptr;
+                         })
+                .expect("restore backend homing target after observer tracking was cleared");
+        }
+    }
+    const auto before = restored.snapshot().encodeState().takeValue().toJson().takeValue();
+    auto       saved  = rts::RTSProjectileSystemSnapshot::prepareState(Value::fromJson(wire).takeValue()).takeValue();
+    REQUIRE(!restored.restore(saved, [](SubjectRef) -> ecs::Entity* { return nullptr; }).ok());
+    CHECK_EQ(restored.snapshot().encodeState().takeValue().toJson().takeValue(), before);
+    target->release();
+    observer->release();
+    faction->release();
+}
+TEST_CASE("rts.rootSnapshot.projectileFileRejectsUnknownAndUnclosedFacts") {
+    using namespace eve;
+    rts::RTSProjectileSystem empty;
+    const auto               base = empty.snapshot().encodeState().takeValue();
+    for (int mode = 0; mode < 5; ++mode) {
+        auto  value = base;
+        auto& root  = *value.getIf<Value::Object>();
+        if (mode == 0) root.emplace("unknown", true);
+        if (mode == 1) root.at("version") = std::int64_t(2);
+        if (mode == 2) root.at("capacity") = "0";
+        if (mode == 3) root.at("slots").getIf<Value::Array>()->front().getIf<Value::Array>()->front() = "4294967296";
+        if (mode == 4) root.at("payloads") = Value::Array{Value::Array{}};
+        REQUIRE(!rts::RTSProjectileSystemSnapshot::prepareState(value).ok());
+    }
+}
+
 TEST_CASE("rts.ballisticProjectileUsesAbsoluteHeightsAndSnapshotsThreeDimensionalFlight") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);
@@ -2715,7 +2859,8 @@ TEST_CASE("rts.ballisticProjectileUsesAbsoluteHeightsAndSnapshotsThreeDimensiona
         });
     REQUIRE(advanced.ok());
     CHECK(sawThreeDimensionalSweep);
-    const auto inFlight = projectiles.snapshot();
+    auto inFlight = projectiles.snapshot();
+    inFlight      = eve::rts::RTSProjectileSystemSnapshot::prepareState(inFlight.encodeState().takeValue()).takeValue();
     REQUIRE(inFlight.runtime.slots[0].state.has_value());
     CHECK(inFlight.runtime.slots[0].state->position.y > 1.0);
 
@@ -3246,3 +3391,627 @@ TEST_CASE("rts.facadeMigratesCombatStanceAndMovementPriorityIntoSnapshots") {
     CHECK(canonical.value().find("\"stance\":\"passive\"") != std::string::npos);
 }
 }  // namespace test_rts_restore
+
+// Contract section: native RTS action checkpoint and order correlations
+#include <array>
+#include "action/Action.h"
+#include "action/ActionCapture.h"
+#include "rts/RTSActionCapture.h"
+namespace test_rts_action_checkpoint {
+TEST_CASE("rts.action.checkpointProducerKeepsRetiredUnitIdentityWithoutReplacementAdoption") {
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    const auto       epoch   = *eve::PersistentId::parse("01900000-0000-7000-8000-000000000a32");
+    const auto       subject = eve::SubjectRef::fromPersistentId(epoch.child("unit"));
+    auto*            unit    = domain.newUnit(subject).expect("actual RTS root");
+    unit->motion()->arrived  = false;
+    eve::action::ActionRuntime actions;
+    eve::rts::ActionAdapter    adapter(actions);
+    eve::rts::OrderRecord      order;
+    order.id   = "retained-order";
+    order.kind = eve::rts::OrderKind::Move;
+    adapter.execute(*unit, order, {eve::SimulationTick(1), eve::Duration(10)}).expect("actual canonical action");
+    REQUIRE_EQ(actions.executionCount(), std::size_t(1));
+    domain.remove(subject).expect("actual unit retirement");
+    auto captured = actions.capture(epoch, world, {}).expect("source producer retained authoritative identity");
+    REQUIRE(captured.executions()[0].source->subject == subject);
+    REQUIRE(captured.executions()[0].source->presence == eve::action::ActionEntityPresence::Retired);
+    auto*            replacement = domain.newUnit(subject).expect("explicit replacement incarnation");
+    const std::array binding{eve::action::ActionEntityBinding{ecs::handle_of(replacement), subject}};
+    auto plan = eve::action::PreparedActionRestore::prepare(captured, world, binding).expect("prepare history");
+    eve::action::ActionRuntime restored;
+    restored.restore(std::move(plan)).expect("publish original history");
+    REQUIRE(restored.find(captured.executions()[0].execution->id())->request().source->table == nullptr);
+}
+}  // namespace test_rts_action_checkpoint
+
+namespace test_rts_action_correlation {
+eve::PersistentId     epoch() { return *eve::PersistentId::parse("01900000-0000-7000-8000-000000000a33"); }
+eve::SubjectRef       source() { return eve::SubjectRef::fromPersistentId(epoch().child("unit")); }
+eve::rts::OrderRecord order() {
+    eve::rts::OrderRecord value;
+    value.id   = "saved-move-order";
+    value.kind = eve::rts::OrderKind::Move;
+    return value;
+}
+// Deterministic test digest only; no cryptographic security claim.
+eve::Result<eve::ContentId> digest(std::string_view text) {
+    std::uint64_t value = 14695981039346656037ULL;
+    for (unsigned char byte : text) value = (value ^ byte) * 1099511628211ULL;
+    eve::ContentId::Bytes bytes{};
+    for (auto& byte : bytes) {
+        value = value * 6364136223846793005ULL + 1;
+        byte  = std::uint8_t(value >> 32);
+    }
+    return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+}
+eve::rts::RTSActionCapture wireRoundTrip(const eve::rts::RTSActionCapture& source) {
+    const auto snapshot =
+        source.seal(eve::Revision(7), eve::SimulationTick(3), digest).expect("seal correlated actions");
+    const auto wire   = eve::serializeSnapshotEnvelope(snapshot).expect("file bytes");
+    auto       parsed = eve::rts::RTSActionCapture::parse(eve::parseSnapshotEnvelope(wire, digest).expect("read bytes"),
+                                                          epoch(), digest)
+                      .expect("admit joint facts");
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(
+                   parsed.seal(eve::Revision(7), eve::SimulationTick(3), digest).expect("repeat seal"))
+                   .expect("repeat bytes"),
+               wire);
+    return parsed;
+}
+TEST_CASE("rts.action.correlatedArchiveRejectsBrokenReferencesAndNestedSaveBoundaries") {
+    using namespace eve;
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    rts::RTS         domain(world);
+    auto*            unit   = domain.newUnit(source()).expect("actual unit");
+    unit->motion()->arrived = false;
+    action::ActionRuntime    actions;
+    rts::ActionAdapter       adapter(actions);
+    action::ActionDefinition unrelated;
+    unrelated.id       = *LogicalId::parse("action:unrelated");
+    unrelated.metadata = {{"payload", std::string(96, 'm')}};
+    action::ActionRequest request;
+    request.actionId   = unrelated.id;
+    request.parameters = {{"payload", std::string(96, 'r')}};
+    actions.submit(unrelated, request).expect("non-RTS action retained");
+    adapter.execute(*unit, order(), {SimulationTick(1), Duration(10)}).expect("actual pending order");
+    auto       capture = adapter.capture(epoch(), world, {}).expect("joint facts");
+    const auto base    = capture.seal(Revision(7), SimulationTick(3), digest).expect("seal");
+    auto       rehash  = [](SnapshotEnvelope value) {
+        return makeSnapshotEnvelope(value.type, value.schema, value.schemaVersion, value.instanceId, value.revision,
+                                           value.tick, std::move(value.payload), digest)
+            .expect("rehash forged input");
+    };
+    auto refused = [&](SnapshotEnvelope value) {
+        REQUIRE(!rts::RTSActionCapture::parse(rehash(std::move(value)), epoch(), digest).ok());
+    };
+    auto edit = [&](auto mutate) {
+        auto value = base;
+        mutate(value.payload);
+        refused(std::move(value));
+    };
+    auto pending = [](Value& payload) -> Value::Array& {
+        return *payload.getIf<Value::Object>()->at("pending").getIf<Value::Array>()->front().getIf<Value::Array>();
+    };
+    edit([](Value& p) { p.set("unknown", true); });
+    edit([&](Value& p) { pending(p).push_back(true); });
+    edit([&](Value& p) { pending(p)[0] = epoch().child("other").format(); });
+    edit([&](Value& p) { pending(p)[0] = PersistentId{}.format(); });
+    edit([&](Value& p) { pending(p)[1] = 1; });
+    edit([&](Value& p) { pending(p)[1] = 2; });
+    edit([&](Value& p) { pending(p)[2] = 7; });
+    edit([&](Value& p) { pending(p)[3] = "1"; });  // Exists, but has no corresponding Unit source.
+    edit([&](Value& p) { pending(p)[3] = "999"; });
+    edit([&](Value& p) { pending(p)[3] = "02"; });
+    edit([&](Value& p) { pending(p)[3] = "18446744073709551616"; });
+    edit([&](Value& p) {
+        auto& rows = *p.getIf<Value::Object>()->at("pending").getIf<Value::Array>();
+        rows.push_back(rows.front());
+    });
+    for (int boundary = 0; boundary < 3; ++boundary) {
+        auto value = base;
+        auto nested =
+            parseSnapshotEnvelopeValue(value.payload.getIf<Value::Object>()->at("actions"), digest).expect("inner");
+        if (boundary == 0) nested.revision = Revision(8);
+        if (boundary == 1) nested.tick = SimulationTick(4);
+        if (boundary == 2) nested.instanceId = epoch().child("foreign");
+        value.payload.set("actions", snapshotEnvelopeValue(rehash(std::move(nested))).expect("new inner envelope"));
+        refused(std::move(value));
+    }
+    edit([](Value& p) {
+        p.getIf<Value::Object>()->at("actions").getIf<Value::Object>()->at("payload").set("next", "999");
+    });  // Inner digest must also verify.
+    auto value          = base;
+    value.schemaVersion = SchemaVersion(2);
+    refused(value);
+    value      = base;
+    value.type = "other";
+    refused(value);
+    value            = base;
+    value.instanceId = epoch().child("other");
+    refused(value);
+    value = base;
+    value.payload.set("pending", Value::Array{});
+    REQUIRE(!rts::RTSActionCapture::parse(value, epoch(), digest).ok());
+    SnapshotHashProvider unavailable = [](std::string_view) {
+        return Result<ContentId>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "digest unavailable"));
+    };
+    REQUIRE(!capture.seal(Revision(7), SimulationTick(3), unavailable).ok());
+    REQUIRE(!capture.seal({}, SimulationTick(3), digest).ok());
+    REQUIRE_EQ(actions.executionCount(), std::size_t(2));
+    REQUIRE_EQ(adapter.capture(epoch(), world, {}).expect("unchanged source").pendingCount(), std::size_t(1));
+    auto                  parsed = wireRoundTrip(capture);
+    action::ActionRuntime target;
+    rts::ActionAdapter    restored(target);
+    const std::array      bindings{action::ActionEntityBinding{ecs::handle_of(unit), source()}};
+    restored.restore(rts::PreparedRTSActionRestore::prepare(parsed, world, bindings).expect("candidate"))
+        .expect("publish");
+    restored.execute(*unit, order(), {SimulationTick(2), Duration(10)}).expect("same pending movement");
+    REQUIRE_EQ(target.executionCount(), std::size_t(2));
+    REQUIRE(target.find(action::ActionExecutionId(1))->phase() == action::ActionPhase::Requested);
+}
+TEST_CASE("rts.action.correlatedArchiveFreezesOuterFactsBeforeDigestCallbackRetiresSource") {
+    using namespace eve;
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    rts::RTS         domain(world);
+    auto*            unit   = domain.newUnit(source()).expect("unit");
+    unit->motion()->arrived = false;
+    action::ActionRuntime actions;
+    rts::ActionAdapter    adapter(actions);
+    adapter.execute(*unit, order(), {SimulationTick(1), Duration(10)}).expect("move");
+    auto       captured = std::make_unique<rts::RTSActionCapture>(adapter.capture(epoch(), world, {}).expect("freeze"));
+    const auto expected =
+        serializeSnapshotEnvelope(captured->seal(Revision(7), SimulationTick(3), digest).expect("baseline"))
+            .expect("wire");
+    int                  calls    = 0;
+    SnapshotHashProvider retiring = [&](std::string_view text) {
+        ++calls;
+        captured.reset();
+        return digest(text);
+    };
+    auto sealed = captured->seal(Revision(7), SimulationTick(3), retiring).expect("no source access after callback");
+    REQUIRE(!captured);
+    REQUIRE_EQ(calls, 2);
+    REQUIRE_EQ(serializeSnapshotEnvelope(sealed).expect("retired wire"), expected);
+    auto parsed = rts::RTSActionCapture::parse(std::move(sealed), epoch(), digest).expect("owning result");
+    REQUIRE_EQ(parsed.pendingCount(), std::size_t(1));
+}
+TEST_CASE("rts.action.correlatedRestoreContinuesExistingExecutionAfterSourceWorldDestruction") {
+    std::optional<eve::rts::RTSActionCapture> frozen;
+    std::weak_ptr<ecs::Table>                 oldWorld;
+    eve::action::ActionExecutionId            execution;
+    {
+        auto world = std::make_shared<ecs::Table>();
+        oldWorld   = world;
+        ecs::ScopedTable scope(*world);
+        eve::rts::RTS    domain(world);
+        auto*            unit   = domain.newUnit(source()).expect("actual source unit");
+        unit->motion()->arrived = false;
+        eve::action::ActionRuntime actions;
+        eve::rts::ActionAdapter    adapter(actions);
+        REQUIRE(adapter.execute(*unit, order(), {eve::SimulationTick(1), eve::Duration(10)})
+                    .expect("original order")
+                    .disposition == eve::rts::ActionDisposition::Pending);
+        frozen.emplace(wireRoundTrip(adapter.capture(epoch(), world, {}).expect("joint action freeze")));
+        execution = frozen->actions()->get().executions()[0].execution->id();
+        REQUIRE_EQ(frozen->pendingCount(), std::size_t(1));
+    }
+    REQUIRE(oldWorld.expired());
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    auto*            unit   = domain.newUnit(source()).expect("restored domain unit");
+    unit->motion()->arrived = false;
+    const std::array bindings{eve::action::ActionEntityBinding{ecs::handle_of(unit), source()}};
+    auto plan = eve::rts::PreparedRTSActionRestore::prepare(*frozen, world, bindings).expect("joint candidate");
+    eve::action::ActionRuntime actions;
+    eve::rts::ActionAdapter    adapter(actions);
+    adapter.restore(std::move(plan)).expect("joint publish");
+    REQUIRE(!adapter.restore(std::move(plan)).ok());
+    REQUIRE(adapter.execute(*unit, order(), {eve::SimulationTick(2), eve::Duration(10)})
+                .expect("continue order")
+                .disposition == eve::rts::ActionDisposition::Pending);
+    REQUIRE_EQ(actions.executionCount(), std::size_t(1));
+    REQUIRE(actions.find(execution) != nullptr);
+    auto after = adapter.capture(epoch(), world, {}).expect("continued freeze");
+    REQUIRE(after.actions()->get().nextExecutionId() == frozen->actions()->get().nextExecutionId());
+    unit->motion()->arrived = true;
+    REQUIRE(adapter.execute(*unit, order(), {eve::SimulationTick(3), eve::Duration(10)})
+                .expect("finish actual movement")
+                .disposition == eve::rts::ActionDisposition::Completed);
+    REQUIRE_EQ(adapter.capture(epoch(), world, {}).expect("finished freeze").pendingCount(), std::size_t(0));
+    REQUIRE_EQ(actions.executionCount(), std::size_t(1));
+    auto moved = std::move(*frozen);
+    REQUIRE(!frozen->actions());
+    REQUIRE_EQ(moved.pendingCount(), std::size_t(1));
+}
+TEST_CASE("rts.action.correlatedRestoreRejectsIdentityDriftWithoutReplacingEitherOwner") {
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    auto*            unit   = domain.newUnit(source()).expect("actual unit");
+    unit->motion()->arrived = false;
+    eve::action::ActionRuntime actions;
+    eve::rts::ActionAdapter    adapter(actions);
+    adapter.execute(*unit, order(), {eve::SimulationTick(1), eve::Duration(10)}).expect("actual order");
+    auto             frozen = adapter.capture(epoch(), world, {}).expect("joint freeze");
+    const std::array bindings{eve::action::ActionEntityBinding{ecs::handle_of(unit), source()}};
+    const auto       other    = eve::SubjectRef::fromPersistentId(epoch().child("wrong"));
+    unit->identity()->subject = other;
+    REQUIRE(!eve::rts::PreparedRTSActionRestore::prepare(frozen, world, bindings).ok());
+    REQUIRE(!adapter.capture(epoch(), world, {}).ok());
+    unit->identity()->subject = source();
+    auto plan = eve::rts::PreparedRTSActionRestore::prepare(frozen, world, bindings).expect("valid candidate");
+    unit->identity()->subject = other;
+    REQUIRE(!adapter.restore(std::move(plan)).ok());
+    REQUIRE_EQ(actions.executionCount(), std::size_t(1));
+    unit->identity()->subject = source();
+    REQUIRE_EQ(adapter.capture(epoch(), world, {}).expect("unchanged old correlations").pendingCount(), std::size_t(1));
+    adapter.restore(std::move(plan)).expect("same candidate retry");
+    auto view = ecs::View<eve::rts::Unit>(*world);
+    REQUIRE(!adapter.capture(epoch(), world, {}).ok());
+}
+TEST_CASE("rts.action.correlatedRetiredSourceNeverAdoptsSameSubjectReplacement") {
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    auto*            unit   = domain.newUnit(source()).expect("actual unit");
+    unit->motion()->arrived = false;
+    eve::action::ActionRuntime actions;
+    eve::rts::ActionAdapter    adapter(actions);
+    adapter.execute(*unit, order(), {eve::SimulationTick(1), eve::Duration(10)}).expect("actual order");
+    domain.remove(source()).expect("canonical retirement");
+    auto frozen             = wireRoundTrip(adapter.capture(epoch(), world, {}).expect("retired correlation"));
+    unit                    = domain.newUnit(source()).expect("explicit replacement");
+    unit->motion()->arrived = false;
+    const std::array bindings{eve::action::ActionEntityBinding{ecs::handle_of(unit), source()}};
+    auto plan = eve::rts::PreparedRTSActionRestore::prepare(frozen, world, bindings).expect("retired candidate");
+    adapter.restore(std::move(plan)).expect("restore original history");
+    adapter.execute(*unit, order(), {eve::SimulationTick(2), eve::Duration(10)})
+        .expect("replacement starts its own action");
+    REQUIRE_EQ(actions.executionCount(), std::size_t(2));
+    auto after = wireRoundTrip(adapter.capture(epoch(), world, {}).expect("mixed live and retired facts"));
+    REQUIRE_EQ(after.pendingCount(), std::size_t(2));
+    REQUIRE(after.actions()->get().executions()[0].source->presence == eve::action::ActionEntityPresence::Retired);
+    REQUIRE(after.actions()->get().executions()[1].source->presence == eve::action::ActionEntityPresence::Present);
+}
+}  // namespace test_rts_action_correlation
+
+#include "rts/RTSOrderState.h"
+namespace test_rts_order_files {
+TEST_CASE("rts.rootSnapshot.orderFileRetainsQueueHistoryAndRebindsTargetsAfterRetirement") {
+    using namespace eve;
+    const auto                id       = *PersistentId::parse("01900000-0000-7000-8000-000000000e51");
+    const auto                ownerId  = SubjectRef::fromPersistentId(id.child("owner"));
+    const auto                targetId = SubjectRef::fromPersistentId(id.child("target"));
+    std::weak_ptr<ecs::Table> witness;
+    rts::RTSStateSnapshot     roots;
+    std::string               wire, expectedQueue, active;
+    {
+        auto world = std::make_shared<ecs::Table>();
+        witness    = world;
+        ecs::ScopedTable scope(*world);
+        rts::RTS         source(world);
+        auto*            unit   = source.newUnit(ownerId).expect("source unit");
+        auto*            target = source.newBuilding(targetId).expect("source target");
+        rts::CommandSpec command;
+        command.kind   = rts::OrderKind::Move;
+        command.target = {3.25f, -7.5f};
+        auto done      = unit->orders()->values.enqueue(command, 4).expect("terminal record");
+        unit->orders()->values.complete(done).expect("completed history");
+        command.kind            = rts::OrderKind::Attack;
+        command.targetEntity    = ecs::handle_of(target);
+        command.definitionId    = "saved-target-recipe";
+        command.priority        = 12;
+        command.timeoutSeconds  = 7.25;
+        command.secondaryTarget = {-2, 9};
+        command.radius          = 3.5f;
+        command.append          = true;
+        active                  = unit->orders()->values.enqueue(command, 2).expect("target command");
+        command.kind            = rts::OrderKind::Patrol;
+        command.priority        = -7;
+        command.targetEntity    = {};
+        unit->orders()->values.enqueue(command).expect("queued patrol");
+        roots       = source.snapshotState().expect("portable native roots");
+        auto& saved = roots.units[0];
+        REQUIRE_EQ(saved.orders.extended.at(active).targetEntity.table, nullptr);
+        REQUIRE_EQ(saved.orderTargets.at(active), targetId);
+        rts::RTSOrderState values{saved.orders, saved.orderTargets};
+        wire          = values.encodeState().expect("order values").toJson().expect("order file");
+        expectedQueue = saved.orders.queueJson;
+    }
+    REQUIRE(witness.expired());
+    auto parsed   = Value::fromJson(wire).expect("independent file read");
+    auto admitted = rts::RTSOrderState::prepareState(parsed).expect("CPU admission");
+    parsed        = Value{};
+    REQUIRE_EQ(admitted.orders.queueJson, expectedQueue);
+    auto& saved        = roots.units[0];
+    saved.orders       = std::move(admitted.orders);
+    saved.orderTargets = std::move(admitted.targets);
+    rts::RTS restored;
+    restored.rebuildState(roots).expect("native roots with file orders");
+    auto* unit = restored.findUnit(ownerId);
+    REQUIRE(unit != nullptr);
+    auto current = unit->orders()->values.current().expect("restored active");
+    CHECK_EQ(current.id, active);
+    CHECK_EQ(current.targetEntity.table, ecs::handle_of(restored.findBuilding(targetId)).table);
+    CHECK_EQ(current.targetEntity.id, ecs::handle_of(restored.findBuilding(targetId)).id);
+    CHECK_EQ(current.formationSlot, 2);
+    CHECK_EQ(current.radius, 3.5f);
+    unit->orders()->values.complete(active).expect("continued completion");
+    auto next = unit->orders()->values.current().expect("queued continuation");
+    CHECK_EQ(next.kind, rts::OrderKind::Patrol);
+    auto retained = unit->orders()->values.snapshotState().expect("history retained");
+    CHECK_EQ(unit->orders()->values.orderCount(), std::size_t(3));
+    CHECK(retained.extended.find(active) == retained.extended.end());
+}
+TEST_CASE("rts.rootSnapshot.orderFileRejectsMalformedCommandsAndPreservesNativeTarget") {
+    using namespace eve;
+    rts::OrderComponent source;
+    rts::CommandSpec    c;
+    c.target              = {4, 5};
+    auto               id = source.enqueue(c).expect("source command");
+    rts::RTSOrderState values{source.snapshotState().expect("source snapshot"), {}};
+    auto               value               = values.encodeState().expect("valid value");
+    auto               rejects             = [&](Value bad) { CHECK(!rts::RTSOrderState::prepareState(bad).ok()); };
+    auto               bad                 = value;
+    (*bad.getIf<Value::Object>())["extra"] = 1;
+    rejects(bad);
+    bad                                      = value;
+    (*bad.getIf<Value::Object>())["version"] = 2;
+    rejects(bad);
+    auto& root    = *value.getIf<Value::Object>();
+    auto  rows    = *root.at("commands").getIf<Value::Array>();
+    auto  command = *rows[0].getIf<Value::Array>();
+    auto  changed = [&](Value::Array row) {
+        auto bad                                  = value;
+        (*bad.getIf<Value::Object>())["commands"] = Value::Array{Value(std::move(row))};
+        rejects(bad);
+    };
+    auto row = command;
+    row[1]   = 255;
+    changed(row);
+    row    = command;
+    row[5] = -1.0;
+    changed(row);
+    row    = command;
+    row[4] = std::int64_t(INT64_MAX);
+    changed(row);
+    row    = command;
+    row[0] = "absent-record";
+    changed(row);
+    row        = command;
+    row.back() = "00000000-0000-0000-0000-000000000000";
+    changed(row);
+    row = command;
+    row.push_back(0);
+    changed(row);
+    bad                                       = value;
+    (*bad.getIf<Value::Object>())["commands"] = Value::Array{rows[0], rows[0]};
+    rejects(bad);
+    values.targets.emplace("absent",
+                           SubjectRef::fromPersistentId(*PersistentId::parse("01900000-0000-7000-8000-000000000e52")));
+    CHECK(!values.encodeState().ok());
+    values.targets.clear();
+    values.orders.extended.at(id).targetEntity.id = 1;
+    CHECK(!values.encodeState().ok());
+    values.orders.extended.at(id).targetEntity = {};
+    values.orders.extended.at(id).kind         = static_cast<rts::OrderKind>(255);
+    auto before                                = source.snapshot().expect("old queue");
+    REQUIRE(!source.restoreState(values.orders).ok());
+    CHECK_EQ(source.snapshot().expect("intact queue"), before);
+    CHECK_EQ(source.current().expect("intact current").id, id);
+}
+}  // namespace test_rts_order_files
+
+namespace test_rts_effect_files {
+TEST_CASE("rts.rootSnapshot.effectFileContinuesSettlementWithoutReplayingHistory") {
+    using namespace eve;
+    std::string              wire;
+    std::vector<std::string> golden;
+    {
+        rts::RTSEffectAdapter    source;
+        rts::RTSEffectDefinition morale;
+        morale.id        = "saved-morale";
+        morale.kind      = rts::RTSEffectKind::Morale;
+        morale.duration  = 1.5;
+        morale.period    = .25;
+        morale.magnitude = 7;
+        morale.tags      = {"saved-tag"};
+        morale.source    = "retired:caster";
+        auto subject     = SubjectRef::fromPersistentId(*PersistentId::parse("01900000-0000-7000-8000-000000000e62"));
+        source.apply(morale, subject).expect("actual morale effect");
+        auto suppression = morale;
+        suppression.id   = "saved-suppression";
+        suppression.kind = rts::RTSEffectKind::Suppression;
+        source.apply(suppression, subject).expect("actual suppression effect");
+        auto lock   = morale;
+        lock.id     = "saved-lock";
+        lock.kind   = rts::RTSEffectKind::ProductionLock;
+        lock.period = 0;
+        source.apply(lock, subject).expect("immediate lock");
+        source.advance({SimulationTick(4), Duration::fromSeconds(.375).expect("delta")}).expect("partial settlement");
+        wire = source.snapshot().encodeState().expect("complete effects").toJson().expect("effects file");
+        for (std::uint64_t tick = 5; tick < 9; ++tick) {
+            source.advance({SimulationTick(tick), Duration::fromSeconds(.375).expect("delta")})
+                .expect("source continuation");
+            golden.push_back(source.snapshot().encodeState().expect("golden effects").toJson().expect("golden file"));
+        }
+    }
+    auto admitted =
+        rts::RTSEffectSnapshot::prepareState(Value::fromJson(wire).expect("file read")).expect("CPU admission");
+    rts::RTSEffectAdapter restored;
+    restored.restore(admitted).expect("publish without settlement");
+    REQUIRE_EQ(restored.target().morale, 93.0);
+    REQUIRE_EQ(restored.target().suppression, std::uint32_t(1));
+    REQUIRE(restored.target().productionLocked);
+    CHECK_EQ(restored.snapshot().encodeState().expect("restored effects").toJson().expect("restored file"), wire);
+    for (std::uint64_t tick = 5; tick < 9; ++tick) {
+        restored.advance({SimulationTick(tick), Duration::fromSeconds(.375).expect("delta")})
+            .expect("actual continuation");
+        CHECK_EQ(restored.snapshot().encodeState().expect("actual effects").toJson().expect("actual file"),
+                 golden[tick - 5]);
+    }
+    auto invalid                               = Value::fromJson(wire).expect("bad candidate");
+    (*invalid.getIf<Value::Object>())["extra"] = true;
+    REQUIRE(!rts::RTSEffectSnapshot::prepareState(invalid).ok());
+    invalid                                     = Value::fromJson(wire).expect("bad target");
+    (*invalid.getIf<Value::Object>())["target"] = Value::Array{101.0, "1", true, "0"};
+    REQUIRE(!rts::RTSEffectSnapshot::prepareState(invalid).ok());
+    const auto before      = restored.snapshot().encodeState().expect("old effects").toJson().expect("old file");
+    admitted.target.morale = 101;
+    REQUIRE(!restored.restore(admitted).ok());
+    CHECK_EQ(restored.snapshot().encodeState().expect("intact effects").toJson().expect("intact file"), before);
+}
+}  // namespace test_rts_effect_files
+
+#include "integration/rts_spawn/RTSRootFileFixture.h"
+namespace test_rts_complete_root_files {
+TEST_CASE("rts.rootSnapshot.completeFileRebuildsEveryFamilyAfterSourceRetirementAndContinues") {
+    using namespace eve;
+    using namespace eve::rts;
+    using namespace test_rts_root_file;
+    std::string               saved, attributes;
+    std::vector<std::string>  golden;
+    std::weak_ptr<ecs::Table> witness;
+    {
+        Fixture source;
+        witness      = source.world;
+        saved        = wire(source.domain);
+        auto capture = source.domain.captureUnitAttributes(epoch()).expect("full attribute participant");
+        attributes = serializeSnapshotEnvelope(capture.seal(Revision(1), SimulationTick(1), test_rts_spawn::restoreHash)
+                                                   .expect("sealed attribute participant"))
+                         .expect("attribute file");
+        for (std::uint64_t tick = 2; tick < 6; ++tick) {
+            advance(source.domain, *source.world, tick);
+            golden.push_back(wire(source.domain));
+        }
+    }
+    REQUIRE(witness.expired());
+    auto parsed = Value::fromJson(saved).expect("independent root file");
+    auto roots  = RTSStateSnapshot::prepareState(parsed).expect("CPU root admission");
+    parsed      = Value{};
+    REQUIRE_EQ(roots.encodeState().expect("exact detached facts").toJson().expect("exact root file"), saved);
+    auto full = RTSUnitAttributeCapture::parse(
+                    parseSnapshotEnvelope(attributes, test_rts_spawn::restoreHash).expect("attribute read"), epoch(),
+                    test_rts_spawn::restoreHash)
+                    .expect("full attributes admission");
+    auto             targetWorld = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*targetWorld);
+    RTS              target(targetWorld);
+    target.rebuildState(roots).expect("native roots");
+    auto plan = PreparedRTSUnitAttributeRestore::prepare(target, full).expect("joined authoritative attributes");
+    target.restoreUnitAttributes(std::move(plan)).expect("exact attributes publication");
+    REQUIRE_EQ(wire(target), saved);
+    REQUIRE_EQ(target.unitCount(), std::size_t(4));
+    REQUIRE_EQ(target.buildingCount(), std::size_t(1));
+    REQUIRE_EQ(target.resourceNodeCount(), std::size_t(1));
+    REQUIRE_EQ(target.playerCount(), std::size_t(1));
+    REQUIRE_EQ(target.factionCount(), std::size_t(2));
+    REQUIRE_EQ(target.matchCount(), std::size_t(1));
+    for (std::uint64_t tick = 2; tick < 6; ++tick) {
+        advance(target, *targetWorld, tick);
+        CHECK_EQ(wire(target), golden[tick - 2]);
+    }
+}
+TEST_CASE("rts.rootSnapshot.completeFileRejectsUnknownNativeHandlesAndBrokenRootClosure") {
+    using namespace eve;
+    using namespace eve::rts;
+    using namespace test_rts_root_file;
+    Fixture          source;
+    ecs::ScopedTable sourceScope(*source.world);
+    auto             state = source.domain.snapshotState().expect("actual roots");
+    REQUIRE(!state.buildings[0].placement.link.isBound());
+    REQUIRE(source.domain.findBuilding(test_rts_root_file::subject("base"))->placement()->link.isBound());
+    const auto value                       = state.encodeState().expect("root value");
+    const auto before                      = value.toJson().expect("root bytes");
+    auto       rejects                     = [&](Value bad) { REQUIRE(!RTSStateSnapshot::prepareState(bad).ok()); };
+    auto       bad                         = value;
+    (*bad.getIf<Value::Object>())["extra"] = 1;
+    rejects(bad);
+    bad                                      = value;
+    (*bad.getIf<Value::Object>())["version"] = 2;
+    rejects(bad);
+    bad                                              = value;
+    (*bad.getIf<Value::Object>())["snapshotVersion"] = 2;
+    rejects(bad);
+    bad                                        = value;
+    (*bad.getIf<Value::Object>())["buildings"] = Value::Array{};
+    rejects(bad);
+    auto rows    = *value.getIf<Value::Object>()->at("units").getIf<Value::Array>();
+    auto changed = [&](Value::Array row) {
+        auto bad                               = value;
+        auto units                             = rows;
+        units[0]                               = Value(std::move(row));
+        (*bad.getIf<Value::Object>())["units"] = std::move(units);
+        rejects(bad);
+    };
+    auto row = *rows[0].getIf<Value::Array>();
+    row.push_back(0);
+    changed(row);
+    row    = *rows[0].getIf<Value::Array>();
+    row[6] = test_rts_root_file::subject("ore").format();
+    changed(row);
+    row         = *rows[0].getIf<Value::Array>();
+    auto combat = *row[11].getIf<Value::Array>();
+    combat[0]   = 7;
+    row[11]     = std::move(combat);
+    changed(row);
+    auto invalid                         = state;
+    auto external                        = state;
+    external.buildings[0].placement.link = PlacementLink::bind("foreign-provider").expect("external link");
+    REQUIRE(!external.encodeState().ok());
+    invalid.units[0].navigation.formationTarget = WorldPosition{3, 5};
+    REQUIRE(!invalid.encodeState().ok());
+    invalid                                   = state;
+    invalid.units[0].navigation.waypointIndex = 999;
+    REQUIRE(!invalid.encodeState().ok());
+    invalid                           = state;
+    invalid.units[0].combat.target.id = 1;
+    REQUIRE(!invalid.encodeState().ok());
+    CHECK_EQ(wire(source.domain), before);
+}
+TEST_CASE("rts.rootSnapshot.playerWatermarksMigrateExplicitlyAndCannotWrapOnCommand") {
+    using namespace eve;
+    using namespace eve::rts;
+    using namespace test_rts_root_file;
+    Fixture source;
+    auto    roots = source.domain.snapshotState().expect("native v3");
+    REQUIRE_EQ(roots.version, std::uint32_t(3));
+    REQUIRE_EQ(roots.players[0].selectionRevision, UINT64_C(9007199254741001));
+    auto legacy    = roots;
+    legacy.version = 2;
+    RTS rejected;
+    REQUIRE(!rejected.rebuildState(legacy).ok());
+    REQUIRE_EQ(rejected.unitCount(), std::size_t(0));
+    legacy.players[0].selectionRevision = 0;
+    legacy.players[0].selectionTick     = {};
+    REQUIRE(!legacy.encodeState().ok());
+    auto             targetWorld = std::make_shared<ecs::Table>();
+    ecs::ScopedTable targetScope(*targetWorld);
+    RTS              target(targetWorld);
+    target.rebuildState(legacy).expect("native legacy import");
+    auto upgraded = target.snapshotState().expect("native v3 recapture");
+    REQUIRE_EQ(upgraded.players[0].selectionRevision, std::uint64_t(0));
+    REQUIRE_EQ(upgraded.players[0].selectionTick.value(), std::uint64_t(0));
+    ecs::ScopedTable sourceScope(*source.world);
+    auto             p  = ecs::View<Player, Player::Selection>();
+    auto             it = p.begin();
+    REQUIRE(it != p.end());
+    auto [selection]    = *it;
+    selection->revision = UINT64_MAX;
+    const auto before =
+        source.domain.findUnit(test_rts_root_file::subject("mover"))->orders()->values.snapshot().expect("old queue");
+    CommandSpec move;
+    move.target = {20, 20};
+    REQUIRE(!source.domain.fanOut(*selection, move, {}).ok());
+    CHECK_EQ(selection->revision, UINT64_MAX);
+    CHECK_EQ(source.domain.findUnit(test_rts_root_file::subject("mover"))
+                 ->orders()
+                 ->values.snapshot()
+                 .expect("intact queue"),
+             before);
+}
+}  // namespace test_rts_complete_root_files

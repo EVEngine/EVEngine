@@ -105,7 +105,7 @@ TEST_CASE("ui.builder.ecsSubclassOwnerBindingAndQueuedClickContract") {
         REQUIRE(ui->mountAs("inv", window("Inv", {button("Use", "use")})));
         ui->bindOwner(7);
         CHECK(host(UISystem::findHostByOwner(7)) == host(ui->current()));
-        UIEvent event;
+        UIEvent event(ui->current());
         event.host         = ui->current();
         event.hostName     = "inv";
         event.nodeId       = "use";
@@ -314,7 +314,7 @@ TEST_CASE("ui.advanced.controls_haveDeclaredNodeTypesAndDispatchValueChanges") {
     }
     CHECK(node(owner, "tip") != nullptr);
     CHECK(node(owner, "row") != nullptr);
-    ui::UIEvent event;
+    ui::UIEvent event(owner->handle());
     event.host         = owner->handle();
     event.hostName     = "advanced_controls";
     event.nodeId       = "volume";
@@ -483,7 +483,7 @@ TEST_CASE("ui.advanced.imageComboAndVirtualList_widgetPropertiesAndEventContract
     CHECK(node(owner, "goods/2") != nullptr);
     CHECK_EQ(node(owner, "goods/2")->text, "three");
 
-    ui::UIEvent click;
+    ui::UIEvent click(owner->handle());
     click.host         = owner->handle();
     click.hostName     = "media";
     click.nodeId       = "go";
@@ -716,7 +716,7 @@ TEST_CASE("ui.system.queuedClickInvokesHandlerAndIsConsumableByHost") {
     REQUIRE(owner != nullptr);
     owner->setTree(window("Commands", {button("Run", "run"), text("Idle", "status")}));
     CHECK(owner->setClickHandler("run", [&] { ++clicks; }));
-    UIEvent event;
+    UIEvent event(owner->handle());
     event.host         = owner->handle();
     event.hostName     = "commands";
     event.nodeId       = "run";
@@ -1334,7 +1334,7 @@ TEST_CASE("ui.semantics.pointerPassBubblesPastIgnoreAndStopContains") {
     REQUIRE(action != nullptr);
     auto tree = owner->tree();
     REQUIRE(!tree->nodes.empty());
-    UIEvent event;
+    UIEvent event(owner->handle());
     event.host         = owner->handle();
     event.hostName     = owner->getName();
     event.nodeId       = action->id;

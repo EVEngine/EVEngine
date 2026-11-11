@@ -557,7 +557,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     REQUIRE(go != nullptr);
     REQUIRE(sl != nullptr);
 
-    ui::UIEvent click;
+    ui::UIEvent click(host->handle());
     click.host         = host->handle();
     click.hostName     = "cb";
     click.nodeId       = "go";
@@ -565,7 +565,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     click.handlerIndex = go->handlerClick;
     ui::UISystem::pendingEvents().push_back(click);
 
-    ui::UIEvent change;
+    ui::UIEvent change(host->handle());
     change.host         = host->handle();
     change.hostName     = "cb";
     change.nodeId       = "s";

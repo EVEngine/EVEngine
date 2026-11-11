@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server, spawn-core-only, spawn-content-only, spawn-rpg-only, spawn-map-rpg-runtime, spawn-map-rts-runtime]
     env:
       PROFILE: ${{ matrix.profile }}
       PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
@@ -70,6 +70,24 @@ jobs:
             libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
             libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
 
+      - name: Prepare Spawn runtime validation
+        if: startsWith(matrix.profile, 'spawn-')
+        timeout-minutes: 10
+        run: |
+          # OBJECT exercises allocation fault injection and permits actual
+          # module-input/symbol audits. Other profiles retain their defaults.
+          echo "PROFILE_CMAKE_COMMAND=cmake -DEVENGINE_MODULE_LINKAGE=OBJECT -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF" >> "$GITHUB_ENV"
+          if [[ "$PROFILE" == spawn-map-*-runtime ]]; then
+            sudo apt-get install -y --no-install-recommends \
+              xvfb xauth mesa-vulkan-drivers vulkan-tools glslc
+            bash .github/scripts/setup-software-vulkan.sh
+            runtime_dir="$RUNNER_TEMP/spawn-xdg-runtime"
+            mkdir -p "$runtime_dir"
+            chmod 700 "$runtime_dir"
+            echo "XDG_RUNTIME_DIR=$runtime_dir" >> "$GITHUB_ENV"
+            echo "ALSOFT_DRIVERS=null" >> "$GITHUB_ENV"
+          fi
+
       - name: Configure profile
         timeout-minutes: 30
         run: make profile/configure
@@ -79,9 +97,34 @@ jobs:
         timeout-minutes: 60
         run: make profile/build
 
-      - name: Run independent capability smoke probes
-        timeout-minutes: 10
-        run: make profile/smoke
+      - name: Run independent profile contracts and examples
+        # RTS includes complete allocation enumerations, not sampled failures.
+        timeout-minutes: ${{ matrix.profile == 'spawn-map-rts-runtime' && 45 || 20 }}
+        run: |
+          if [[ "$PROFILE" == spawn-map-*-runtime ]]; then
+            xvfb-run -a -s "-screen 0 1280x800x24" make profile/smoke
+          else
+            make profile/smoke
+          fi
+
+      - name: Audit actual Spawn link boundary
+        if: startsWith(matrix.profile, 'spawn-')
+        timeout-minutes: 5
+        run: >-
+          python3 scripts/profile_matrix.py --profile "$PROFILE"
+          --build-root "$PROFILE_BUILD_ROOT" --audit-link
+
+      - name: Upload Spawn boundary and contract evidence
+        if: always() && startsWith(matrix.profile, 'spawn-')
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-profile-${{ matrix.profile }}-linux-object
+          path: |
+            /tmp/evengine-profile-matrix/${{ matrix.profile }}/CMakeCache.txt
+            /tmp/evengine-profile-matrix/${{ matrix.profile }}/profile/**/boundary/**
+            /tmp/evengine-profile-matrix/${{ matrix.profile }}/profile/**/Testing/Temporary/*.log
+          if-no-files-found: error
+          retention-days: 14
 
   macos-x86_64:
     name: macOS x86_64 (${{ matrix.configuration }}, build)
@@ -620,6 +663,46 @@ jobs:
         run: >-
           make test/win32
           LABEL_FILTER=''
+
+      - name: Verify Windows OBJECT Spawn validation artifacts
+        timeout-minutes: 5
+        run: |
+          # The preceding complete monolithic suite includes the module-owned
+          # Spawn/Effects and map/domain integration cases without duplicating
+          # the entire statically linked engine into extra helper executables.
+          grep -q '^EVENGINE_MODULE_LINKAGE:STRING=OBJECT' build/win32/CMakeCache.txt
+          grep -q '^EVENGINE_TEST_DOMAIN_SPLIT:BOOL=OFF' build/win32/CMakeCache.txt
+          mkdir -p build/spawn-windows-object
+          for target in host tests; do
+            if [[ "$target" == host ]]; then
+              mapfile -t binaries < <(find build/win32/src/engine -type f -name eve.exe)
+            else
+              mapfile -t binaries < <(find build/win32/test -type f -name unit_test.exe)
+            fi
+            test "${#binaries[@]}" -eq 1
+            binary="$(cygpath -w "${binaries[0]}")"
+            MSYS_NO_PATHCONV=1 cmake/with-msvc.cmd dumpbin.exe /DEPENDENTS "$binary" \
+              | tee "build/spawn-windows-object/$target-dependents.txt"
+            if grep -Eiq '^[[:space:]]+EV[^[:space:]]*[.]dll[[:space:]]*$' \
+                "build/spawn-windows-object/$target-dependents.txt"; then
+              echo "OBJECT artifact unexpectedly imports an engine group DLL: $target" >&2
+              exit 1
+            fi
+          done
+
+      - name: Upload Windows OBJECT Spawn validation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-contracts-windows-object
+          path: |
+            build/win32/CMakeCache.txt
+            build/win32/Testing/Temporary/*.log
+            build/spawn-windows-object/*-dependents.txt
+            build/win32/src/engine/**/*.tlog/link.command.1.tlog
+            build/win32/test/**/*.tlog/link.command.1.tlog
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Sample settlement release benchmark
         id: settlement-benchmark

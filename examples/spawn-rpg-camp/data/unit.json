@@ -1,0 +1,11 @@
+{
+  "schema": "eve.rpg.unit",
+  "version": 1,
+  "id": "wolf",
+  "display_name": "Wolf",
+  "skill": "wolf.claw",
+  "attack": 7,
+  "defense": 2,
+  "max_hp": 20,
+  "speed": 3
+}

@@ -7,11 +7,12 @@
  * @brief 角色成长：等级 / 经验 / 升级。
  *
  * 进度数据存在 RPGActor::Progression 组件。gainXp 在跨过阈值时升级并发出
- * LevelUpEvent（推入进程级事件队列，RPG facade 在 update() 后轮询）。
+ * LevelUpEvent（推入当前 SimulationEventScope 的队列，RPG facade 在 update() 后轮询）。
  * 阈值按 xpGrowth 比例逐级增长。
  */
 
 #include "common/Result.h"
+#include "rpg/ActorEventRef.h"
 
 #include <cstdint>
 #include <string>
@@ -21,16 +22,26 @@ namespace eve::rpg {
 
 class RPGActor;
 
-/** @brief Move-only progression gain prepared against one actor revision. */
+/** @brief Move-only progression candidate bound to one actor incarnation and its saved progression facts.
+ * @ownership Holds only a weak actor reference; it never retains the actor or Table.
+ * @thread Prepare and commit on the same actor owner thread; no callbacks. */
 class PreparedProgressionGain {
 public:
     /** @brief Constructs a PreparedProgressionGain. */
     PreparedProgressionGain() = default;
+    /** @brief Transfer the prepared candidate without allocation. */
+    PreparedProgressionGain(PreparedProgressionGain &&) noexcept = default;
+    /** @brief Transfer the prepared candidate without allocation. */
+    PreparedProgressionGain &operator=(PreparedProgressionGain &&) noexcept = default;
+    /** @brief Copying a prepared candidate is forbidden. */
+    PreparedProgressionGain(const PreparedProgressionGain &) = delete;
+    /** @brief Copying a prepared candidate is forbidden. */
+    PreparedProgressionGain &operator=(const PreparedProgressionGain &) = delete;
     /** @brief Number of level transitions contained in this prepared candidate. */
     [[nodiscard]] int levelsGained() const noexcept { return nextLevel_ - previousLevel_; }
 
 private:
-    RPGActor *actor_ = nullptr;
+    ActorEventRef actor_;
     int       previousLevel_ = 0;
     double    previousXp_ = 0.0;
     double    previousXpToNext_ = 0.0;
@@ -42,7 +53,7 @@ private:
 
 /** @brief 升级事件。 */
 struct LevelUpEvent {
-    class RPGActor *actor = nullptr;
+    ActorEventRef actor;
     int previousLevel = 0;
     int newLevel = 0;
 };
@@ -86,7 +97,9 @@ public:
 
     /**
      * @brief Validate an XP gain and calculate its complete progression candidate without mutation/events.
-     * @return Prepared candidate, or a structured finite/range failure.
+     * @return Prepared candidate, or a structured missing-component/finite/range failure.
+     * @remarks Requires existing Progression; preparation never installs a missing component.
+     * @cost One arithmetic step per crossed level, bounded to 10000; constant-size candidate storage.
      * @thread Actor owning ECS simulation thread.
      * @reentrancy No callbacks or events are emitted.
      */
@@ -95,13 +108,17 @@ public:
     /**
      * @brief Commit a prepared XP gain if actor progression is still unchanged.
      * @return Number of levels gained, or Conflict without mutation/events.
-     * @remarks Progression is committed before level-up events are queued.
+     * @remarks Queue capacity is admitted before progression changes; all transitions publish together.
+     * A retired actor/world returns StaleHandle. Failed queue admission leaves progression/events unchanged.
+     * The value candidate is consumed by the call; prepare again to retry a rejected transaction.
+     * @cost Constant actor validation plus one event per gained level; queue growth is amortized per simulation.
      * @thread Same actor-owning thread used for preparation.
      * @reentrancy No callbacks are invoked; events are poll-only.
      */
     [[nodiscard]] static eve::Result<int> commitGainXp(PreparedProgressionGain prepared);
 
-    /** @brief 取出并清空自上次调用以来累积的升级事件（push/poll 风格）。 */
+    /** @brief Replace out with this simulation's queued level transitions; self-output is a no-op.
+     * @ownership Transfers event values without retaining actors/worlds; no callbacks or allocation. */
     static void pollLevelUps(std::vector<LevelUpEvent> &out);
 };
 

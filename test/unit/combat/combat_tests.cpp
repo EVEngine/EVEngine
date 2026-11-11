@@ -5,6 +5,7 @@
   "version": 1,
   "origins": [
     "combat_camera_framing.cpp",
+    "combat_damage_capture.cpp",
     "combat_attributes.cpp",
     "combat_character.cpp",
     "combat_locomotion.cpp",
@@ -450,4 +451,171 @@ TEST_CASE("combat.CombatLocomotionRuntime navigation: arrival does not overshoot
     };
 }
 }  // namespace test_combat_locomotion_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_damage_capture)
+// combat_damage_capture.cpp
+#include <limits>
+#include "combat/Damage.h"
+#include "combat/DamageCapture.h"
+namespace test_damage_capture {
+eve::combat::CombatState state() {
+    return {eve::SubjectRef::fromPersistentId(*eve::PersistentId::parse("01900000-0000-7000-8000-000000000d21")), 100,
+            100, 50, 50};
+}
+eve::combat::DamageRequest request(const eve::combat::CombatState& target) {
+    eve::combat::DamageRequest result;
+    result.target       = target.subject;
+    result.healthDamage = 10;
+    result.poiseDamage  = 5;
+    result.damageType   = "Damage.Physical.Slash";
+    result.tick         = eve::SimulationTick(3);
+    return result;
+}
+eve::settlement::SettlementRuleSet rules(double factor) {
+    eve::settlement::SettlementRule damage;
+    damage.id           = "native.damage";
+    damage.operation    = eve::settlement::RuleOperation::Multiply;
+    damage.value        = factor;
+    damage.filter.kinds = {"damage"};
+    damage.when         = "magnitude > 0";
+    auto heal           = damage;
+    heal.id             = "native.heal";
+    heal.value          = 2;
+    heal.filter.kinds   = {"heal"};
+    eve::settlement::SettlementRuleSet result;
+    result.configure({damage, heal}).expect("actual conditional declarations");
+    return result;
+}
+TEST_CASE("combat.damageCapture.ownsRulesAndReactionPolicyWithoutSourceOrCompiledCallbackRetention") {
+    std::optional<eve::combat::DamageCapture> frozen;
+    std::string                               expectedDamage, expectedHeal;
+    {
+        eve::combat::DamageRuntime source(nullptr, {20, .9});
+        source.configureSettlementRules(rules(1.5)).expect("actual source rules");
+        auto       target   = state();
+        auto       input    = request(target);
+        const auto expected = source.previewSettlement(target, input).takeValue();
+        REQUIRE_EQ(expected.appliedHealthDamage, 15.0);
+        REQUIRE(expected.reaction == eve::combat::HitReaction::None);
+        expectedDamage = eve::settlement::settlementResultCanonicalJson(expected.settlementResult).takeValue();
+        target.health  = 10;
+        expectedHeal =
+            eve::settlement::settlementResultCanonicalJson(source.heal(target, {}, 10).takeValue()).takeValue();
+        frozen.emplace(source.capture().takeValue());
+        eve::combat::DamageRuntime copied(source), assigned;
+        assigned = source;
+        source.configureSettlementRules(rules(2)).expect("later source configuration");
+        REQUIRE_EQ(copied.previewSettlement(state(), input).takeValue().appliedHealthDamage, 15.0);
+        REQUIRE_EQ(assigned.previewSettlement(state(), input).takeValue().appliedHealthDamage, 15.0);
+        REQUIRE_EQ(source.previewSettlement(state(), input).takeValue().appliedHealthDamage, 20.0);
+        auto moved = std::move(copied);
+        REQUIRE(!copied.capture().ok());
+        auto unchanged = state();
+        REQUIRE(!copied.apply(unchanged, input).ok());
+        REQUIRE_EQ(unchanged.health, 100.0);
+        REQUIRE_EQ(moved.previewSettlement(state(), input).takeValue().appliedHealthDamage, 15.0);
+        copied.configureSettlementRules(rules(1)).expect("reconfigure moved source");
+        REQUIRE(copied.capture().ok());
+    }
+    auto capture = std::move(*frozen);
+    REQUIRE(!eve::combat::DamageRuntime::prepareRestored(*frozen).ok());
+    auto restored = eve::combat::DamageRuntime::prepareRestored(capture).takeValue();
+    auto target   = state();
+    auto result   = restored->apply(target, request(target)).takeValue();
+    REQUIRE_EQ(target.health, 85.0);
+    REQUIRE(result.reaction == eve::combat::HitReaction::None);
+    auto stronger        = request(state());
+    stronger.poiseDamage = 30;
+    REQUIRE(restored->previewSettlement(state(), stronger).takeValue().reaction == eve::combat::HitReaction::None);
+    REQUIRE_EQ(eve::settlement::settlementResultCanonicalJson(result.settlementResult).takeValue(), expectedDamage);
+    target        = state();
+    target.health = 10;
+    REQUIRE_EQ(eve::settlement::settlementResultCanonicalJson(restored->heal(target, {}, 10).takeValue()).takeValue(),
+               expectedHeal);
+    auto independent = eve::combat::DamageRuntime::prepareRestored(capture).takeValue();
+    restored->configureSettlementRules(rules(3)).expect("target configuration isolated");
+    REQUIRE_EQ(independent->previewSettlement(state(), request(state())).takeValue().appliedHealthDamage, 15.0);
+}
+// Deterministic test digest only; no security-strength claim.
+eve::Result<eve::ContentId> damageDigest(std::string_view text) {
+    std::uint64_t value = 14695981039346656037ULL;
+    for (unsigned char byte : text) value = (value ^ byte) * 1099511628211ULL;
+    eve::ContentId::Bytes bytes{};
+    for (auto& byte : bytes) {
+        value = value * 6364136223846793005ULL + 1;
+        byte  = static_cast<std::uint8_t>(value >> 32);
+    }
+    return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+}
+TEST_CASE("combat.damageCapture.persistentRoundTripRejectsCorruptionUnknownFieldsAndVersions") {
+    using namespace eve;
+    const auto epoch = state().subject.persistentId();
+    auto       wire  = [&] {
+        combat::DamageRuntime source(nullptr, {20, .9});
+        source.configureSettlementRules(rules(1.5)).expect("exact source configuration");
+        auto capture  = source.capture().takeValue();
+        auto envelope = capture.seal(epoch, Revision(4), SimulationTick(7), damageDigest).takeValue();
+        return serializeSnapshotEnvelope(envelope).takeValue();
+    }();
+    auto envelope = parseSnapshotEnvelope(wire, damageDigest).takeValue();
+    auto captured = combat::DamageCapture::parse(envelope, epoch, damageDigest).takeValue();
+    auto restored = combat::DamageRuntime::prepareRestored(captured).takeValue();
+    auto result   = restored->previewSettlement(state(), request(state())).takeValue();
+    REQUIRE_EQ(result.appliedHealthDamage, 15.0);
+    REQUIRE(result.reaction == combat::HitReaction::None);
+    REQUIRE_EQ(serializeSnapshotEnvelope(captured.seal(epoch, Revision(4), SimulationTick(7), damageDigest).takeValue())
+                   .takeValue(),
+               wire);
+    auto reseal = [&](SnapshotEnvelope value) {
+        return makeSnapshotEnvelope(value.type, value.schema, value.schemaVersion, value.instanceId, value.revision,
+                                    value.tick, std::move(value.payload), damageDigest)
+            .takeValue();
+    };
+    auto changed = envelope;
+    changed.payload.set("unknown", true);
+    REQUIRE(!combat::DamageCapture::parse(changed, epoch, damageDigest).ok());
+    REQUIRE(!combat::DamageCapture::parse(reseal(changed), epoch, damageDigest).ok());
+    changed               = envelope;
+    changed.schemaVersion = SchemaVersion(2);
+    REQUIRE(!combat::DamageCapture::parse(reseal(changed), epoch, damageDigest).ok());
+    changed = envelope;
+    changed.payload.find("reaction")->set("stagger_poise_fraction", 1.1);
+    REQUIRE(!combat::DamageCapture::parse(reseal(changed), epoch, damageDigest).ok());
+    changed = envelope;
+    changed.payload.find("reaction")->set("extra", false);
+    REQUIRE(!combat::DamageCapture::parse(reseal(changed), epoch, damageDigest).ok());
+    changed = envelope;
+    changed.payload.set("rules", Value::object({}));
+    REQUIRE(!combat::DamageCapture::parse(reseal(changed), epoch, damageDigest).ok());
+    REQUIRE(!combat::DamageCapture::parse(envelope, epoch.child("foreign"), damageDigest).ok());
+    auto moved = std::move(captured);
+    REQUIRE(!captured.seal(epoch, Revision(4), SimulationTick(7), damageDigest).ok());
+    REQUIRE(!moved.seal({}, Revision(4), SimulationTick(7), damageDigest).ok());
+    REQUIRE(!moved.seal(epoch, Revision::zero(), SimulationTick(7), damageDigest).ok());
+    SnapshotHashProvider unavailable = [](std::string_view) {
+        return Result<ContentId>::failure(Diagnostic::error(DiagnosticCode::Failed, "test digest unavailable"));
+    };
+    REQUIRE(!moved.seal(epoch, Revision(4), SimulationTick(7), unavailable).ok());
+    REQUIRE(!combat::DamageCapture::parse(envelope, epoch, unavailable).ok());
+    REQUIRE(moved.seal(epoch, Revision(4), SimulationTick(7), damageDigest).ok());
+}
+TEST_CASE("combat.damageCapture.rejectsExternalRuleWithoutCallingItAndRejectsInvalidReactionPolicy") {
+    struct External final : eve::combat::IDamageRule {
+        mutable int                             calls = 0;
+        eve::Result<eve::combat::DamageAmounts> evaluate(const eve::combat::DamageRequest&,
+                                                         const eve::combat::CombatState&) const override {
+            ++calls;
+            return eve::Result<eve::combat::DamageAmounts>::success({5, 0, 1});
+        }
+    } external;
+    eve::combat::DamageRuntime borrowed(&external);
+    REQUIRE(!borrowed.capture().ok());
+    REQUIRE_EQ(external.calls, 0);
+    REQUIRE_EQ(borrowed.previewSettlement(state(), request(state())).takeValue().appliedHealthDamage, 5.0);
+    REQUIRE_EQ(external.calls, 1);
+    eve::combat::DamageRuntime invalid(nullptr, {std::numeric_limits<double>::quiet_NaN(), .5});
+    REQUIRE(!invalid.capture().ok());
+}
+}  // namespace test_damage_capture
 #endif

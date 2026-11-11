@@ -1,5 +1,6 @@
 #include "map/TileLayer.h"
 #include "map/TileConfig.h"
+#include "map/TileGridInternal.h"
 #include "map/TileProjection.h"
 
 #include "graphics/Canvas.h"
@@ -124,21 +125,24 @@ int TileLayer::getNonEmptyChunkCount() {
     return count;
 }
 
-void TileLayer::rebuildSpatialIndex() {
-    auto c = config();
-    auto t = tiles();
-    t->chunkColumns = (c->mapW + Tiles::kChunkSize - 1) / Tiles::kChunkSize;
-    t->chunkRows = (c->mapH + Tiles::kChunkSize - 1) / Tiles::kChunkSize;
-    t->chunks.assign(size_t(t->chunkColumns * t->chunkRows), {});
-    for (int y = 0; y < c->mapH; ++y) {
-        for (int x = 0; x < c->mapW; ++x) {
-            const size_t index = size_t(y * c->mapW + x);
-            if (index >= t->gids.size() || tileGid(t->gids[index]) == 0) continue;
-            const int chunkIndex = (y / Tiles::kChunkSize) * t->chunkColumns + x / Tiles::kChunkSize;
-            ++t->chunks[size_t(chunkIndex)].nonEmpty;
+void detail::rebuildTileChunks(TileLayer::Tiles &tiles, int width, int height) {
+    tiles.chunkColumns = (width + TileLayer::Tiles::kChunkSize - 1) / TileLayer::Tiles::kChunkSize;
+    tiles.chunkRows    = (height + TileLayer::Tiles::kChunkSize - 1) / TileLayer::Tiles::kChunkSize;
+    tiles.chunks.assign(size_t(tiles.chunkColumns * tiles.chunkRows), {});
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const size_t index = size_t(y * width + x);
+            if (index >= tiles.gids.size() || tileGid(tiles.gids[index]) == 0) continue;
+            const int chunkIndex =
+                (y / TileLayer::Tiles::kChunkSize) * tiles.chunkColumns + x / TileLayer::Tiles::kChunkSize;
+            ++tiles.chunks[size_t(chunkIndex)].nonEmpty;
         }
     }
-    ++t->revision;
+    ++tiles.revision;
+}
+void TileLayer::rebuildSpatialIndex() {
+    auto c = config();
+    detail::rebuildTileChunks(*tiles(), c->mapW, c->mapH);
 }
 
 void TileLayer::clearTileAnimation(int gid) {

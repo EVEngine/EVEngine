@@ -21,6 +21,7 @@
 
 #include "attributes/AttributeProjection.h"
 #include "common/ECS.h"
+#include "common/LifetimeWitness.h"
 #include "common/definitions/DefinitionRuntime.h"
 
 #include <cstdint>
@@ -29,6 +30,47 @@
 #include <vector>
 
 namespace eve::weapon {
+class WeaponEntity;
+class AmmoPoolEntity;
+/** @brief Non-owning generation/lifetime checked relationship to a shared ammunition pool.
+ * @ownership Pool owns its lifetime record. Weapon owns this relationship; neither extends the other lifetime.
+ * @thread ECS owner thread. Both endpoints must share their actual owning Table; no default-world lookup.
+ * @remarks Destroying either endpoint is safe. Pool destruction/reuse makes the link stale; it never adopts a
+ * replacement. Pool lifetime component copy/move, restore and hot-reload require rebinding after publication.
+ * Runtime handles/witnesses must not be persisted; the save coordinator resolves stable pool identities.
+ */
+class EVENGINE_API_WORLD AmmoPoolLink final {
+public:
+    /** @brief Construct an unbound relationship. */
+    AmmoPoolLink() = default;
+    /** @brief Bind live same-world endpoints outside Views, allocating a pool witness only on its first binding.
+     * @return Owning link value or stale/cross-world/missing component failure; no endpoint pointer is retained.
+     * @cost Constant admission plus one shared lifetime record per newly bound pool, amortized over its links.
+     * @throws std::bad_alloc Lifetime admission failed before publishing a link.
+     */
+    [[nodiscard]] static Result<AmmoPoolLink> bind(WeaponEntity& weapon, AmmoPoolEntity& pool);
+    /** @brief Whether a relationship was assigned, including one whose target has retired. */
+    [[nodiscard]] bool isBound() const noexcept { return handle_.table != nullptr; }
+    /** @brief Whether the assigned target has retired or lacks its required components. */
+    [[nodiscard]] bool isStale() const noexcept;
+    /** @brief Borrow the live target for this call only, or null when unbound/stale.
+     * @ownership No ownership transfer; no implicit rebinding or component materialization.
+     * @lifetime Borrow expires at target destruction/component publication. Never retain across frames.
+     */
+    [[nodiscard]] AmmoPoolEntity* resolve() const noexcept;
+    /** @brief Borrow the runtime handle until this link is reassigned; not a persistent identity. */
+    [[nodiscard]] const ecs::EntityHandle& handle() const noexcept { return handle_; }
+    /** @brief Explicitly release this relationship; does not delete the pool. */
+    void reset() noexcept {
+        handle_   = {};
+        lifetime_ = {};
+    }
+
+private:
+    friend class PreparedAmmoPoolRestore;
+    ecs::EntityHandle handle_{};
+    LifetimeWitness   lifetime_;
+};
 
 /** @brief 武器形态。 */
 enum class WeaponKind : uint8_t { Melee, Ranged, Magic, Missile, Custom };
@@ -327,7 +369,11 @@ public:
         float     stageTimer     = 0.f;
         /** @brief 阶段期间保存的攻击请求（供 Active/channel 使用）。 */
         AttackRequest lastRequest;
-        /** @brief 阶段机时长（模板持有，实体只存指针）。 */
+        /** @brief Effective stage configuration borrowed from the definition, caller, or ownedStages.
+         * @ownership No ownership through this view; ownedStages retains restored overrides when present.
+         * @lifetime External storage must outlive use; state/definition replacement invalidates borrowed views.
+         * @thread ECS owner thread only; never retain the view across state publication.
+         */
         const AttackStageSpec* stages = nullptr;
         /** @brief 散布 bloom：当前散布（度），随射击增大、停火回稳。 */
         float currentSpread = 0.f;
@@ -339,7 +385,12 @@ public:
         /** @brief 是否开镜（ADS）。 */
         bool aiming = false;
         /** @brief 可选的共享弹药池（不拥有，模块管理生命周期）。 */
-        class AmmoPoolEntity* ammoPool = nullptr;
+        AmmoPoolLink ammoPool;
+        /** @brief Optional immutable owner for restored per-instance stage overrides.
+         * @remarks When present, stages must equal ownedStages.get(); clear this owner before assigning an
+         * external borrowed override. Copy/move keeps the same immutable storage alive, not a second stage value.
+         */
+        std::shared_ptr<const AttackStageSpec> ownedStages;
     };
 
     /**
@@ -497,9 +548,33 @@ public:
         int count = 0;
         int max   = -1;
     };
+    /** @brief Derived lifetime authority, excluded from saved pool state.
+     * @remarks Copies start unbound; moves also retire original witnesses. Import/hot-reload must rebuild links.
+     * No allocation until the first explicit AmmoPoolLink::bind. This component is never a second pool owner.
+     */
+    struct EVENGINE_API_WORLD Lifetime {
+        /** @brief Start without a witness record. */
+        Lifetime();
+        /** @brief Retire all target witnesses. */
+        ~Lifetime();
+        /** @brief Start fresh for a copied component. */
+        Lifetime(const Lifetime&);
+        /** @brief Retire current witnesses and start fresh. */
+        Lifetime& operator=(const Lifetime&);
+        /** @brief Retire source witnesses; destination requires explicit rebinding. */
+        Lifetime(Lifetime&&) noexcept;
+        /** @brief Retire both sets of witnesses; destination requires explicit rebinding. */
+        Lifetime& operator=(Lifetime&&) noexcept;
+
+    private:
+        friend class AmmoPoolLink;
+        friend class PreparedAmmoPoolRestore;
+        std::unique_ptr<LifetimeOwner> owner_;
+    };
 
     COMPONENT(Identity, identity)
     COMPONENT(State, state)
+    COMPONENT(Lifetime, lifetime)
 
     /**
      * @brief 创建并触摸全部组件。
@@ -509,7 +584,7 @@ public:
      * @thread Call on the owning ECS thread.
      * @reentrancy Creation invokes no user callbacks; do not re-enter structural ECS mutation.
      */
-    static AmmoPoolEntity* createPool();
+    static EVENGINE_API_WORLD AmmoPoolEntity* createPool();
 };
 
 }  // namespace eve::weapon

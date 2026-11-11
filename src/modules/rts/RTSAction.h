@@ -10,12 +10,16 @@
 #include "rts/RTSTypes.h"
 
 #include <memory>
+#include <span>
 
 namespace eve::action {
 class ActionRuntime;
+struct ActionEntityBinding;
 }
 
 namespace eve::rts {
+class RTSActionCapture;
+class PreparedRTSActionRestore;
 
 /** @brief Outcome of one RTS order-to-action adapter call. */
 enum class ActionDisposition : std::uint8_t {
@@ -74,6 +78,19 @@ public:
                                                         const SimulationStep& step) override;
     /** @brief Forget runtime execution correlations so restored orders are rebound on their next step. */
     void clear() noexcept;
+
+    /** @brief Freeze native actions and their order correlations at one idle owner-thread boundary.
+     * @ownership Output owns facts only; world and bindings are borrowed for this call, outside Views.
+     * @return Detached facts or invalid source/correlation/runtime failure; no callbacks or time advance.
+     * @cost Copies all native executions and pending order strings per checkpoint attempt.
+     */
+    [[nodiscard]] Result<RTSActionCapture> capture(PersistentId saveEpoch, std::shared_ptr<ecs::Table> world,
+                                                   std::span<const action::ActionEntityBinding> bindings) const;
+    /** @brief Publish prepared native actions and correlations together, without resubmitting orders.
+     * @return Applied or unchanged target/token on validation failure; success consumes the token.
+     * @thread Owner thread outside Views; invokes no service callbacks and allocates no publication state.
+     */
+    [[nodiscard]] Result<void> restore(PreparedRTSActionRestore&& prepared);
 
 private:
     struct Impl;

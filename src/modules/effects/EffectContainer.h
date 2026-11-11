@@ -7,7 +7,9 @@
 
 /**
  * @file EffectContainer.h
- * @brief Owning effect storage and lifecycle-only executor.
+ * @brief effects module-interface: owning effect storage and lifecycle-only executor.
+ * @remarks Allocation-free ownership moves preserve instance/event borrows in the destination.
+ * Retained event and effects.container v1 data faces are unchanged; no new capability, ECS, script or tool face.
  */
 
 #include "effects/EffectTypes.h"
@@ -62,9 +64,14 @@ public:
      */
     EffectContainer& operator=(const EffectContainer& other);
 
-    /** @brief Move an owning container without sharing instance storage. */
+    /** @brief Transfer sole instance/event ownership without allocation.
+     * @remarks Borrows follow storage into the destination. Only destruction or assignment is supported on the source.
+     */
     EffectContainer(EffectContainer&& other) noexcept = default;
-    /** @brief Move-assign an owning container without sharing instance storage. */
+    /** @brief Replace sole instance/event ownership without allocation.
+     * @remarks Existing destination borrows expire; source borrows follow storage into the destination.
+     * Only destruction or assignment is supported on the source.
+     */
     EffectContainer& operator=(EffectContainer&& other) noexcept = default;
 
     /**
@@ -86,6 +93,24 @@ public:
      * @remarks Every pre-existing handle becomes stale after a successful restore.
      */
     [[nodiscard]] eve::Result<void> restore(const EffectContainer& snapshot);
+
+    /** @brief Encode complete lifecycle facts, events, counters and scheduler cursor as effects.container v1.
+     * @return Owning portable value, or invalid facts / Unsupported for an injected UUID generator whose
+     * implementation and external state have no persistent identity protocol.
+     * @remarks Native handle generations and callbacks are not serialized. Initial v1 has no migration.
+     * @thread Read-only simulation-owner boundary; no callbacks or services invoked.
+     * @cost Copies every instance, payload and retained event once per explicit save.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] eve::Result<eve::Value> encodeState() const;
+    /** @brief Admit strict effects.container v1 without applying effects, replaying events or creating ECS.
+     * @return Detached lifecycle container, or malformed/unknown fields, enums, identities and counter errors.
+     * @remarks Owns all values independently of input. Publish through restore to invalidate old native handles.
+     * @thread Pure CPU admission; no callbacks, providers or simulation advancement.
+     * @cost Copies and validates all instances and events once per explicit load.
+     * @throws std::bad_alloc Input and live worlds remain unchanged.
+     */
+    [[nodiscard]] static eve::Result<EffectContainer> prepareState(const eve::Value& value);
 
     /**
      * @brief Applies a definition and returns the stable instance identifier.
@@ -259,7 +284,8 @@ public:
      * @brief Returns an event by deterministic sequence index, or nullptr.
      * @ownership Borrowed from this container's retained event deque.
      * @nullable Null when the index is outside the retained range.
-     * @lifetime Until `clearEvents`, `clear`, restore, or destruction; do not retain it across those calls.
+     * @lifetime Until `clearEvents`, `clear`, restore, successful checked time update, replacement, or destruction.
+     * Appending events preserves borrows. An owning move transfers their lifetime to the destination storage.
      * @thread Simulation-thread confined unless externally synchronized.
      * @reentrancy No callbacks are made.
      */
@@ -274,12 +300,14 @@ public:
     [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
     /** @brief Restore the scheduler cursor after an owning world checkpoint rollback. @param tick Completed tick. */
     void restoreSchedulerTick(eve::SimulationTick tick) noexcept {
-        lastTick_ = tick;
+        lastTick_    = tick;
         hasLastTick_ = tick.value() != 0;
     }
 
 private:
-    using Store = std::deque<std::unique_ptr<EffectInstance>>;
+    using Store = std::vector<std::unique_ptr<EffectInstance>>;
+
+    [[nodiscard]] eve::Result<void> validateState() const;
 
     friend class EffectExecutor;
 
@@ -298,7 +326,8 @@ private:
     eve::SimulationTick                 lastTick_    = eve::SimulationTick::zero();
     bool                                hasLastTick_ = false;
     Store                               effects_;
-    std::deque<EffectEvent>             events_;
+    // Keep deque element addresses stable while transferring the queue itself without allocation.
+    std::unique_ptr<std::deque<EffectEvent>> events_;
 };
 
 /**

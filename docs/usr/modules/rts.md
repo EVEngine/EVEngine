@@ -224,3 +224,12 @@ ScriptWorld 初始化启用 SensingWorld 现有空间索引（格宽为八倍导
 
 
 同一帧的常规无乘员伤亡按完整代次批量清理引用和 roster，避免每个死者再扫描所有单位；先准备并验证 Crowd 数值移除，再更新所有关系，最后按原根顺序释放 sensing、weapon 和 entity。带乘员或建筑递归仍按既有生命周期执行。镜像保留稳定 Sensing 节点，用完整当前 roster 线性对账，只删除已离开的主体。
+
+
+### 地图增援的整体运行存档
+
+`mapRtsSpawn.freezeRuntime(epoch, revision)` 捕获当前真实 RTSMapRuntime，`sealRuntime()` 用 common snapshot hasher 返回完整文件文本；`snapshotHashAlgorithm()` 可观测当前实现。`prepareRuntimeRestore(fileText, epoch)` 复用 RTSRuntimeCheckpoint 的严格读取与联合接纳，`commitRuntimeRestore()` 物化隔离候选并一次替换完整 owner。上述操作除算法观测外均返回 Result。
+
+准备失败保留当前游戏；恢复提交不读取原资产，不推进模拟或重放历史事件。close 取消尚未提交的恢复，已冻结检查点仍可封装。游戏继续注入存档后的连续 tick/delta；不能重复执行已保存的领域阶段。持久状态限于既有 closed-native 协议，未知/外部实现继续明确拒绝，不从当前 registry 猜测补齐。
+
+`examples/spawn-rts-reinforcements` 在实际移动途中和全部六个增援离开入口后分别原子写盘、读回并整体恢复，核对稳定 subject、坐标、阵营、订单和 Crowd agent 数，并继续移动。模块仍沿用注册单例语义；没有通过重复构造创建多个游戏世界。

@@ -287,7 +287,7 @@ public:
      */
     void declareCapability(std::string capability, ScriptCapabilityBinder binder, ScriptCapabilityUnbinder unbinder);
 
-    /** @brief Whether `capability` has a declared script binding seam. */
+    /** @brief Allocation-free observation of a declared script binding seam. */
     [[nodiscard]] bool hasCapabilitySeam(std::string_view capability) const;
 
     /**
@@ -298,7 +298,8 @@ public:
      *          already published keeps its generation and its installed adapter, so
      *          unloading it still runs the unbinder it was published with. A seam
      *          that outlived its owner would otherwise advertise a binding that can
-     *          only fail later, at publish time.
+     *          only fail later, at publish time. Successful registry lookup/erase allocates no new storage;
+     *          reporting a missing seam may allocate its diagnostic.
      */
     [[nodiscard]] Result<void> removeCapability(std::string_view capability);
 
@@ -312,6 +313,9 @@ public:
      * @cost One publish plus one binder invocation. Call at load/publish time.
      * @remarks Atomic: a binder failure unloads the fresh generation again, so a
      *          caller never observes a published provider that serves nothing.
+     *          A throwing binder retires its still-current generation before the
+     *          exception propagates. A replacement published by a reentrant binder
+     *          owns its own lifetime and is not removed by that rollback.
      */
     [[nodiscard]] Result<ScriptProviderHandle> publishForCapability(std::string_view capability, std::string name,
                                                                     const ssq::Object& instance);

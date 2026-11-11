@@ -45,9 +45,17 @@ public:
     using StackPolicyFn = std::function<int(RPGActor *actor, StatusInstance &existing,
                                              const EffectDefinition &def, const std::string &source)>;
 
-    /** @brief 生命周期钩子：每次产生 StatusChangeEvent 时同步回调（在事件入队之后）。 */
+    /** @brief Invoke lifecycle hooks synchronously after enqueueing a change fact.
+     * @ownership The event owns its values and a weak ActorEventRef; it never retains the actor/world.
+     * @reentrancy Earlier hooks may retire/reuse the actor; each consumer resolves again before accessing it.
+     * A retired actor does not discard the historical event or skip later hooks. No View/lock spans a hook. */
     using LifecycleHook = std::function<void(const StatusChangeEvent &ev)>;
 
+    /** @brief Reject global apply/lifecycle callbacks without an admitted persistence contract.
+     * @return Applied only when both registries are empty, otherwise Unsupported. No execution or mutation.
+     * @thread RPG owner thread; check at capture/admission and before publication. Versioned custom stack policies
+     * keep their separate canonical implementation-binding contract. */
+    [[nodiscard]] static Result<void> validatePersistenceContext();
     /** @brief Registers apply condition. */
     static void registerApplyCondition(const std::string &name, ApplyCondition fn);
     /** @brief Unregisters apply condition. */
@@ -59,7 +67,23 @@ public:
 
     /** @brief Registers stack policy. */
     static void registerStackPolicy(const std::string &name, StackPolicyFn fn);
-    /** @brief Unregisters stack policy. */
+    /** @brief Atomically register a custom executable stack policy and its publisher-declared revision.
+     * @return InvalidArgument for empty name/revision/callback or a built-in policy name; otherwise success.
+     * @ownership Owns callback and revision in the same entry; no separate metadata registry.
+     * @thread Owner thread only; callbacks must not mutate the stack registry during application.
+     * @remarks Publisher must change the stable revision when code behavior changes. Registration invokes no callback.
+     * Legacy registerStackPolicy replacement clears revision identity. Failure preserves the previous entry.
+     * @throws std::bad_alloc Allocation failed without replacing the previous entry.
+     */
+    [[nodiscard]] static Result<void> registerVersionedStackPolicy(const std::string &name, std::string revision,
+                                                                   StackPolicyFn function);
+    /** @brief Copy the actual installed policy revision without invoking callbacks.
+     * @return Owning revision, NotFound if absent, or Unsupported for an unversioned entry.
+     * @ownership Returned text survives replacement/removal; registry access is owner-thread only.
+     * @throws std::bad_alloc Output allocation failed; live state is unchanged.
+     */
+    [[nodiscard]] static Result<std::string> stackPolicyRevision(const std::string &name);
+    /** @brief Unregisters stack policy and its revision. */
     static void unregisterStackPolicy(const std::string &name);
     /** @brief True when stack policy. */
     static bool hasStackPolicy(const std::string &name);
@@ -123,23 +147,39 @@ public:
     static bool setProp(RPGActor *actor, int instanceId, const std::string &key,
                         const std::string &value);
 
-    /**
-     * @brief Advance all live RPG status executors with an injected simulation delta.
-     * @return Expiry/tick summary; invalid deltas leave all actor state unchanged.
+    /** @brief Advance the phase's frozen, generation-checked roster in ActorExecutionOrder.
+     * @param dt Finite nonnegative simulation seconds.
+     * @return Expiry/tick summary; invalid deltas leave all actors unchanged.
+     * @remarks Expiry hooks run after this actor's state commit. Retired/reused later actors are skipped;
+     * replacement actors enter a later phase. No borrowed View or mutable roster spans a hook.
+     * @cost Scan N actors, order K keyed actors in O(K log K), and copy active effect/attribute facts per actor.
+     * @thread Current simulation Table's owner thread; dt is supplied simulation time, with no wall clock/RNG reads.
+     * @throws Propagates allocation/hook exceptions; previously committed actors remain applied. This is a phase
+     * traversal, not an atomic world transaction. Emitted ActorEventRefs detect entity/world retirement; event values
+     * retain their normal queue lifetime.
      */
     [[nodiscard]] static eve::Result<StatusUpdateSummary> update(double dt);
 
-    /** @brief 取出并清空自上次调用以来累积的周期 tick 事件（push/poll 风格，见 event 模块）。 */
+    /** @brief Append queued ticks to out and drain the active simulation queue; self-output is a no-op.
+     * @throws std::bad_alloc or std::length_error Before either vector's event facts change.
+     * @cost One move per queued event; output growth is amortized over the caller-owned vector. */
     static void pollTicks(std::vector<StatusTickEvent> &out);
 
-    /** @brief 取出并清空自上次调用以来累积的生命周期变更事件。 */
+    /** @brief Append queued changes to out and drain the active simulation queue; self-output is a no-op.
+     * @throws std::bad_alloc or std::length_error Before either vector's event facts change.
+     * @cost One move per queued event; output growth is amortized over the caller-owned vector. */
     static void pollChanges(std::vector<StatusChangeEvent> &out);
 
 private:
     static void emitChange(StatusChangeEvent ev);
 
     static std::unordered_map<std::string, ApplyCondition> &applyConditions();
-    static std::unordered_map<std::string, StackPolicyFn> &stackPolicies();
+    struct StackPolicy {
+        StackPolicyFn function;
+        std::string   revision;
+    };
+    static void installStackPolicy(const std::string &name, StackPolicy policy);
+    static std::unordered_map<std::string, StackPolicy>   &stackPolicies();
     static std::unordered_map<std::string, LifecycleHook> &lifecycleHooks();
 };
 

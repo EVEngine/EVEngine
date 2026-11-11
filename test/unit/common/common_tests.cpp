@@ -64,6 +64,7 @@
 #include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/CapabilityOwned.h"
+#include "common/ListenerStaging.h"
 #include "common/ProtocolDispatch.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -291,6 +292,78 @@ TEST_CASE("common.capability.spec.borrowedAndOwnedProviderLifetime") {
         REQUIRE(eve::cap::query<IGreeter>() == nullptr);
         REQUIRE_EQ(lease.value()->greet(), "hello");
     };
+}
+
+TEST_CASE("common.capability.staging.selectedFamiliesPublishTogetherAndPreserveOrdering") {
+    NamedStep old("old"), early("early"), late("late"), external("external");
+    Hello     hello;
+    Bonjour   bonjour;
+    Reset     reset;
+    eve::cap::addListener<IStep>(&old, 10);
+    eve::cap::provide<IGreeter>(&hello);
+    const std::string_view names[]{IStep::capabilityName, IGreeter::capabilityName};
+    auto                   stage = eve::cap::ListenerStaging::begin(names).takeValue();
+    eve::cap::addListener<IStep>(&early, 0);
+    eve::cap::addListener<IStep>(&late, 10);
+    eve::cap::addListener<IStep>(&late, -10);  // First registration owns its priority.
+    eve::cap::addListener<IGreeter>(&bonjour);
+    REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(1));
+    REQUIRE_EQ(eve::cap::listenerCount<IGreeter>(), std::size_t(0));
+    REQUIRE(!eve::cap::ListenerStaging::begin(names).ok());
+    {
+        auto pause = stage->pause().takeValue();
+        eve::cap::addListener<IStep>(&external, 10);
+        eve::cap::provide<IGreeter>(&bonjour);
+        REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(2));
+    }
+    stage->publish().expect("all selected listener families");
+    REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(4));
+    REQUIRE(eve::cap::listenerAt<IStep>(0) == &early);
+    REQUIRE(eve::cap::listenerAt<IStep>(1) == &old);
+    REQUIRE(eve::cap::listenerAt<IStep>(2) == &external);
+    REQUIRE(eve::cap::listenerAt<IStep>(3) == &late);
+    REQUIRE(eve::cap::listenerAt<IGreeter>(0) == &bonjour);
+    REQUIRE(eve::cap::query<IGreeter>() == &bonjour);
+    REQUIRE(!stage->publish().ok());
+    REQUIRE(!stage->pause().ok());
+}
+TEST_CASE("common.capability.staging.cancellationAndPausedWithdrawalNeverResurrectListeners") {
+    NamedStep              cancelled("cancelled"), parent("parent"), child("child");
+    Reset                  reset;
+    const std::string_view names[]{IStep::capabilityName};
+    {
+        auto stage = eve::cap::ListenerStaging::begin(names).takeValue();
+        eve::cap::addListener<IStep>(&cancelled);
+    }
+    REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(0));
+    auto stage = eve::cap::ListenerStaging::begin(names).takeValue();
+    eve::cap::addListener<IStep>(&parent);
+    {
+        auto pause = stage->pause().takeValue();
+        eve::cap::removeListener<IStep>(&parent);
+        auto nested = eve::cap::ListenerStaging::begin(names).takeValue();
+        eve::cap::addListener<IStep>(&child);
+        nested->publish().expect("independent external construction");
+    }
+    stage->publish().expect("withdrawn parent stays absent");
+    REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(1));
+    REQUIRE(eve::cap::listenerAt<IStep>(0) == &child);
+}
+TEST_CASE("common.capability.staging.resetInvalidatesPublicationAndRejectsInvalidFamilies") {
+    NamedStep              entry("entry");
+    Reset                  reset;
+    const std::string_view duplicate[]{IStep::capabilityName, IStep::capabilityName};
+    REQUIRE(!eve::cap::ListenerStaging::begin(duplicate).ok());
+    REQUIRE(!eve::cap::ListenerStaging::begin({}).ok());
+    const std::string_view names[]{IStep::capabilityName};
+    auto                   stage = eve::cap::ListenerStaging::begin(names).takeValue();
+    eve::cap::addListener<IStep>(&entry);
+    {
+        auto pause = stage->pause().takeValue();
+        eve::cap::detail::clearAllRaw();
+    }
+    REQUIRE(!stage->publish().ok());
+    REQUIRE_EQ(eve::cap::listenerCount<IStep>(), std::size_t(0));
 }
 }  // namespace capability
 }  // namespace
@@ -2306,10 +2379,11 @@ TEST_CASE("common.json.spec.syntaxDepthAndOwnership") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_result)
-#include "PrivateTestScope.h"
 #include <memory>
+#include <new>
 #include <string>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2385,6 +2459,38 @@ TEST_CASE("common.result.spec.successFailureAndConsumption") {
         CHECK(true);
 #endif
     };
+}
+
+TEST_CASE("common.result.spec.successConstructionUnwindsThrowingPayload") {
+    struct Payload {
+        int& moves;
+        int  failAt;
+        Payload(int& count, int failure) : moves(count), failAt(failure) {}
+        Payload(const Payload&) = delete;
+        Payload(Payload&& other) : moves(other.moves), failAt(other.failAt) {
+            if (moves++ == failAt) throw std::bad_alloc();
+        }
+    };
+    // Argument, optional payload, and final member construction must all unwind
+    // without an observation obligation for a Result that never finished construction.
+    for (int failAt = 0; failAt < 3; ++failAt) {
+        int     moves = 0;
+        Payload payload(moves, failAt);
+        bool    caught = false;
+        try {
+            auto result = Result<Payload>::success(std::move(payload));
+            result.ignore("unexpected successful construction is checked below");
+        } catch (const std::bad_alloc&) {
+            caught = true;
+        }
+        CHECK(caught);
+        CHECK_EQ(moves, failAt + 1);
+    }
+    int     moves = 0;
+    Payload payload(moves, -1);
+    auto    result = Result<Payload>::success(std::move(payload));
+    REQUIRE(result.ok());
+    CHECK_EQ(result.value().moves, 3);
 }
 
 TEST_CASE("common.result.spec.moveCompositionAndConstConversion") {

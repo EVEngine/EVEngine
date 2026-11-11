@@ -10,6 +10,7 @@
 */
 // clang-format on
 
+#include "definitions/DefinitionRegistryCapture.h"
 #include "definitions/Definitions.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -175,3 +176,131 @@ TEST_CASE("definitions.snapshot_preserves_tombstones_and_rejects_invalid_schema_
     CHECK(!restored.restoreJson(unknownField).ok());
     CHECK_EQ(restored.snapshotJson(), before);
 }
+
+namespace test_definitions_capture {
+// Test-only deterministic digest; no security or collision-strength claim.
+eve::Result<eve::ContentId> digest(std::string_view text) {
+    eve::ContentId::Bytes bytes{};
+    std::uint64_t         state = 14695981039346656037ULL;
+    for (unsigned char byte : text) state = (state ^ byte) * 1099511628211ULL;
+    for (auto& byte : bytes) {
+        byte  = static_cast<std::uint8_t>(state);
+        state = (state ^ byte) * 1099511628211ULL;
+    }
+    return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+}
+TEST_CASE("definitions.capture.exactMetadataTombstonesHistoryAndIndependentObserverScope") {
+    const auto identity = *eve::PersistentId::parse("01900000-0000-7000-8000-000000000d11");
+    auto       original = std::make_unique<DefinitionRegistry>(identity);
+    original->insert("unit", "live", 2, R"({"health":77})").expect("actual content");
+    original->insert("unit", "retired", 1, "{}").expect("future tombstone");
+    original->remove("unit", "retired").expect("actual tombstone");
+    auto envelope = original->snapshot(digest).takeValue();
+    auto imported = eve::makeSnapshotEnvelope(envelope.type, envelope.schema, envelope.schemaVersion, identity,
+                                              eve::Revision(88), eve::SimulationTick(99), envelope.payload, digest)
+                        .takeValue();
+    original->restoreSnapshot(imported, digest).expect("actual non-default registry metadata");
+    const auto expected      = eve::serializeSnapshotEnvelope(imported).takeValue();
+    const auto content       = original->snapshotJson();
+    int        notifications = 0;
+    auto       subscription  = original->subscribe([&](const DefinitionEvent&) { ++notifications; });
+    auto       frozen        = original->capture().takeValue();
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(frozen.seal(digest).takeValue()).takeValue(), expected);
+    auto wire = eve::serializeSnapshotEnvelope(frozen.seal(digest).takeValue()).takeValue();
+    frozen =
+        eve::definitions::DefinitionRegistryCapture::parse(eve::parseSnapshotEnvelope(wire, digest).takeValue(), digest)
+            .takeValue();
+    auto first  = DefinitionRegistry::prepareRestored(frozen).takeValue();
+    auto second = DefinitionRegistry::prepareRestored(frozen).takeValue();
+    REQUIRE_EQ(notifications, 0);
+    REQUIRE_EQ(first->snapshotJson(), content);
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(first->snapshot(digest).takeValue()).takeValue(), expected);
+    auto revived = first->insert("unit", "retired", 3, "{}").takeValue();
+    REQUIRE_EQ(revived.generation.value(), std::uint64_t(3));
+    REQUIRE_EQ(first->snapshot(digest).takeValue().revision.value(), std::uint64_t(89));
+    REQUIRE_EQ(first->snapshot(digest).takeValue().tick.value(), std::uint64_t(99));
+    REQUIRE(second->isTombstone("unit", "retired"));
+    REQUIRE_EQ(second->snapshotJson(), content);
+    REQUIRE_EQ(notifications, 0);
+    original->replace("unit", "live", 3, R"({"health":1})").expect("source mutation after capture");
+    REQUIRE_EQ(notifications, 1);
+    original.reset();
+    subscription.dispose();
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(frozen.seal(digest).takeValue()).takeValue(), expected);
+    auto moved = std::move(frozen);
+    REQUIRE(!frozen.seal(digest).ok());
+    REQUIRE(!DefinitionRegistry::prepareRestored(frozen).ok());
+    auto afterRetirement = DefinitionRegistry::prepareRestored(moved).takeValue();
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(afterRetirement->snapshot(digest).takeValue()).takeValue(), expected);
+    eve::SnapshotHashProvider rejecting = [](std::string_view) {
+        return eve::Result<eve::ContentId>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "injected digest failure"));
+    };
+    REQUIRE(!moved.seal(rejecting).ok());
+    REQUIRE_EQ(eve::serializeSnapshotEnvelope(moved.seal(digest).takeValue()).takeValue(), expected);
+}
+}  // namespace test_definitions_capture
+
+namespace test_definitions_capture {
+TEST_CASE("definitions.capture.fileAdmissionPreservesLegacyMigrationAndRejectsCorruptHistory") {
+    using namespace eve;
+    const auto         id = *PersistentId::parse("01900000-0000-7000-8000-000000000d13");
+    DefinitionRegistry source(id);
+    source.insert("unit", "fighter", 1, R"({"health":7})").expect("actual definition");
+    source.replace("unit", "fighter", 2, R"({"health":9})").expect("actual revision history");
+    const auto base = source.snapshot(digest).takeValue();
+    for (int mode = 0; mode < 4; ++mode) {
+        auto  payload = base.payload;
+        auto& root    = *payload.getIf<Value::Object>();
+        if (mode == 0) root.emplace("unknown", true);
+        if (mode == 1) root.at("nextEventSequence") = "1";
+        if (mode == 2)
+            root.at("generations").getIf<Value::Array>()->front().getIf<Value::Object>()->at("generation") = "0";
+        if (mode == 3) root.at("events").getIf<Value::Array>()->back().getIf<Value::Object>()->at("sequence") = "1";
+        auto bad = makeSnapshotEnvelope(base.type, base.schema, base.schemaVersion, id, base.revision, base.tick,
+                                        std::move(payload), digest)
+                       .takeValue();
+        REQUIRE(!definitions::DefinitionRegistryCapture::parse(std::move(bad), digest).ok());
+    }
+    auto oldPayload                                  = base.payload;
+    oldPayload.getIf<Value::Object>()->at("version") = std::int64_t(0);
+    auto legacy = makeSnapshotEnvelope(base.type, base.schema, SchemaVersion(0), id, base.revision, base.tick,
+                                       std::move(oldPayload), digest)
+                      .takeValue();
+    auto admitted = definitions::DefinitionRegistryCapture::parse(std::move(legacy), digest).takeValue();
+    CHECK_EQ(serializeSnapshotEnvelope(admitted.seal(digest).takeValue()).takeValue(),
+             serializeSnapshotEnvelope(base).takeValue());
+    auto future = makeSnapshotEnvelope(base.type, base.schema, SchemaVersion(2), id, base.revision, base.tick,
+                                       base.payload, digest)
+                      .takeValue();
+    REQUIRE(!definitions::DefinitionRegistryCapture::parse(std::move(future), digest).ok());
+    DefinitionRegistry anonymous;
+    auto               empty =
+        definitions::DefinitionRegistryCapture::parse(anonymous.snapshot(digest).takeValue(), digest).takeValue();
+    auto restored = DefinitionRegistry::prepareRestored(empty).takeValue();
+    CHECK_EQ(restored->size(), 0);
+    CHECK_EQ(serializeSnapshotEnvelope(restored->snapshot(digest).takeValue()).takeValue(),
+             serializeSnapshotEnvelope(anonymous.snapshot(digest).takeValue()).takeValue());
+}
+TEST_CASE("definitions.capture.digestCallbackMayRetireTheSourceCapture") {
+    using namespace eve;
+    DefinitionRegistry source;
+    source.insert("unit", "fighter", 1, "{}").expect("actual definition");
+    std::optional<definitions::DefinitionRegistryCapture> saved(source.capture().takeValue());
+    const auto                 expected = serializeSnapshotEnvelope(saved->seal(digest).takeValue()).takeValue();
+    const SnapshotHashProvider retiring = [&](std::string_view input) {
+        saved.reset();
+        return digest(input);
+    };
+    auto envelope = saved->seal(retiring).takeValue();
+    REQUIRE(!saved);
+    auto read = definitions::DefinitionRegistryCapture::parse(std::move(envelope), digest).takeValue();
+    CHECK_EQ(serializeSnapshotEnvelope(read.seal(digest).takeValue()).takeValue(), expected);
+    const SnapshotHashProvider unavailable = [](std::string_view) {
+        return Result<ContentId>::failure(Diagnostic::error(DiagnosticCode::Failed, "digest unavailable"));
+    };
+    REQUIRE(!definitions::DefinitionRegistryCapture::parse(read.seal(digest).takeValue(), unavailable).ok());
+    auto retry = DefinitionRegistry::prepareRestored(read).takeValue();
+    CHECK_EQ(retry->snapshotJson(), source.snapshotJson());
+}
+}  // namespace test_definitions_capture

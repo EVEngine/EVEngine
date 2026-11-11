@@ -1,9 +1,11 @@
 #include "map/Pathfinder.h"
 #include "common/Exception.h"
+#include "map/PathfinderState.h"
 
 #include "map/TileOrientation.h"
 
 #include <algorithm>
+#include <charconv>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -367,6 +369,7 @@ std::span<const std::uint8_t> NavigationGridSnapshot::exitMasks() const noexcept
 }
 
 struct Pathfinder::Impl {
+    std::weak_ptr<const PathfinderState::Data> restoredFrom;
     NavigationGridSnapshot lastCapture;
     std::uint64_t          changes = 1;
     Grid grid;
@@ -375,6 +378,349 @@ struct Pathfinder::Impl {
     int cachedGoalY = 0;
     FlowField cachedField;
 };
+
+struct PathfinderState::Data {
+    Pathfinder::Impl    saved;
+    std::optional<Grid> binding;
+};
+PathfinderState::PathfinderState(std::shared_ptr<const Data> data) : data_(std::move(data)) {}
+PathfinderState::~PathfinderState()                                      = default;
+PathfinderState::PathfinderState(PathfinderState &&) noexcept            = default;
+PathfinderState &PathfinderState::operator=(PathfinderState &&) noexcept = default;
+bool             PathfinderState::bound() const noexcept { return data_ && data_->binding.has_value(); }
+
+namespace {
+namespace navigation_state {
+struct Invalid {
+    Status status;
+};
+[[noreturn]] void invalid(const char *message) {
+    throw Invalid{Status::failure(Diagnostic::error(DiagnosticCode::ParseError, message, "map.pathfinder-state"))};
+}
+const Value::Array &array(const Value &v) {
+    auto *a = v.getIf<Value::Array>();
+    if (!a) invalid("Expected navigation array");
+    return *a;
+}
+const Value::Array &tuple(const Value &v, std::size_t n) {
+    const auto &a = array(v);
+    if (a.size() != n) invalid("Unknown or missing navigation tuple fields");
+    return a;
+}
+const std::string &text(const Value &v) {
+    auto *s = v.getIf<std::string>();
+    if (!s) invalid("Expected navigation text");
+    return *s;
+}
+std::uint64_t counter(const Value &v) {
+    const auto   &s = text(v);
+    std::uint64_t n = 0;
+    auto          p = std::from_chars(s.data(), s.data() + s.size(), n);
+    if (p.ec != std::errc{} || p.ptr != s.data() + s.size() || std::to_string(n) != s)
+        invalid("Invalid canonical navigation counter");
+    return n;
+}
+std::int64_t integer(const Value &v, std::int64_t min, std::int64_t max) {
+    if (!v.isInt64() || v.asInt() < min || v.asInt() > max) invalid("Navigation integer outside range");
+    return v.asInt();
+}
+bool boolean(const Value &v) {
+    auto *b = v.getIf<bool>();
+    if (!b) invalid("Expected navigation boolean");
+    return *b;
+}
+std::size_t cells(int width, int height) {
+    constexpr int limit = 4 * 1024 * 1024;
+    if (width < 0 || height < 0 || width > limit || height > limit || std::int64_t(width) * height > limit)
+        invalid("Oversized navigation dimensions");
+    return std::size_t(width) * std::size_t(height);
+}
+float number(const Value &v) {
+    if (!v.isDouble() && !v.isInt64()) invalid("Expected navigation number");
+    double n = v.isDouble() ? v.asDouble() : double(v.asInt());
+    if (!std::isfinite(n) || std::abs(n) > std::numeric_limits<float>::max()) invalid("Invalid navigation float");
+    return float(n);
+}
+Value floats(std::span<const float> values) {
+    Value::Array a;
+    a.reserve(values.size());
+    for (float x : values) {
+        if (!std::isfinite(x)) invalid("Nonfinite grid cost");
+        a.push_back(x);
+    }
+    return a;
+}
+std::vector<float> floats(const Value &v, std::size_t count) {
+    const auto &a = array(v);
+    if (a.size() != count) invalid("Navigation cost length mismatch");
+    std::vector<float> r;
+    r.reserve(count);
+    for (const auto &x : a) r.push_back(number(x));
+    return r;
+}
+Value masks(std::span<const std::uint8_t> values) {
+    Value::Array a;
+    a.reserve(values.size());
+    for (auto x : values) a.push_back(int(x));
+    return a;
+}
+std::vector<std::uint8_t> masks(const Value &v, std::size_t count) {
+    const auto &a = array(v);
+    if (a.size() != count) invalid("Navigation mask length mismatch");
+    std::vector<std::uint8_t> r;
+    r.reserve(count);
+    for (const auto &x : a) r.push_back(std::uint8_t(integer(x, 0, 255)));
+    return r;
+}
+Value grid(const Grid &g) {
+    const auto n = cells(g.width, g.height);
+    if (g.cost.size() != n || g.enterMask.size() != n || g.exitMask.size() != n || g.layer)
+        invalid("Invalid detached navigation grid");
+    std::vector<std::uint32_t> gids(g.blockedGids.begin(), g.blockedGids.end());
+    std::sort(gids.begin(), gids.end());
+    Value::Array blocked;
+    for (auto gid : gids) blocked.push_back(std::int64_t(gid));
+    return Value::Array{g.width,           g.height,          std::to_string(g.layerRevision),
+                        int(g.topology),   g.topologyManual,  g.diagonal,
+                        g.blockEmpty,      g.staggerAxisY,    g.staggerOdd,
+                        g.dirty,           floats(g.cost),    masks(g.enterMask),
+                        masks(g.exitMask), std::move(blocked)};
+}
+Grid grid(const Value &v) {
+    const auto &a = tuple(v, 14);
+    Grid        g;
+    g.width          = int(integer(a[0], 0, 4 * 1024 * 1024));
+    g.height         = int(integer(a[1], 0, 4 * 1024 * 1024));
+    const auto n     = cells(g.width, g.height);
+    g.layerRevision  = counter(a[2]);
+    g.topology       = Topology(integer(a[3], 0, 2));
+    g.topologyManual = boolean(a[4]);
+    g.diagonal       = boolean(a[5]);
+    g.blockEmpty     = boolean(a[6]);
+    g.staggerAxisY   = boolean(a[7]);
+    g.staggerOdd     = boolean(a[8]);
+    g.dirty          = boolean(a[9]);
+    g.cost           = floats(a[10], n);
+    g.enterMask      = masks(a[11], n);
+    g.exitMask       = masks(a[12], n);
+    std::optional<std::uint32_t> prior;
+    for (const auto &item : array(a[13])) {
+        auto gid = std::uint32_t(integer(item, 0, std::numeric_limits<std::uint32_t>::max()));
+        if (prior && gid <= *prior) invalid("Blocked gids must be ordered unique");
+        prior = gid;
+        g.blockedGids.insert(gid);
+    }
+    return g;
+}
+Value field(const FlowField &f) {
+    const auto   count = cells(f.getWidth(), f.getHeight());
+    Value::Array data;
+    data.reserve(count);
+    for (std::size_t i = 0; i < count; ++i) {
+        int   x = int(i % std::size_t(f.getWidth())), y = int(i / std::size_t(f.getWidth()));
+        float cost = f.costAt(x, y);
+        if (std::isnan(cost) || cost < 0) invalid("Invalid flow integration cost");
+        data.push_back(Value::Array{std::isinf(cost) ? Value{} : Value(cost), f.nextX(x, y), f.nextY(x, y)});
+    }
+    return Value::Array{f.getWidth(), f.getHeight(), f.getGoalX(), f.getGoalY(), std::move(data)};
+}
+FlowField field(const Value &v) {
+    const auto &a = tuple(v, 5);
+    int         w = int(integer(a[0], 0, 4 * 1024 * 1024)), h = int(integer(a[1], 0, 4 * 1024 * 1024));
+    const auto  n    = cells(w, h);
+    const auto &data = array(a[4]);
+    if (data.size() != n) invalid("Flow cell length mismatch");
+    FlowField f;
+    f.resize(w, h);
+    f.setGoal(int(integer(a[2], std::numeric_limits<int>::min(), std::numeric_limits<int>::max())),
+              int(integer(a[3], std::numeric_limits<int>::min(), std::numeric_limits<int>::max())));
+    for (std::size_t i = 0; i < n; ++i) {
+        const auto &row  = tuple(data[i], 3);
+        float       cost = row[0].isNull() ? FlowField::kUnreachable : number(row[0]);
+        if (cost < 0) invalid("Negative flow integration cost");
+        int x = int(i % std::size_t(w)), y = int(i / std::size_t(w));
+        f.setCost(x, y, cost);
+        f.setNext(x, y, int(integer(row[1], 0, w - 1)), int(integer(row[2], 0, h - 1)));
+    }
+    return f;
+}
+}  // namespace navigation_state
+}  // namespace
+Result<Value> PathfinderState::encodeState() const {
+    using R = Result<Value>;
+    if (!data_) return R::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "Moved navigation state"));
+    try {
+        const auto &s = data_->saved;
+        Value       capture;
+        if (s.lastCapture.valid()) {
+            const auto &c = s.lastCapture;
+            capture       = Value::Array{c.width(),
+                                   c.height(),
+                                   std::to_string(c.revision()),
+                                   int(c.topology()),
+                                   c.isStaggerAxisY(),
+                                   c.isStaggerOdd(),
+                                   navigation_state::floats(c.costs()),
+                                   navigation_state::masks(c.enterMasks()),
+                                   navigation_state::masks(c.exitMasks())};
+        }
+        return R::success(
+            Value::object({{"schema", "map.pathfinder-state"},
+                           {"version", 1},
+                           {"grid", navigation_state::grid(s.grid)},
+                           {"binding", data_->binding ? navigation_state::grid(*data_->binding) : Value{}},
+                           {"changes", std::to_string(s.changes)},
+                           {"lastCapture", std::move(capture)},
+                           {"hasCachedField", s.hasCachedField},
+                           {"cachedGoal", Value::Array{s.cachedGoalX, s.cachedGoalY}},
+                           {"cachedField", navigation_state::field(s.cachedField)}}));
+    } catch (const navigation_state::Invalid &error) {
+        return R::failure(error.status);
+    }
+}
+Result<PathfinderState> PathfinderState::prepareState(const Value &value) {
+    using R = Result<PathfinderState>;
+    try {
+        const auto *root = value.getIf<Value::Object>();
+        if (!root || root->size() != 9) navigation_state::invalid("Unknown or missing navigation state fields");
+        for (const auto *key : {"schema", "version", "grid", "binding", "changes", "lastCapture", "hasCachedField",
+                                "cachedGoal", "cachedField"})
+            if (!root->contains(key)) navigation_state::invalid("Missing navigation state field");
+        if (navigation_state::text(root->at("schema")) != "map.pathfinder-state")
+            navigation_state::invalid("Wrong navigation schema");
+        if (navigation_state::integer(root->at("version"), 0, std::numeric_limits<std::int64_t>::max()) != 1)
+            return R::failure(Diagnostic::error(DiagnosticCode::UnknownVersion, "Unknown navigation state version"));
+        auto  data = std::make_shared<Data>();
+        auto &s    = data->saved;
+        s.grid     = navigation_state::grid(root->at("grid"));
+        if (!root->at("binding").isNull()) {
+            data->binding = navigation_state::grid(root->at("binding"));
+            const auto &b = *data->binding;
+            if (!b.dirty || b.topologyManual != s.grid.topologyManual || b.diagonal != s.grid.diagonal ||
+                b.blockEmpty != s.grid.blockEmpty || b.blockedGids != s.grid.blockedGids ||
+                (b.topologyManual && b.topology != s.grid.topology))
+                navigation_state::invalid("Pending binding policy differs from captured grid");
+        }
+        s.changes = navigation_state::counter(root->at("changes"));
+        if (!s.changes) navigation_state::invalid("Zero navigation configuration watermark");
+        const auto &last = root->at("lastCapture");
+        if (!last.isNull()) {
+            const auto &a = navigation_state::tuple(last, 9);
+            auto        c = std::make_shared<NavigationGridSnapshot::Data>();
+            c->width      = int(navigation_state::integer(a[0], 1, 4 * 1024 * 1024));
+            c->height     = int(navigation_state::integer(a[1], 1, 4 * 1024 * 1024));
+            const auto n  = navigation_state::cells(c->width, c->height);
+            c->revision   = navigation_state::counter(a[2]);
+            if (!c->revision) navigation_state::invalid("Zero published navigation revision");
+            c->topology     = NavigationTopology(navigation_state::integer(a[3], 0, 2));
+            c->staggerAxisY = navigation_state::boolean(a[4]);
+            c->staggerOdd   = navigation_state::boolean(a[5]);
+            if (c->topology != NavigationTopology::Hex && (!c->staggerAxisY || !c->staggerOdd))
+                navigation_state::invalid("Noncanonical orthogonal capture flags");
+            c->costs            = navigation_state::floats(a[6], n);
+            c->enterMasks       = navigation_state::masks(a[7], n);
+            c->exitMasks        = navigation_state::masks(a[8], n);
+            s.lastCapture.data_ = std::move(c);
+        }
+        s.hasCachedField = navigation_state::boolean(root->at("hasCachedField"));
+        const auto &goal = navigation_state::tuple(root->at("cachedGoal"), 2);
+        s.cachedGoalX =
+            int(navigation_state::integer(goal[0], std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
+        s.cachedGoalY =
+            int(navigation_state::integer(goal[1], std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));
+        s.cachedField = navigation_state::field(root->at("cachedField"));
+        if (s.hasCachedField) {
+            if (s.cachedField.getGoalX() != s.cachedGoalX || s.cachedField.getGoalY() != s.cachedGoalY ||
+                (!s.grid.dirty &&
+                 (s.cachedField.getWidth() != s.grid.width || s.cachedField.getHeight() != s.grid.height)))
+                navigation_state::invalid("Cached flow identity differs from grid/cache goal");
+        } else if (s.cachedField.getWidth() != 0 || s.cachedField.getHeight() != 0 || s.cachedField.getGoalX() != 0 ||
+                   s.cachedField.getGoalY() != 0)
+            navigation_state::invalid("Inactive flow cache contains a field");
+        return R::success(PathfinderState(std::move(data)));
+    } catch (const navigation_state::Invalid &error) {
+        return R::failure(error.status);
+    }
+}
+namespace {
+template <class T>
+const T *existingNavigationComponent(TileLayer &layer) noexcept {
+    auto *buffer = layer.getComponentManager().template getComponentBuffer<T>();
+    return buffer && buffer->has(layer.id) ? buffer->ptr(layer.id) : nullptr;
+}
+bool completeNavigationLayer(TileLayer &layer) noexcept {
+    const auto *config = existingNavigationComponent<TileLayer::Config>(layer);
+    return config && config->mapW >= 0 && config->mapH >= 0 &&
+           std::int64_t(config->mapW) * config->mapH <= 4 * 1024 * 1024 &&
+           existingNavigationComponent<TileLayer::Tiles>(layer) &&
+           existingNavigationComponent<TileLayer::Tileset>(layer);
+}
+bool sameBindingInputs(const Grid &a, const Grid &b) noexcept {
+    return a.width == b.width && a.height == b.height && a.layerRevision == b.layerRevision &&
+           a.topology == b.topology && a.staggerAxisY == b.staggerAxisY && a.staggerOdd == b.staggerOdd &&
+           a.cost == b.cost && a.enterMask == b.enterMask && a.exitMask == b.exitMask;
+}
+}  // namespace
+
+Result<PathfinderState> Pathfinder::captureState() const {
+    if (!impl_)
+        return Result<PathfinderState>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Moved-from Pathfinder", "map.navigation-state"));
+    if (impl_->grid.layer && !completeNavigationLayer(*impl_->grid.layer))
+        return Result<PathfinderState>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "Incomplete navigation layer", "map.navigation-state"));
+    auto data   = std::make_shared<PathfinderState::Data>();
+    data->saved = *impl_;
+    data->saved.restoredFrom.reset();
+    // Observe pending layer changes through a copy, leaving the actual stale cache untouched.
+    if (impl_->grid.layer) {
+        data->binding = impl_->grid;
+        data->binding->syncFromLayer();
+        data->binding->layer = nullptr;
+    }
+    data->saved.grid.layer = nullptr;
+    return Result<PathfinderState>::success(PathfinderState(std::move(data)));
+}
+
+Result<std::unique_ptr<Pathfinder>> Pathfinder::prepareRestored(const PathfinderState &state,
+                                                                OptionalRef<TileLayer> binding) {
+    using Outcome = Result<std::unique_ptr<Pathfinder>>;
+    if (!state.data_ || state.data_->binding.has_value() != binding.has_value())
+        return Outcome::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Native navigation binding mismatch",
+                                                  "map.navigation-state"));
+    if (binding) {
+        auto &layer = binding->get();
+        if (!completeNavigationLayer(layer))
+            return Outcome::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "Incomplete restored navigation layer", "map.navigation-state"));
+        Grid actual  = state.data_->saved.grid;
+        actual.layer = &layer;
+        actual.syncFromLayer();
+        if (!sameBindingInputs(actual, *state.data_->binding))
+            return Outcome::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "Restored navigation layer facts differ", "map.navigation-state"));
+    }
+    auto result                 = std::make_unique<Pathfinder>();
+    *result->impl_              = state.data_->saved;
+    result->impl_->grid.layer   = binding ? &binding->get() : nullptr;
+    result->impl_->restoredFrom = state.data_;
+    return Outcome::success(std::move(result));
+}
+
+bool Pathfinder::isRestoredFrom(const PathfinderState &state) const noexcept {
+    if (!impl_ || !state.data_ || impl_->restoredFrom.lock() != state.data_) return false;
+    if (!impl_->grid.layer) return !state.data_->binding;
+    const auto *config = existingNavigationComponent<TileLayer::Config>(*impl_->grid.layer);
+    const auto *tiles  = existingNavigationComponent<TileLayer::Tiles>(*impl_->grid.layer);
+    if (!config || !tiles || !state.data_->binding) return false;
+    const auto &saved    = *state.data_->binding;
+    const auto  topology = impl_->grid.topologyManual
+                               ? impl_->grid.topology
+                               : topologyFromOrientation(config->orientation, impl_->grid.diagonal);
+    return tiles->revision == saved.layerRevision && config->mapW == saved.width && config->mapH == saved.height &&
+           topology == saved.topology && (config->staggerAxis == StaggerAxis::Y) == saved.staggerAxisY &&
+           (config->staggerIndex == StaggerIndex::Odd) == saved.staggerOdd;
+}
 
 Pathfinder::Pathfinder() : impl_(std::make_unique<Impl>()) {}
 
@@ -461,6 +807,7 @@ void Pathfinder::invalidateCache() {
     if (impl_->changes == std::numeric_limits<std::uint64_t>::max())
         throw eve::Exception("Navigation input revision exhausted");
     ++impl_->changes;
+    impl_->restoredFrom.reset();
     impl_->hasCachedField = false;
     impl_->cachedField.clear();
 }
@@ -567,6 +914,7 @@ Result<NavigationGridSnapshot> Pathfinder::captureNavigationGrid() try {
     data->exitMasks    = std::move(staged.exitMask);
     NavigationGridSnapshot result;
     result.data_       = std::move(data);
+    impl_->restoredFrom.reset();
     impl_->lastCapture = result;
     return Result<NavigationGridSnapshot>::success(std::move(result));
 } catch (const std::exception &error) {
@@ -581,6 +929,7 @@ Path *Pathfinder::findPath(int sx, int sy, int gx, int gy) {
 
 Path *Pathfinder::findPath(int sx, int sy, int gx, int gy,
                            const std::function<float(int, int)> &entryPenalty) {
+    impl_->restoredFrom.reset();
     auto *path = new Path();
     Grid &grid = impl_->grid;
     if (!ensureSynced(grid)) return path;
@@ -645,6 +994,7 @@ Path *Pathfinder::findPath(int sx, int sy, int gx, int gy,
 }
 
 FlowField *Pathfinder::buildFlowField(int gx, int gy) {
+    impl_->restoredFrom.reset();
     Grid &grid = impl_->grid;
     if (!ensureSynced(grid)) {
         auto *empty = new FlowField();
@@ -671,6 +1021,7 @@ FlowField *Pathfinder::buildFlowField(int gx, int gy) {
 }
 
 Path *Pathfinder::followFlow(FlowField *field, int sx, int sy) {
+    impl_->restoredFrom.reset();
     auto *path = new Path();
     Grid &grid = impl_->grid;
     if (!field || !ensureSynced(grid)) return path;
@@ -705,6 +1056,7 @@ Path *Pathfinder::followFlow(FlowField *field, int sx, int sy) {
 }
 
 Path *Pathfinder::findGroupPath(int sx, int sy, int gx, int gy) {
+    impl_->restoredFrom.reset();
     Grid &grid = impl_->grid;
     if (!ensureSynced(grid)) return new Path();
     if (!impl_->hasCachedField || grid.dirty || impl_->cachedGoalX != gx || impl_->cachedGoalY != gy ||

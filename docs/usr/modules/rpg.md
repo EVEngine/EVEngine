@@ -450,9 +450,49 @@ JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` stor
 恢复时会与当前任务注册表逐项核对任务 id、目标 id、顺序和进度边界；内容版本不匹配会明确失败，
 不会悄悄丢弃旧任务进度。
 
-`RPGActor.checkpointJson()` / `restoreCheckpointJson()` 提供安全检查点语义：持久化基础属性、
-等级经验、当前资源、已学技能、职业和特征身份；活动效果、施法、冷却与运行时事件属于战斗瞬态。
-捕获时存在活动效果或施法会明确失败，恢复目标必须是相同职业、特征和属性布局的干净角色原型。
+技能读条目标保存为同一物理 ECS 世界内的 generation-qualified link；目标销毁或槽位复用后取消结算，
+不会把效果转给施法者或替身。完成时清除读条元数据，正常冷却超步归零；非有限、零或负技能 dt 不推进。
+默认自身与显式自身目标保留各自的事件投影。回调退休的 actor 不会因同槽位替身而再次推进，新 actor 留到下一帧。
+开发热重载的 casting v2 投影支持明确的默认自身及已退休意图；退休目标恢复后按原计时取消，不结算效果。链接目标及目标意图缺失的旧活动投影
+返回明确错误，完整地图存档仍须由目标重绑参与者接纳。活动施法文件存档的现有限制见下文。
+
+`RPGActor.checkpointJson()` / `restoreCheckpointJson()` 使用版本 5：保存完整属性和 modifier、
+活动效果容器、RPG 周期进度与 modifier 归属、实例 ID 水位，以及等级经验、当前资源、已学技能及
+冷却、职业和预配置特征身份。恢复目标须无活动效果/施法，职业和特征匹配，并具备必要属性；
+读取先准备独立候选，完整校验后一次发布，旧本地效果 handle 失效，不重发历史玩法事件。
+版本 1/2 可显式导入为空效果状态；v1 缺失冷却迁移为零。v1/v2 沿用未知字段忽略政策，v3–v5 拒绝未知字段。
+v1–v3 的缺失施法状态显式迁移为 inactive。v4 保存活动技能、精确 float 剩余/总读条时间以及默认自身、
+显式自身、活目标或退休意图。默认/显式自身保留各自事件投影；退休目标按原时间取消，不重新绑定替身。
+C++ 调用方为活的其他目标提供 `CastTargetBinding`，负责证明稳定 subject 对应实际实体；codec 验证身份、
+handle 和同世界 RPG 类型后一次发布。无上下文的脚本门面仍拒绝活的其他目标，不能静默改为自身。
+生成归档从 SpawnedActorState 冻结身份；地图恢复创建全部候选 actor 后统一重绑，支持相互指向的读条，
+缺失或不属于该参与者的目标明确失败。文件不包含 native handle；失败销毁候选批次并保留旧游戏 owner。
+v5 增加 executionOrder：顺序键是 actor 的持久事实，不是实体身份。生成单位在发布前以稳定 subject
+初始化键；完整归档要求键完整且唯一，恢复保留原键，物理槽位复用不改变按键处理的顺序。普通独立
+actor 的 null/相等键继续使用原 View 顺序，不能据此声称该组具有跨进程回放保证。v1–v4 导入保留目标
+预配置顺序，完整生成协调器显式提供稳定默认值；旧文件没有记录的物理顺序不能恢复。
+技能和状态更新按键冻结本阶段的 generation handles；到期回调退休或替换下一只 actor 时，旧代际跳过，
+替身在后续阶段才推进，查询 roster 不会改变当前循环。
+Table 的技能/状态/资源事件队列及自定义资源上限计算仍待联合接纳，不能据此声称完整战斗存档可用。
+读取不会执行自定义策略。生成归档同时保存实际活动效果的定义，即使它们不是已学技能授予的效果。
+
+C++ 协调器可用 `bindActorIdentity(actor, subject)` 为 RPG actor 显式登记稳定主键；nil、同世界 RPG 家族的
+重复值和同 incarnation 改名均拒绝。`actorSubject(actor)` 只查询、不创建身份。分配和跨会话身份预留由
+协调器负责；检查点正文可复制到另一个 actor，但不会覆盖其主键，完整归档在 actor 记录键中保存身份。
+生成工厂自动登记该主键，`SpawnedActorState` 不再重复保存 subject。
+
+C++ 的技能、状态、资源和升级事件现在持有 `ActorEventRef`，通过 `resolve()` 获得即时 actor 借用；
+实体退休、槽位复用或整个 Table 销毁后返回空。`presence()` 区分 None / Live / Retired，默认自身施法的
+目标为 None，显式自身保留引用。脚本的事件 actor/caster/target getter 也只返回当前存活的对象，调用后
+仍应检查空值，不能跨回调保留裸借用。历史事件中的数值和字符串不因 actor 退休而丢失。
+`capturedSubject()` 保存引用构造时已登记的身份；未登记的历史引用不会因之后注册而回填。
+
+五类原生队列由 `SimulationEventScope` 一起选择，嵌套仿真不会串用升级事件。技能/状态轮询追加到调用方
+向量，容量分配失败保留两侧事件；资源/升级轮询替换调用方向量。以队列自身作为输出明确不执行搬运。
+XP 候选提交先接纳全部升级事件的容量，再修改成长；失败不留下半批等级事件。以上属于进程内交接，
+不等于队列已具备持久文件格式或消费确认水位。
+
+
 
 `rpg.newParty()` 创建 non-owning 的有序 `RPGParty`。`addMember(memberId, actor)` / `removeMember(memberId)`
 以稳定成员 ID 管理关系，`clear()` 只清关系、不销毁 ECS 拥有的 Actor；重复 ID、重复 Actor 和非法 ID
@@ -533,3 +573,56 @@ owning payload 副本，随后仍执行全部 participant codec；磁盘原文�
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](rpg/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+### 原生地图运行 owner 与事件确认
+
+`map_rpg_spawn::RPGMapRuntime` 提供拥有私有地图与 actor 世界的原生组合入口，声明见 `map/rpg_spawn/RPGMapRuntime.h`。通过 prepare 接纳单位、模板和地图绑定，advance 接受从 1 开始的连续正增量仿真帧；状态系统先于技能系统执行，之后交接生命周期与 Spawn。生成帧在消费核心 tick 前失败时，只重试相同 step；领域部分失败或核心消费后的异常会使运行 owner 进入 Faulted。
+
+applyDamage 不推进时间。成功交接 canonical HP death 后，该 owner 删除身体，保留队列中的退役历史引用，避免尸体持续占据生成落点。借用 Map 的 RPGMapSession/MapRPGSpawn 仍由各自游戏调用方管理身体生命周期。
+
+readEvents 返回五类事件的独立副本和不透明前缀回执；acknowledge 只确认读取时的前缀，保留之后追加的事件。旧运行实例、恢复前、重复、乱序或空回执不能确认新队列。资源事件的玩法消费确认与生成生命周期交接使用不同水位；消费者自身副作用仍须有自己的幂等或事务协议。
+
+captureCheckpoint 返回独立 RPGRuntimeCheckpoint，seal 使用应用注入的摘要实现生成 `eve.map-rpg-runtime / map:rpg-runtime v2` 文件（显式兼容 v1 的已知空激活语义）。PreparedRPGRuntimeRestore 先接纳完整文件，再于 commit 中物化隔离候选并交换整个运行 owner；失败保留旧 owner。文件包括地图/网格、核心/actor/待交接生命周期、全部未确认事件、确认水位和帧阶段。
+
+恢复运行通过 SkillContentScope 读取其归档持有的精确技能/效果内容，不要求源实时目录仍然可用，也不会把归档发布到全局目录。缺失定义不回退最新版本。Scope 退出后恢复前一查询上下文；通过该作用域借用的定义不能跨作用域保留。没有版本化持久契约的全局 cast condition、status apply condition 和 lifecycle hook 会使保存/接纳/提交明确失败。
+
+prepareActivation(players, events) 返回不可变、绑定当前运行实例的 RPGActivation。players 为空 optional 表示保留已有玩家事实，存在但数组为空表示当前无玩家；位置采用 World2D。events 是外部事件名，准备时解析为当前地图上所有匹配的 event 生成器。每类输入及展开后的事件来源上限为 1024，重复/未知事件、非有限位置在推进前拒绝。
+
+advance(step, activation) 使用准备好的事实；待重试帧必须保持同一组事实。advance(step) 在 Ready 时使用已知空玩家/无事件，在 SpawnPending 时重试其保存的输入。v2 文件保留当前玩家事实和待重试激活，恢复后重新绑定事件来源；恢复前 token 不可用于新运行实例。脚本入口见下文；完整三场景验收仍在接入。待确认事件引用的技能和效果也进入同一领域内容闭包，包括已经到期的效果。缺失定义或实际版本化实现时保存明确失败，队列保留可重试；恢复只使用已存档内容。该接口不覆盖外部 Battle 或其他未参与归档的 actor；保存遇到图外 actor、目标或无法解析的历史内容时明确拒绝。
+
+
+### MapRPGSpawn 的完整运行脚本入口
+
+同一 `mapRpgSpawn` 模块有两种互斥模式：既有 prepare(map, …)/commit(map) 借用外部 Map；以下 Runtime 方法拥有完整私有世界。拥有式模式由 advanceRuntime 推进 RPG 状态、技能与生成，调用方不要另行 RPG.update。damage 和 draw 使用当前运行 owner；close("remove") 清理并释放它，close("keep") 在该模式明确拒绝。
+
+| 方法 | 作用 |
+| --- | --- |
+| prepareRuntime(unitsJson, templatesJson, bindingJson, owner, seed, radius) / commitRuntime() | 单位和模板为 JSON 对象数组，地图绑定沿用 canonical 协议；准备后显式发布 |
+| prepareRuntimeActivation(playersJson, eventsJson) | 玩家为 `null`（保留）或 `[[x,y],…]`（空数组表示无人），事件为字符串数组；成功帧消费本地 token，失败保留供同帧重试 |
+| advanceRuntime(tick, nanoseconds) / captureRuntimeState() | 连续正时间推进与拥有式观测；观测 completed 是精确十进制字符串 |
+| freezeRuntime(epoch, revision) / sealRuntime() | 分别捕获独立检查点和封装文件字符串；检查点不因源 owner 关闭而失效 |
+| prepareRuntimeRestore(fileText, epoch) / commitRuntimeRestore() | 严格读取后准备隔离候选，成功提交替换整个 owner；失败保留旧运行，成功使旧激活和回执失效 |
+| readRuntimeEvents(epoch, revision) / acknowledgeRuntimeEvents(receipt) | 读取返回 `{receipt, snapshot, hash_algorithm}`，snapshot 是 canonical 五队列归档文件；确认原生读取前缀，保留追加后缀 |
+| snapshotHashAlgorithm() | 观测当前 common snapshot hasher；未注册自定义实现时沿用引擎明确命名的内置非密码学实现 |
+
+除 snapshotHashAlgorithm 外均返回 Result。文件读写由调用方使用现有 fs 完成；营地示例使用 writeTextAtomic，避免写入半份存档。读取事件会复制并封装全部待确认队列，应在实际消费边界调用。新的读取替换本地待确认回执，但不消耗事件；旧、跨模块实例、重复或恢复前 receipt 均不能确认当前队列。回执是进程内不重复的协议身份，不属于模拟状态或存档身份。
+
+参见 `examples/spawn-rpg-camp/main.nut` 的真实写盘、读回、完整 owner 替换与恢复后死亡补充路径。原始技能/效果库须在初次捕获前保留实际内容；恢复后的运行只解析存档中的不可变内容，不从全局库补齐。
+
+帧顺序应为游戏输入（包括 damage）→ advanceRuntime → draw。伤害产生的死亡虽已保留，生成核心仍需该帧推进完成交接；交接前绘制明确拒绝。`eve.MapRPGSpawn()` 沿用模块单例约定，重复构造不是创建第二个世界；原生嵌入对象的回执域彼此独立。
+
+拥有式 captureRuntimeState 的来源包含实际 phase、wave、remaining_ns、alive 和 subjects；total 为精确十进制字符串。`examples/spawn-rpg-waves` 在第二波带待确认事件保存，并在 Completed 状态再次保存；恢复后验证 3/2/1 生成顺序及完成状态不重启。
+
+
+### RPG 生成适配的原生裁剪验证
+
+`spawn-rpg-only` 构建真实 RPG/Spawn 工厂及其 canonical 依赖闭包，不启用地图、RTS、UI 或图形模块。它提供独立测试驱动；地图游戏仍需要自己的地图/图形组合，不能由此推导地图服务是 headless。
+
+构建现有 profile 后，可以读取实际链接/符号证据（当前审计器仅接纳 Darwin/Linux 的 native OBJECT 产物）：
+
+```sh
+python3 scripts/profile_matrix.py --profile spawn-rpg-only --build-root build/spawn-trim-evidence --audit-link
+ctest --test-dir build/spawn-trim-evidence/spawn-rpg-only/profile/spawn --output-on-failure
+```
+
+`spawn-core-only` 与 `spawn-content-only` 使用同一入口。三个纯 Spawn profile 的 `make profile/smoke PROFILE=<profile>` 会执行能力探针及所属 `profile/spawn` 的全部独立 CTest；没有用例或用例失败均会失败。审计报告及原始符号/链接记录写入各 profile 的 `profile/spawn/boundary/`；缺产物、闭包污染、实现缺失或不支持的模式会失败，旧成功报告不会被保留冒充新结果。完整构建命令和本机验证范围见地图生成系统设计文档 §12。

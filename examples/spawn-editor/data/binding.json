@@ -1,0 +1,14 @@
+{
+  "schema": "eve.map-spawn-binding",
+  "version": 1,
+  "map_id": "forest",
+  "map_uri": "project://data/map.json",
+  "spawns_uri": "project://data/spawns.json",
+  "pixel_to_world": {
+    "origin": [
+      0,
+      0
+    ],
+    "scale": 1
+  }
+}

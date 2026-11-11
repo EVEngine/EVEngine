@@ -95,7 +95,7 @@ enum class OrderKind : std::uint8_t {
  * @thread Thread-safe because the pointed-to characters are immutable.
  * @reentrancy Does not invoke callbacks and is safe during re-entrant queries.
  */
-[[nodiscard]] const char* orderKindName(OrderKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS const char* orderKindName(OrderKind kind) noexcept;
 
 /**
  * @brief One domain-neutral command submitted to a unit's generic order queue.
@@ -114,8 +114,12 @@ struct CommandSpec {
     float         radius = 0.0f;
     bool          append = false;
 
-    /** @brief Validate coordinates and command metadata without mutating state. */
-    [[nodiscard]] Result<void> validate() const;
+    /** @brief Validate coordinates, order kind and command metadata without mutating state.
+     * @return Applied or invalid kind, nonfinite coordinates, negative/nonfinite radius or timeout.
+     * @ownership Borrows this command for the call; the result owns diagnostics. No entity is resolved or retained.
+     * @thread Read-only; callers synchronize concurrent changes to the command. No callbacks or services.
+     */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> validate() const;
 };
 
 /** @brief Owning projection of the active generic order used by RTS systems. */
@@ -374,6 +378,26 @@ public:
     [[nodiscard]] bool isStale() const noexcept;
     /** @brief Add a modifier with the common source/priority/sequence contract. */
     [[nodiscard]] Result<eve::attributes::ModifierId> addModifier(eve::attributes::AttributeModifier modifier);
+    /** @brief Observe the canonical bound incarnation, or nil for an empty/moved component. */
+    [[nodiscard]] ecs::EntityHandle owner() const noexcept;
+    /** @brief Freeze complete native projection facts without capability registration or policy evaluation.
+     * @return Detached values/revision/initialization/counters, or empty/stale/busy projection failure.
+     * @ownership No source entity, Table or provider retained; owner-thread call outside Views/callbacks.
+     * @cost Copies all canonical attribute storage once per explicit checkpoint.
+     */
+    [[nodiscard]] Result<attributes::AttributeProjectionCapture> capture() const;
+    /** @brief Validate a native candidate's subject and target incarnation without mutation or allocation.
+     * @ownership Candidate and owner borrowed for this owner-thread call outside Views/callbacks.
+     * @return Same admission errors as native restore; does not bind, seed or repair an empty component.
+     */
+    [[nodiscard]] Result<void> validateRestore(const attributes::PreparedAttributeProjection& prepared,
+                                               ecs::EntityHandle                              owner) const;
+    /** @brief Publish exact native projection facts after canonical subject/incarnation checks.
+     * @return Applied or rejection preserving target and candidate; consumes only on success.
+     * @ownership Target owns published facts. Owner-thread only outside Views/callbacks; no policy evaluation.
+     * @cost Retires old native storage once per publication; successful restoration allocates none.
+     */
+    [[nodiscard]] Result<void> restore(attributes::PreparedAttributeProjection&& prepared, ecs::EntityHandle owner);
     /** @brief Capture selected values with owner and revision metadata. */
     [[nodiscard]] Result<eve::attributes::AttributeProjectionSnapshot> snapshot(
         std::span<const std::string_view> attributes) const;

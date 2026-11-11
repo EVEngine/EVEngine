@@ -72,6 +72,10 @@ struct Crowd::NavigationRequests {
 };
 
 struct Crowd::Impl {
+    /** @brief Fill pre-reserved owning frame using this backend's canonical agent state projection.
+     * @ownership Destination owns rows; no backend pointers retained. @thread Owner only, no callbacks. */
+    void       fillAgentFrame(AgentFrame& destination) const;
+    AgentState agentState(std::size_t slot) const;
     struct SchedulerFailure {
         Status status;
     };
@@ -104,6 +108,8 @@ struct Crowd::Impl {
         SimulationTick                    access;
         std::uint32_t                     algorithm = flowBuildAlgorithmVersion;
     };
+    /** @brief Compare the complete native cache identity without resolving a live owner. */
+    static bool          matchesFlowLease(const FlowCacheEntry& entry, const FlowLease& lease) noexcept;
     static std::uint64_t retainedFlowBytes(const CrowdField& value);
     static bool          isFlowKeyBefore(const FlowCacheEntry& a, const FlowCacheEntry& b);
     /** @brief Stage cache metadata and deterministic unleased evictions without live mutation.
@@ -113,6 +119,17 @@ struct Crowd::Impl {
     [[nodiscard]] Result<std::vector<FlowCacheEntry>> stageFlowCache(std::uint64_t budget, std::uint64_t bytes,
                                                                      size_t count) const;
     FlowLease                                         leaseFor(FlowCacheEntry& entry);
+    /** @brief Rebuild cache pin ownership from this detached state's agent and retained request leases.
+     * @ownership Shares immutable fields, never pin tokens with the source state or its external clients.
+     * @thread Owner-thread checkpoint preparation only; invokes no callbacks.
+     * @cost Builds a generation index and copies pin ownership per checkpoint/restore attempt.
+     */
+    void detachFlowPins(NavigationRequests* requests);
+    /** @brief Attach candidate-owned lease copies to one staged cache pin graph.
+     * @ownership Borrow nullable lease pointers only for the call; no source pointers retained.
+     * @thread Owner-thread preparation only, no callbacks.
+     * @cost Copies bounded cache metadata and indexes generations per restore attempt. */
+    void                                              attachFlowPins(std::span<FlowLease*> leases);
     std::vector<FlowCacheEntry>                       flowCache;
     std::uint64_t                                     flowCacheBudget = 64 * 1024 * 1024, nextFlowGeneration = 1;
     bool                                              isFlowLeaseCurrent(const FlowLease& lease) const noexcept {
@@ -269,6 +286,26 @@ struct Crowd::Impl {
     float resolveOverlapsPass();
 
     void resolveWalls();
+};
+
+/** @brief Detached snapshot storage; request state is owned independently of the source registry. */
+struct Crowd::SnapshotData {
+    SnapshotData() = default;
+    explicit SnapshotData(const Impl& source) : state(source) {}
+    Impl                                state;
+    std::unique_ptr<NavigationRequests> requests;
+};
+/** @brief One unpublished native state, including exact source-token remapping provenance. */
+struct Crowd::RestoreData {
+    std::unique_ptr<Impl>               state;
+    std::unique_ptr<NavigationRequests> requests;
+    std::uint64_t                       sourceOwner = 0;
+    std::shared_ptr<const SnapshotData> source;
+};
+/** @brief Detached external work and its exact immutable backend capture provenance. */
+struct Crowd::NavigationData {
+    std::shared_ptr<const SnapshotData> source;
+    std::vector<NavigationWork>         work;
 };
 
 }  // namespace eve::crowd

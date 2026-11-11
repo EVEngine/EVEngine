@@ -1,6 +1,7 @@
 #include "attributes/AttributeSet.h"
 
 #include "attributes/StateAccessAdapter.h"
+#include "common/Assert.h"
 #include "common/Capability.h"
 #include "common/StateAccess.h"
 
@@ -56,8 +57,35 @@ eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view o
     return eve::Result<ParsedAttributeOperation>::success(std::move(parsed));
 }
 
+void AttributeOperationRegistry::install(const std::string& policyId, Operation operation) {
+    auto found = operations_.find(policyId);
+    if (found == operations_.end()) {
+        operations_.emplace(policyId, std::move(operation));
+    } else {
+        found->second.function.swap(operation.function);
+        found->second.revision.swap(operation.revision);
+    }
+}
 void AttributeOperationRegistry::registerOperation(const std::string& policyId, Function function) {
-    if (!policyId.empty() && function) operations_[policyId] = std::move(function);
+    if (!policyId.empty() && function) install(policyId, {std::move(function), {}});
+}
+Result<void> AttributeOperationRegistry::registerVersionedOperation(const std::string& policyId, std::string revision,
+                                                                    Function function) {
+    if (policyId.empty() || revision.empty() || !function)
+        return Result<void>::failure(
+            invalidArgument("Operation name, implementation revision and callback are required", policyId));
+    install(policyId, {std::move(function), std::move(revision)});
+    return Result<void>::success();
+}
+Result<std::string> AttributeOperationRegistry::implementationRevision(const std::string& policyId) const {
+    auto found = operations_.find(policyId);
+    if (found == operations_.end())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Attribute operation is absent", policyId));
+    if (found->second.revision.empty())
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Attribute operation has no implementation revision", policyId));
+    return Result<std::string>::success(found->second.revision);
 }
 
 void AttributeOperationRegistry::unregisterOperation(const std::string& policyId) { operations_.erase(policyId); }
@@ -68,7 +96,7 @@ bool AttributeOperationRegistry::has(const std::string& policyId) const {
 
 double AttributeOperationRegistry::apply(const std::string& policyId, double current, double value) const {
     const auto it = operations_.find(policyId);
-    return it == operations_.end() ? current : it->second(current, value);
+    return it == operations_.end() ? current : it->second.function(current, value);
 }
 
 void AttributeOperationRegistry::registerOp(const std::string& policyId, Function function) {
@@ -147,9 +175,16 @@ double computeAttributeValue(const AttributeValue& attribute, const AttributeOpe
 
 void AttributeSet::publishWorldAdapter() {
     if (worldAdapter_) return;
-    worldAdapter_ = std::make_unique<AttributeSetStateAdapter>(*this);
-    eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(worldAdapter_.get()));
-    eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(worldAdapter_.get()));
+    auto adapter = std::make_unique<AttributeSetStateAdapter>(*this);
+    try {
+        eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+        eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+    } catch (...) {
+        eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(adapter.get()));
+        eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(adapter.get()));
+        throw;
+    }
+    worldAdapter_ = std::move(adapter);
 }
 
 void AttributeSet::withdrawWorldAdapter() {
@@ -163,12 +198,44 @@ AttributeSet::AttributeSet(std::string subject) : subject_(std::move(subject)) {
 
 AttributeSet::~AttributeSet() { withdrawWorldAdapter(); }
 
-AttributeSet::AttributeSet(const AttributeSet& other)
+AttributeSet::AttributeSet(const AttributeSet& other) : AttributeSet(other, DetachedCopyTag{}) {
+    publishWorldAdapter();
+}
+
+AttributeSet::AttributeSet(DetachedCopyTag) {}
+
+AttributeSet::AttributeSet(const AttributeSet& other, DetachedCopyTag)
     : subject_(other.subject_),
       values_(other.values_),
       nextSequence_(other.nextSequence_),
-      nextModifierId_(other.nextModifierId_) {
-    publishWorldAdapter();
+      nextModifierId_(other.nextModifierId_) {}
+PreparedAttributeSet::PreparedAttributeSet(std::unique_ptr<AttributeSet> candidate) noexcept
+    : candidate_(std::move(candidate)) {}
+PreparedAttributeSet::~PreparedAttributeSet()                                          = default;
+PreparedAttributeSet::PreparedAttributeSet(PreparedAttributeSet&&) noexcept            = default;
+PreparedAttributeSet& PreparedAttributeSet::operator=(PreparedAttributeSet&&) noexcept = default;
+const AttributeSet&   PreparedAttributeSet::view() const noexcept {
+    if (!candidate_) EV_ASSERT(false, "Attribute candidate was consumed");
+    return *candidate_;
+}
+void PreparedAttributeSet::setBase(const AttributeId& attribute, double value) {
+    if (!candidate_) EV_ASSERT(false, "Attribute candidate was consumed");
+    candidate_->setBase(attribute, value);
+}
+PreparedAttributeSet AttributeSet::prepareEmpty() {
+    return PreparedAttributeSet(std::unique_ptr<AttributeSet>(new AttributeSet(DetachedCopyTag{})));
+}
+PreparedAttributeSet AttributeSet::prepareCopy() const {
+    return PreparedAttributeSet(std::unique_ptr<AttributeSet>(new AttributeSet(*this, DetachedCopyTag{})));
+}
+void AttributeSet::commitPrepared(PreparedAttributeSet&& candidate) noexcept {
+    if (!candidate.candidate_) EV_ASSERT(false, "Attribute candidate was consumed");
+    auto staged     = std::move(candidate.candidate_);
+    values_         = std::move(staged->values_);
+    nextSequence_   = staged->nextSequence_;
+    nextModifierId_ = staged->nextModifierId_;
+    order_.clear();
+    orderDirty_ = true;
 }
 
 AttributeSet& AttributeSet::operator=(const AttributeSet& other) {
@@ -187,22 +254,29 @@ AttributeSet::AttributeSet(AttributeSet&& other) noexcept
     : subject_(std::move(other.subject_)),
       values_(std::move(other.values_)),
       nextSequence_(other.nextSequence_),
-      nextModifierId_(other.nextModifierId_) {
-    other.withdrawWorldAdapter();
-    publishWorldAdapter();
+      nextModifierId_(other.nextModifierId_),
+      worldAdapter_(std::move(other.worldAdapter_)) {
+    if (worldAdapter_) worldAdapter_->rebind(*this);
+    other.order_.clear();
+    other.orderDirty_ = true;
 }
 
 AttributeSet& AttributeSet::operator=(AttributeSet&& other) noexcept {
     if (this == &other) return *this;
-    withdrawWorldAdapter();
     subject_        = std::move(other.subject_);
     values_         = std::move(other.values_);
     nextSequence_   = other.nextSequence_;
     nextModifierId_ = other.nextModifierId_;
     order_.clear();
     orderDirty_ = true;
-    other.withdrawWorldAdapter();
-    publishWorldAdapter();
+    other.order_.clear();
+    other.orderDirty_ = true;
+    if (worldAdapter_) {
+        other.withdrawWorldAdapter();
+    } else {
+        worldAdapter_ = std::move(other.worldAdapter_);
+        if (worldAdapter_) worldAdapter_->rebind(*this);
+    }
     return *this;
 }
 

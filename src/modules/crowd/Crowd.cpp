@@ -372,17 +372,22 @@ AgentState Crowd::getAgentState(int id) const {
         s.action = -1;
         return s;
     }
-    s.x = impl_->xs[size_t(id)];
-    s.y = impl_->ys[size_t(id)];
-    s.heading = impl_->headings[size_t(id)];
-    s.speed = impl_->speeds[size_t(id)];
-    s.vx = impl_->vxs[size_t(id)];
-    s.vy = impl_->vys[size_t(id)];
-    s.action = impl_->actions[size_t(id)];
-    s.data = impl_->datas[size_t(id)];
-    s.avoidancePriority = impl_->avoidancePriorities[size_t(id)];
-    s.flowGeneration    = impl_->flows[size_t(id)].generation();
-    s.movement          = impl_->movements[size_t(id)];
+    return impl_->agentState(static_cast<std::size_t>(id));
+}
+
+AgentState Crowd::Impl::agentState(std::size_t slot) const {
+    AgentState s;
+    s.x                 = xs[slot];
+    s.y                 = ys[slot];
+    s.heading           = headings[slot];
+    s.speed             = speeds[slot];
+    s.vx                = vxs[slot];
+    s.vy                = vys[slot];
+    s.action            = actions[slot];
+    s.data              = datas[slot];
+    s.avoidancePriority = avoidancePriorities[slot];
+    s.flowGeneration    = flows[slot].generation();
+    s.movement          = movements[slot];
     return s;
 }
 

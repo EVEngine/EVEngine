@@ -118,6 +118,8 @@ struct RTSPlayerSnapshot {
     std::string displayName;
     std::vector<SubjectRef> units;
     std::vector<SubjectRef> buildings;
+    std::uint64_t           selectionRevision = 0;
+    SimulationTick          selectionTick{};
 };
 
 /** @brief Faction-owned strategy, workforce, intelligence, technology, and stable membership. */
@@ -166,11 +168,12 @@ struct RTSMovementGroupSnapshot {
 };
 
 /**
- * @brief Complete RTS-owned state; v2 adds movement groups, v1 imports with no groups.
- * @cost Linear in saved entity and relationship counts; capture/restore copies owned snapshot vectors at checkpoint boundaries.
+ * @brief RTS-owned roots; v3 retains player control-plane watermarks, v2 adds movement groups.
+ * @cost Linear in saved entity and relationship counts; capture/restore copies owned snapshot vectors at checkpoint
+ * boundaries.
  */
 struct RTSStateSnapshot {
-    std::uint32_t                         version = 2;
+    std::uint32_t                         version = 3;
     std::vector<RTSMovementGroupSnapshot> movementGroups;
     std::vector<RTSUnitSnapshot> units;
     std::vector<RTSBuildingSnapshot> buildings;
@@ -179,6 +182,23 @@ struct RTSStateSnapshot {
     std::vector<RTSFactionSnapshot> factions;
     std::vector<RTSMatchSnapshot> matches;
     RTSProjectileSystemSnapshot projectiles;
+    /** @brief Encode all native v3 root facts and stable relationships as rts.roots v1.
+     * @return Owning value, or unsupported native version / invalid or nonportable facts.
+     * @remarks External attributes, weapons, Crowd, clocks and providers remain separate joined participants.
+     * @ownership Read-only owner-thread save boundary; no ECS, callbacks or services retained/invoked.
+     * @cost Copies all roots, nested state and relationships once per explicit save.
+     * @throws std::bad_alloc Source and live worlds remain unchanged.
+     */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<Value> encodeState() const;
+    /** @brief Admit strict initial rts.roots v1 with canonical nested codecs and closed typed root relationships.
+     * @param value Borrowed only during this synchronous CPU call; returned facts own all data.
+     * @return Detached native v3 roots, or unknown fields/version, invalid values and broken relationships.
+     * @remarks Initial wire v1 has no migration; native v1/v2 remain readable through native rebuild only.
+     * Does not create entities, evaluate policies, replay events or publish a world.
+     * @cost Validates and copies all roots, nested state and relationship indices per explicit load.
+     * @throws std::bad_alloc Input and live worlds remain unchanged.
+     */
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<RTSStateSnapshot> prepareState(const Value& value);
 };
 
 }  // namespace eve::rts

@@ -1,12 +1,16 @@
+// eve-hot-path
 #include "rpg/StatusSystem.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/Effect.h"
+#include "rpg/EffectDefinitionCodec.h"
 #include "rpg/RPGActor.h"
 #include "rpg/SimulationEvents.h"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
+#include <type_traits>
 #include <utility>
 
 namespace eve::rpg {
@@ -33,37 +37,15 @@ eve::Result<T> rejected(eve::DiagnosticCode code, std::string message,
     return eve::Result<T>::failure(rejectedStatus(code, std::move(message), statusCode));
 }
 
-bool isBuiltinStackPolicy(const std::string &policy) {
-    return policy == "none" || policy == "refresh" || policy == "extend" || policy == "stack";
-}
-
 eve::Result<void> validateRpgDefinition(const EffectDefinition &definition) {
-    if (definition.id.empty())
-        return rejected<void>(eve::DiagnosticCode::InvalidArgument, "effect definition id must not be empty");
-    if (definition.durationPolicy != "instant" && definition.durationPolicy != "duration" &&
-        definition.durationPolicy != "infinite") {
-        return rejected<void>(eve::DiagnosticCode::InvalidArgument,
-                              "unknown effect duration policy: " + definition.durationPolicy);
-    }
-    if (!std::isfinite(definition.duration) || definition.duration < 0.0f)
-        return rejected<void>(eve::DiagnosticCode::InvalidArgument,
-                              "effect definition duration must be finite and non-negative");
-    if (!std::isfinite(definition.period) || definition.period < 0.0f)
-        return rejected<void>(eve::DiagnosticCode::InvalidArgument,
-                              "effect definition period must be finite and non-negative");
-    if (definition.maxStacks < 0)
-        return rejected<void>(eve::DiagnosticCode::InvalidArgument, "effect definition maxStacks must be non-negative");
-    if (!isBuiltinStackPolicy(definition.stackPolicy) && !StatusSystem::hasStackPolicy(definition.stackPolicy)) {
+    auto shape = validateEffectDefinition(definition);
+    if (!shape) return shape;
+    if (!isBuiltinEffectStackPolicy(definition.stackPolicy) && !StatusSystem::hasStackPolicy(definition.stackPolicy)) {
         return rejected<void>(eve::DiagnosticCode::InvalidArgument,
                               "unknown effect stack policy: " + definition.stackPolicy);
     }
 
     for (const auto &modifier : definition.modifiers) {
-        if (modifier.attribute.empty())
-            return rejected<void>(eve::DiagnosticCode::InvalidArgument, "effect modifier attribute must not be empty");
-        if (!std::isfinite(modifier.value))
-            return rejected<void>(eve::DiagnosticCode::InvalidArgument, "effect modifier value must be finite");
-
         auto parsed = ::eve::attributes::parseAttributeOperation(modifier.op, modifier.value);
         if (parsed.ok()) {
             std::move(parsed).takeValue();
@@ -256,8 +238,8 @@ std::unordered_map<std::string, StatusSystem::ApplyCondition> &StatusSystem::app
     return t;
 }
 
-std::unordered_map<std::string, StatusSystem::StackPolicyFn> &StatusSystem::stackPolicies() {
-    static std::unordered_map<std::string, StackPolicyFn> t;
+std::unordered_map<std::string, StatusSystem::StackPolicy> &StatusSystem::stackPolicies() {
+    static std::unordered_map<std::string, StackPolicy> t;
     return t;
 }
 
@@ -266,6 +248,13 @@ std::unordered_map<std::string, StatusSystem::LifecycleHook> &StatusSystem::life
     return t;
 }
 
+Result<void> StatusSystem::validatePersistenceContext() {
+    if (!applyConditions().empty() || !lifecycleHooks().empty())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Global status callbacks require an explicit persistence contract",
+            "rpg.status.callbacks"));
+    return Result<void>::success();
+}
 void StatusSystem::registerApplyCondition(const std::string &name, ApplyCondition fn) {
     if (!name.empty()) applyConditions()[name] = std::move(fn);
 }
@@ -276,8 +265,38 @@ bool StatusSystem::hasApplyCondition(const std::string &name) { return applyCond
 
 void StatusSystem::clearApplyConditions() { applyConditions().clear(); }
 
+void StatusSystem::installStackPolicy(const std::string &name, StackPolicy policy) {
+    auto &policies = stackPolicies();
+    auto  found    = policies.find(name);
+    if (found == policies.end())
+        policies.emplace(name, std::move(policy));
+    else {
+        found->second.function.swap(policy.function);
+        found->second.revision.swap(policy.revision);
+    }
+}
 void StatusSystem::registerStackPolicy(const std::string &name, StackPolicyFn fn) {
-    if (!name.empty()) stackPolicies()[name] = std::move(fn);
+    if (!name.empty()) installStackPolicy(name, {std::move(fn), {}});
+}
+Result<void> StatusSystem::registerVersionedStackPolicy(const std::string &name, std::string revision,
+                                                        StackPolicyFn function) {
+    if (name.empty() || revision.empty() || !function || isBuiltinEffectStackPolicy(name))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "Custom stack policy name, implementation revision and callback are required", name));
+    installStackPolicy(name, {std::move(function), std::move(revision)});
+    return Result<void>::success();
+}
+Result<std::string> StatusSystem::stackPolicyRevision(const std::string &name) {
+    auto &policies = stackPolicies();
+    auto  found    = policies.find(name);
+    if (found == policies.end())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Stack policy is absent", name));
+    if (found->second.revision.empty())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "Stack policy has no implementation revision", name));
+    return Result<std::string>::success(found->second.revision);
 }
 
 void StatusSystem::unregisterStackPolicy(const std::string &name) { stackPolicies().erase(name); }
@@ -323,7 +342,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
         std::string reason;
         if (!condition(actor, *definition, source, reason)) {
             StatusChangeEvent event;
-            event.actor                   = actor;
+            event.actor                   = ActorEventRef(*actor);
             event.effectId                = effectId;
             event.source                  = source;
             event.action                  = "reject";
@@ -347,7 +366,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
         actor->attributes()->values = std::move(candidateAttributes);
 
         StatusChangeEvent event;
-        event.actor    = actor;
+        event.actor    = ActorEventRef(*actor);
         event.effectId = effectId;
         event.source   = source;
         event.action   = "apply";
@@ -369,17 +388,17 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
         const StatusInstance current     = project(*existing, oldMetadata, legacyId);
         const std::string   &policy      = definition->stackPolicy;
 
-        if (!isBuiltinStackPolicy(policy)) {
+        if (!isBuiltinEffectStackPolicy(policy)) {
             const auto custom = stackPolicies().find(policy);
-            if (custom == stackPolicies().end() || !custom->second)
+            if (custom == stackPolicies().end() || !custom->second.function)
                 return rejected<int>(eve::DiagnosticCode::InvalidArgument,
                                      "effect stack policy is not callable: " + policy);
 
             StatusInstance candidate    = current;
-            const int      policyResult = custom->second(actor, candidate, *definition, source);
+            const int      policyResult = custom->second.function(actor, candidate, *definition, source);
             if (policyResult < 0) {
                 StatusChangeEvent event;
-                event.actor      = actor;
+                event.actor      = ActorEventRef(*actor);
                 event.instanceId = legacyId;
                 event.effectId   = effectId;
                 event.source     = source;
@@ -439,7 +458,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
                    std::move(candidateAttributes));
 
             StatusChangeEvent event;
-            event.actor      = actor;
+            event.actor      = ActorEventRef(*actor);
             event.instanceId = legacyId;
             event.effectId   = effectId;
             event.source     = source;
@@ -451,7 +470,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
 
         if (policy == "none") {
             StatusChangeEvent event;
-            event.actor      = actor;
+            event.actor      = ActorEventRef(*actor);
             event.instanceId = legacyId;
             event.effectId   = effectId;
             event.source     = source;
@@ -508,7 +527,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
                std::move(candidateEffectByLegacyId), statuses->nextInstanceId, std::move(candidateAttributes));
 
         StatusChangeEvent event;
-        event.actor      = actor;
+        event.actor      = ActorEventRef(*actor);
         event.instanceId = legacyId;
         event.effectId   = effectId;
         event.source     = source;
@@ -555,7 +574,7 @@ eve::Result<int> StatusSystem::apply(RPGActor *actor, const std::string &effectI
            std::move(candidateEffectByLegacyId), candidateNextInstanceId, std::move(candidateAttributes));
 
     StatusChangeEvent event;
-    event.actor      = actor;
+    event.actor      = ActorEventRef(*actor);
     event.instanceId = legacyId;
     event.effectId   = effectId;
     event.source     = source;
@@ -597,7 +616,7 @@ eve::Result<void> StatusSystem::remove(RPGActor *actor, int instanceId) {
            std::move(candidateEffectByLegacyId), statuses->nextInstanceId, std::move(candidateAttributes));
 
     StatusChangeEvent event;
-    event.actor      = actor;
+    event.actor      = ActorEventRef(*actor);
     event.instanceId = old.instanceId;
     event.effectId   = old.effectId;
     event.source     = old.source;
@@ -729,7 +748,17 @@ eve::Result<StatusUpdateSummary> StatusSystem::update(double dt) {
     StatusUpdateSummary total;
     total.elapsedSeconds = dt;
 
-    for (RPGActor *actor : RPGActor::liveActors()) {
+    // Phase roster: current Table's RPG/Attributes actors, ordered by ActorExecutionOrder.
+    // Read Statuses and Attributes, prepare replacement facts, then publish before expiry hooks.
+    // No View or borrowed roster survives callbacks; structural changes occur only after the snapshot.
+    std::vector<ecs::EntityHandle> actors;
+    {
+        const auto &live = RPGActor::liveActors();
+        actors.reserve(live.size());
+        for (auto *actor : live) actors.push_back(ecs::handle_of(actor));
+    }
+    for (const auto &handle : actors) {
+        auto *actor = dynamic_cast<RPGActor *>(ecs::try_get(handle));
         if (!actor) continue;
         auto                     statuses = actor->statuses();
         std::vector<std::string> activeIds;
@@ -769,7 +798,7 @@ eve::Result<StatusUpdateSummary> StatusSystem::update(double dt) {
             while (accumulated >= period) {
                 accumulated -= period;
                 StatusTickEvent tick;
-                tick.actor      = actor;
+                tick.actor      = ActorEventRef(*actor);
                 tick.instanceId = legacyId;
                 tick.effectId   = effect->type;
                 tick.source     = effect->source;
@@ -799,7 +828,7 @@ eve::Result<StatusUpdateSummary> StatusSystem::update(double dt) {
             if (!bindingsRemoved.ok()) return eve::Result<StatusUpdateSummary>::failure(bindingsRemoved.status());
 
             StatusChangeEvent expired;
-            expired.actor      = actor;
+            expired.actor      = ActorEventRef(*actor);
             expired.instanceId = mapping->second;
             expired.effectId   = oldEffect->type;
             expired.source     = oldEffect->source;
@@ -830,12 +859,30 @@ eve::Result<StatusUpdateSummary> StatusSystem::update(double dt) {
 
 void StatusSystem::pollTicks(std::vector<StatusTickEvent> &out) {
     auto &queue = tickQueue();
+    if (&out == &queue) return;
+    if (queue.size() > out.max_size() - out.size()) throw std::length_error("RPG event output capacity exhausted");
+    static_assert(std::is_nothrow_move_constructible_v<StatusTickEvent>);
+    const auto required = out.size() + queue.size();
+    if (required > out.capacity()) {
+        const auto capacity = out.capacity();
+        const auto growth   = capacity > out.max_size() / 2 ? out.max_size() : capacity * 2;
+        out.reserve(std::max(required, growth));
+    }
     for (auto &event : queue) out.push_back(std::move(event));
     queue.clear();
 }
 
 void StatusSystem::pollChanges(std::vector<StatusChangeEvent> &out) {
     auto &queue = changeQueue();
+    if (&out == &queue) return;
+    if (queue.size() > out.max_size() - out.size()) throw std::length_error("RPG event output capacity exhausted");
+    static_assert(std::is_nothrow_move_constructible_v<StatusChangeEvent>);
+    const auto required = out.size() + queue.size();
+    if (required > out.capacity()) {
+        const auto capacity = out.capacity();
+        const auto growth   = capacity > out.max_size() / 2 ? out.max_size() : capacity * 2;
+        out.reserve(std::max(required, growth));
+    }
     for (auto &event : queue) out.push_back(std::move(event));
     queue.clear();
 }

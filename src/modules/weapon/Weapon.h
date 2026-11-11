@@ -107,7 +107,10 @@ public:
     void            ammoPoolAdd(AmmoPoolEntity* pool, int n);
     /** @brief Ammo pool get count. */
     int             ammoPoolGetCount(AmmoPoolEntity* pool);
-    /** @brief Binds ammo pool. */
+    /** @brief Compatibility-only bool facade over the canonical AmmoPoolLink::bind Result API.
+     * @remarks Both live endpoints must share their actual Table outside Views. Failure preserves the old binding;
+     * retired pools never adopt replacements. Native callers may use AmmoPoolLink::bind for structured diagnostics.
+     */
     bool            bindAmmoPool(WeaponEntity* w, AmmoPoolEntity* pool);
     /** @brief Unbinds ammo pool. */
     void            unbindAmmoPool(WeaponEntity* w);

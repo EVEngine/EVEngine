@@ -264,8 +264,8 @@ std::string viewportKey(UIHost *host, const UINode &n) {
 void pushPending(UIHost *host, const UINode &n, const char *kind, uint32_t handlerIndex,
                  bool toggleValue = false, float floatValue = 0.f, std::string textValue = {}) {
     if (!n.enabled || n.mouseFilter == MouseFilter::Ignore) return;
-    UIEvent ev;
     if (!host) return;
+    UIEvent ev(host->handle());
     ev.host     = host->handle();
     ev.hostName = host ? host->meta()->name : "";
     ev.nodeId = n.id;
@@ -2125,9 +2125,11 @@ void UISystem::dispatchEvents() {
     auto events = std::move(g_pending);
     g_pending.clear();
     for (auto &ev : events) {
+        if (!ev.worldLifetime.isAlive()) continue;
         auto resolvedHost = UIHost::resolve(ev.host);
         if (!resolvedHost) continue;
         UIHost *host = &resolvedHost->get();
+        if (host->tree()->generation != ev.treeGeneration) continue;
 
         if (ev.kind == "click" && !ev.nodeId.empty()) {
             UIClick c;

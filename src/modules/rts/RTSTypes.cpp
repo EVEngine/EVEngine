@@ -1,5 +1,7 @@
 #include "rts/RTSTypes.h"
+#include "rts/RTSOrderStateInternal.h"
 
+#include "attributes/AttributeProjectionCapture.h"
 #include "attributes/AttributeSet.h"
 #include "common/Json.h"
 #include "effects/EffectContainer.h"
@@ -80,87 +82,104 @@ Result<OrderRecord> projectOrder(const orders::Order& order, const CommandSpec* 
     return Result<OrderRecord>::success(std::move(result));
 }
 
+template <class Entity>
+struct UnpublishedRoot {
+    Entity* entity;  // @lifetime Synchronous unpublished root; publish transfers responsibility to the caller.
+    ~UnpublishedRoot() {
+        if (entity) ecs::DestroyEntity(entity);
+    }
+    void publish() noexcept { entity = nullptr; }
+};
+
 void touchUnitComponents(Unit& unit) {
-    (void)unit.identity();
-    (void)unit.definition();
-    (void)unit.attributes();
-    (void)unit.tags();
-    (void)unit.effects();
-    (void)unit.orders();
-    (void)unit.sensing();
-    (void)unit.steering();
-    (void)unit.crowd();
-    (void)unit.weapon();
-    (void)unit.action();
-    (void)unit.settlement();
-    (void)unit.faction();
-    (void)unit.motion();
-    (void)unit.navigation();
-    (void)unit.vision();
-    (void)unit.worker();
-    (void)unit.combat();
-    (void)unit.durability();
-    (void)unit.capture();
-    (void)unit.containment();
-    (void)unit.supply();
-    (void)unit.morale();
-    (void)unit.artillery();
-    (void)unit.tactics();
-    (void)unit.technology();
+    (void)*unit.identity();
+    (void)*unit.definition();
+    (void)*unit.attributes();
+    (void)*unit.tags();
+    (void)*unit.effects();
+    (void)*unit.orders();
+    (void)*unit.sensing();
+    (void)*unit.steering();
+    (void)*unit.crowd();
+    (void)*unit.weapon();
+    (void)*unit.action();
+    (void)*unit.settlement();
+    (void)*unit.faction();
+    (void)*unit.motion();
+    (void)*unit.navigation();
+    (void)*unit.vision();
+    (void)*unit.worker();
+    (void)*unit.combat();
+    (void)*unit.durability();
+    (void)*unit.command();
+    (void)*unit.abilities();
+    (void)*unit.shield();
+    (void)*unit.veterancy();
+    (void)*unit.capture();
+    (void)*unit.containment();
+    (void)*unit.supply();
+    (void)*unit.morale();
+    (void)*unit.artillery();
+    (void)*unit.tactics();
+    (void)*unit.technology();
 }
 
 void touchBuildingComponents(Building& building) {
-    (void)building.identity();
-    (void)building.definition();
-    (void)building.placement();
-    (void)building.production();
-    (void)building.economy();
-    (void)building.orders();
-    (void)building.tags();
-    (void)building.effects();
-    (void)building.settlement();
-    (void)building.faction();
-    (void)building.construction();
-    (void)building.integrity();
-    (void)building.capture();
-    (void)building.dropoff();
-    (void)building.rally();
-    (void)building.weapon();
-    (void)building.combat();
-    (void)building.garrison();
-    (void)building.supply();
-    (void)building.vision();
-    (void)building.technology();
+    (void)*building.identity();
+    (void)*building.definition();
+    (void)*building.placement();
+    (void)*building.production();
+    (void)*building.economy();
+    (void)*building.orders();
+    (void)*building.tags();
+    (void)*building.effects();
+    (void)*building.settlement();
+    (void)*building.faction();
+    (void)*building.construction();
+    (void)*building.integrity();
+    (void)*building.shield();
+    (void)*building.capture();
+    (void)*building.dropoff();
+    (void)*building.rally();
+    (void)*building.weapon();
+    (void)*building.combat();
+    (void)*building.garrison();
+    (void)*building.supply();
+    (void)*building.vision();
+    (void)*building.technology();
+    (void)*building.infrastructure();
+    (void)*building.command();
+    (void)*building.indirectFire();
 }
 
 void touchResourceNodeComponents(ResourceNode& node) {
-    (void)node.identity();
-    (void)node.position();
-    (void)node.stock();
-    (void)node.harvest();
+    (void)*node.identity();
+    (void)*node.position();
+    (void)*node.stock();
+    (void)*node.harvest();
 }
 
 void touchPlayerComponents(Player& player) {
-    (void)player.identity();
-    (void)player.authority();
-    (void)player.economy();
-    (void)player.social();
-    (void)player.selection();
-    (void)player.eventStream();
+    (void)*player.identity();
+    (void)*player.authority();
+    (void)*player.economy();
+    (void)*player.social();
+    (void)*player.selection();
+    (void)*player.eventStream();
 }
 
 void touchFactionComponents(Faction& faction) {
-    (void)faction.identity();
-    (void)faction.authority();
-    (void)faction.economy();
-    (void)faction.social();
-    (void)faction.members();
-    (void)faction.eventStream();
-    (void)faction.strategy();
-    (void)faction.workforce();
-    (void)faction.productionPolicy();
-    (void)faction.intel();
-    (void)faction.technology();
+    (void)*faction.identity();
+    (void)*faction.authority();
+    (void)*faction.economy();
+    (void)*faction.social();
+    (void)*faction.members();
+    (void)*faction.eventStream();
+    (void)*faction.strategy();
+    (void)*faction.workforce();
+    (void)*faction.productionPolicy();
+    (void)*faction.intel();
+    (void)*faction.technology();
 }
 
 }  // namespace
@@ -325,6 +344,29 @@ bool AttributeComponent::isStale() const noexcept { return impl_ != nullptr && i
 Result<eve::attributes::ModifierId> AttributeComponent::addModifier(eve::attributes::AttributeModifier modifier) {
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->values.addModifier(std::move(modifier));
+}
+
+ecs::EntityHandle AttributeComponent::owner() const noexcept {
+    return impl_ ? impl_->values.owner() : ecs::EntityHandle{};
+}
+Result<attributes::AttributeProjectionCapture> AttributeComponent::capture() const {
+    if (!impl_)
+        return Result<attributes::AttributeProjectionCapture>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "RTS attribute component is empty"));
+    return impl_->values.capture();
+}
+Result<void> AttributeComponent::validateRestore(const attributes::PreparedAttributeProjection& prepared,
+                                                 ecs::EntityHandle                              owner) const {
+    if (!impl_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "RTS attribute component is empty"));
+    return impl_->values.validateRestore(prepared, owner);
+}
+Result<void> AttributeComponent::restore(attributes::PreparedAttributeProjection&& prepared, ecs::EntityHandle owner) {
+    if (!impl_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "RTS attribute component is empty"));
+    return impl_->values.restore(std::move(prepared), owner);
 }
 
 Result<eve::attributes::AttributeProjectionSnapshot> AttributeComponent::snapshot(
@@ -509,17 +551,10 @@ Result<OrderComponent::Snapshot> OrderComponent::snapshotState() const {
 }
 
 Result<void> OrderComponent::restoreState(const Snapshot& snapshotValue) {
-    orders::CommandQueue queue;
-    auto restored = queue.restore(snapshotValue.queueJson);
-    if (!restored) return restored;
-    for (const auto& [id, command] : snapshotValue.extended) {
-        auto valid = command.validate();
-        if (!valid) return valid;
-        if (!queue.find(id))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "RTS order extension references an absent canonical queue record", "orders.extended"));
-    }
+    auto prepared = order_state_internal::prepareQueue(snapshotValue);
+    if (!prepared) return Result<void>::failure(prepared.status());
     auto candidate = std::make_unique<Impl>();
-    candidate->queue = std::move(queue);
+    candidate->queue    = std::move(prepared).takeValue();
     candidate->extended = snapshotValue.extended;
     impl_ = std::move(candidate);
     ++membershipEpoch_;
@@ -655,62 +690,78 @@ production::WorkQueue* ProductionComponent::queueForComposition() noexcept {
 }
 
 Unit* Unit::createUnit(SubjectRef subject, LogicalId definition) {
-    Unit* unit                = Unit::create();
-    unit->identity()->self    = ecs::handle_of(unit);
-    unit->identity()->subject = subject;
-    unit->definition()->id    = std::move(definition);
-    unit->durability()->state.subject = subject;
-    unit->durability()->state.health = 1.0;
-    unit->durability()->state.maxHealth = 1.0;
-    touchUnitComponents(*unit);
-    return unit;
+    Unit* unit = Unit::create();
+    try {
+        unit->identity()->self              = ecs::handle_of(unit);
+        unit->identity()->subject           = subject;
+        unit->definition()->id              = std::move(definition);
+        unit->durability()->state.subject   = subject;
+        unit->durability()->state.health    = 1.0;
+        unit->durability()->state.maxHealth = 1.0;
+        touchUnitComponents(*unit);
+        return unit;
+    } catch (...) {
+        // The entity exists before lazy component construction; never publish its failed prefix.
+        ecs::DestroyEntity(unit);
+        throw;
+    }
 }
 
 Building* Building::createBuilding(SubjectRef subject, LogicalId definition) {
-    Building* building            = Building::create();
-    building->identity()->self    = ecs::handle_of(building);
-    building->identity()->subject = subject;
-    building->definition()->id    = std::move(definition);
-    building->integrity()->state.subject = subject;
-    building->integrity()->state.health = 1.0;
+    Building*                 building = Building::create();
+    UnpublishedRoot<Building> unpublished{building};
+    building->identity()->self             = ecs::handle_of(building);
+    building->identity()->subject          = subject;
+    building->definition()->id             = std::move(definition);
+    building->integrity()->state.subject   = subject;
+    building->integrity()->state.health    = 1.0;
     building->integrity()->state.maxHealth = 1.0;
     touchBuildingComponents(*building);
+    unpublished.publish();
     return building;
 }
 
 ResourceNode* ResourceNode::createResourceNode(SubjectRef subject) {
-    ResourceNode* node        = ResourceNode::create();
+    ResourceNode*                 node = ResourceNode::create();
+    UnpublishedRoot<ResourceNode> unpublished{node};
     node->identity()->self    = ecs::handle_of(node);
     node->identity()->subject = subject;
     touchResourceNodeComponents(*node);
+    unpublished.publish();
     return node;
 }
 
 Player* Player::createPlayer(SubjectRef subject) {
-    Player* player              = Player::create();
+    Player*                 player = Player::create();
+    UnpublishedRoot<Player> unpublished{player};
     player->identity()->self    = ecs::handle_of(player);
     player->identity()->subject = subject;
     touchPlayerComponents(*player);
+    unpublished.publish();
     return player;
 }
 
 Faction* Faction::createFaction(SubjectRef subject) {
-    Faction* faction             = Faction::create();
+    Faction*                 faction = Faction::create();
+    UnpublishedRoot<Faction> unpublished{faction};
     faction->identity()->self    = ecs::handle_of(faction);
     faction->identity()->subject = subject;
     touchFactionComponents(*faction);
+    unpublished.publish();
     return faction;
 }
 
 Match* Match::createMatch(SubjectRef subject) {
-    Match* match = Match::create();
+    Match*                 match = Match::create();
+    UnpublishedRoot<Match> unpublished{match};
     if (match == nullptr) return nullptr;
-    match->identity()->self = ecs::handle_of(match);
+    match->identity()->self    = ecs::handle_of(match);
     match->identity()->subject = subject;
-    (void)match->rules();
-    (void)match->participants();
-    (void)match->state();
-    (void)match->events();
+    (void)*match->rules();
+    (void)*match->participants();
+    (void)*match->state();
+    (void)*match->events();
+    unpublished.publish();
     return match;
 }
 

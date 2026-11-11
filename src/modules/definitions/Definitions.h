@@ -16,6 +16,7 @@
 #include <vector>
 
 namespace eve::definitions {
+class DefinitionRegistryCapture;
 
 /**
  * @brief Compatibility names for the canonical common definition identity.
@@ -127,6 +128,25 @@ public:
     /** @brief Transactionally restores registry state from snapshotJson() output. */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
+    /** @brief Freeze canonical content and exact instance/revision/tick metadata without invoking callbacks.
+     * @return Detached native facts or canonical payload failure, without changing registry or event projections.
+     * @ownership Subscriptions and callbacks are excluded; the result survives registry destruction.
+     * @thread Content owner thread outside mutation/dispatch. No locks or policy callbacks.
+     * @cost Copies/encodes registry values, generations, tombstones and history once per explicit checkpoint.
+     * @throws std::bad_alloc Registry remains unchanged.
+     */
+    [[nodiscard]] Result<DefinitionRegistryCapture> capture() const;
+    /** @brief Construct an independent registry using the canonical restore kernel and captured envelope metadata.
+     * @param captured Native facts borrowed only during this call; moved captures reject.
+     * @return New registry with exact content/counters/identity, or failure without changing inputs/live registries.
+     * @ownership Fresh observer scope; source subscriptions/callbacks are never copied or invoked.
+     * @thread Content owner thread; no external callbacks or capability publication.
+     * @cost Registry-sized canonical validation and owning storage rebuild per isolated restore attempt.
+     * @throws std::bad_alloc Local candidate discarded; the same capture remains retryable.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<DefinitionRegistry>> prepareRestored(
+        const DefinitionRegistryCapture& captured);
+
     /**
      * @brief Captures this registry in the common versioned snapshot envelope.
      * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
@@ -183,6 +203,13 @@ private:
     };
     using Storage = eve::VersionedRegistry<Key, Definition, EventData>;
 
+    friend class DefinitionRegistryCapture;
+    /** @brief Canonical CPU snapshot reader shared by live restore and detached admission.
+     * @cost Validates and copies all registry entries/history once per explicit load. */
+    [[nodiscard]] static eve::Result<Storage::State> prepareSnapshotState(const std::string& json);
+    /** @brief Canonical CPU snapshot writer shared by live inspection and detached sealing.
+     * @cost Copies complete registry entries/history per explicit snapshot. */
+    [[nodiscard]] static eve::Value encodeSnapshotState(const Storage::State& state);
     static DefinitionEvent  projectEvent(const Storage::Event& event);
     static DefinitionHandle projectHandle(const Storage::Handle& handle);
     static Storage::Handle  storageHandle(const DefinitionHandle& handle);

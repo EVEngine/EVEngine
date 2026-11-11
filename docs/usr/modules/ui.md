@@ -652,3 +652,16 @@ EditorHost JSON 使用 `{"type":"link","id":"manual","label":"使用说明","tar
 
 工具的进度、就绪／错误状态和取消／重试操作继续使用已有的 `progress`、`badge`、
 `statusBar` 和按钮，由工具根据自身执行结果设置文本与可用状态。
+
+
+### 私有 UI 世界的语义自动化
+
+拥有独立 `shared_ptr<ecs::Table>` 的编辑宿主可通过 `UIAutomationWorld::observe(world)` 获取发现租约。
+租约只观察世界；`eve_ui_tree/get/click` 继续经过 canonical automation provider，同时查询当前世界和显式登记的存活世界。
+同一世界的重复租约不会重复返回控件；跨世界同名控件不会任意选中。宿主应在释放面板和世界前撤销租约。
+世界先销毁时登记自动失效，查询不会保活它；排队的 `UIEvent` 在原生/脚本派发前检查 Table 寿命。
+手动构造事件应使用 `UIEvent(liveHostHandle)` 捕获寿命，默认未绑定事件不会派发。
+租约不创建 provider，不改变 UI 实体、配置或保存格式，也不保证所有平台均提供语义自动化工具。
+
+
+文本编辑可通过 `eve_input_batch` 的 `ui_text` 动作指定 `host`、`widget` 和显式 `text`（空串清空）。它以完整文本更新可编辑控件并排队正常 text-change 事件，后续仍由控件/表单完成业务校验；不需要拼接 SDL 文本片段或求值脚本。不可编辑、隐藏、禁用及跨世界歧义目标拒绝。排队事件同时校验世界寿命和控件树代际，树被替换后不会把旧 handler 投递到新控件。

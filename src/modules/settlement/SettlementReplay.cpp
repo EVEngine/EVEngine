@@ -200,15 +200,57 @@ eve::Status locateRequestStatus(const eve::Status& status, const std::string& ro
     return eve::Status(status.code(), std::move(diagnostics));
 }
 
-bool knownStageKind(std::string_view value) noexcept {
-    return value == "validate" || value == "decision" || value == "source_modifiers" ||
-           value == "target_mitigation" || value == "armor_shield" || value == "clamp" || value == "apply" ||
-           value == "trigger" || value == "event";
+std::optional<StageKind> decodedStageKind(std::string_view value) noexcept {
+    for (int index = 0; index <= int(StageKind::Event); ++index) {
+        const auto kind = static_cast<StageKind>(index);
+        if (value == stageKindName(kind)) return kind;
+    }
+    return std::nullopt;
 }
-
-bool knownDisposition(std::string_view value) noexcept {
-    return value == "applied" || value == "no_op" || value == "immune" || value == "resisted" ||
-           value == "partially_applied" || value == "blocked" || value == "invalid_target";
+std::optional<SettlementDisposition> decodedDisposition(std::string_view value) noexcept {
+    for (int index = 0; index <= int(SettlementDisposition::InvalidTarget); ++index) {
+        const auto disposition = static_cast<SettlementDisposition>(index);
+        if (value == settlementDispositionName(disposition)) return disposition;
+    }
+    return std::nullopt;
+}
+bool knownStageKind(std::string_view value) noexcept { return decodedStageKind(value).has_value(); }
+bool knownDisposition(std::string_view value) noexcept { return decodedDisposition(value).has_value(); }
+eve::Result<game_event::CausationRef> decodeCausation(std::string_view text, std::int64_t kind,
+                                                      const std::string& path) {
+    using Ref = game_event::CausationRef;
+    using R   = eve::Result<Ref>;
+    if (kind == static_cast<std::int64_t>(Ref::Kind::Event)) {
+        const auto id = game_event::EventId::parse(text);
+        if (!id || id->isNil())
+            return failure<Ref>(eve::DiagnosticCode::ParseError, "invalid causation event id", path + ".causation");
+        return R::success(Ref::fromEventId(*id));
+    }
+    if (kind == static_cast<std::int64_t>(Ref::Kind::Command)) {
+        const auto id = game_event::CommandId::parse(text);
+        if (!id || id->isNil())
+            return failure<Ref>(eve::DiagnosticCode::ParseError, "invalid causation command id", path + ".causation");
+        return R::success(Ref::fromCommandId(*id));
+    }
+    if (kind != static_cast<std::int64_t>(Ref::Kind::None) || !text.empty())
+        return failure<Ref>(eve::DiagnosticCode::InvalidArgument, "unsupported causation form",
+                            path + ".causationKind");
+    return R::success(Ref{});
+}
+eve::Result<game_event::CorrelationId> decodeCorrelation(std::string_view text, std::int64_t kind,
+                                                         const std::string& path) {
+    using Ref = game_event::CorrelationId;
+    using R   = eve::Result<Ref>;
+    if (kind == static_cast<std::int64_t>(Ref::Kind::Id)) {
+        const auto id = game_event::EventId::parse(text);
+        if (!id || id->isNil())
+            return failure<Ref>(eve::DiagnosticCode::ParseError, "invalid correlation id", path + ".correlation");
+        return R::success(Ref::fromEventId(*id));
+    }
+    if (kind != static_cast<std::int64_t>(Ref::Kind::None) || !text.empty())
+        return failure<Ref>(eve::DiagnosticCode::InvalidArgument, "unsupported correlation form",
+                            path + ".correlationKind");
+    return R::success(Ref{});
 }
 
 eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::string& path,
@@ -222,21 +264,21 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
     const auto& object = *checked.value();
 
     SettlementRequest request;
-    auto sourceText = stringField(object, "source", path);
-    auto targetText = stringField(object, "target", path);
-    auto kind       = stringField(object, "kind", path);
-    auto resource   = stringField(object, "resource", path);
-    auto trigger    = stringField(object, "trigger", path);
-    auto tickText   = stringField(object, "tick", path);
-    auto magnitude  = numberField(object, "magnitude", path);
-    auto trace      = integerField(object, "trace", path);
+    auto              sourceText = stringField(object, "source", path);
     if (!sourceText) return eve::Result<SettlementRequest>::failure(sourceText.status());
+    auto targetText = stringField(object, "target", path);
     if (!targetText) return eve::Result<SettlementRequest>::failure(targetText.status());
+    auto kind = stringField(object, "kind", path);
     if (!kind) return eve::Result<SettlementRequest>::failure(kind.status());
+    auto resource = stringField(object, "resource", path);
     if (!resource) return eve::Result<SettlementRequest>::failure(resource.status());
+    auto trigger = stringField(object, "trigger", path);
     if (!trigger) return eve::Result<SettlementRequest>::failure(trigger.status());
+    auto tickText = stringField(object, "tick", path);
     if (!tickText) return eve::Result<SettlementRequest>::failure(tickText.status());
+    auto magnitude = numberField(object, "magnitude", path);
     if (!magnitude) return eve::Result<SettlementRequest>::failure(magnitude.status());
+    auto trace = integerField(object, "trace", path);
     if (!trace) return eve::Result<SettlementRequest>::failure(trace.status());
 
     const auto sourceId = eve::PersistentId::parse(sourceText.value());
@@ -268,9 +310,9 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
 
     auto chainObject = strictObject(object.at("chain"), {"depth", "emittedCount", "triggerPath"}, path + ".chain");
     if (!chainObject) return eve::Result<SettlementRequest>::failure(chainObject.status());
-    auto depth   = integerField(*chainObject.value(), "depth", path + ".chain");
-    auto emitted = integerField(*chainObject.value(), "emittedCount", path + ".chain");
+    auto depth = integerField(*chainObject.value(), "depth", path + ".chain");
     if (!depth) return eve::Result<SettlementRequest>::failure(depth.status());
+    auto emitted = integerField(*chainObject.value(), "emittedCount", path + ".chain");
     if (!emitted) return eve::Result<SettlementRequest>::failure(emitted.status());
     if (depth.value() < 0 || depth.value() > std::numeric_limits<std::uint32_t>::max() || emitted.value() < 0 ||
         emitted.value() > std::numeric_limits<std::uint32_t>::max())
@@ -293,14 +335,15 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
                                                                   "threshold"}, itemPath);
         if (!decisionObject) return eve::Result<SettlementRequest>::failure(decisionObject.status());
         auto streamText = stringField(*decisionObject.value(), "stream", itemPath);
-        auto sequenceText = stringField(*decisionObject.value(), "sequence", itemPath);
-        auto sample = numberField(*decisionObject.value(), "sample", itemPath);
-        auto threshold = numberField(*decisionObject.value(), "threshold", itemPath);
-        const auto* accepted = decisionObject.value()->at("accepted").getIf<bool>();
         if (!streamText) return eve::Result<SettlementRequest>::failure(streamText.status());
+        auto sequenceText = stringField(*decisionObject.value(), "sequence", itemPath);
         if (!sequenceText) return eve::Result<SettlementRequest>::failure(sequenceText.status());
+        auto sample = numberField(*decisionObject.value(), "sample", itemPath);
         if (!sample) return eve::Result<SettlementRequest>::failure(sample.status());
+        auto threshold = numberField(*decisionObject.value(), "threshold", itemPath);
         if (!threshold) return eve::Result<SettlementRequest>::failure(threshold.status());
+        const auto* accepted = decisionObject.value()->at("accepted").getIf<bool>();
+
         if (accepted == nullptr)
             return failure<SettlementRequest>(eve::DiagnosticCode::TypeMismatch, "expected boolean",
                                               itemPath + ".accepted");
@@ -314,38 +357,19 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
     }
 
     auto causationText = stringField(object, "causation", path);
-    auto causationKind = integerField(object, "causationKind", path);
-    auto correlationText = stringField(object, "correlation", path);
-    auto correlationKind = integerField(object, "correlationKind", path);
     if (!causationText) return eve::Result<SettlementRequest>::failure(causationText.status());
+    auto causationKind = integerField(object, "causationKind", path);
     if (!causationKind) return eve::Result<SettlementRequest>::failure(causationKind.status());
+    auto correlationText = stringField(object, "correlation", path);
     if (!correlationText) return eve::Result<SettlementRequest>::failure(correlationText.status());
+    auto correlationKind = integerField(object, "correlationKind", path);
     if (!correlationKind) return eve::Result<SettlementRequest>::failure(correlationKind.status());
-    if (causationKind.value() == static_cast<std::int64_t>(game_event::CausationRef::Kind::Event)) {
-        const auto id = game_event::EventId::parse(causationText.value());
-        if (!id) return failure<SettlementRequest>(eve::DiagnosticCode::ParseError, "invalid causation event id",
-                                                   path + ".causation");
-        request.causation = game_event::CausationRef::fromEventId(*id);
-    } else if (causationKind.value() == static_cast<std::int64_t>(game_event::CausationRef::Kind::Command)) {
-        const auto id = game_event::CommandId::parse(causationText.value());
-        if (!id) return failure<SettlementRequest>(eve::DiagnosticCode::ParseError, "invalid causation command id",
-                                                   path + ".causation");
-        request.causation = game_event::CausationRef::fromCommandId(*id);
-    } else if (causationKind.value() != static_cast<std::int64_t>(game_event::CausationRef::Kind::None) ||
-               !causationText.value().empty()) {
-        return failure<SettlementRequest>(eve::DiagnosticCode::InvalidArgument, "unsupported causation form",
-                                          path + ".causationKind");
-    }
-    if (correlationKind.value() == static_cast<std::int64_t>(game_event::CorrelationId::Kind::Id)) {
-        const auto id = game_event::EventId::parse(correlationText.value());
-        if (!id) return failure<SettlementRequest>(eve::DiagnosticCode::ParseError, "invalid correlation id",
-                                                   path + ".correlation");
-        request.correlation = game_event::CorrelationId::fromEventId(*id);
-    } else if (correlationKind.value() != static_cast<std::int64_t>(game_event::CorrelationId::Kind::None) ||
-               !correlationText.value().empty()) {
-        return failure<SettlementRequest>(eve::DiagnosticCode::InvalidArgument, "unsupported correlation form",
-                                          path + ".correlationKind");
-    }
+    auto causation = decodeCausation(causationText.value(), causationKind.value(), path);
+    if (!causation) return eve::Result<SettlementRequest>::failure(causation.status());
+    request.causation = std::move(causation).takeValue();
+    auto correlation  = decodeCorrelation(correlationText.value(), correlationKind.value(), path);
+    if (!correlation) return eve::Result<SettlementRequest>::failure(correlation.status());
+    request.correlation = std::move(correlation).takeValue();
     auto executable = request;
     if (emittedTemplate && executable.chain.depth == 0 && !executable.trigger.empty()) {
         executable.chain.depth = 1;
@@ -360,9 +384,9 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
 eve::Result<void> validateResultShape(const Value& value, const std::string& path) {
     auto result = strictObject(value, {"payload", "schema", "version"}, path);
     if (!result) return eve::Result<void>::failure(result.status());
-    auto schema  = stringField(*result.value(), "schema", path);
-    auto version = integerField(*result.value(), "version", path);
+    auto schema = stringField(*result.value(), "schema", path);
     if (!schema) return eve::Result<void>::failure(schema.status());
+    auto version = integerField(*result.value(), "version", path);
     if (!version) return eve::Result<void>::failure(version.status());
     if (schema.value() != "settlement.result")
         return failure<void>(eve::DiagnosticCode::InvalidArgument, "unexpected settlement result schema",
@@ -402,15 +426,15 @@ eve::Result<void> validateResultShape(const Value& value, const std::string& pat
                                   path + ".payload.stages[" + std::to_string(index) + "]");
         if (!stage) return eve::Result<void>::failure(stage.status());
         const auto stagePath = path + ".payload.stages[" + std::to_string(index) + "]";
-        auto kind   = stringField(*stage.value(), "kind", stagePath);
-        auto name   = stringField(*stage.value(), "name", stagePath);
-        auto status = integerField(*stage.value(), "status", stagePath);
-        auto before = numberField(*stage.value(), "before", stagePath);
-        auto after  = numberField(*stage.value(), "after", stagePath);
+        auto       kind      = stringField(*stage.value(), "kind", stagePath);
         if (!kind) return eve::Result<void>::failure(kind.status());
+        auto name = stringField(*stage.value(), "name", stagePath);
         if (!name) return eve::Result<void>::failure(name.status());
+        auto status = integerField(*stage.value(), "status", stagePath);
         if (!status) return eve::Result<void>::failure(status.status());
+        auto before = numberField(*stage.value(), "before", stagePath);
         if (!before) return eve::Result<void>::failure(before.status());
+        auto after = numberField(*stage.value(), "after", stagePath);
         if (!after) return eve::Result<void>::failure(after.status());
         if (!knownStageKind(kind.value()))
             return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown settlement stage kind",
@@ -465,14 +489,99 @@ eve::Result<void> validateResultShape(const Value& value, const std::string& pat
                                  eventPath + ".correlationKind");
         for (const auto field : {"schemaVersion", "tick"}) {
             auto text = stringField(*checked.value(), field, eventPath);
+            if (!text) return eve::Result<void>::failure(text.status());
             auto number = unsignedText(text.value(), eventPath + "." + field);
             if (!number) return eve::Result<void>::failure(number.status());
         }
+        const auto& object    = *checked.value();
+        auto        causation = decodeCausation(*object.at("causation").getIf<std::string>(), causationKind, eventPath);
+        if (!causation) return eve::Result<void>::failure(causation.status());
+        auto correlation =
+            decodeCorrelation(*object.at("correlation").getIf<std::string>(), correlationKind, eventPath);
+        if (!correlation) return eve::Result<void>::failure(correlation.status());
+        const auto& schema = *object.at("schema").getIf<std::string>();
+        if (!schema.empty() && !game_event::SchemaId::parse(schema))
+            return failure<void>(eve::DiagnosticCode::ParseError, "invalid event schema", eventPath + ".schema");
+        if (object.at("flags").asInt() > std::numeric_limits<std::uint32_t>::max())
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "event flags exceed uint32",
+                                 eventPath + ".flags");
         if (checked.value()->at("payload").getIf<Value::Object>() == nullptr)
             return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected event payload object",
                                  eventPath + ".payload");
     }
     return eve::Result<void>::success();
+}
+
+eve::Result<SettlementResult> decodeResult(const Value& value, const std::string& path) {
+    using R    = eve::Result<SettlementResult>;
+    auto valid = validateResultShape(value, path);
+    if (!valid) return R::failure(valid.status());
+    const auto& payload = *value.find("payload")->getIf<Value::Object>();
+    const auto  number  = [](const Value& value) {
+        return value.isDouble() ? value.asDouble() : static_cast<double>(value.asInt());
+    };
+    SettlementResult result;
+    result.requested   = number(payload.at("requested"));
+    result.applied     = number(payload.at("applied"));
+    result.absorbed    = number(payload.at("absorbed"));
+    result.resisted    = number(payload.at("resisted"));
+    result.clamped     = number(payload.at("clamped"));
+    result.critical    = *payload.at("critical").getIf<bool>();
+    result.disposition = *decodedDisposition(*payload.at("disposition").getIf<std::string>());
+    auto tick          = unsignedText(*payload.at("tick").getIf<std::string>(), path + ".payload.tick");
+    if (!tick) return R::failure(tick.status());
+    result.tick = SimulationTick(tick.value());
+    for (const auto& value : *payload.at("stages").getIf<Value::Array>()) {
+        const auto& row = *value.getIf<Value::Object>();
+        result.stages.push_back({*decodedStageKind(*row.at("kind").getIf<std::string>()),
+                                 *row.at("name").getIf<std::string>(),
+                                 static_cast<eve::StatusCode>(row.at("status").asInt()), number(row.at("before")),
+                                 number(row.at("after")), row.at("details")});
+    }
+    for (const auto& value : *payload.at("derived").getIf<Value::Array>()) {
+        auto request =
+            decodeRequest(value, path + ".payload.derived[" + std::to_string(result.derived.size()) + "]", true);
+        if (!request) return R::failure(request.status());
+        result.derived.push_back(std::move(request).takeValue());
+    }
+    if (!payload.at("event").isNull()) {
+        const auto& row       = *payload.at("event").getIf<Value::Object>();
+        const auto  eventPath = path + ".payload.event";
+        const auto  text = [&](const char* key) -> const std::string& { return *row.at(key).getIf<std::string>(); };
+        game_event::GameEvent event;
+        event.type     = text("type");
+        event.source   = text("source");
+        event.subject  = text("subject");
+        auto causation = decodeCausation(text("causation"), row.at("causationKind").asInt(), eventPath);
+        if (!causation) return R::failure(causation.status());
+        event.causation  = std::move(causation).takeValue();
+        auto correlation = decodeCorrelation(text("correlation"), row.at("correlationKind").asInt(), eventPath);
+        if (!correlation) return R::failure(correlation.status());
+        event.correlation = std::move(correlation).takeValue();
+        if (!text("schema").empty()) {
+            auto schema = game_event::SchemaId::parse(text("schema"));
+            if (!schema)
+                return failure<SettlementResult>(eve::DiagnosticCode::ParseError, "invalid event schema",
+                                                 eventPath + ".schema");
+            event.schemaId = *schema;
+        }
+        auto version = unsignedText(text("schemaVersion"), eventPath + ".schemaVersion");
+        if (!version) return R::failure(version.status());
+        event.schemaVersion = SchemaVersion(version.value());
+        auto eventTick      = unsignedText(text("tick"), eventPath + ".tick");
+        if (!eventTick) return R::failure(eventTick.status());
+        event.tick       = SimulationTick(eventTick.value());
+        const auto flags = row.at("flags").asInt();
+        if (flags > std::numeric_limits<std::uint32_t>::max())
+            return failure<SettlementResult>(eve::DiagnosticCode::InvalidArgument, "event flags exceed uint32",
+                                             eventPath + ".flags");
+        event.flags       = static_cast<std::uint32_t>(flags);
+        auto eventPayload = row.at("payload").toJson();
+        if (!eventPayload) return R::failure(eventPayload.status());
+        event.payload = std::move(eventPayload).takeValue();
+        result.event.emplace(std::move(event));
+    }
+    return R::success(std::move(result));
 }
 
 eve::Result<Value> parseReplayRecord(std::string_view json) {
@@ -482,9 +591,9 @@ eve::Result<Value> parseReplayRecord(std::string_view json) {
     auto checked = strictObject(root, {"request", "result", "resultDigest", "ruleDigest", "schema", "version"},
                                 "record");
     if (!checked) return eve::Result<Value>::failure(checked.status());
-    auto schema  = stringField(*checked.value(), "schema", "record");
-    auto version = integerField(*checked.value(), "version", "record");
+    auto schema = stringField(*checked.value(), "schema", "record");
     if (!schema) return eve::Result<Value>::failure(schema.status());
+    auto version = integerField(*checked.value(), "version", "record");
     if (!version) return eve::Result<Value>::failure(version.status());
     if (schema.value() != "settlement.replay")
         return failure<Value>(eve::DiagnosticCode::InvalidArgument, "unexpected replay schema", "record.schema");
@@ -547,10 +656,42 @@ void diffValues(const Value& expected, const Value& actual, const std::string& p
 
 }  // namespace
 
+eve::Result<std::string> settlementRequestCanonicalJson(const SettlementRequest& request) {
+    auto payload  = encodeRequest(request);
+    auto admitted = decodeRequest(payload, "request.payload");
+    if (!admitted) return eve::Result<std::string>::failure(admitted.status());
+    return Value(Value::Object{{"schema", "settlement.request"}, {"version", 1}, {"payload", std::move(payload)}})
+        .toJson();
+}
+eve::Result<SettlementRequest> settlementRequestFromJson(std::string_view json) {
+    using R     = eve::Result<SettlementRequest>;
+    auto parsed = Value::fromJson(json);
+    if (!parsed) return R::failure(parsed.status());
+    auto root = strictObject(parsed.value(), {"schema", "version", "payload"}, "request");
+    if (!root) return R::failure(root.status());
+    auto schema = stringField(*root.value(), "schema", "request");
+    if (!schema) return R::failure(schema.status());
+    auto version = integerField(*root.value(), "version", "request");
+    if (!version) return R::failure(version.status());
+    if (schema.value() != "settlement.request")
+        return failure<SettlementRequest>(eve::DiagnosticCode::InvalidArgument, "unexpected request schema",
+                                          "request.schema");
+    if (version.value() != 1)
+        return failure<SettlementRequest>(eve::DiagnosticCode::UnknownVersion, "unknown request version",
+                                          "request.version");
+    return decodeRequest(root.value()->at("payload"), "request.payload");
+}
+
 eve::Result<std::string> settlementResultCanonicalJson(const SettlementResult& result) {
     auto encoded = encodeResult(result);
     if (!encoded) return eve::Result<std::string>::failure(encoded.status());
     return std::move(encoded).takeValue().toJson();
+}
+
+eve::Result<SettlementResult> settlementResultFromJson(std::string_view json) {
+    auto parsed = Value::fromJson(json);
+    if (!parsed) return eve::Result<SettlementResult>::failure(parsed.status());
+    return decodeResult(parsed.value(), "result");
 }
 
 eve::Result<eve::ContentId> settlementResultDigest(const SettlementResult&           result,
@@ -651,9 +792,9 @@ eve::Result<std::vector<std::string>> verifySettlementReplayRecord(
     if (!record) return eve::Result<std::vector<std::string>>::failure(record.status());
     const auto& root = *record.value().getIf<Value::Object>();
 
-    auto storedRuleText   = stringField(root, "ruleDigest", "record");
-    auto storedResultText = stringField(root, "resultDigest", "record");
+    auto storedRuleText = stringField(root, "ruleDigest", "record");
     if (!storedRuleText) return eve::Result<std::vector<std::string>>::failure(storedRuleText.status());
+    auto storedResultText = stringField(root, "resultDigest", "record");
     if (!storedResultText) return eve::Result<std::vector<std::string>>::failure(storedResultText.status());
     const auto storedRule   = eve::ContentId::parse(storedRuleText.value());
     const auto storedResult = eve::ContentId::parse(storedResultText.value());

@@ -7,6 +7,7 @@
  * @brief RTS module owner and phase-one composition profile entry point.
  */
 
+#include <set>
 #include "common/GameplayControl.h"
 #include "common/GameplayInstanceCatalog.h"
 #include "common/LifetimeWitness.h"
@@ -23,6 +24,7 @@
 #include "rts/RTSSnapshot.h"
 #include "rts/RTSSystems.h"
 #include "rts/RTSTech.h"
+#include "rts/RTSUnitBatch.h"
 
 #include <cstddef>
 #include <memory>
@@ -30,13 +32,32 @@
 #include <utility>
 #include <vector>
 
+namespace eve::definitions {
+class DefinitionRegistryCapture;
+}
+namespace eve::combat {
+class DamageCapture;
+}
 namespace eve::crowd {
 struct NavigationSurfaceTag;
 struct MovementClassTag;
 enum class CrowdExecution;
 class CrowdWorkScheduler;
 }  // namespace eve::crowd
+namespace eve::weapon {
+class WeaponDefinitionRuntime;
+}
 namespace eve::rts {
+class RTSCrowdCapture;
+class RTSNavigationCapture;
+class PreparedRTSCrowdRestore;
+class RTSUnitAttributeCapture;
+class PreparedRTSUnitAttributeRestore;
+class RTSWeaponCapture;
+class PreparedRTSWeaponRestore;
+class RestoredRTSWeaponPools;
+class PreparedRTSCombatRestore;
+class PreparedRTSFrameRestore;
 /** @brief Runtime-owned map projection settings; configure once, rebuild only on source changes.
  * This initial tracker publishes one movement class; per-agent mismatches remain observable.
  * Identity/revisions belong to the game. Surface publication revisions belong to the tracker.
@@ -94,6 +115,29 @@ struct RTSFrameLifecycleEvent {
     LifecycleEvent event;
 };
 
+/** @brief Detached native event queues and their exact publication cursors; no providers or ECS handles.
+ * @remarks In-memory participant only. Domain clocks, simulation caches and consumer acknowledgements are separate.
+ */
+struct RTSFrameState {
+    std::vector<RTSFrameDamageEvent>    damage;
+    std::vector<RTSFrameCombatEvent>    combat;
+    std::vector<RTSFrameLifecycleEvent> lifecycle;
+    std::uint64_t                       sequence           = 0;
+    bool                                preserveOnNextStep = false;
+    std::vector<GameplayEvent>          gameplay;
+    std::uint64_t                       nextGameplaySequence = 1;
+};
+/** @brief Detached combat mirror ownership and FireBlocked deduplication state, without service pointers.
+ * @remarks Native in-memory participant; sensing facts and provider implementation identity remain separate.
+ */
+struct RTSCombatSnapshot {
+    std::set<std::string> mirroredSubjects;
+    std::set<std::string> blockedSubjects;
+};
+
+/** @brief Expected physical service attachment at a checkpoint/replacement boundary. */
+enum class RTSCheckpointAttachment { Attached, Detached };
+
 /**
  * @brief Owns RTS root entities and coordinates the phase-one systems.
  *
@@ -107,6 +151,38 @@ public:
 
     /** @brief Construct an empty RTS composition profile. */
     RTS();
+    /** @brief Construct a facade retaining a genuinely owned domain table.
+     * @param world Shared owning table; an empty value retains the legacy borrowed-table mode.
+     * @ownership Retains world until all facade roots have been destroyed; never adopts a raw table.
+     * @thread Simulation owner thread. @reentrancy No gameplay callbacks.
+     * @details Creation still uses the caller's ScopedTable. This constructor does not change global ECS routing.
+     */
+    explicit RTS(std::shared_ptr<ecs::Table> world);
+    /** @brief Copy the owned domain table, or an empty pointer for borrowed-table mode.
+     * @ownership Returns shared ownership. @thread Simulation owner thread. @reentrancy No callbacks.
+     */
+    [[nodiscard]] std::shared_ptr<ecs::Table> ownedWorld() const noexcept;
+    /** @brief Observe facade liveness without retaining the facade or granting access to it.
+     * @thread Simulation owner thread. @reentrancy No callbacks.
+     * @lifetime Invalidated before facade root teardown; not serializable.
+     */
+    [[nodiscard]] LifetimeWitness lifetimeWitness() const noexcept;
+    /** @brief Prepare up to 1024 immutable unit recipes for one faction and atomic Crowd placement.
+     * @ownership Copies requests; requires an owning domain Table and a live Crowd provider.
+     * @thread Simulation owner thread outside Views. @reentrancy No callbacks.
+     * @return One-use token; failure creates no entities or backend agents.
+     * @cost Owning copies/weapon parsing plus bounded pairwise duplicate checks (at most 1024 requests).
+     * Amortize preparation across the batch's units.
+     */
+    [[nodiscard]] Result<PreparedUnitBatch> prepareUnitBatch(Faction&                          faction,
+                                                             std::span<const UnitBatchRequest> requests);
+    /** @brief Capture up to 1024 owned unit identities for atomic administrative removal.
+     * @ownership Copies subjects and retains the genuinely owned Table; absent identities are accepted.
+     * @thread Simulation owner thread outside Views. @reentrancy No callbacks.
+     * @return Owning one-use candidate; preparation changes no domain facts.
+     * @cost Bounded pairwise validation and domain index scans per batch; amortize across its units.
+     */
+    [[nodiscard]] Result<PreparedUnitRemoval> prepareUnitRemoval(std::span<const SubjectRef> subjects);
     /** @brief Destroy only live entities created through this module. */
     ~RTS() override;
 
@@ -184,6 +260,13 @@ public:
     /** @brief Return an owning deterministic projection of one match lifecycle. */
     [[nodiscard]] Result<Value> inspectMatch(Match& match) const;
 
+    /** @brief Resolve an owned RTS root's stable subject to its actual generation-qualified handle.
+     * @return Observed handle or invalid subject, borrowed/busy world, absent/ambiguous identity error.
+     * @ownership Does not retain the world; root retirement or Table destruction invalidates the handle.
+     * @thread Owner thread outside Views/callbacks; selects actual owning Table regardless of current Scope.
+     * @cost Scans owned root registries once per explicit admission; retain the handle instead of repeating per frame.
+     */
+    [[nodiscard]] Result<ecs::EntityHandle> resolveOwnedSubject(SubjectRef subject) const;
     /** @brief Resolve a module-owned unit by persistent subject identity. */
     [[nodiscard]] Unit* findUnit(SubjectRef subject) const noexcept;
     /** @brief Resolve a module-owned building by persistent subject identity. */
@@ -194,8 +277,145 @@ public:
     [[nodiscard]] Faction* findFaction(SubjectRef subject) const noexcept;
     /** @brief Resolve a module-owned match by persistent subject identity. */
     [[nodiscard]] Match* findMatch(SubjectRef subject) const noexcept;
-    /** @brief Capture all module-owned RTS root state using stable subject relationships. */
+    /** @brief Capture module-owned RTS root state using stable subject relationships, without component creation.
+     * @remarks Owned facades select their actual Table, independent of current Scope. Missing canonical root
+     * components/identities or uninitialized/foreign attributes reject without repair; legacy facades use current
+     * Table.
+     * @thread Owner thread outside Views; no gameplay callbacks or time/RNG advancement.
+     * @cost Copies root components, relationships, effects and orders per explicit checkpoint boundary.
+     */
     [[nodiscard]] Result<RTSStateSnapshot> snapshotState() const;
+    /** @brief Freeze the actual bound definition registry after checking the game-owned content authority.
+     * @param owner Registry expected by the game composition, borrowed only during capture.
+     * @return Native content facts or borrowed/busy world, absent/foreign registry failure; no source changes.
+     * @ownership Capture owns canonical registry state and envelope metadata, excluding subscriptions/callbacks.
+     * @thread Simulation/content owner thread outside Views; no policy, service or script callbacks.
+     * @cost Registry-sized copy/encoding once per coordinated checkpoint, independent of current root count.
+     * @throws std::bad_alloc World and registry remain unchanged.
+     */
+    [[nodiscard]] Result<definitions::DefinitionRegistryCapture> captureDefinitions(
+        const definitions::DefinitionRegistry& owner) const;
+    /** @brief Validate the closed native simulation context without invoking any provider or callback.
+     * @param backend Expected game-owned Crowd, borrowed only during validation.
+     * @param navigation Expected game-owned map provider.
+     * @param sensing Expected game-owned sensing scope.
+     * @param damage Expected game-owned damage coordinator.
+     * @param definitions Expected game-owned content registry.
+     * @param attachment Attached for active worlds, Detached for an explicitly closed owner.
+     * @return Applied or busy/foreign service/unadmitted callback, fog, script or alternate-executor context.
+     * @ownership No reference retained; returned diagnostics own their data. Does not authorize persistent import.
+     * @thread Simulation owner thread outside Views/callbacks; no time advancement or service evaluation.
+     */
+    [[nodiscard]] Result<void> validateCheckpointContext(const crowd::Crowd& backend, const map::Pathfinder& navigation,
+                                                         const sensing::SensingWorld&           sensing,
+                                                         const combat::DamageRuntime&           damage,
+                                                         const definitions::DefinitionRegistry& definitions,
+                                                         RTSCheckpointAttachment                attachment) const;
+    /** @brief Freeze the actual bound damage coordinator after checking its game-owned authority.
+     * @param owner Expected game-owned damage service, borrowed only during capture.
+     * @return Native rules/policy or borrowed/busy world, foreign service or unsupported rule failure.
+     * @ownership No target state, damage provider, callback or source world retained.
+     * @thread Simulation owner thread outside Views/callbacks; no advancement or rule evaluation.
+     * @cost Rule-sized canonical freezing once per coordinated checkpoint, independent of root count.
+     */
+    [[nodiscard]] Result<combat::DamageCapture> captureDamage(const combat::DamageRuntime& owner) const;
+    /** @brief Freeze every owned Unit/Building weapon relationship, including bodies outside spawn provenance.
+     * @return Independent native closure or nil epoch, borrowed/busy world, missing/stale/foreign component failure.
+     * @ownership No source entity/Table/provider retained; aliases share immutable captures, absence is explicit.
+     * @thread Owner thread outside Views/callbacks; uses actual owned Table independent of current Scope.
+     * @remarks Includes referenced shared-pool facts and stable owned-root request targets; no content lookup.
+     * Unreferenced pools, other inventory relationships and content/clock/backend participants remain separate.
+     * @cost Scans owned roots and Table pool bindings, copying each distinct live weapon once per checkpoint.
+     * @throws std::bad_alloc Source is unchanged, with no component creation or event consumption.
+     */
+    [[nodiscard]] Result<RTSWeaponCapture> captureWeapons(PersistentId saveEpoch) const;
+    /** @brief Materialize a prepared native graph, then publish all body links and RTS gun ownership together.
+     * @return Pool owner or stale/claimed/topology/native admission failure; consume only on complete success.
+     * @ownership RTS owns guns; caller owns the returned pool scope. All references are weak generation links.
+     * @remarks Requires the pristine unarmed target topology admitted by preparation. Any fallible creation/native
+     * preparation rolls back every provisional gun/pool and capability; original roots/links stay unchanged.
+     * @thread Owner thread outside Views/callbacks; no gameplay events, policy evaluation or time advancement.
+     * @cost Whole native graph copying and ECS materialization per explicit attempt, followed by no-fail publication.
+     * @throws std::bad_alloc Provisional resources are retired; the same candidate remains retryable.
+     */
+    [[nodiscard]] Result<RestoredRTSWeaponPools> restoreWeapons(PreparedRTSWeaponRestore&& prepared);
+    /** @brief Freeze canonical native Crowd and all owned Unit binding/pose/containment facts.
+     * @return Owning capture or nil epoch, idle-world/provider, component, identity or agent-ownership failure.
+     * @ownership No source facade, Table, component or external navigation service is retained.
+     * @thread Simulation owner thread outside Views/callbacks; no advancement or component repair.
+     * @cost Copies native backend and all Unit binding keys once per checkpoint attempt.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] Result<RTSCrowdCapture> captureCrowd(PersistentId saveEpoch) const;
+    /** @brief Preflight all bodies, then publish native Crowd and prepared body references together.
+     * @return Applied or target/provider/topology/pose/claimed failure; rejection preserves candidate and target.
+     * @ownership Consumes only on success; requires pristine bindings and an empty target backend.
+     * @thread Simulation owner thread outside Views/callbacks; no structural mutation, events or time advance.
+     * @cost Linear body preflight and old backend retirement per restore; successful commit allocates none.
+     */
+    [[nodiscard]] Result<void> restoreCrowd(PreparedRTSCrowdRestore&& prepared);
+    /** @brief Freeze actual map-provider facts and surface tracking at the caller's joint epoch.
+     * @param saveEpoch Nonnil common checkpoint epoch.
+     * @param provider Actual attached, live provider; its bound layer must remain alive throughout capture.
+     * @return Detached native facts or idle-world/provider mismatch/unsupported callback failure.
+     * @ownership Input is borrowed synchronously; no source provider, Table, layer or callback is retained.
+     * @thread Simulation owner thread outside Views/callbacks. @reentrancy No callbacks or advancement.
+     * @cost Copies provider grid/cache sized facts per explicit checkpoint.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] Result<RTSNavigationCapture> captureNavigation(PersistentId     saveEpoch,
+                                                                 map::Pathfinder& provider) const;
+    /** @brief Bind a pristine restored provider and the captured tracker without publishing a new surface.
+     * @param captured Same-boundary native navigation participant, borrowed only during this call.
+     * @param provider Pristine owner prepared from captured.provider(); must outlive this RTS attachment.
+     * @return Applied or idle-world/claimed/provider-provenance failure; rejection preserves target and inputs.
+     * @ownership The isolated game owner owns provider and bound map, with RTS destroyed first.
+     * @remarks Requires no existing navigation provider, callback or tracker. Preserves Unit recovery/routes
+     * and existing Crowd jobs; the game coordinator must join matching Crowd, roots and clock separately.
+     * @thread Simulation owner thread outside Views/callbacks. @reentrancy No callbacks or advancement.
+     * @throws std::bad_alloc Constant-size tracker preparation failed before publication; same inputs retry.
+     */
+    [[nodiscard]] Result<void> restoreNavigation(const RTSNavigationCapture& captured, map::Pathfinder& provider);
+    /** @brief Freeze full native projections for all owned Units, including non-combat attributes.
+     * @return Detached facts or nil epoch, borrowed/busy world, missing/foreign projection or identity failure.
+     * @ownership No source Table, owner handle, capability or custom policy retained.
+     * @thread Owner thread outside Views/callbacks; no seeding, evaluation, events or time advancement.
+     * @cost Copies complete canonical values/modifiers/counters once per explicit checkpoint.
+     * @throws std::bad_alloc Source remains unchanged.
+     */
+    [[nodiscard]] Result<RTSUnitAttributeCapture> captureUnitAttributes(PersistentId saveEpoch) const;
+    /** @brief Preflight every Unit, then publish all prepared full projections without allocation or callbacks.
+     * @return Applied/NoOp or consumed/foreign/stale/topology/subject/owner rejection, preserving every old value.
+     * @ownership Consumes only on success; target incarnation/topology must match preparation, not source handles.
+     * @thread Owner thread outside Views/callbacks; no structural changes, policy evaluation or events.
+     * @cost Linear preflight/publication and old storage retirement once per restore; successful commit allocates none.
+     */
+    [[nodiscard]] Result<void> restoreUnitAttributes(PreparedRTSUnitAttributeRestore&& prepared);
+    /** @brief Copy existing frame/gameplay event queues and watermarks without polling or consuming them.
+     * @return Owning facts or View/world admission failure; invokes no callbacks or time advancement.
+     * @thread Owner thread outside Views. Owned facades use their actual Table; legacy facades use current Table.
+     * @cost Copies all retained event payloads per coordinated checkpoint attempt.
+     */
+    [[nodiscard]] Result<RTSFrameState> captureFrameState() const;
+    /** @brief Replace all native frame/gameplay queues, watermarks and next-step retention flag together.
+     * @return Applied or consumed/borrowed-world/View rejection, preserving candidate and target on rejection.
+     * @thread Owner thread outside Views and callbacks; no observers invoked, events replayed or time advanced.
+     * @ownership Owns published queues; historical identities are not rebound to current bodies.
+     * @cost Retires old event storage once per publication; successful publication allocates no storage.
+     */
+    [[nodiscard]] Result<void> restoreFrameState(PreparedRTSFrameRestore&& prepared);
+    /** @brief Freeze actual combat mirror ownership and blocked-notification latches without repair.
+     * @return Owning facts or View/world admission failure. @thread Owner thread outside world operations.
+     * @reentrancy No provider calls or callbacks. @cost Copies both retained subject sets per checkpoint attempt.
+     */
+    [[nodiscard]] Result<RTSCombatSnapshot> captureCombatState() const;
+    /** @brief Publish jointly prepared sensing facts and mirror/blocked sets; consume only on success.
+     * @return Applied or stale/foreign/consumed/busy candidate; rejection preserves target and token.
+     * @ownership Replaces the entire attached sensing scope; preserves its physical instance lifetime.
+     * @thread Owner thread outside Views and callbacks; no callbacks or structural ECS mutation.
+     * @cost Validates bound bodies and retires old sensing/sets once per publication; no successful allocation.
+     */
+    [[nodiscard]] Result<void> restoreCombat(PreparedRTSCombatRestore&& prepared);
     /** @brief Validate and atomically restore an exact-topology RTS root snapshot. */
     [[nodiscard]] Result<void> restoreState(const RTSStateSnapshot& snapshot);
     /**
@@ -290,6 +510,11 @@ public:
      * @return Owning presentation data excluded from deterministic snapshots and state hashes.
      */
     [[nodiscard]] Value inspectFrameEvents() const;
+    /** @brief Borrow already-published damage facts without polling or consuming the domain queue.
+     * @ownership Synchronous owner-thread borrow, invalidated by the next step, frame-event mutation or destruction.
+     * @remarks Dispatch the same batch to gameplay and spawn consumers before the next domain step. No callbacks.
+     */
+    [[nodiscard]] std::span<const RTSFrameDamageEvent> frameDamageEvents() const noexcept { return frameDamageEvents_; }
 
     /** @brief Read a canonical selected combat attribute through the RTS facade. */
     [[nodiscard]] Result<double> readUnitAttribute(Unit& unit, std::string_view attribute) const;
@@ -360,6 +585,10 @@ public:
      * detach or bind a live provider explicitly to change this policy.
      */
     void setCrowdProvider(crowd::Crowd* crowd) noexcept;
+    /** @brief Query whether the attached canonical Crowd owner is currently alive, without mutation or callbacks.
+     * @thread RTS owner thread; this observation is not a lifetime lease or publication authorization.
+     */
+    [[nodiscard]] bool hasLiveCrowdProvider() const noexcept { return crowd_ && crowdLifetime_.isAlive(); }
     /** @brief Atomically relocate owned units; preserves orders and invalidates derived navigation routes.
      * @ownership Borrows the owning batch during the call, retaining no input pointers.
      * @thread Simulation owner thread only. @reentrancy No callbacks.
@@ -400,7 +629,11 @@ public:
 
     /** @brief Install the faction-to-canonical-FOV resolver used by fog-of-war projection. */
     void setFogProvider(FogProvider provider) noexcept;
-    /** @brief Attach canonical sensing and damage coordinators used by automatic combat. */
+    /** @brief Attach canonical sensing and damage coordinators used by automatic combat.
+     * @ownership Both services borrowed; sensing has a physical-instance witness. Damage must outlive use.
+     * @thread Simulation owner thread outside step/callbacks; invokes no callbacks.
+     * @remarks Retired sensing rejects step before simulation mutation; rebind explicitly even on address reuse.
+     */
     void setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRuntime* damage) noexcept;
     /**
      * @brief Replace declarative settlement rules on the active canonical damage provider.
@@ -621,6 +854,7 @@ public:
     /**
      * @brief Physically remove dead units and buildings and repair all module-owned relationships.
      * @return Number of gameplay roots removed in this cleanup pass.
+     * @thread Simulation owner thread outside Views; active Views return PreconditionViolation.
      * @cost One world-reference sweep amortized across a simple casualty batch; nested occupant removal can revisit
      * relationships.
      */
@@ -640,6 +874,17 @@ public:
     [[nodiscard]] std::size_t matchCount() const noexcept;
 
 private:
+    friend class PreparedUnitBatch;
+    friend class PreparedUnitRemoval;
+    friend class PreparedRTSCrowdRestore;
+    friend class PreparedRTSWeaponRestore;
+    friend class PreparedRTSUnitAttributeRestore;
+    friend class PreparedRTSCombatRestore;
+    friend class PreparedRTSFrameRestore;
+    [[nodiscard]] Result<weapon::WeaponEntity*> publishPreparedWeapon(weapon::WeaponDefinitionRuntime& runtime);
+    // Declared first so the domain table outlives every other member and owned root.
+    std::shared_ptr<ecs::Table> ownedWorld_;
+    LifetimeOwner               lifetime_;
     /**
      * @brief Runtime movement-group cache.
      * @cost Linear in group member count for handles and epoch snapshots; rebuilt at command/restore boundaries.
@@ -681,13 +926,18 @@ private:
     [[nodiscard]] Result<AbilitySpec> resolveScriptAbility(Unit& caster, const std::string& ability);
     [[nodiscard]] Result<void> materialize(Unit& unit);
     [[nodiscard]] Result<void> materialize(Building& building);
-    enum class UnitRemovalReason { Gameplay, SpawnRollback, GameplayReferencesPrepared };
-    /** @brief Prepare numeric removals and clear owned references once before releasing a simple casualty batch.
+    enum class UnitRemovalReason { Gameplay, SpawnRollback };
+    /** @brief Atomically remove numeric projections, references and roots for a simple casualty batch.
      * @ownership Handles are borrowed for this synchronous call; no plan survives it.
      * @thread RTS owner, after all system Views close. @reentrancy No callbacks while planning references.
      * @cost One world-reference sweep amortized over the casualty batch.
      */
-    [[nodiscard]] Result<void>                   prepareUnitRemovalBatch(std::span<const ecs::EntityHandle> units);
+    [[nodiscard]] Result<void> removeUnitBatch(std::span<const ecs::EntityHandle> units);
+    /** @brief Release one root after all external references and facade indexes are cleared.
+     * @ownership Borrows a live unit only for this call; no pointers escape.
+     * @thread Owner thread outside Views. @reentrancy No callbacks; required components are already materialized.
+     */
+    void                                         releaseUnreferencedUnit(Unit& unit);
     [[nodiscard]] Result<ProductionSpawnOutcome> placeProducedUnit(Unit& unit, WorldPosition requested);
     void                             removeUnitRoot(Unit& unit, UnitRemovalReason reason = UnitRemovalReason::Gameplay);
     void removeBuildingRoot(Building& building, bool destroyOccupants);
@@ -717,6 +967,7 @@ private:
     FogProvider fogProvider_;
     FogOfWarSystem::State fogState_;
     sensing::SensingWorld* sensing_ = nullptr;
+    LifetimeWitness                      sensingLifetime_;
     combat::DamageRuntime* damage_ = nullptr;
     CombatFireSystem::State combatState_;
     FireLineQuery fireLineQuery_;

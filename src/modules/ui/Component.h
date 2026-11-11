@@ -6,6 +6,7 @@
 #include "ui/Widget.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace eve::ui {
@@ -43,6 +44,15 @@ public:
     /** @brief Returns the attached host handle, or an empty handle before attach. */
     [[nodiscard]] UIHostHandle host() const noexcept { return host_; }
 
+    /** @brief Optionally frame a non-Window build root in a native UI window during mounted reconciliation.
+     * @param title Window title, or nullopt to keep the component's original embeddable root.
+     * @ownership Copies/moves presentation metadata into private scheduling state; build() itself remains unchanged.
+     * @thread UI owner thread; schedules the next dirty batch without invoking build or callbacks.
+     * @remarks Existing Window roots remain intact. Captures the frame setting before each build, so changes during
+     * build apply on the next scheduled batch. Host Meta still owns placement/size; no persistent document changes.
+     * @cost Title ownership transfer and constant scheduling per presentation change; wrapping is one node per rebuild.
+     */
+    void setWindowFrame(std::optional<std::string> title);
     /** @brief Compatibility-only synchronous refresh; normal edits use markDirty / setState.
      * @cost Builds the complete description tree and reconciles by key; call once per edit batch.
      * @reentrancy May invoke build(); recursively rebuilding or destroying this component during build is invalid. */

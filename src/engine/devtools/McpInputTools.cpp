@@ -126,6 +126,16 @@ std::string applyOneAction(Poco::JSON::Object::Ptr action, Poco::JSON::Object::P
         if (!result) return diagnosticMessage(result.status());
         return {};
     }
+    if (op == "ui_text") {
+        if (!action->has("text") || !action->get("text").isString())
+            return "ui_text requires explicit string text (empty clears)";
+        if (!ui) return std::string(eve::IUIAutomation::capabilityName) + " unavailable";
+        const auto widget = getArgString(action, "widget");
+        if (widget.empty()) return "ui_text requires widget";
+        auto result = ui->setText(getArgString(action, "host"), widget, getArgString(action, "text"));
+        if (!result) return diagnosticMessage(result.status());
+        return {};
+    }
     if (op == "ui_click") {
         if (!ui) return std::string(eve::IUIAutomation::capabilityName) + " unavailable";
         const std::string host   = getArgString(action, "host");
@@ -135,7 +145,7 @@ std::string applyOneAction(Poco::JSON::Object::Ptr action, Poco::JSON::Object::P
         if (out.rfind("error:", 0) == 0) return out.substr(6);
         return {};
     }
-    return "unknown action.op '" + op + "' (key|mouse_move|mouse_button|wheel|text|ui_click|wait)";
+    return "unknown action.op '" + op + "' (key|mouse_move|mouse_button|wheel|text|ui_click|ui_text|wait)";
 }
 
 void finishCapture(PendingBatch& batch) {
@@ -350,7 +360,7 @@ std::string callMcpInputTool(std::string_view name, Poco::JSON::Object::Ptr args
 }
 
 std::string_view mcpInputToolSchemas() {
-    return R"json({"name":"eve_input_status","description":"Whether IInputInjection / IUIAutomation / IRenderCapture are available and how many input batches are pending.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_input_batch","description":"Inject a playtest action sequence (key/mouse_move/mouse_button/wheel/text/ui_click/wait) through IInputInjection + IUIAutomation. Optional waitFrames/capture completes across subsequent McpServer::poll ticks — call eve_input_poll until status=ready. Does not block the game loop.","inputSchema":{"type":"object","properties":{"actions":{"type":"array","items":{"type":"object","properties":{"op":{"type":"string","enum":["key","mouse_move","mouse_button","wheel","text","ui_click","wait"]},"key":{"type":"string"},"down":{"type":"boolean"},"repeat":{"type":"boolean"},"button":{"type":"integer"},"x":{"type":"number"},"y":{"type":"number"},"dx":{"type":"number"},"dy":{"type":"number"},"text":{"type":"string"},"host":{"type":"string"},"widget":{"type":"string"},"frames":{"type":"integer"}},"required":["op"]}},"waitFrames":{"type":"integer","minimum":0},"capture":{"type":"boolean"},"capturePath":{"type":"string"}},"required":["actions"]}},{"name":"eve_input_poll","description":"Poll a pending eve_input_batch wait/capture. Pass id from the batch response (omit to use the latest). Returns status=pending|ready with optional PNG path.","inputSchema":{"type":"object","properties":{"id":{"type":"integer","minimum":1}}}})json";
+    return R"json({"name":"eve_input_status","description":"Whether IInputInjection / IUIAutomation / IRenderCapture are available and how many input batches are pending.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_input_batch","description":"Inject a playtest action sequence (key/mouse_move/mouse_button/wheel/text/ui_click/ui_text/wait) through IInputInjection + IUIAutomation. Optional waitFrames/capture completes across subsequent McpServer::poll ticks — call eve_input_poll until status=ready. Does not block the game loop.","inputSchema":{"type":"object","properties":{"actions":{"type":"array","items":{"type":"object","properties":{"op":{"type":"string","enum":["key","mouse_move","mouse_button","wheel","text","ui_click","ui_text","wait"]},"key":{"type":"string"},"down":{"type":"boolean"},"repeat":{"type":"boolean"},"button":{"type":"integer"},"x":{"type":"number"},"y":{"type":"number"},"dx":{"type":"number"},"dy":{"type":"number"},"text":{"type":"string"},"host":{"type":"string"},"widget":{"type":"string"},"frames":{"type":"integer"}},"required":["op"]}},"waitFrames":{"type":"integer","minimum":0},"capture":{"type":"boolean"},"capturePath":{"type":"string"}},"required":["actions"]}},{"name":"eve_input_poll","description":"Poll a pending eve_input_batch wait/capture. Pass id from the batch response (omit to use the latest). Returns status=pending|ready with optional PNG path.","inputSchema":{"type":"object","properties":{"id":{"type":"integer","minimum":1}}}})json";
 }
 
 void pollMcpInputBatches() {
