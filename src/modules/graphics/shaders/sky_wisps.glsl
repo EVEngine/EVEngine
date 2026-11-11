@@ -29,8 +29,9 @@ float skyWispsOpacityAtPhase(sampler2D wispsTexture, vec2 authoredUV3, float ver
     vec2 firstUV = authoredUV3 + displacement * (fract(phase + 0.5) - 0.5);
     vec2 secondUV = vec2(1.0) - authoredUV3 - displacement * (fract(phase) - 0.5);
     float blend = (sin((phase + 0.75) * 6.283185307179586) + 1.0) * 0.5;
-    return clamp(mix(texture(wispsTexture, firstUV).r, texture(wispsTexture, secondUV).r, blend) * opacity,
-                 0.0, 1.0);
+    float firstDensity = texture(wispsTexture, firstUV).r;
+    float secondDensity = texture(wispsTexture, secondUV).r;
+    return clamp((firstDensity + (secondDensity - firstDensity) * blend) * opacity, 0.0, 1.0);
 }
 
 float skyWispsOpacity(sampler2D wispsTexture, vec2 authoredUV3, float vertexRed,

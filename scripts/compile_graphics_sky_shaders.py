@@ -53,7 +53,8 @@ def main() -> None:
          for stage in ("vert", "frag")],
         ROOT / "src/modules/graphics/sky/SkyViewLutSpv.h",
     )
-    compile_header([(ROOT / "test/sky_wisps_probe.frag", "sky_wisps_probe_frag")], ROOT / "test/SkyWispsSpv.h")
+    compile_header([(ROOT / "test/sky_wisps_probe.frag", "sky_wisps_probe_frag")], ROOT / "test/SkyWispsSpv.h",
+                   words_per_line=9)
     compile_header(
         [(ROOT / f"src/modules/graphics/shaders/sky_wisps.{stage}", f"sky_wisps_{stage}")
          for stage in ("vert", "frag")],
