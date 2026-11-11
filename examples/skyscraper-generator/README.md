@@ -1,7 +1,7 @@
 # Sky Lab — Procedural Skyscraper Generator
 
-Interactive showcase for the `procgen` `mesh.skyscraper` recipe. Every seed rebuilds the
-same deterministic setback-tiered tower with a window grid, an optional spire, and a
+Interactive showcase for the `procgen` `mesh.skyscraper` recipe. The example rebuilds a
+deterministic setback-tiered tower with a window grid, an optional spire, and a
 procedural facade texture.
 
 ## Run
@@ -15,11 +15,12 @@ make run/linux-debug  GAME=examples/skyscraper-generator
 
 | Key | Action |
 |-----|--------|
-| `R` | New random seed |
+| `R` | Next seed and a new tier count |
 | `1` / `2` | Fewer / more setback tiers |
 | `W` | Toggle window density |
 | `S` | Toggle spire |
-| `T` | Cycle facade texture recipe |
+| `T` | Cycle cool, warm and evening facade palettes |
+| `Space` | Pause / resume rotation |
 
 ## Notes
 
@@ -27,6 +28,7 @@ make run/linux-debug  GAME=examples/skyscraper-generator
   `windowCols`, `windowRows`, `windowDepth`, `spireHeight`.
 - Window quads are raised a thin lip in front of the wall so openings read under
   directional light without coplanar z-fighting. UV mapping lets a small atlas tint
-  windows bright vs walls dark.
+  blue glass vs stone walls. Every setback tier has a closed roof; all four facade normals point outward.
+- The camera fits the current tier count after each rebuild. Yaw is expressed in radians.
 - A render smoke test (`procgen.render.skyscraperPng`) outputs
   `build/<platform>/test/out/skyscraper.png`.

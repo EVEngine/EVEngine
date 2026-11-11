@@ -42,7 +42,18 @@
           20
         ],
         "blendMode": "alpha",
-        "colorOverLifetime": [
+        "randomSeed": 420,
+        "autoRandomSeed": false,
+        "fixedTimeStep": 0.008333333,
+        "maxSubSteps": 8,
+        "parameterBindings": [
+          {
+            "parameter": "intensity",
+            "target": "emission",
+            "scale": 1.0
+          }
+        ],
+        "colorOverLife": [
           [
             0,
             0.15,
@@ -65,17 +76,7 @@
             0
           ]
         ],
-        "randomSeed": 420,
-        "autoRandomSeed": false,
-        "fixedTimeStep": 0.008333333,
-        "maxSubSteps": 8,
-        "parameterBindings": [
-          {
-            "parameter": "intensity",
-            "target": "emission",
-            "scale": 1.0
-          }
-        ]
+        "texture": "textures/soft-plume.png"
       }
     },
     {
@@ -83,7 +84,7 @@
       "emitter": {
         "buffer": 600,
         "emitterLife": -1,
-        "emissionRate": 260,
+        "emissionRate": 160,
         "particleLife": [
           0.45,
           0.8
@@ -115,7 +116,18 @@
           20
         ],
         "blendMode": "additive",
-        "colorOverLifetime": [
+        "randomSeed": 421,
+        "autoRandomSeed": false,
+        "fixedTimeStep": 0.008333333,
+        "maxSubSteps": 8,
+        "parameterBindings": [
+          {
+            "parameter": "intensity",
+            "target": "emission",
+            "scale": 1.0
+          }
+        ],
+        "colorOverLife": [
           [
             0,
             1,
@@ -145,17 +157,7 @@
             0
           ]
         ],
-        "randomSeed": 421,
-        "autoRandomSeed": false,
-        "fixedTimeStep": 0.008333333,
-        "maxSubSteps": 8,
-        "parameterBindings": [
-          {
-            "parameter": "intensity",
-            "target": "emission",
-            "scale": 1.0
-          }
-        ]
+        "texture": "textures/soft-plume.png"
       }
     },
     {
@@ -163,7 +165,7 @@
       "emitter": {
         "buffer": 600,
         "emitterLife": -1,
-        "emissionRate": 200,
+        "emissionRate": 110,
         "particleLife": [
           0.12,
           0.32
@@ -195,36 +197,6 @@
           20
         ],
         "blendMode": "additive",
-        "colorOverLifetime": [
-          [
-            0,
-            0.65,
-            0.8,
-            1,
-            0.8
-          ],
-          [
-            0.25,
-            1,
-            0.95,
-            0.65,
-            0.8
-          ],
-          [
-            0.8,
-            1,
-            0.45,
-            0.06,
-            0.3
-          ],
-          [
-            1,
-            1,
-            0.1,
-            0,
-            0
-          ]
-        ],
         "randomSeed": 422,
         "autoRandomSeed": false,
         "fixedTimeStep": 0.008333333,
@@ -235,7 +207,38 @@
             "target": "emission",
             "scale": 1.0
           }
-        ]
+        ],
+        "colorOverLife": [
+          [
+            0,
+            0.65,
+            0.8,
+            1,
+            0.48
+          ],
+          [
+            0.25,
+            1,
+            0.95,
+            0.65,
+            0.48
+          ],
+          [
+            0.8,
+            1,
+            0.45,
+            0.06,
+            0.18
+          ],
+          [
+            1,
+            1,
+            0.1,
+            0,
+            0.0
+          ]
+        ],
+        "texture": "textures/soft-plume.png"
       }
     },
     {
@@ -275,7 +278,20 @@
           20
         ],
         "blendMode": "additive",
-        "colorOverLifetime": [
+        "randomSeed": 423,
+        "autoRandomSeed": false,
+        "fixedTimeStep": 0.008333333,
+        "maxSubSteps": 8,
+        "parameterBindings": [
+          {
+            "parameter": "intensity",
+            "target": "emission",
+            "scale": 1.0
+          }
+        ],
+        "renderMode": "velocity",
+        "stretch": 0.025,
+        "colorOverLife": [
           [
             0,
             1,
@@ -298,19 +314,7 @@
             0
           ]
         ],
-        "randomSeed": 423,
-        "autoRandomSeed": false,
-        "fixedTimeStep": 0.008333333,
-        "maxSubSteps": 8,
-        "parameterBindings": [
-          {
-            "parameter": "intensity",
-            "target": "emission",
-            "scale": 1.0
-          }
-        ],
-        "renderMode": "velocity",
-        "stretch": 0.025
+        "texture": "textures/soft-plume.png"
       }
     }
   ]

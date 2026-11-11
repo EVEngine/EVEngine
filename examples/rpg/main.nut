@@ -289,6 +289,7 @@ function buildUI() {
     ui.select("player");
     ui.setHostOverlay(true);
     ui.setHostPos(pad, pad, 0.0, 0.0);
+    ui.setHostSize(330.0, 420.0);
 
     ui.beginBuild();
     ui.beginWindow("Enemy", "root");
@@ -301,6 +302,7 @@ function buildUI() {
     ui.select("enemy");
     ui.setHostOverlay(true);
     ui.setHostPos(config.width - pad, pad, 1.0, 0.0);
+    ui.setHostSize(330.0, 160.0);
 
     ui.beginBuild();
     ui.beginWindow("Log", "root");
@@ -310,7 +312,8 @@ function buildUI() {
     ui.mountBuildAs("log");
     ui.select("log");
     ui.setHostOverlay(true);
-    ui.setHostPos(pad, config.height - pad, 0.0, 1.0);
+    ui.setHostPos(config.width - pad, pad + 180.0, 1.0, 0.0);
+    ui.setHostSize(480.0, 260.0);
 
     ui.beginBuild();
     ui.beginWindow("Game Over", "root");

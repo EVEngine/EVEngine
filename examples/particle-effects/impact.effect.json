@@ -51,7 +51,7 @@
         "renderMode": "velocity",
         "stretch": 0.07,
         "blendMode": "additive",
-        "colorOverLifetime": [
+        "colorOverLife": [
           [0.0, 1.0, 0.95, 0.7, 1.0],
           [0.4, 1.0, 0.35, 0.08, 0.85],
           [1.0, 0.2, 0.04, 0.01, 0.0]

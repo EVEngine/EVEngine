@@ -705,6 +705,7 @@ function buildHud() {
     ui.select("hud");
     ui.setHostOverlay(true);
     ui.setHostPos(16.0, 16.0, 0.0, 0.0);
+    ui.setHostSize(620.0,210.0);
 }
 
 function refreshHud() {
@@ -733,7 +734,7 @@ eve_init = function() {
     local camera = eve.Camera2D();
     for (local i = 0; i < 4; i += 1) {
         local layer = map.getLayer(i);
-        if (layer != null) layer.setCamera(camera);
+        if (layer != null) {layer.setCamera(camera);layer.setTint(0.95,0.98,1.0,1.0);}
     }
     game = {
         world = null, byBody = {}, staticBodies = [], player = null, boss = null,
@@ -744,9 +745,9 @@ eve_init = function() {
         checkpointX = 112.0, checkpointY = 548.0, hasWallJump = false, hasDash = false,
         activeImpacts = {}, contactCounts = {}, crateTexture = gfx.newTextureFromFile("assets/crate.png"),
         rockTexture = gfx.newTextureFromFile("assets/rock.png"),
-        backgrounds = [gfx.newTextureFromFile("assets/background_forest.png"),
-                       gfx.newTextureFromFile("assets/background_ruins.png"),
-                       gfx.newTextureFromFile("assets/background_mine.png")],
+        backgrounds = [gfx.newTextureFromFile("assets/background-forest-detail.png"),
+                       gfx.newTextureFromFile("assets/background-ruins-detail.png"),
+                       gfx.newTextureFromFile("assets/background-mine-detail.png")],
         message = "Reach the ruins",
         messageTimer = 3.0, shake = 0.0, time = 0.0, hitStop = 0.0, accumulator = 0.0,
         effects = [], won = false
@@ -796,6 +797,25 @@ function screenY(wy) {
     return game.camera.worldToScreenY(0.0, wy, config.width.tofloat(), config.height.tofloat());
 }
 
+// Authored articulated pixel silhouette for the explicit non-Spine visual path.
+function drawActorSilhouette(e,sx,sy,width,height) {
+    local unit=width/8.0,hero=e.kind=="player",f=("facing" in e)?e.facing:1;
+    local walk=e.body.getLinearSpeed()>0.5?sin(game.time*11.0)*unit:0.0;
+    local bodyR=hero?0.22:0.43,bodyG=hero?0.37:0.17,bodyB=hero?0.48:0.19;
+    // Cape, boots, torso, shoulder guards, helmet and visor have separate silhouettes.
+    gfx.drawSolidRect(sx-f*unit*3.0-unit,sy-height*0.32,unit*2.5,height*0.68,0.56,0.13,0.12,1.0);
+    for(local leg=-1;leg<=1;leg+=2) {
+        gfx.drawSolidRect(sx+leg*unit*1.5-unit,sy+height*0.18+leg*walk,unit*1.6,height*0.28,0.09,0.13,0.19,1.0);
+        gfx.drawSolidRect(sx+leg*unit*1.5-unit,sy+height*0.40+leg*walk,unit*2.1,height*0.09,0.23,0.27,0.3,1.0);
+    }
+    gfx.drawSolidRect(sx-unit*2.4,sy-height*0.2,unit*4.8,height*0.47,bodyR,bodyG,bodyB,1.0);
+    gfx.drawSolidRect(sx-unit*3.2,sy-height*0.2,unit*6.4,height*0.13,0.48,0.57,0.61,1.0);
+    gfx.drawSolidRect(sx-unit*2.1,sy-height*0.49,unit*4.2,height*0.29,0.53,0.62,0.65,1.0);
+    gfx.drawSolidRect(sx-unit*1.6,sy-height*0.36,unit*3.2,height*0.065,0.045,0.075,0.09,1.0);
+    gfx.drawSolidRect(sx+f*unit*0.5,sy-height*0.36,unit*0.9,height*0.055,0.7,0.9,0.96,1.0);
+    gfx.drawSolidRect(sx+f*unit*3.0,sy+height*0.04,unit*4.0,height*0.045,0.72,0.81,0.83,1.0);
+    gfx.drawSolidRect(sx+f*unit*3.0,sy-height*0.02,unit*0.6,height*0.18,0.68,0.47,0.17,1.0);
+}
 eve_render = function() {
     gfx.clear();
     local region = game.player.body.getX() < 40.0 * 32.0 ? 0 : (game.player.body.getX() < 80.0 * 32.0 ? 1 : 2);
@@ -803,9 +823,15 @@ eve_render = function() {
     local tintG = region == 0 ? 0.16 : (region == 1 ? 0.10 : 0.09);
     gfx.drawTexturedRect(game.backgrounds[region], 0.0, 0.0,
                          config.width.tofloat(), config.height.tofloat(),
-                         0.72, 0.72, 0.78, 1.0);
+                         0.9, 0.95, 1.0, 1.0);
     gfx.drawSolidRect(0.0, 0.0, config.width.tofloat(), config.height.tofloat(),
                       tintR, tintG, 0.18, 0.45);
+    // Distant pillars move more slowly than the collision map.
+    for(local i=0;i<14;++i) {
+        local px=i*180.0-game.player.body.getX()*0.18;
+        gfx.drawSolidRect(px,150.0,22.0,570.0,0.045,0.075,0.10,0.5);
+        gfx.drawSolidRect(px-16.0,150.0,54.0,16.0,0.065,0.10,0.12,0.6);
+    }
     map.render(gfx);
 
     foreach (e in eve.view(Actor)) {
@@ -850,12 +876,7 @@ eve_render = function() {
             local height = e.kind == "boss" ? 80.0 : 52.0;
             local sx = screenX(e.body.getX());
             local sy = screenY(e.body.getY());
-            gfx.drawSolidRect(sx - width * 0.5, sy - height * 0.5, width, height,
-                              e.kind == "player" ? 0.25 : 0.9,
-                              e.kind == "player" ? 0.78 : 0.3, 0.5, 1.0);
-            local facing = ("facing" in e) ? e.facing : 1;
-            gfx.drawSolidRect(sx + facing * width * 0.25 - 3.0, sy - height * 0.25,
-                              6.0, 6.0, 1.0, 1.0, 1.0, 1.0);
+            drawActorSilhouette(e,sx,sy,width,height);
         }
     }
     foreach (effect in game.effects) {

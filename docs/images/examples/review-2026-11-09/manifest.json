@@ -1,0 +1,985 @@
+{
+  "schema": "eve.example-gallery.p1-recheck",
+  "version": 1,
+  "date": "2026-11-09",
+  "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "sourceState": "HEAD plus the source fixes in this working tree; not a clean commit",
+  "configuration": "Windows MSVC Debug SHARED, strict warnings, 203/203 modules",
+  "runtime": {
+    "exe": "b1132cdf231ee4b27e87dd349bed1b9998062701aa0e3b711c37d9f6c1c1fd9b",
+    "dlls": {
+      "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+      "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+      "EVBackends.dll": "d253eb3c96c163f02b690bdb4d2a420ec47fe3223c3cdad4bb88c6d3fe98b4a5",
+      "EVDomains.dll": "d7d238b8da0061d5948240dd7ae3f7ed723eb7e8584f371a8e6621af3199de44",
+      "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+      "EVEditors.dll": "e331b19448aa4f072957d6cde436c2a74db177fb64c7f311d23a4cd958b69a5f",
+      "EVFoundation.dll": "e50ce678e9d9205672a71197dcfae5857b90edecc7125700fe7e77fa3ee1a9e5",
+      "EVOrchestration.dll": "5e756ded5c33caba3c305a52a018e14ab04f0b0086fae973e8dd62398e29482f",
+      "EVPlatform.dll": "fa7f7368ac414749e2e223bc71b134ab2c100db812a4fdeffc74d4485d2e6aeb",
+      "EVWorld.dll": "efad3a448bbbf990ec92810fe635713557a7d3695e33b303c6749c42c56aac7e",
+      "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+    }
+  },
+  "runtimeBaseline": {
+    "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+    "configuration": "Debug SHARED full, 203/203 modules",
+    "exeSha256": "65e52f9619a087994ca13b60665904dcca03fac68b6eaac8f115f1cd4da47e77",
+    "dllSha256": {
+      "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+      "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+      "EVBackends.dll": "34af900bbda726346d223c7b3b91fc22de4b16d927586f1d04488affccff6451",
+      "EVDomains.dll": "d5377b3390cac05e1be6dc450292eb753f087578ca5fbd1e9b7809923993a4d9",
+      "EVEditors.dll": "d77612abec135b170f4237b8aebfac698b8000aa10aad3bc462babf7d872a4b7",
+      "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+      "EVFoundation.dll": "6b056942088383139d09ec36962253ffe928a4988dd41bc4c1632713dcb5816b",
+      "EVOrchestration.dll": "eb494fce4762e7746b90c4f48a0fa1be4a98cc5f7bf39bfeedc6d96fa0c06e72",
+      "EVPlatform.dll": "41924662f7f8ce34e051280ba33b893c4a03e792466d1ad3ecb915487019cbf9",
+      "EVWorld.dll": "67e40b576a7723cbe286e1c04e67805d71c6b378c67e8b99bf0b2d5cad4498ee",
+      "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+    },
+    "thirdParty": "e7e0a476be19a05839add497c29482c372f2c484"
+  },
+  "thirdParty": "prebuilt dependencies at pinned e7e0a476be19a05839add497c29482c372f2c484; engine and engine DLLs rebuilt from this checkout",
+  "method": "scripts/capture_example.ps1; standard load.nut; engine gfx.saveFramePng; no desktop capture or image postprocessing",
+  "sourcePatchSha256": "ed88b816a3f978933643309ffe548d5d2fb4899886cf627aa4fc53e1267d5f6b",
+  "results": [
+    {
+      "example": "ai-stage",
+      "status": "定位更正",
+      "finding": "README 定义为供 AI/MCP 布置的空舞台；默认地面属预期，后续可补引导演示。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/ai-stage.png",
+        "sha256": "3412fcd2a1156515d1a71790dd58c09067138aa5435c9967033e42c23e27f361",
+        "width": 1024,
+        "height": 768
+      },
+      "after": {
+        "image": "review-2026-11-09/ai-stage.png",
+        "sha256": "3412fcd2a1156515d1a71790dd58c09067138aa5435c9967033e42c23e27f361",
+        "width": 1024,
+        "height": 768
+      },
+      "source": {
+        "config.nut": "3a672baab05aeeebdd04eafbcdf5fccf28655d18856383a286c72841fee4610d",
+        "main.nut": "f29179675102f0dd1c8422d1c2d2bf46606f84a91db0fc686d4d3b5ffd7f853f"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "anime-character-lab",
+      "status": "前置条件已明确",
+      "finding": "本机没有 assets/witch.obj；新增缺失素材提示与准备步骤。未伪造角色或宣称模型导入通过。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/anime-character-lab.png",
+        "sha256": "caf99719790e993df06b82965cca5a28e0d8519c80ed1145df225ae87bcb04b9",
+        "width": 1200,
+        "height": 1000
+      },
+      "after": {
+        "image": "review-2026-11-09/anime-character-lab.png",
+        "sha256": "78ac69b24a142c9c1f81db0b8b04763e489de9b7104d58582d4aa1533e077502",
+        "width": 1200,
+        "height": 1000
+      },
+      "source": {
+        "config.nut": "27328d4983735017ae812b6415f4694218d187c08b019ba3750f6799001d7c32",
+        "main.nut": "6a2904ffb2c40d563a50557fafec40bf901cc55931a55b50b9149e351004041f"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "atmospheric-fog",
+      "status": "已修复",
+      "finding": "CPU 积分和上传图集正确；浮点除法/取模计算切片坐标时在第 24 层读到图集外。改为整数寻址并同步 WGSL；黑带回归由失败变为通过，完整雾场景黑带消失。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/atmospheric-fog.png",
+        "sha256": "ee4a16423ba819a4c85971297b61ce2550dde9f837d971035d445c45d5087558",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/atmospheric-fog.png",
+        "sha256": "69c9986bd21c0341b01b54891b6236e6226daba498fb965a868df7f6fae527e7",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "f662c70546166610e733a15bd5c7a9b90f2eb6b5bc6c32036a99b5ed3d36eefa",
+        "main.nut": "0ed06015ce665a5caf8aa9377c8e252da02facba3c7d1d2cf86b7d09341e3b20"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "building-3d",
+      "status": "定位更正",
+      "finding": "这是交互式建造入口；初始化只有网格和操作提示，尚未放置建筑，不是主体丢失。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/building-3d.png",
+        "sha256": "69a860516e21176d886a3f9aae08b8903e12e11200cdbc89a2a83151674cc8c1",
+        "width": 1100,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/building-3d.png",
+        "sha256": "69a860516e21176d886a3f9aae08b8903e12e11200cdbc89a2a83151674cc8c1",
+        "width": 1100,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "d1419f19ade14dff72dfc8b1e0fd4d265483293aa8478ef4a004c89c882512a4",
+        "main.nut": "3562b952c64d0a45f5337bc94942861217454fd9c9434c44dce52ced63b4f843"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "commandery-rts",
+      "status": "已修复",
+      "finding": "地面背景原先在单位之后绘制，遮住地图主体；修正绘制顺序及血条底色顺序。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/commandery-rts.png",
+        "sha256": "3ad55c2bf72df5c3bddbbd64b7b2760314c30d60932872170e0724cde33f2adc",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/commandery-rts.png",
+        "sha256": "d2cc565b32a02088a7866b4dba10a49febb18ec638cc3bb9c0f0e0b5452bb5c8",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "a99d8d39e51b9e25c23a8ea490dc5fdd9230481d3ad64105b73f1c2f23e3dc92",
+        "ecs.nut": "34ebe62f61b0406d60bf7bd03e0be14dd39afcf9b044356a2574768fd8df6762",
+        "main.nut": "06884874f78476088e39cbf12ba5f408a8a67d1946d572dd26e550a5cc6a2ae2"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "dungeon-generator-3d",
+      "status": "降为 P2",
+      "finding": "生成平台和连接可见；墙体、道具与镜头表达仍薄弱，属于展示完整度，未确认渲染对象丢失。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/dungeon-generator-3d.png",
+        "sha256": "2e3d973badb437276a273d2d573274c852e0fcf8e7e914fda013f926fa06ad46",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/dungeon-generator-3d.png",
+        "sha256": "2e3d973badb437276a273d2d573274c852e0fcf8e7e914fda013f926fa06ad46",
+        "width": 1280,
+        "height": 800
+      },
+      "source": {
+        "assetpack.nut": "f6520b98eae1eb8b2e7f3096b7dd4051d07a5fd59ed80825e6b5f61f975abbc2",
+        "config.nut": "197e62a75d9ded6f65eb3b7acb9172e7156639f25b67409d277fb43ab9e0053c",
+        "main.nut": "a94abb74e82c5e7db108c089de0e2a272df38e94aaa8aa13fdfedf9e81b7f017"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "editor-host-world",
+      "status": "已修复",
+      "finding": "原 onUpdate/onRender 不是标准入口；改用 eve_init/eve_render，显示实际挂载的 2 个包和 8 个面板描述。未宣称已组合完整编辑面板 UI。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/editor-host-world.png",
+        "sha256": "5703907ac3cf567e6b2cc360b9a4230eb9118e36e4151aa99311192ed096c56d",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/editor-host-world.png",
+        "sha256": "20b539bf7e362bcce61fc39a2c70f6c46b4f39e582cab10b9bbf9dd59c17b32f",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "107333ca6b4d9b690416bfcad6b5bc20d03190b137be15b64f4a6cc1b2d3b596",
+        "main.nut": "6a629156e66aea1a8db96ba0135fce16d71bf5fbcd0c6661de18edf3a00ca02a"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "glass-crystal",
+      "status": "已修复",
+      "finding": "自定义网格的 Less 拒绝 G-buffer 已写入的同深度表面；默认改为 LessEqual，显式 Less 仍受尊重。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/glass-crystal.png",
+        "sha256": "5491300596f8832f1c2c9b866d660aaed4cba30a88f963791522fb20fd054457",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/glass-crystal.png",
+        "sha256": "35a1d983eb75a85f74f2e85a4e18d90a1c6763e6ad4dfa2a0fdfb44b9bd3212f",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "9e663c2fb1ea830cfb9178b38b03b365ebaefb61fd4e437d2a0b537f10cbf0ef",
+        "main.nut": "c63a12f8a312adc4f5e755c817f0079b03f23548aac2ddfd95a7870055308350"
+      },
+      "shaders": {
+        "shaders/dielectric.frag": "cdef557ded3f6419d5967dee1b95f7447cae16c6da6566c9312428822faf11f1",
+        "shaders/dielectric.frag.spv": "17e34edf409815ca1d0ddb825faf03ff2febc21b772c23863ade8a4a7074c59a"
+      }
+    },
+    {
+      "example": "gpu-agents",
+      "status": "定位更正",
+      "finding": "当前脚本只有初始化、计算更新及日志，没有 eve_render 场景提交；空图不作为 GPU 仿真失败证据。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/gpu-agents.png",
+        "sha256": "1f4a3196ad4752004cc28395a24cf2993d9d64626bccb478a6b76e08e89da9a5",
+        "width": 960,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/gpu-agents.png",
+        "sha256": "1f4a3196ad4752004cc28395a24cf2993d9d64626bccb478a6b76e08e89da9a5",
+        "width": 960,
+        "height": 640
+      },
+      "source": {
+        "config.nut": "23d748b492e86d0b3f480834c8dfde5b99dfc92ec3c623b084a623230e9f0872",
+        "main.nut": "3682e8fb8ce2ed0751c360ee42e92e7c07577cd00ecb607adcffe7e415de2b35"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "hex-planet",
+      "status": "已修复",
+      "finding": "修正 Light3D 数组步长造成的 Frame 偏移不一致；地貌颜色恢复。球体与侧栏的遮挡继续按 P2 调整。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/hex-planet.png",
+        "sha256": "6f443d97eaf7685ffa70f38d4789093e75b6e81b4ddbb454a355bfa191ab60b6",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/hex-planet.png",
+        "sha256": "bbd14ff1ddd6e737266b4c6fb943903734115043b87e2ff880a7991232e0aaf8",
+        "width": 1280,
+        "height": 800
+      },
+      "source": {
+        "civilization.nut": "1f1be338bc88904fd76e34a9ce407efe580f5d386f6e248324aa55e48c0e66e1",
+        "civilization_test.nut": "05c942a2be1a047256e91fc4c939d2784dbcc0e1e7d31f19a5fa5a36e120c049",
+        "civilization_view.nut": "aa2569f3e70e15257a80534cbc42a31d8f580c71c4d3a1937a22e9dc27f728bd",
+        "config.nut": "e4bd2fbf49c379a0b7394e269f1f72eb1e048810e53ffd0ef730b59d7282baff",
+        "game.agent.json": "03f4403ee6a6df5ac4c9938583efb829f41e06ceb81a717d3b2a6ccd9c1c9c8d",
+        "main.nut": "33fef804cc25ed5bc378cc9a92e7ac67c9386e3bea65f03295dd4655d19215d4"
+      },
+      "shaders": {
+        "shaders/hex_planet_terrain.frag": "6627e165ea3abfd42280dea4bc624245140cf90e87a4dcc35e1ccc5f2c5ada38",
+        "shaders/hex_planet_terrain.frag.spv": "5701710dfb4f8c437abdb5a5fe0ad5c02d8434d5ec72abea816b2bcecb17e2ea",
+        "shaders/hex_planet_water.frag": "e65347947ead7c93b67e3399669f95d7659e57eab315d047bc29218c279fc7d9",
+        "shaders/hex_planet_water.frag.spv": "683d315c9ebf0f4dadd0322c971c698a728d3ef760a4198206484ded5dca9c45"
+      }
+    },
+    {
+      "example": "hex-terrain",
+      "status": "已修复",
+      "finding": "统一顶点/片元 Frame 的灯光布局并重新编译着色器；白青块面异常改善，亮度和取景仍可按 P2 优化。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/hex-terrain.png",
+        "sha256": "1fc30f94f43d0e8375174a61e6e32a4e5172ef87b5a41f547045ae24122ba5ad",
+        "width": 1100,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/hex-terrain.png",
+        "sha256": "8ef8cd15b30cebac95e38b6ecb706dbc6e56a0707fc49d3af29f95eda91cc76e",
+        "width": 1100,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "c69b7d61698a7fb3d5d403ce090b0cb0f4227967a6a44966e73b20157171bfee",
+        "main.nut": "a37ac2d62f44a0ae4c314f11df30ac24f27ea3623a15fbfc545799fbd58aa0db"
+      },
+      "shaders": {
+        "shaders/hex_terrain.frag": "acece7028888f2584b7a420060fec7f0ec0dacbfe3b43d2f6d9856f3485a7815",
+        "shaders/hex_terrain.frag.spv": "e0ab7de08fb785eda40f88440a5e85899b0e34c43dcf417b637c58b80a900709",
+        "shaders/hex_terrain.vert": "b6793769fd16d19169139ac0d1f7a5d6bae0b3cc45aa7b69a0d61a0509a24208",
+        "shaders/hex_terrain.vert.spv": "b34d02db056c69f05f948d7aae2ccd70fb4ed975a8469a997551bfa44c697b50"
+      }
+    },
+    {
+      "example": "hex-terrain-3d",
+      "status": "已修复",
+      "finding": "恢复完整 Light3D.spot 字段与后续 Frame 偏移；地表分区可辨。帮助面板遮挡仍属 P2。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/hex-terrain-3d.png",
+        "sha256": "60d0e4edcc8a253cb5bfa1398c4f32d1f84ded56c2d738ff08ec102c842157ff",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/hex-terrain-3d.png",
+        "sha256": "60c742e3b50323f32fbaed7947bdfae427cb4f920465df59f60f8606529e1bd3",
+        "width": 1280,
+        "height": 800
+      },
+      "source": {
+        "config.nut": "3bc1e913bfc3b97fae7db942081bcbdcd24aaaff8d406ecde970746393a80044",
+        "main.nut": "975752e91fa3bab23980303e9b2a8d835c24d918df4bf3c99937ff6076b74a70"
+      },
+      "shaders": {
+        "shaders/hex_map_feature.frag": "119303c5e982ab81cd07e0c3f9808782e3f514f3de6de3f6e721daa49208bf51",
+        "shaders/hex_map_feature.frag.spv": "6f8361600d833a7ceb5cd57afd4470fc867a04429a7e7e776932c136db7686a3",
+        "shaders/hex_map_fog.frag": "8dc28a07f59cea361f17d69ba0814f8520abc0f2bd1b264235493c658a378bbe",
+        "shaders/hex_map_fog.frag.spv": "bf7fb76972f86644da9e90663a04ec2dd9c7bb1d28dc0541f78c9c197e057eb4",
+        "shaders/hex_map_river.frag": "145e627c6969b423fe3da839d7d5d96a2112b272da86496a8ef0293e99c55cb5",
+        "shaders/hex_map_river.frag.spv": "d7ac594b6cedf524e1064ca62413306dab609d985e7e692769c0bc9d769aba8c",
+        "shaders/hex_map_road.frag": "a863f54a51b6ad02aef0ae3e6a0e594ddc5d218f1e50bc79dbf89e909df60952",
+        "shaders/hex_map_road.frag.spv": "45b4d46e59000e4017b01453d76b1c46d81fa4893a8aadc22894289235ae71fd",
+        "shaders/hex_map_terrain.frag": "c06e8ec71ae204229e8614ace6cecc2ee45bda9fac5f1aa71106f3fa7c3e2838",
+        "shaders/hex_map_terrain.frag.spv": "d942d3146baab26e1de412336c6daee5a233b7df95251829c5c6209556ac740d",
+        "shaders/hex_map_water.frag": "1a713946cf13b6acaec44b44da1ff4d4caabce4ea6871897929da9a134f6879c",
+        "shaders/hex_map_water.frag.spv": "e4e503a33bf38ee9e4bb69d056e332f4624bd4a64a3c64f6677634444702954a"
+      }
+    },
+    {
+      "example": "ink-arena",
+      "status": "已修复",
+      "finding": "使用修复后的自定义网格深度默认值，墙面和地板恢复，墨迹可与底材区分。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/ink-arena.png",
+        "sha256": "7b26c447d16c3caea08d372fef446142680bc24b08243c2a2851bb7475fa5410",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/ink-arena.png",
+        "sha256": "8db2f8ee2fbb98d0c34db9840bb6fc7d3a00eefc7b4b317da6371a5d5be10356",
+        "width": 1280,
+        "height": 800
+      },
+      "source": {
+        "capture_settings.nut": "987d07cf6866fefaf09bbaf65f24649f26857560b3269404d77c166e498013fb",
+        "config.nut": "daf7e7d4d11053273d4b817ab7a92ed7fd55da6fbfd75631ee038411ae3c4c7e",
+        "main.nut": "fa3ad47026fd686ee107bac8ba052f98957a58d36adb53d88c0644e49a9793ac",
+        "parameters.nut": "4c987aeae15693da633fa22c514c1d8b78951fbc328a03ed583023979b552249",
+        "scene.nut": "b872ecde01aba4a1151c31f6c67903e6839cbe63785100a9291a3e57fd5a0fcd",
+        "verify.nut": "fb0003f7311894ca69a50907972bc2ab9191cdc082cf8aebd68f1cecd9fb8580",
+        "verify_gpu.nut": "dc0e306710062e1ae70d4b5e7ccc2decfdd6663e98f272dd3b76201815e58914"
+      },
+      "shaders": {
+        "shaders/ink.frag": "50486bca0c703fd72cbd18fd919c988699489cf0acbaa159518ceb2f5292e44b",
+        "shaders/ink.frag.spv": "2667b4762a17fad2a5bd3f9a50dc921669f2700778b4e51021c76588e1fd7ee7",
+        "shaders/paint.frag": "7a46a344272d078431b709abbf41572179f2b6cc611d62e46e78a8875a98f14a",
+        "shaders/paint.frag.spv": "b9a4b4b9408f3e19fe5ba1185ed38314b04bbc52c4106a08aa49d82468c665d2"
+      }
+    },
+    {
+      "example": "ink-combat",
+      "status": "取帧更正",
+      "finding": "默认 120 帧落在消散后的空白间隔。新增预设冻结正常重播的 0.38 秒刀光；不是角色/关卡缺失。",
+      "frames": 120,
+      "preset": "scripts/gallery_presets/ink-combat.nut",
+      "baseline": {
+        "image": "review-2026-11-09/baseline/ink-combat.png",
+        "sha256": "cb29fd3f6e2e9403ab878c9f3ad4179b247bc7ab3428ec0fae2dfb518d84c3c6",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/ink-combat.png",
+        "sha256": "e42694699d5160299a6b7b74d60ac04a01d0170b1590f775ad5480e5d8d3090d",
+        "width": 1280,
+        "height": 800
+      },
+      "source": {
+        "config.nut": "ab90e1c4efbb85f97ca5093a9515bfdda31d5fa84359d84e5f4cc986e0f0bb55",
+        "main.nut": "86632a46ece5dbdf090f59cd38d48974e37757d28a6800ff1f10f96c1d979d9d"
+      },
+      "shaders": {
+        "shaders/combat.frag": "b4658e8c4dc54bf2cc73228f9d14cdc155ee7d4dd26ed3e7e520986c907f4d5b",
+        "shaders/combat.frag.spv": "0637e890520407d78cbe9fcdd9893811b1250464d8989b03232fa8ba065661f0"
+      }
+    },
+    {
+      "example": "inspector-demo",
+      "status": "已修复",
+      "finding": "Database 单元格不再被压缩到窄列；使用最小列宽、水平滚动与原生控件行高，字段不再叠写。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/inspector-demo.png",
+        "sha256": "a59f85bba4a7fffd72095c75035301524ac12e9ee30fac0a5db7644b740d7574",
+        "width": 900,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/inspector-demo.png",
+        "sha256": "3d40660cfe9f82e77dc900991b466ae412204bd3103cf258a018579b6f28139c",
+        "width": 900,
+        "height": 640
+      },
+      "source": {
+        "config.nut": "d92aee98823b7d71d5ee8516993fbec5e307473fd2bac02114cffe1f4a6e4fea",
+        "main.nut": "afb2fa868809e187ea8079ade5f64ac6f31732387aa77b351f51a0cb2916d5b8"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "interior-mapping",
+      "status": "已修复",
+      "finding": "补齐 Frame 灯光布局并重编译，窗格与室内着色恢复可见；仍可优化自动环绕取景。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/interior-mapping.png",
+        "sha256": "eb08f296a361f1e04c6567b9537f80e558719f80f04680740e6db573222a0f0a",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/interior-mapping.png",
+        "sha256": "62d62d1e44c18d04b885d17dbb26a39b48a7a6e81d7de1e06119428e3c1623d6",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "12981732d849d37f0f8ea3627cab187c835c7f999f75902532e263e388d3f621",
+        "main.nut": "c19310b3b5a358c07e119cdae0f1a899724777376eeb09f658751f1a2e078707"
+      },
+      "shaders": {
+        "shaders/interior_mapping.frag": "f09b70aa26af3fc1efc99a1fe3735f10ec3a19e4d97bda9ed58bb939fc461ab2",
+        "shaders/interior_mapping.frag.spv": "518a762c7dd2299841bb087912d61213f5d64521f2ddba3231ca61aedd019586"
+      }
+    },
+    {
+      "example": "metroidvania",
+      "status": "降为 P2",
+      "finding": "素材是机制夹具；当前 Spine 能力不支持夹具中的 IK，日志明确进入彩色矩形兼容显示。绿色场景仍需美术提升，未冒充完整 Spine 动画验收。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/metroidvania.png",
+        "sha256": "a52f78c74da5f15f06bd8ba37d4b7bed9a2b7416e3162bf26e867b3a6f6cc83b",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/metroidvania.png",
+        "sha256": "c3b4355315ef6d8ad427726653312a9885e540c9dd29b5e9d776fd6ce13c9685",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "1220bbc731366241582a7f7aeae947331f9aff07285b7e12a4c6e88345a9e98e",
+        "ecs.nut": "4b17517a885d6565a22f052598ec7ae0cd86d2922994ae39a3f6526f3247a43e",
+        "main.nut": "516666330818ed935c5b603378c98aaf8643445ba843dbe2c9b08e3b764f2e01",
+        "tuning.nut": "19d2a4aadb11504aa634920f99d9bc2a1ab004b4a7e9cb7cfb1725b9ccb7eb6a"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "model-converter",
+      "status": "前置条件已明确",
+      "finding": "原 setHostPos 把宽高当作 pivot，导致提示面板移出屏幕；修正位置、尺寸和右侧锚点。当前缺少转换插件/bpy，未验证真实模型转换。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/model-converter.png",
+        "sha256": "f9499b34b12a279310677725a25510673f8fac694ac259c645758648adcdc332",
+        "width": 1024,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/model-converter.png",
+        "sha256": "b41be3d989adbd1e47e5cd72e5db6b3f9fb806434e3f94b9e1fbd5f685df433d",
+        "width": 1024,
+        "height": 640
+      },
+      "source": {
+        "config.nut": "539bdc215296657f94b358fc930341c39c15642c2a40d65206331009b0bf5190",
+        "main.nut": "564696aef9a03a53c633f736cbfc5a3b7f269121d9e82a07faf1f77af4f7fdd3"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "pcg-biome",
+      "status": "已修复",
+      "finding": "图执行结果改为模块注册表拥有的完整点集快照；例子使用 executeResult，发布不再被 owned points 检查拒绝。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/pcg-biome.png",
+        "sha256": "b427ae9478810a023286a8a7a6e3fdb7316ecb2550bc5898bf3f1ba52480d430",
+        "width": 960,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/pcg-biome.png",
+        "sha256": "62aea0ed43ecfaa116f09413a856b3771e1f96b38b2ed6b89beb679a4a364d4e",
+        "width": 960,
+        "height": 640
+      },
+      "source": {
+        "config.nut": "daee265fb6b45fc4d6dd68fd57c56a71581202c906ab7e4f6bb36af317ad2e07",
+        "main.nut": "2103e3f883a0d89161c7f2eeb9ac04a75095a6f0c5d4bbff3b120bab60c7e1a6"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "rendering-chain-lab",
+      "status": "已修复",
+      "finding": "无效果基线及单功能开关定位到 SSR/RTGI 合成。移除只叠加间接光的 Vulkan 特殊分支，使用已有显式合成路径保留基础场景；完整效果下主体恢复。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/rendering-chain-lab.png",
+        "sha256": "587739ee0ab311bb3b9e10f7f979b2d4ee977a989901e41ced6ea8082aee173b",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/rendering-chain-lab.png",
+        "sha256": "4ec82274db91754428759a8d7e97a0388e80c7408e178ac5cb24ae934d109493",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "c2e50eff68f8b5ae69e941cc74fa127b183735e51dcef112aefc590463abfd39",
+        "main.nut": "ece6f1ef87575d589935cfac3dbe8a76efeb6fa3e0bb705de8218528b698c73d"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "rpg",
+      "status": "已修复",
+      "finding": "为玩家、敌方与日志设置独立尺寸和位置，日志移到右侧，消除属性/日志重叠。方块角色属于机制示意。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/rpg.png",
+        "sha256": "3fc4d4d81914b1d14aaf79081c1be6c455616e9f5b12e41c94311fc9ea84e961",
+        "width": 960,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/rpg.png",
+        "sha256": "0b7a4d7c77f93397c7da886c084a8e9d061ba5bef086bd27dc63cf0ec3f16b65",
+        "width": 960,
+        "height": 640
+      },
+      "source": {
+        "config.nut": "1e5f4aba07841f6128eecc0843c10b26919a25f5d3fffc286ce707297aa62eb2",
+        "main.nut": "3aa8f619767ddae47d1744df95f967c08902cf309743d7335c2e1a2f66bedffb"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "skyscraper-generator",
+      "status": "已修复",
+      "finding": "persist camera 遇到引擎内置 2D camera，跳过了 3D 相机创建；改为 towerCamera 并调整全楼取景。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/skyscraper-generator.png",
+        "sha256": "e267b2523aa74be5a8d727aa334ff4c10573341126946f438ea05c029618c5b3",
+        "width": 1000,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/skyscraper-generator.png",
+        "sha256": "99aee6377e8e6dea7ecffa3feded4e2cf7e9b7105ed963f809f13eb1658eb513",
+        "width": 1000,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "5d5028658d592da4fb80f4d6304deaf3e31cb247401ac8291ab31532a3be37cf",
+        "main.nut": "157cc4551ab05cd03d9a2612a70767ec3158ae1413212f0f8333ddbe2a3c9d50"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "softbody",
+      "status": "已修复",
+      "finding": "将面板背景移到布料/流体之前绘制，恢复网格与粒子；进度条也先画底色。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/softbody.png",
+        "sha256": "60b052a1f94a4524c832c386ca18416903b2e9648f8132fa24572f01502d1d38",
+        "width": 900,
+        "height": 560
+      },
+      "after": {
+        "image": "review-2026-11-09/softbody.png",
+        "sha256": "cb1e6f77afa5b362ef3ed50408de6eed8f7d6c6b42154f71733f70a4ef042d51",
+        "width": 900,
+        "height": 560
+      },
+      "source": {
+        "config.nut": "84914272f4aa1d588f98349fad561b2ff34833ed6e70ae7414de7e31716153b0",
+        "main.nut": "f352a940d9453474ad6f9a5c26d990615cff41e230dbd43509ea563af261662b"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "terrain-gallery",
+      "status": "已修复",
+      "finding": "修正程序生成地形着色器 Frame ABI 及嵌入字节码，彩虹地表恢复自然地貌分区。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/terrain-gallery.png",
+        "sha256": "2922f73c971f1f5be7643452c800817d54446e1d98c437de57e45594b6a0236f",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/terrain-gallery.png",
+        "sha256": "2be32a8808d0bf1eb96982154d4abdd1ccd013e942e0a8d408ad6a3e7681f59f",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "9d4e4af0f8eb209a22a9180602f93bac53cd1220e05f3ea587cb90b405fa975f",
+        "main.nut": "677803e78f9a19de0cddde6cbe4d3bf9e5957985c545d43b664e22480c9bdb52"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "terrain-preview",
+      "status": "已修复",
+      "finding": "修正地形/水面兼容着色器的 Light3D 布局；相同种子的地貌、河湖颜色恢复。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/terrain-preview.png",
+        "sha256": "9388c83f7fa9692564d3170d53a1c5172f6a60d45aea8adb0ebf5aa5571be0f5",
+        "width": 1000,
+        "height": 700
+      },
+      "after": {
+        "image": "review-2026-11-09/terrain-preview.png",
+        "sha256": "864f4206242e519a37d5873aafc583f14981f0e719762fcc518a8f91e3803946",
+        "width": 1000,
+        "height": 700
+      },
+      "source": {
+        "config.nut": "482b37116d648ec7eb0f19c385f2d8fef3919b36d71a3bd45715ccbe4dd5dce8",
+        "main.nut": "e90c9a74031434bcc23447b21bdd779edcdd2e7733bc1add166b5af45150fd8f"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "terrain-smooth-mountain",
+      "status": "已修复",
+      "finding": "共用地形着色器布局修复后，饱和蓝色山体恢复自然材质；轮廓和镜头表达仍可继续改善。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/terrain-smooth-mountain.png",
+        "sha256": "30d0499f937e36287a4f9eec92f9ee57c226d9993d5900546fc55de207b00bc5",
+        "width": 1200,
+        "height": 800
+      },
+      "after": {
+        "image": "review-2026-11-09/terrain-smooth-mountain.png",
+        "sha256": "7c6413bb1574101239b3338793a29d229733fe82d147b548bdc4217594c8c755",
+        "width": 1200,
+        "height": 800
+      },
+      "source": {
+        "config.nut": "3a6dcf781d475dfac0349ccc1acf8fd035cfa89a68b7d71d2425e9f098af33c3",
+        "main.nut": "2da38d10006a196fd5822f0d6b9bca1b77665edb5164eedf82cc038b91d9f0fb"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "topdown-procmap",
+      "status": "已修复",
+      "finding": "修正共用地形着色器后，黄/品红地表异常消除；树冠过密遮挡路径仍按 P2 保留。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/topdown-procmap.png",
+        "sha256": "a9ce535edf054d9608806b847db8651afc389b9c8617069a60dda20d4c66fc49",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/topdown-procmap.png",
+        "sha256": "6297b14b5ef79888b7f0e11de08824cf26384dab1ced07e2f5975a263ed9dba8",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "022b521f5e5c6fb55363c55da3e3490f89cb1450c5e1d48cc50484268652259a",
+        "main.nut": "b53abf283826697d15ac898572aa96c100bf0f210d55deb7d2f77c7fa92cf811"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "unity-vfx-port-lab",
+      "status": "已修复",
+      "finding": "权威配方与演示副本的颜色字段改为加载器支持的 colorOverLife；恢复焰色、紫色传送门与烟雾淡出。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/unity-vfx-port-lab.png",
+        "sha256": "90192abcda8c8dfa3cbda663b4784c5bf4126eff12bfb5a030fd77f3632ffce8",
+        "width": 1100,
+        "height": 640
+      },
+      "after": {
+        "image": "review-2026-11-09/unity-vfx-port-lab.png",
+        "sha256": "a090b6e56bb964eebc545008b0bf9b7117ef11fdb6d80686336f1ac5aa7ae51c",
+        "width": 1100,
+        "height": 640
+      },
+      "source": {
+        "bonfire.effect.json": "25fd5fe86816f2c26ace738e987a96f3b14bcc3d5484aba1f946abcdc569d195",
+        "config.nut": "764d40429181585c9324a6eb607b046312cad9555480b2395112013902b13c05",
+        "fireworks.effect.json": "2beaadd8cf75d3ed08b8ab9c3ff94716606481105de918883c1a5c8178c535ad",
+        "fire_flipbook.effect.json": "93f52178bce67b8da36ed1c90bf20b8e3b88be0755f9051a28fda0120127ef68",
+        "main.nut": "2fa5e2534e94342e054f3ef7b0a1a51ec9da83654f348a119963e84bf354d0fd",
+        "portal.effect.json": "a3b4eefef2fd65d3ff105666e7475e7c39c072f0185ebaef439f01270c9e03a8",
+        "ribbon_dissipate.effect.json": "5e0f2c5a4f92e45da677056f285f7f987c5349cb66ac545fab82efa8fad107ba",
+        "smoke_flipbook.effect.json": "5669d1d639bf0ddcef1e3b5a6c9da1e6aeb74d8e884f1e79795e93a0a2aaf643"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "urban-generator",
+      "status": "已修复",
+      "finding": "镜头轨道约 150 单位，超出默认 100 的远裁剪面；改为 500 后生成网格可见。地块/道路的材质分区仍可按 P2 改善。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/urban-generator.png",
+        "sha256": "7cf8dcc4ea05b67a5d373d8fd04cd550cf7aeeb6fed8e9c918c5969d50239c7e",
+        "width": 1200,
+        "height": 760
+      },
+      "after": {
+        "image": "review-2026-11-09/urban-generator.png",
+        "sha256": "6f6e8ee98d8bf14994f23ba334221f4e614384203645c396b419ef5af8a7f84b",
+        "width": 1200,
+        "height": 760
+      },
+      "source": {
+        "config.nut": "760cb8b62064734ad7017b9aec3852176b32d01562b60aa87363171c4abe629a",
+        "main.nut": "862c4e15660ee801cd172823f1e3958fdaf7d724beab422cc40d3624f24b923f"
+      },
+      "shaders": {}
+    },
+    {
+      "example": "venom-transform",
+      "status": "取帧更正",
+      "finding": "静态 T 姿属于覆盖材质演示模型；补正常 scrub 状态的开始/中间/结束对照，单个 120 帧不能判定变装流程失效。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/venom-transform.png",
+        "sha256": "f4d90db531fa9474e0195dad622f99a686486988344345f3c493c342ded334c2",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "image": "review-2026-11-09/venom-transform.png",
+        "sha256": "449e110377f31a005df9c207fae128a4eea8c30e5a7d723b7af2e402798865c5",
+        "width": 1280,
+        "height": 720
+      },
+      "source": {
+        "config.nut": "4bcbf3f35b85f0afc3562d4fbbef49063a049c33a9890b76df6a5ddae36760a4",
+        "main.nut": "06da75631db233d8ddaae4d76c844467a1124df76010abb3b1349b8929e0edb1"
+      },
+      "shaders": {
+        "shaders/venom.frag": "b6b09485e537f82640dc3c6ce14731cde6340228c64b6c5658b9faa86bc1af3c",
+        "shaders/venom.frag.spv": "6fc4137d305c7430822ac987dcd4282339ae635c56159eedf5eb2dc443ad9100"
+      }
+    },
+    {
+      "example": "vrm-avatar",
+      "status": "定位更正",
+      "finding": "README 明确默认是两个三角形的合成 VRM 合约夹具；没有额外 model.vrm 时，不应按完整角色显示故障计 P1。",
+      "frames": 120,
+      "preset": null,
+      "baseline": {
+        "image": "review-2026-11-09/baseline/vrm-avatar.png",
+        "sha256": "90d2f0b8bfdba2f2c289c4be6b6113df23ef41402d57f043c7968e07e70fe92d",
+        "width": 1000,
+        "height": 900
+      },
+      "after": {
+        "image": "review-2026-11-09/vrm-avatar.png",
+        "sha256": "d175da6fb01d046581a5f88e81cb50ea956262e1ba0f084b512410b16d240607",
+        "width": 1000,
+        "height": 900
+      },
+      "source": {
+        "config.nut": "6513469b2ce9c4feb934f3d329f14a612def0a918e98f5d38795c1fdf47b0693",
+        "main.nut": "fe223a48e74483abede8b1d301957dfe82914a5e0973121f10d0ab452857b4af"
+      },
+      "shaders": {}
+    }
+  ],
+  "variants": [
+    {
+      "example": "venom-transform",
+      "state": "start",
+      "image": "review-2026-11-09/venom-start.png",
+      "sha256": "3a0bf8a93a63e83bd1cbdd4cf6e877770b508fddc5a41043d02281b4b429324d",
+      "frames": 120,
+      "preset": "scripts/gallery_presets/venom-start.nut"
+    },
+    {
+      "example": "venom-transform",
+      "state": "mid",
+      "image": "review-2026-11-09/venom-mid.png",
+      "sha256": "e367f4de5e9053cdbc6fb7938406ece890f3babd7841c4130a3b579ce7e3ad4c",
+      "frames": 120,
+      "preset": "scripts/gallery_presets/venom-mid.nut"
+    },
+    {
+      "example": "venom-transform",
+      "state": "end",
+      "image": "review-2026-11-09/venom-end.png",
+      "sha256": "32a600ed3427acfd948d008cb0bf7d2046b7345c687c2601a377676748cace29",
+      "frames": 120,
+      "preset": "scripts/gallery_presets/venom-end.nut"
+    },
+    {
+      "example": "atmospheric-fog",
+      "state": "fog-off",
+      "image": "review-2026-11-09/fog-off.png",
+      "sha256": "2346705071d2875ddea267c6c4bcef89a5c9002389e95bce5ba8fbd5efebff0e",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "atmospheric-fog",
+      "state": "fog-no-shadows",
+      "image": "review-2026-11-09/fog-no-shadows.png",
+      "sha256": "ee4a16423ba819a4c85971297b61ce2550dde9f837d971035d445c45d5087558",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "atmospheric-fog",
+      "state": "fog-no-proxy",
+      "image": "review-2026-11-09/fog-no-proxy.png",
+      "sha256": "51a723dda1cfceca41a2ed2cf457ff2d6379f856e73b7d2936360b7895ada66f",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "rendering-chain-lab",
+      "state": "chain-baseline",
+      "image": "review-2026-11-09/chain-baseline.png",
+      "sha256": "7504f114e0398806af7a78159f7893c14cfe7ed74f00d299409c09cf5db87670",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "rendering-chain-lab",
+      "state": "chain-taa",
+      "image": "review-2026-11-09/chain-taa.png",
+      "sha256": "dd0ed079ddbaa362f63dcae0a852a61932b35bba9c1d18a188ac23df0385da1d",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "rendering-chain-lab",
+      "state": "chain-ssr",
+      "image": "review-2026-11-09/chain-ssr.png",
+      "sha256": "10eb218636e38f0e78afc77833f662ebe53f204a3793d09702586fb78599c09e",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    },
+    {
+      "example": "rendering-chain-lab",
+      "state": "chain-rtgi",
+      "image": "review-2026-11-09/chain-rtgi.png",
+      "sha256": "772f3ffa48c3a9fe4306ef1b5772bd8be3037f248fc660061027b496c6fb09e8",
+      "frames": 120,
+      "purpose": "diagnostic isolation before the corresponding fix; not a repaired final frame"
+    }
+  ],
+  "galleryAliases": {
+    "building-3d.png": "69a860516e21176d886a3f9aae08b8903e12e11200cdbc89a2a83151674cc8c1",
+    "hex-terrain.png": "8ef8cd15b30cebac95e38b6ecb706dbc6e56a0707fc49d3af29f95eda91cc76e",
+    "ink-arena.png": "8db2f8ee2fbb98d0c34db9840bb6fc7d3a00eefc7b4b317da6371a5d5be10356",
+    "interior-mapping.png": "62d62d1e44c18d04b885d17dbb26a39b48a7a6e81d7de1e06119428e3c1623d6",
+    "metroidvania.png": "c3b4355315ef6d8ad427726653312a9885e540c9dd29b5e9d776fd6ce13c9685",
+    "rpg.png": "0b7a4d7c77f93397c7da886c084a8e9d061ba5bef086bd27dc63cf0ec3f16b65",
+    "terrain-gallery.png": "2be32a8808d0bf1eb96982154d4abdd1ccd013e942e0a8d408ad6a3e7681f59f",
+    "terrain-preview.png": "864f4206242e519a37d5873aafc583f14981f0e719762fcc518a8f91e3803946",
+    "topdown-procmap.png": "6297b14b5ef79888b7f0e11de08824cf26384dab1ced07e2f5975a263ed9dba8",
+    "venom-transform.png": "e367f4de5e9053cdbc6fb7938406ece890f3babd7841c4130a3b579ce7e3ad4c"
+  },
+  "summary": {
+    "定位更正": 4,
+    "前置条件已明确": 2,
+    "已修复": 21,
+    "降为 P2": 2,
+    "取帧更正": 2
+  },
+  "unknownFieldPolicy": "Consumers may ignore unknown metadata fields; unsupported schema versions require explicit support. Image integrity is verified by SHA-256.",
+  "runtimeScope": "Final results and venom playback variants; diagnostic variants precede their corresponding fixes.",
+  "validation": {
+    "sourceBuild": "PASS: Windows MSVC Debug SHARED, strict warnings, 203/203 host modules",
+    "nativeCases": 5,
+    "nativeAssertions": 51,
+    "nativeFailed": 0,
+    "nativeSkipped": 0,
+    "nativeMethod": "Per-process CTest using an unchanged projection of the official generated registrations",
+    "shaderLayoutPythonTests": 3,
+    "smokeRunnablePassed": 27,
+    "smokeFailed": 0,
+    "assetPackNonRunnable": "particle-effects; actual JSON exercised by the native asset integration case",
+    "workingTreeQuality": {
+      "command": "make check CI_BASE=HEAD",
+      "passed": true
+    },
+    "defaultQuality": {
+      "command": "make check",
+      "passed": false,
+      "remaining": "Five pre-existing ownership/lifetime documentation findings in unchanged src/modules/database/Database.h at the origin/dev base"
+    },
+    "additionalTarget": {
+      "name": "scene_authoring_contract_test",
+      "passed": false,
+      "reason": "Unchanged auxiliary target lacks EVENGINE_TEST_BINARY_DIR / EVENGINE_SOURCE_DIR definitions; not included among passed checks"
+    },
+    "notRun": [
+      "complete native test suite",
+      "OBJECT release link",
+      "browser WebGPU runtime"
+    ]
+  }
+}

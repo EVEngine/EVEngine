@@ -24,7 +24,7 @@ layout(location = 4) in vec3 vCameraPos;
 layout(location = 5) in vec3 vViewPos;
 layout(location = 0) out vec4 outColor;
 
-struct Light3D { vec4 posRadius; vec4 color; };
+struct Light3D { vec4 posRadius; vec4 color; vec4 spot; };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
     mat4 mvp;

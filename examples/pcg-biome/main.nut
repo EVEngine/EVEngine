@@ -33,9 +33,9 @@ function buildBiomeCell(request) {
     graph.addNode("prune", "self.prune");
     graph.setNodeFloat("prune", "radius", request.getLevel() == 0 ? 38.0 : 10.0);
     graph.connect("biome", "prune");
-    local result = graph.execute("prune");
-    if (result == null) throw graph.getError();
-    return result;
+    local result = graph.executeResult("prune");
+    if (!result.ok) throw result.status.summary;
+    return result.value;
 }
 
 function pumpRuntime() {

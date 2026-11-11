@@ -1,0 +1,233 @@
+{
+  "schema": "evengine.urban-example-visual-review",
+  "version": 1,
+  "date": "2026-11-11",
+  "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "sourceState": "dirty",
+  "sourcePatchSha256": "54cd3c9bf6e41ea0bdaaf2f864815eaa37b9149c94d4b92ad750ed82bdb2120b",
+  "configuration": "Windows MSVC Debug SHARED strict; 203 modules; eve and unit_test_procgen rebuilt from current source",
+  "method": "scripts/capture_example.ps1 -> gfx.saveFramePng, 120 frames, raw unedited PNG",
+  "before": {
+    "path": "before.png",
+    "sha256": "ac8572634b7c99275160281b5e7d7e4e8bc8f89a707f85ef149a7faa54f36812",
+    "width": 1200,
+    "height": 760
+  },
+  "after": {
+    "path": "urban-generator.png",
+    "sha256": "5b5482b3fe30457f437f406a037f2dd2b6fcce0ea6931d62dcc9b807b66a42af",
+    "width": 1200,
+    "height": 760
+  },
+  "defaultRun": {
+    "example": "urban-generator",
+    "captured": true,
+    "frames": 120,
+    "seconds": 10.7,
+    "runtime": {
+      "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+      "dlls": {
+        "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+        "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+        "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+        "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+        "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+        "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+        "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+        "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+        "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+        "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+        "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+      }
+    }
+  },
+  "variants": [
+    {
+      "example": "urban-generator",
+      "label": "opposite",
+      "setup": "cityYaw=220.0;",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "opposite.png",
+        "sha256": "0504ef792e7a9bb437c0d95e9a7cc8b9a11c12912505444011859d1d41c5b168",
+        "width": 1200,
+        "height": 760
+      }
+    },
+    {
+      "example": "urban-generator",
+      "label": "plan",
+      "setup": "showGrid=true;",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "plan.png",
+        "sha256": "5cba035b9b4aea8cf5ca879f23cc9032dd7c662a3b2f4bea236b5f6bc89eca81",
+        "width": 1200,
+        "height": 760
+      }
+    },
+    {
+      "example": "urban-generator",
+      "label": "triangle",
+      "setup": "landPreset=\"triangle\";regenerate();",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "triangle.png",
+        "sha256": "659e7f0a7fd0ce88b8134340ec41e99f7eec5f770c2742307f18aa7e3abe604a",
+        "width": 1200,
+        "height": 760
+      }
+    },
+    {
+      "example": "urban-generator",
+      "label": "ellipse",
+      "setup": "landPreset=\"ellipse\";regenerate();",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "ellipse.png",
+        "sha256": "1faa5e9b21018ab0d86a51ba1b452f6e7b15185a419e0bf076d428649c2fe31d",
+        "width": 1200,
+        "height": 760
+      }
+    },
+    {
+      "example": "urban-generator",
+      "label": "reseed",
+      "setup": "urbanSeed=20261111;regenerate();",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "reseed.png",
+        "sha256": "bf37b2bb24bf4e1b42bb13a95fac4b4f6c29300d759f68594e6eacf2c326df5d",
+        "width": 1200,
+        "height": 760
+      }
+    },
+    {
+      "example": "urban-generator",
+      "label": "flat",
+      "setup": "extrude=0.0;regenerate();showGrid=true;",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "888a3adcf394a0277610c4a93e3d61895e59bac4912e2d0f6c2c54ea35ea7ccb",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "6ca9dbd2a2a256a089c6085e7860388a2ebae6540680f3b86e905221b527cae4",
+          "EVDomains.dll": "333807864acc29b4486369415a950943f6b46b5082950a2436096ef49da04829",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "717508cd17f3e70654f4c5bae22b0830e70769c2806194b8bb95ceeed0de0c15",
+          "EVFoundation.dll": "815d28ba8013369753fa7fda64308698917f798962966fd0dbb34220968f599a",
+          "EVOrchestration.dll": "6cfad7b40d917003efbf814e10aa489c9945cbd2651ed21a20318a4079928765",
+          "EVPlatform.dll": "b70b8318b539b8a09d4326018cd721f2bbbadefbaa30320979c58456b7ac7ace",
+          "EVWorld.dll": "e372af2cf7b9009aae0a0344decbdf5d9e831d9d2b63ea3a7e8ea44111d14134",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "flat.png",
+        "sha256": "256ba76d8580c5b1afd4839f11916f8d1d109e87a1572ccfa2753d16a48acfdc",
+        "width": 1200,
+        "height": 760
+      }
+    }
+  ],
+  "features": [
+    "facade windows, entrance doors and roof equipment",
+    "paved sidewalks, dashed center lines and junction zebra crossings",
+    "seeded parks, lawns and setback trees",
+    "terracotta / cream / blue-grey palette and paused diagonal framing"
+  ],
+  "validation": {
+    "native": "Updated official Urban mesh CTest passed; optional-off compatibility, deterministic vertices and colors, finite coordinates, index bounds, all detail types, flat mode",
+    "sourceQuality": "make check CI_BASE=HEAD passed; default origin/dev has five pre-existing Database.h lifetime-contract failures",
+    "smoke": "standard two-second urban-generator smoke; see local build/p1-recheck/urban-smoke.log",
+    "scope": "Windows Vulkan; parameter-state variants, not a claim of every keyboard input or browser backend tested"
+  },
+  "unknownFieldPolicy": "ignore"
+}

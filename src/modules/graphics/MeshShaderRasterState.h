@@ -9,9 +9,11 @@ enum class MeshDepthCompare { Less, LessEqual, Always };
  * @brief Value snapshot of custom mesh rasterization state, independent of blending/culling.
  * @details Bias uses the backend's native depth-buffer units and slope factor.
  * Color mask bits 0..3 select R,G,B,A. This is runtime state, not a persistent format.
+ * The default accepts equal depth so a custom forward material can replace its
+ * own G-buffer surface. Select Less explicitly when equal-depth fragments must fail.
  */
 struct MeshShaderRasterState {
-    MeshDepthCompare depthCompare      = MeshDepthCompare::Less;
+    MeshDepthCompare depthCompare      = MeshDepthCompare::LessEqual;
     float            depthBiasConstant = 0.f;
     float            depthBiasSlope    = 0.f;
     std::uint8_t     colorWriteMask    = 15;

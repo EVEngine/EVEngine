@@ -90,8 +90,8 @@ void addBox(MeshBuild &out, float cx, float cz, float hw, float hd, float y0, fl
     const Vec3 p101 = {cx + hw, y1, cz - hd};
     const Vec3 p111 = {cx + hw, y1, cz + hd};
     const Vec3 p011 = {cx - hw, y1, cz + hd};
-    addQuad(out, p000, p100, p101, p001, {0, 0, 1}, 0.25f, 0.5f);    // +Z
-    addQuad(out, p110, p010, p011, p111, {0, 0, -1}, 0.25f, 0.5f);   // -Z
+    addQuad(out, p000, p100, p101, p001, {0, 0, -1}, 0.25f, 0.5f);   // +Z
+    addQuad(out, p110, p010, p011, p111, {0, 0, 1}, 0.25f, 0.5f);    // -Z
     addQuad(out, p100, p110, p111, p101, {1, 0, 0}, 0.25f, 0.5f);    // +X
     addQuad(out, p010, p000, p001, p011, {-1, 0, 0}, 0.25f, 0.5f);   // -X
     if (top) addQuad(out, p001, p101, p111, p011, {0, 1, 0}, 0.25f, 0.5f);
@@ -130,21 +130,12 @@ bool generateSkyscraperMesh(const Params &params, MeshBuild &out, std::string &e
         const Vec3 p111 = {cx + hw, y1, cz + hd};
         const Vec3 p011 = {cx - hw, y1, cz + hd};
 
-        addFacade(out, p000, p100, p101, p001, {0, 0, 1}, windowCols, windowRows, windowDepth);
-        addFacade(out, p110, p010, p011, p111, {0, 0, -1}, windowCols, windowRows, windowDepth);
+        addFacade(out, p000, p100, p101, p001, {0, 0, -1}, windowCols, windowRows, windowDepth);
+        addFacade(out, p110, p010, p011, p111, {0, 0, 1}, windowCols, windowRows, windowDepth);
         addFacade(out, p100, p110, p111, p101, {1, 0, 0}, windowCols, windowRows, windowDepth);
         addFacade(out, p010, p000, p001, p011, {-1, 0, 0}, windowCols, windowRows, windowDepth);
+        addQuad(out, p001, p101, p111, p011, {0, 1, 0}, 0.25f, 0.5f);
         yCursor = y1;
-    }
-
-    // Roof cap on the top tier.
-    {
-        const float shrink = 1.f - setback * float(tiers - 1);
-        const float hw = baseWidth * 0.5f * shrink;
-        const float hd = baseDepth * 0.5f * shrink;
-        const float y1 = yCursor;
-        addQuad(out, {cx - hw, y1, cz - hd}, {cx + hw, y1, cz - hd}, {cx + hw, y1, cz + hd},
-                {cx - hw, y1, cz + hd}, {0, 1, 0}, 0.25f, 0.5f);
     }
 
     if (spireHeight > 0.f) {
