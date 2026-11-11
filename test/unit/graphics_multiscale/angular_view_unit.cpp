@@ -37,10 +37,12 @@ TEST_CASE("graphics.multiscale.directedRoundingMatchesStandardBitsAndBoundaryExc
         identical &= check(state);
     }
     REQUIRE(identical);
+    using Nextafter = double (*)(double, double);
+    Nextafter volatile standardCall = static_cast<Nextafter>(std::nextafter);
     for (double input : {0.0, -0.0, std::numeric_limits<double>::min(), -std::numeric_limits<double>::min(),
                          std::numeric_limits<double>::max(), -std::numeric_limits<double>::max()}) {
         std::feclearexcept(FE_ALL_EXCEPT);
-        volatile double expected      = std::nextafter(input, std::numeric_limits<double>::infinity());
+        volatile double expected      = standardCall(input, std::numeric_limits<double>::infinity());
         const int       expectedFlags = std::fetestexcept(FE_ALL_EXCEPT);
         std::feclearexcept(FE_ALL_EXCEPT);
         volatile double actual      = detail::roundUp(input);

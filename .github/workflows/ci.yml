@@ -258,6 +258,25 @@ jobs:
           cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install SPIR-V validation debug libraries
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          $libraries = @('SPIRV-Toolsd.lib', 'spirv-cross-cored.lib')
+          $libraryDir = Join-Path $env:VULKAN_SDK 'Lib'
+          $missing = @($libraries | Where-Object { -not (Test-Path (Join-Path $libraryDir $_)) })
+          if ($missing.Count -gt 0) {
+            $maintenance = Join-Path $env:VULKAN_SDK 'maintenancetool.exe'
+            if (-not (Test-Path $maintenance)) { throw "Vulkan SDK maintenance tool is unavailable: $maintenance" }
+            & $maintenance --accept-licenses --default-answer --confirm-command install com.lunarg.vulkan.debug
+            if ($LASTEXITCODE -ne 0) { throw "Vulkan SDK debug library installation failed: $LASTEXITCODE" }
+          }
+          foreach ($library in $libraries) {
+            if (-not (Test-Path (Join-Path $libraryDir $library))) {
+              throw "Required SPIR-V validation library is unavailable: $library"
+            }
+          }
+
       - name: Setup software Vulkan ICD (SwiftShader)
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
