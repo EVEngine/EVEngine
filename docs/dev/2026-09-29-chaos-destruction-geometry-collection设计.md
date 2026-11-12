@@ -341,7 +341,8 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 - [x] 预算：每 tick 最大解绑边数（`maxEdgeBreaksPerStep`，超额边进 pending 队列）、Sleep 合并（`maxSleepsPerStep` + `sleepsDeferred`）。v1 在 create 时预创建全部叶子 Body，故「新生 Body」由断边激活动态体预算代理。
 - [x] 存档：Instance snapshot schema `physics:geometry-collection-instance@1`（capture/restore，无 PhysicsLink）
 - [x] Asset schema v2：骨块 `clusterId` / `fractureLevel`；cook ClusteredVoronoi 写入；运行时 `ClusterBreakEvent`；v1 文档迁移
-- [ ] 可选 `building` 表现桥；可选英雄物体 Joint3D 投影（仍延期）
+- [x] 碎块连接图到 Joint3D Weld 的原生投影：`GeometryCollectionConstraints.cpp` 的 `stageConstraints`，createFractured/restore 创建候选并保存 owning joints，释放 body 前先释放约束（2026-11-11 源码核验）。
+- [ ] 可选 `building` 表现桥与英雄物体约束场景的完整验收；内部 Weld 投影不能替代这些组合证据。
 
 每阶段单一 PR：接口 + 后端 + 消费者 + 测试 + 文档；禁止中间破坏 CI 的半截提交。
 
