@@ -62,6 +62,23 @@ print(plistlib.loads(data)["UUID"])
 ' "$PROFILE_PATH")
   cp "$PROFILE_PATH" "$PROFILE_DIR/$UUID.mobileprovision"
   echo "Installed provisioning profile $UUID"
+  if [ -n "${GITHUB_ENV:-}" ]; then
+    python3 - "$PROFILE_DIR/$UUID.mobileprovision" >> "$GITHUB_ENV" <<'PYENV'
+import hashlib, plistlib, re, subprocess, sys
+profile = plistlib.loads(subprocess.check_output(["security", "cms", "-D", "-i", sys.argv[1]]))
+allowed = {hashlib.sha1(cert).hexdigest().upper() for cert in profile["DeveloperCertificates"]}
+identities = subprocess.check_output(["security", "find-identity", "-v", "-p", "codesigning"], encoding="utf-8")
+matching = [fingerprint for fingerprint in re.findall(r'\) ([0-9A-F]{40}) "', identities) if fingerprint in allowed]
+if len(matching) != 1:
+    raise SystemExit("Expected exactly one valid signing identity authorized by the profile")
+bundle = profile["Entitlements"]["application-identifier"].split(".", 1)[1]
+if "*" in bundle:
+    bundle = "com.evengine.consumer"
+print("IOS_PROFILE_PATH=" + sys.argv[1])
+print("IOS_SIGN_IDENTITY=" + matching[0])
+print("IOS_BUNDLE_ID=" + bundle)
+PYENV
+  fi
   rm -f "$PROFILE_PATH"
 fi
 

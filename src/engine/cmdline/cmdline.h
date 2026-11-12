@@ -39,7 +39,19 @@ public:
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
             int mcpPort = 0, std::string devServer = "");
 
-    /** @brief 构建项目：委托仓库 Makefile 的 build/<platform>[-debug] 目标。 */
+    /**
+     * @brief Assemble a game using installed Android or Apple SDK tooling.
+     * @param path Owning game-directory path; requires config.nut and main.nut.
+     * @param output Owning output path; Apple output must be new and outside both inputs.
+     * @param platform Target platform name (android, macos or ios).
+     * @param sdkRoot Owning SDK path; empty selects the host/installed target SDK.
+     * @param debug Android build variant; Apple configuration comes from its SDK.
+     * @return CLI exit status: zero on success, nonzero with a diagnostic on failure.
+     * @ownership Inputs are passed by value and retained only during this synchronous call.
+     * @thread Caller thread; external packaging processes finish before this call returns.
+     * @cost Disk work scales with game and SDK runtime size; amortize per packaged build.
+     * @note Apple signing options are supplied through the build subcommand's CLI handler.
+     */
     int Build(std::string path, std::string output, std::string platform,
               std::string sdkRoot = "", bool debug = false);
 

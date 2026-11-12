@@ -1,10 +1,10 @@
 # Single source of truth for the aggregate third-party revision. CI cache keys
 # hash this file, so moving the pin automatically selects a new binary cache.
-set(EVENGINE_THIRD_PARTY_PIN "e7e0a476be19a05839add497c29482c372f2c484" CACHE STRING
+set(EVENGINE_THIRD_PARTY_PIN "68ee8e583d0ca6fb3a4c4fb910e356e2851eb33f" CACHE STRING
     "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
      moved onto this commit at configure time (or verified against it), and every
      prebuilt third-party tree must be built from it.")
-set(EVENGINE_THIRD_PARTY_RELEASE "v0.1.2" CACHE STRING
+set(EVENGINE_THIRD_PARTY_RELEASE "v0.2.1" CACHE STRING
     "Immutable EVEngine/third-party release whose tag resolves to EVENGINE_THIRD_PARTY_PIN")
 set(EVENGINE_THIRD_PARTY_MODE "AUTO" CACHE STRING
     "AUTO downloads releases with source fallback on unavailable downloads; SOURCE builds dependencies; PREBUILT requires a published package")

@@ -1,6 +1,10 @@
 #include "cmdline/cmdline.h"
 #include "cmdline/sdk_tools.h"
+#include "common/config.h"
 
+#if defined(EVENGINE_MACOSX)
+#include <Poco/Process.h>
+#endif
 #include <CLI11.hpp>
 #include <rang.hpp>
 
@@ -33,6 +37,50 @@ bool splitBuildArgs(const std::vector<std::string>& remaining, std::string& plat
     return remaining.size() == 1;
 }
 
+// Apple tooling is shipped with the SDK; argv is passed directly, never through a shell.
+int buildApple(const string& game, const string& output, const string& platform, const string& sdkArgument,
+               const std::vector<string>& options) {
+#if defined(EVENGINE_MACOSX)
+    namespace fs        = std::filesystem;
+    string       root   = sdk::findSdkRoot(sdkArgument);
+    const string target = platform == "macos" ? "macosx" : "ios";
+    if (sdkArgument.empty() && sdk::getEnv("EVENGINE_SDK").empty() &&
+        (root.empty() || sdk::sdkTargetPlatform(root) != target)) {
+        const fs::path installed = fs::path(sdk::eveSdkInstallRoot()) / target;
+        if (fs::is_regular_file(installed / "share/eve/TARGET_PLATFORM")) root = installed.string();
+    }
+    if (root.empty()) {
+        cerr << "eve build: Apple SDK not found; pass --sdk <target-sdk>." << endl;
+        return 2;
+    }
+    const fs::path helper = fs::path(root) / "share/eve/tools/apple_package.py";
+    if (!fs::is_regular_file(helper)) {
+        cerr << "eve build: SDK is missing share/eve/tools/apple_package.py; update the target SDK." << endl;
+        return 2;
+    }
+    const fs::path gameDirectory = fs::weakly_canonical(fs::absolute(game));
+    const string   destination =
+        output.empty() ? (gameDirectory.parent_path() / (gameDirectory.filename().string() + "-" + platform)).string()
+                         : output;
+    std::vector<string> args{helper.string(), platform, game, "--sdk", root, "--output", destination};
+    args.insert(args.end(), options.begin(), options.end());
+    try {
+        return Poco::Process::launch("/usr/bin/python3", args).wait();
+    } catch (const std::exception& error) {
+        cerr << "eve build: cannot launch Apple packaging tools: " << error.what() << endl;
+        return 2;
+    }
+#else
+    (void)game;
+    (void)output;
+    (void)platform;
+    (void)sdkArgument;
+    (void)options;
+    cerr << "eve build: Apple bundle assembly requires macOS and Xcode." << endl;
+    return 2;
+#endif
+}
+
 std::string gradleLauncher(const std::string& gradleHome) {
 #if defined(_WIN32)
     return (std::filesystem::path(gradleHome) / "bin" / "gradle.bat").string();
@@ -59,18 +107,27 @@ std::string gradleCommand(const std::string& apkDir, const std::string& gradleHo
 
 struct BuildArgs : Handler {
     string log_path, platform, output_path, sdk_path;
+    string name, bundle_id, version, identity, profile, device;
+    bool   unsigned_app = false, simulator = false;
     bool   release = false, debug = false;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
-        auto subcmd = app.add_subcommand(
-            "build", "Build the game for a platform (android) using the packaged SDK");
+        auto subcmd = app.add_subcommand("build", "Build an Android game or an Apple app using the packaged SDK");
         subcmd->allow_extras()->formatter(formatter);
-        subcmd->add_option("-p,--platform", platform, "Build platform (android)");
+        subcmd->add_option("-p,--platform", platform, "Build platform (android, macos, ios)");
         subcmd->add_flag("-r,--release", release, "release build (default)");
         subcmd->add_flag("-d,--debug", debug, "debug build");
         subcmd->add_option("-l,--log", log_path, "log messages into a file");
-        subcmd->add_option("-o,--output", output_path, "output folder for the assembled APK project");
+        subcmd->add_option("-o,--output", output_path, "output directory for the built game");
         subcmd->add_option("--sdk", sdk_path, "EVEngine SDK root (default: $EVENGINE_SDK or next to the eve binary)");
+        subcmd->add_option("--name", name, "Apple app name (default: Game)");
+        subcmd->add_option("--bundle-id", bundle_id, "Apple reverse-DNS bundle identifier");
+        subcmd->add_option("--version", version, "Apple app version (default: 1.0.0)");
+        subcmd->add_option("--sign-identity", identity, "iOS development certificate name or SHA-1 fingerprint");
+        subcmd->add_option("--profile", profile, "iOS development provisioning profile");
+        subcmd->add_option("--device", device, "Provisioned device UDID; install and launch the iOS app");
+        subcmd->add_flag("--unsigned", unsigned_app, "Assemble iOS app only; cannot install on a device");
+        subcmd->add_flag("--simulator", simulator, "Use an iOS simulator SDK and ad-hoc signing");
     }
 
     int parse(CLI::App& app, Cmdline& cmd) override {
@@ -86,6 +143,30 @@ struct BuildArgs : Handler {
             if (!splitBuildArgs(subcmd->remaining(), platform, game)) {
                 cerr << rang::fg::red << "Unknown remaining arguments" << rang::fg::reset << endl;
                 return 1;
+            }
+            const auto          target = sdk::parsePlatform(platform);
+            std::vector<string> appleOptions;
+            for (const auto& [flag, value] : std::vector<std::pair<string, string>>{{"--name", name},
+                                                                                    {"--bundle-id", bundle_id},
+                                                                                    {"--version", version},
+                                                                                    {"--sign-identity", identity},
+                                                                                    {"--profile", profile},
+                                                                                    {"--device", device}}) {
+                if (!value.empty()) appleOptions.insert(appleOptions.end(), {flag, value});
+            }
+            if (unsigned_app) appleOptions.push_back("--unsigned");
+            if (simulator) appleOptions.push_back("--simulator");
+            if (target == sdk::Platform::Macosx || target == sdk::Platform::Ios) {
+                if (debug || release) {
+                    cerr << "eve build: Apple apps use the selected SDK configuration; omit -d/-r." << endl;
+                    return 2;
+                }
+                return buildApple(game, output_path, target == sdk::Platform::Macosx ? "macos" : "ios", sdk_path,
+                                  appleOptions);
+            }
+            if (!appleOptions.empty()) {
+                cerr << "eve build: Apple app options require macos or ios." << endl;
+                return 2;
             }
             return cmd.Build(game, output_path, platform, sdk_path, debug);
         }
@@ -107,14 +188,15 @@ int Cmdline::Build(std::string path, std::string output, std::string platform,
         return 2;
     }
     if (p == Platform::Unknown) {
-        cerr << rang::fg::red << "eve build: unknown platform '" << platform
-             << "' (supported: android)" << rang::fg::reset << endl;
+        cerr << rang::fg::red << "eve build: unknown platform '" << platform << "' (supported: android, macos, ios)"
+             << rang::fg::reset << endl;
         return 2;
     }
+    if (p == Platform::Macosx || p == Platform::Ios)
+        return buildApple(path, output, p == Platform::Macosx ? "macos" : "ios", sdkRoot, {});
     if (p != Platform::Android) {
-        cerr << rang::fg::red << "eve build: SDK mode currently supports 'android' only; "
-             << "desktop targets are packaged with `eve package`."
-             << rang::fg::reset << endl;
+        cerr << rang::fg::red << "eve build: SDK mode supports android, macos and ios; "
+             << "desktop targets are packaged with `eve package`." << rang::fg::reset << endl;
         return 2;
     }
 
