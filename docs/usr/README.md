@@ -15,6 +15,9 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、数据类型、数组/表、作用域、引用、标准库与 import/export，以及热重载和游戏帧循环；其中[收集方块小游戏](EVESCRIPT.md#20-实践用键盘收集方块)提供完整工程代码。覆盖全部脚本模块的[模块使用手册](MODULES.md)按功能逐章说明 API 与示例。给编程 Agent 的入口是仓库根目录 [`llms.txt`](../../llms.txt)。先跑通一个示例，再按需查阅对应文档即可。
 
+需要让 LLM 查找“宝箱左边的门”等真实对象时，阅读[场景语义搜索教程](modules/scene/semantic-search.md)：
+包含本地 embedding、hnswlib 索引、自然文本 MCP 接入和空间约束验证。
+
 ## 1. 获取引擎：从官网下载，无需编译
 
 <b>做游戏不需要编译引擎。</b> 到[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载目标平台的 SDK 压缩包即可：
@@ -297,12 +300,13 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 下载对应平台的 SDK，用其自带模板在开发机上组装安装包：
 
 ```sh
-# Android：把游戏脚本放进 SDK 的 platform/apk/app/src/main/assets/game/，
-# 然后执行 SDK 内的 Gradle 工程生成 APK（需要 Android SDK/NDK）
+# Android：安装预编译目标 SDK，再组装 APK（不需要源码或 NDK）
+eve get android
+eve build -d android /你的/游戏目录
 # iOS：用 SDK 的 platform/ios 模板在 Xcode 中生成 .app（需要 macOS、Xcode 与签名）
 ```
 
-移动端的 SDK、NDK、签名和真机要求较严格，请在打包前阅读根目录 [Readme.md 的 Android 章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk)。
+Android 的 Debug 自动签名、Release 密钥生成、手动签名和安装步骤见 [Android APK 构建与签名](ANDROID_APK_SIGNING.md)。从源码编译 Android 引擎的工具要求见根目录 [Readme.md 的 Android 章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk)。
 
 ## 7. 需要注意的事项
 

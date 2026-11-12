@@ -77,10 +77,16 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
             gfx->drawMeshShadow(mesh, glm::mat4(1.f));
             gfx->endShadowPass();
         }
+        // Exercise both legacy zero emission and native HDR PBR emission.
+        eve::graphics::PbrSurface gbufferSurface;
+        gbufferSurface.cullMode = eve::graphics::PbrCullMode::None;
+        gbufferSurface.emissive = {4.f * (frame - 1), .5f, .25f};
+        REQUIRE(gfx->setMesh3DPbrSurface(frame >= 2 ? &gbufferSurface : nullptr).ok());
         gfx->beginGBufferPass(64, 64);
         gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, texture, red, green, 0.f, 0.25f, -0.5f,
                              0.25f, 0.75f);
         gfx->endGBufferPass();
+        REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
         gfx->setMesh3DViewProj(glm::mat4(1.f));
         gfx->setMesh3DView(glm::mat4(1.f));
         gfx->begin3DFrame();
@@ -124,6 +130,14 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
         REQUIRE(pbr.ok());
         REQUIRE((pbr.value().decoded[0] > 0.7 && pbr.value().decoded[0] < 0.8));
         REQUIRE((pbr.value().decoded[1] > 0.2 && pbr.value().decoded[1] < 0.3));
+        const auto& emission = find(eve::FrameAttachment::Emissive);
+        REQUIRE(emission.format == eve::FramePixelFormat::Rgba16Float);
+        REQUIRE(emission.bytes->size() == 64u * 64u * 8u);
+        REQUIRE(emission.colorSpace == "linear");
+        auto hdr = eve::frameCapturePixel(emission, 32, 32);
+        REQUIRE(hdr.ok());
+        REQUIRE_EQ(hdr.value().decoded[0], frame >= 2 ? 4.0 * (frame - 1) : 0.0);
+        REQUIRE_EQ(hdr.value().decoded[1], frame >= 2 ? .5 : 0.0);
         auto final = eve::frameCapturePixel(find(eve::FrameAttachment::Final), 80, 60);
         REQUIRE(final.ok());
         REQUIRE(final.value().decoded[static_cast<size_t>(color)] >
@@ -153,6 +167,9 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
         auto still = eve::frameCapturePixel(find(eve::FrameAttachment::Albedo), 32, 32);
         REQUIRE(still.ok());
         REQUIRE(still.value().stored[static_cast<size_t>(color)] > 247);
+        auto frozenEmission = eve::frameCapturePixel(emission, 32, 32);
+        REQUIRE(frozenEmission.ok());
+        REQUIRE_EQ(frozenEmission.value().decoded[0], hdr.value().decoded[0]);
         auto released = capture.release(token);
         REQUIRE(released.ok());
     }

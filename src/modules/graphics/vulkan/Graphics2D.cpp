@@ -21,11 +21,12 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdint>
 #include <cstring>
 #include <functional>
+#include <glm/gtc/packing.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -430,7 +431,8 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     const uint32_t h = uint32_t(gbufferHeight);
     if (w == 0 || h == 0) return nullptr;
 
-    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * 4;
+    const bool           hdr      = attachment == "emissive";
+    const vk::DeviceSize byteSize = vk::DeviceSize(w) * vk::DeviceSize(h) * (hdr ? 8 : 4);
     if (gbufferPending) recordDeferredFrameGraph();
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
@@ -444,7 +446,14 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
     void *mapped = staging.map();
-    std::memcpy(img->getData(), mapped, size_t(byteSize));
+    if (hdr) {
+        auto       *pixels = static_cast<uint8_t *>(img->getData());
+        const auto *halves = static_cast<const uint16_t *>(mapped);
+        for (size_t i = 0; i < size_t(w) * size_t(h) * 4; ++i)
+            pixels[i] = uint8_t(std::lround(std::clamp(glm::unpackHalf1x16(halves[i]), 0.f, 1.f) * 255.f));
+    } else {
+        std::memcpy(img->getData(), mapped, size_t(byteSize));
+    }
     staging.unmap();
     staging.release();
     if (attachment == "depth") {

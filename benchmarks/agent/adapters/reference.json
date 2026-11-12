@@ -1,0 +1,12 @@
+{
+  "schema": "eve.agent-benchmark-adapter/v1",
+  "id": "reference",
+  "calibrationOnly": true,
+  "command": [
+    "{python}",
+    "{benchmark}/adapters/calibration.py",
+    "reference",
+    "{request}",
+    "{result}"
+  ]
+}

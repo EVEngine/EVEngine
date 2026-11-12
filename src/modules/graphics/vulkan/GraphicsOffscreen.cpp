@@ -8,6 +8,8 @@
 #include "common/Exception.h"
 #include "common/Profile.h"
 #include "graphics/PbrGpuUniform.h"
+#include "graphics/shaders/pbr_gbuffer_frag_spv.inc"
+#include "graphics/shaders/pbr_gbuffer_separated_frag_spv.inc"
 #include "graphics/shaders/pbr_surface_frag_spv.inc"
 #include "graphics/shaders/pbr_surface_separated_frag_spv.inc"
 #include "graphics/shaders/pbr_surface_vert_spv.inc"
@@ -292,10 +294,12 @@ Result<PbrSamplerBinding> planPbrSamplerBinding(size_t uniqueOrdinarySamplers, c
 }
 vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, const vkb::BuiltRenderPass& pass,
                                vk::SampleCountFlagBits samples, BlendMode blend, bool depthWrite, PbrCullMode cullMode,
-                               bool alphaToCoverage, bool separatedSamplers) {
-    ShaderModulePair shaders(
-        device, embeddedSpirv(pbr_surface_vert_spv),
-        separatedSamplers ? embeddedSpirv(pbr_surface_separated_frag_spv) : embeddedSpirv(pbr_surface_frag_spv));
+                               bool alphaToCoverage, bool separatedSamplers, bool gbuffer) {
+    ShaderModulePair shaders(device, embeddedSpirv(pbr_surface_vert_spv),
+                             gbuffer ? (separatedSamplers ? embeddedSpirv(pbr_gbuffer_separated_frag_spv)
+                                                          : embeddedSpirv(pbr_gbuffer_frag_spv))
+                                     : (separatedSamplers ? embeddedSpirv(pbr_surface_separated_frag_spv)
+                                                          : embeddedSpirv(pbr_surface_frag_spv)));
     auto             input = vkb::VertexInputStateBuilder();
     input.addInputBinding<MeshVertex>();
     // The dedicated PBR shader reserves locations 5..15 for its eleven material
@@ -316,8 +320,10 @@ vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, c
     auto attachment        = makeBlendAttachment(blend);
     attachment.blendEnable = blend != BlendMode::Opaque;
     vk::PipelineColorBlendStateCreateInfo color{};
-    color.attachmentCount = 1;
-    color.pAttachments    = &attachment;
+    std::array<vk::PipelineColorBlendAttachmentState, 5> attachments;
+    attachments.fill(attachment);
+    color.attachmentCount = gbuffer ? 5u : 1u;
+    color.pAttachments    = attachments.data();
     vk::PipelineMultisampleStateCreateInfo multisampling{};
     multisampling.rasterizationSamples  = samples;
     multisampling.alphaToCoverageEnable = alphaToCoverage && samples != vk::SampleCountFlagBits::e1;
@@ -351,12 +357,13 @@ struct Graphics::PbrResources {
     std::array<vk::PipelineLayout, 2>                                        layouts{};
     std::map<std::tuple<VkRenderPass, uint32_t, size_t, bool>, vk::Pipeline> pipelines;
     std::map<std::array<uint32_t, 4>, vk::Sampler>                     samplers;
-    std::vector<std::vector<std::unique_ptr<Draw>>>                    frames;
+    std::vector<std::vector<std::unique_ptr<Draw>>>                          frames, gbufferFrames;
     ~PbrResources() {
-        for (auto& frame : frames)
-            for (auto& draw : frame)
-                for (auto pool : draw->pools)
-                    if (pool) device.destroyDescriptorPool(pool);
+        for (auto* slots : {&frames, &gbufferFrames})
+            for (auto& frame : *slots)
+                for (auto& draw : frame)
+                    for (auto pool : draw->pools)
+                        if (pool) device.destroyDescriptorPool(pool);
         for (auto& [key, pipeline] : pipelines) device.destroyPipeline(pipeline);
         for (auto& [key, sampler] : samplers) device.destroySampler(sampler);
         for (auto layout : layouts)
@@ -367,6 +374,25 @@ struct Graphics::PbrResources {
 };
 void         Graphics::deletePbrResources(PbrResources* resources) { delete resources; }
 void         Graphics::destroyPbrResources() { pbrResources_.reset(); }
+void         Graphics::destroyPbrGBufferResources() {
+    if (!pbrResources_) return;
+    // The caller has retired deferred submissions. Forward resources may still
+    // be referenced by an open scene pass, so only retire this pass's cache.
+    auto& r = *pbrResources_;
+    for (auto it = r.pipelines.begin(); it != r.pipelines.end();) {
+        if (std::get<0>(it->first) == VkRenderPass(gbufferRenderPass.handle)) {
+            device->destroyPipeline(it->second);
+            it = r.pipelines.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    for (auto& frame : r.gbufferFrames)
+        for (auto& draw : frame)
+            for (auto pool : draw->pools)
+                if (pool) device->destroyDescriptorPool(pool);
+    r.gbufferFrames.clear();
+}
 Result<void> Graphics::setMesh3DPbrSurface(const PbrSurface* surface) {
     if (!surface) {
         pbrSurface_.reset();
@@ -433,7 +459,7 @@ Result<void> Graphics::setMesh3DPbrSurface(const PbrSurface* surface) {
     pbrSurface_ = *surface;
     return Result<void>::success();
 }
-void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint) {
+void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint, GBufferDraw* gbuffer) {
     if (!pbrResources_) {
         pbrResources_.reset(new PbrResources());
         auto& r             = *pbrResources_;
@@ -443,9 +469,10 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     auto& fslots = currentMesh3dFrameSlots();
     // All snapshots belong to this fenced frame slot and unique draw index.
     auto frame = currentFrameSlot();
-    if (r.frames.size() <= frame) r.frames.resize(frame + 1);
-    auto&      draws = r.frames[frame];
-    const auto index = fslots.drawIndex++;
+    auto& frames = gbuffer ? r.gbufferFrames : r.frames;
+    if (frames.size() <= frame) frames.resize(frame + 1);
+    auto&      draws = frames[frame];
+    const auto index = gbuffer ? gbufferPassDraws.size() : fslots.drawIndex++;
     while (draws.size() <= index) draws.emplace_back(std::make_unique<PbrResources::Draw>());
     auto&         draw = *draws[index];
     const auto&   s = *pbrSurface_;
@@ -743,6 +770,13 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         buffer.allocate(frameToken(), device, usage, bytes, kHostVisibleCoherent);
         updateRingLocal(buffer, 0, data, bytes);
     };
+    if (gbuffer) {
+        u.mvp                 = gbuffer->push.mvp;
+        u.material.x          = gbuffer->pbrFactors.x;
+        u.material.y          = gbuffer->pbrFactors.y;
+        u.material.z          = gbuffer->alphaTest ? 1.f : 0.f;
+        u.lights[0].posRadius = gbuffer->pbrClip;
+    }
     upload(draw.uniform, vk::BufferUsageFlagBits::eUniformBuffer, &u, sizeof(u));
     upload(draw.uv, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eStorageBuffer,
            coordinates.data(), coordinates.size() * sizeof(float));
@@ -904,33 +938,43 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         writes.push_back(slotsWrite);
     }
     device->updateDescriptorSets(writes, {});
-    const auto&  rp = offscreen3DPassOpen ? (offscreen3DHDRActive ? hdrOffscreen3DRenderPass : offscreen3DRenderPass)
-                                          : activeScenePass();
-    const auto   samples         = offscreen3DPassOpen ? vk::SampleCountFlagBits::e1 : activeSceneSamples();
-    const bool   transparent     = mesh3dSurfaceMode == SurfaceMode::Transparent;
+    const auto&  rp          = gbuffer ? gbufferRenderPass
+                               : offscreen3DPassOpen ? (offscreen3DHDRActive ? hdrOffscreen3DRenderPass : offscreen3DRenderPass)
+                                                     : activeScenePass();
+    const auto   samples     = (gbuffer || offscreen3DPassOpen) ? vk::SampleCountFlagBits::e1 : activeSceneSamples();
+    const bool   transparent = !gbuffer && mesh3dSurfaceMode == SurfaceMode::Transparent;
     const auto   blend           = transparent ? mesh3dSurfaceBlend : BlendMode::Opaque;
     const bool   depthWrite      = !transparent || mesh3dSurfaceDepthWrite;
     const auto   resolvedCull    = s.cullMode == PbrCullMode::Inherit
                                        ? (mesh3dSurfaceDoubleSided ? PbrCullMode::None : PbrCullMode::Back)
                                        : s.cullMode;
-    const bool   alphaToCoverage = s.alphaToCoverage && mesh3dSurfaceMode == SurfaceMode::Masked;
+    const bool   alphaToCoverage = !gbuffer && s.alphaToCoverage && mesh3dSurfaceMode == SurfaceMode::Masked;
     const size_t pipelineVariant =
         size_t(blend) * 12u + (depthWrite ? 6u : 0u) + (alphaToCoverage ? 3u : 0u) + size_t(resolvedCull) - 1u;
     auto key   = std::make_tuple(VkRenderPass(rp.handle), uint32_t(samples), pipelineVariant, separatedSamplers);
     auto found = r.pipelines.find(key);
     if (found == r.pipelines.end())
-        found = r.pipelines
-                    .emplace(key, createPbrPipeline(device, r.layouts[mode], rp, samples, blend, depthWrite,
-                                                    resolvedCull, alphaToCoverage, separatedSamplers))
-                    .first;
-    auto& cb = currentPresentCb();
-    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, found->second);
-    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.layouts[mode], 0, 1, &set, 0, nullptr);
+        found =
+            r.pipelines
+                .emplace(key, createPbrPipeline(device, r.layouts[mode], rp, samples, blend, depthWrite, resolvedCull,
+                                                alphaToCoverage, separatedSamplers, gbuffer != nullptr))
+                .first;
     std::array<vk::Buffer, 11> uvBuffers;
     uvBuffers.fill(draw.uv.buffer);
     std::array<vk::DeviceSize, 11> uvOffsets{};
     for (size_t i = 0; i < uvOffsets.size(); ++i)
         if (u.uvInfo[i].offset != UINT32_MAX) uvOffsets[i] = vk::DeviceSize(u.uvInfo[i].offset) * 2 * sizeof(float);
+    if (gbuffer) {
+        gbuffer->pbrPipeline  = found->second;
+        gbuffer->pbrLayout    = r.layouts[mode];
+        gbuffer->pbrSet       = set;
+        gbuffer->pbrUv        = draw.uv.buffer;
+        gbuffer->pbrUvOffsets = uvOffsets;
+        return;
+    }
+    auto& cb = currentPresentCb();
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, found->second);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.layouts[mode], 0, 1, &set, 0, nullptr);
     cb.bindVertexBuffers(1, uvBuffers, uvOffsets);
     drawIndexedMesh(cb, *static_cast<GpuMesh*>(mesh->gpuHandle));
     lastMesh3dPipeline          = vk::Pipeline{};

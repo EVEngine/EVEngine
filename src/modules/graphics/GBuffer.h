@@ -18,7 +18,7 @@ class Texture;
  *   normal      — RGBA8, RGB = world normal * 0.5 + 0.5; A = legacy 3-bit metal/rough pack
  *   albedo      — RGBA8, RGB = albedo×tint; A = linear depth (SSGI compat)
  *   pbrParams   — RGBA8, R = metallic, G = roughness, B = occlusion, A = specularFactor
- *   emissive    — RGBA8, RGB = emissive×strength (HDR later); A unused
+ *   emissive    — RGBA16F, RGB = linear HDR emissive×strength×texture; A unused
  *
  * Shadow maps stay on the CSM path (Graphics shadow pass); query via
  * hasBuffer("shadow") on RenderControl rather than a Texture* here.

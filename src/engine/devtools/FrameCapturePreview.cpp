@@ -27,10 +27,11 @@ uint8_t unorm(double value) {
 }
 }  // namespace
 Result<FramePreview> frameCapturePreview(const FrameCaptureBuffer& b, const FramePreviewOptions& o) {
-    if (!b.bytes || !b.width || !b.height || uint64_t(b.width) * b.height * 4 != b.bytes->size() || !o.maxWidth ||
-        !o.maxHeight || o.maxWidth > 2048 || o.maxHeight > 2048 || !std::isfinite(o.rangeMin) ||
-        !std::isfinite(o.rangeMax) || o.rangeMax <= o.rangeMin || !std::isfinite(o.exposure) ||
-        std::abs(o.exposure) > 20 || o.channel < 0 || o.channel > 3)
+    if (!framePixelBytes(b.format) || !b.bytes || !b.width || !b.height ||
+        uint64_t(b.width) * b.height * framePixelBytes(b.format) != b.bytes->size() || !o.maxWidth || !o.maxHeight ||
+        o.maxWidth > 2048 || o.maxHeight > 2048 || !std::isfinite(o.rangeMin) || !std::isfinite(o.rangeMax) ||
+        o.rangeMax <= o.rangeMin || !std::isfinite(o.exposure) || std::abs(o.exposure) > 20 || o.channel < 0 ||
+        o.channel > 3)
         return invalid<FramePreview>("InvalidPreviewParametersOrStorage");
     FramePreview out;
     out.view = o.view;
@@ -79,8 +80,9 @@ Result<FramePreview> frameCapturePreview(const FrameCaptureBuffer& b, const Fram
             if (out.view == "velocity") values = {values[1] * 0.5 + 0.5, values[2] * 0.5 + 0.5, 0.5, 1};
             if (out.view == "rawChannels") {
                 for (size_t c = 0; c < 4; ++c) {
-                    values[c] = b.format == FramePixelFormat::Depth32Float ? pixel.value().stored[0]
-                                                                           : pixel.value().stored[c] / 255.0;
+                    values[c] = b.format == FramePixelFormat::Depth32Float  ? pixel.value().stored[0]
+                                : b.format == FramePixelFormat::Rgba16Float ? pixel.value().stored[c]
+                                                                            : pixel.value().stored[c] / 255.0;
                 }
             }
             if (out.view == "scalar" || out.view == "linearDepth") {
