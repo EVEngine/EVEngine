@@ -803,7 +803,7 @@ jobs:
     # previous 60-minute job cap even though each step stayed within its guard.
     # Cold third-party restore + read-only sccache (PR) can push the build step
     # past 40 minutes, so keep headroom for tests afterward.
-    timeout-minutes: 120
+    timeout-minutes: 150
     env:
       CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
       CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
@@ -897,7 +897,9 @@ jobs:
       - name: Build linux debug
         # PR compilation caches are read-only. Keep the budget for a full engine
         # rebuild; dependency libraries are downloaded from their own release.
-        timeout-minutes: 60
+        # Run 43186708559 reached the final graphics-test link at 60m with
+        # 2330 successful cold compilations and zero compiler failures.
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

@@ -1800,20 +1800,29 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
     auto* native = dynamic_cast<eve::window::sdl::Window*>(graphics.win);
     REQUIRE(native != nullptr);
     const Uint32 windowId = SDL_GetWindowID(static_cast<SDL_Window*>(native->getHandle()));
-    auto         dispatch = [&](SDL_Event event, bool blockedMouse = false, bool blockedKeyboard = false) {
+    auto         dispatch = [&](SDL_Event event, bool blockedMouse = false, bool blockedKeyboard = false,
+                        bool appendSystemFocusLoss = false) {
         REQUIRE_EQ(SDL_PushEvent(&event), 1);
+        if (appendSystemFocusLoss) {
+            SDL_Event systemFocus{};
+            systemFocus.type            = SDL_WINDOWEVENT;
+            systemFocus.window.windowID = windowId;
+            systemFocus.window.event    = SDL_WINDOWEVENT_FOCUS_LOST;
+            REQUIRE_EQ(SDL_PushEvent(&systemFocus), 1);
+        }
         eve::editor::ToolResponse response;
         SDL_Event                 queued;
         while (SDL_PollEvent(&queued)) {
             ui->processEvent(&queued);
             // This test feeds the selected host's tagged events; application routes other windows separately.
-            const bool tagged =
-                (queued.type == SDL_MOUSEBUTTONDOWN || queued.type == SDL_MOUSEBUTTONUP) ? queued.button.which == 23
-                        : queued.type == SDL_MOUSEMOTION ? queued.motion.which == 23
-                        : queued.type == SDL_KEYDOWN     ? queued.key.windowID == windowId
-                        : queued.type == SDL_WINDOWEVENT
-                            ? queued.window.windowID == windowId && queued.window.event == SDL_WINDOWEVENT_FOCUS_LOST
-                            : false;
+            const bool tagged = (queued.type == SDL_MOUSEBUTTONDOWN || queued.type == SDL_MOUSEBUTTONUP)
+                                            ? queued.button.which == 23
+                                        : queued.type == SDL_MOUSEMOTION ? queued.motion.which == 23
+                                        : queued.type == SDL_KEYDOWN     ? queued.key.windowID == windowId
+                                        : queued.type == SDL_WINDOWEVENT
+                                            ? queued.window.windowID == windowId &&
+                                          queued.window.event == SDL_WINDOWEVENT_FOCUS_LOST && queued.window.data1 == 23
+                                            : false;
             if (tagged)
                 response = host->processSdlEvent(queued, blockedMouse, blockedKeyboard).expect("native SDL routing");
         }
@@ -1826,7 +1835,8 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
     event.button.button   = SDL_BUTTON_LEFT;
     event.button.x        = 80;
     event.button.y        = 80;
-    REQUIRE(dispatch(event).capturePointer);
+    // Unmarked OS focus notifications must not overwrite the tagged event's response.
+    REQUIRE(dispatch(event, false, false, true).capturePointer);
     frame();
     event                 = {};
     event.type            = SDL_MOUSEMOTION;
@@ -1914,6 +1924,7 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
     event.type            = SDL_WINDOWEVENT;
     event.window.windowID = windowId;
     event.window.event    = SDL_WINDOWEVENT_FOCUS_LOST;
+    event.window.data1    = 23;  // Explicitly injected host focus-loss event.
     REQUIRE(dispatch(event).releasePointer);
     REQUIRE(!host->workspace().hasPointerCapture());
     REQUIRE_EQ(asset->form()->sourceRevision().value(), std::uint64_t(3));
