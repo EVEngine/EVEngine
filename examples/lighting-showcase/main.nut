@@ -96,7 +96,7 @@ function resetCamera() {
 
 function applyAmbient() {
     if (litAmbientOn)
-        litCamera.setAmbient(0.22, 0.24, 0.30);
+        litCamera.setAmbient(0.055, 0.065, 0.085);
     else
         litCamera.setAmbient(0.02, 0.02, 0.025);
 }
@@ -155,7 +155,7 @@ function rebuildVolumetricMedia() {
     litVolume.clearFroxelGrid();
     // Dusty medium: dense enough for colored spot shafts without washing the stage.
     litVolume.injectFroxelHeightFog(
-        litVolumetricOn ? 0.032 : 0.0,
+        litVolumetricOn ? 0.012 : 0.0,
         0.62, 0.70, 0.82,
         -0.5, 0.10,
         -1.0, 7.0);
@@ -212,14 +212,14 @@ function configureRenderFeatures() {
             rc.enable("reflectionChain");
             litRtModeLabel = "reflectionChain (portable)";
         }
-        litCamera.setExposure(litVolumetricOn ? 0.20 : 0.28);
+        litCamera.setExposure(litVolumetricOn ? -1.6 : -1.2);
         litCamera.setBloom(0.08, 1.25);
     } else {
         rc.disable("rtx");
         rc.disable("reflectionChain");
         litRtModeLabel = "off";
         // Volumetric shafts add in-scatter; keep exposure lower so cones stay readable.
-        litCamera.setExposure(litVolumetricOn ? 0.58 : 0.90);
+        litCamera.setExposure(litVolumetricOn ? -1.0 : -0.6);
         litCamera.setBloom(litVolumetricOn ? 0.22 : 0.28, 1.05);
     }
     rc.compile();
@@ -286,7 +286,7 @@ eve_init = function() {
     litCamera = eve.Camera3D();
     litCamera.setUp(0.0, 1.0, 0.0);
     litCamera.setFov(46.0);
-    litCamera.setExposure(0.78);
+    litCamera.setExposure(-1.0);
     litCamera.setBloom(0.28, 1.05);
     litCamera.setActive(true);
     resetCamera();
@@ -305,7 +305,7 @@ eve_init = function() {
     litSun = eve.Light3D();
     litSun.setType("dir");
     litSun.setDirection(-0.48, 0.86, 0.28);
-    litSun.setColor(1.0, 0.95, 0.88, 2.15);
+    litSun.setColor(1.0, 0.95, 0.88, 0.85);
     litSun.setCastShadow(true);
     litSun.setShadowMethod("csm");
     litSun.setShadowStrength(0.88);
@@ -316,8 +316,8 @@ eve_init = function() {
 
     litSpots.clear();
     // Warm + cool rotating spots with perspective shadows and volumetric shafts.
-    makeRotatingSpot(1.0, 0.82, 0.48, 8.5, 26.0, 0.28, 18.0);
-    makeRotatingSpot(0.40, 0.72, 1.0, 7.2, 22.0, 0.35, 16.0);
+    makeRotatingSpot(1.0, 0.82, 0.48, 3.5, 26.0, 0.28, 18.0);
+    makeRotatingSpot(0.40, 0.72, 1.0, 3.0, 22.0, 0.35, 16.0);
     updateRotatingSpots();
     applySpots();
 

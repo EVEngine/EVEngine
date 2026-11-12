@@ -67,3 +67,9 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 - `main.nut`：场景、光照、阴影方案与 HUD；约第 36 帧后自动写出 `lighting-showcase.png`。
 - `config.nut`：1280×720，标题 `EVEngine Lighting Showcase`。
 - `README.md`：本文件。
+
+## 2026-11-11 视觉改善
+
+按 EV 校准曝光，降低过强的日光、聚光和体积介质，保留各功能开关；记录体积光开/关同机位，球体粗糙度和暖冷光可区分。
+
+[当前实帧](../../docs/images/examples/review-2026-11-11/next10/lighting-showcase.png) · [前后对照与验证](../../docs/images/examples/QUALITY_REVIEW.md)

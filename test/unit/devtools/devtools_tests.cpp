@@ -913,6 +913,59 @@ TEST_CASE("devtools.FrameCaptureImage depth: projection and BGRA channel mapping
     CHECK_EQ(pixel.value().stored[0], uint8_t{255});
     CHECK_EQ(pixel.value().stored[2], uint8_t{128});
 }
+TEST_CASE("devtools.FrameCaptureImage HDR: native storage publication pixel stride and previews") {
+    auto  snapshot          = pixelSnapshot(eve::FrameAttachment::Final);
+    auto& buffer            = snapshot.buffers.front();
+    buffer.format           = eve::FramePixelFormat::Rgba16Float;
+    buffer.width            = 2;
+    const uint16_t halves[] = {0x4400, 0x3800, 0x3400, 0, 0xc000, 1, 0x7c00, 0x7e00};
+    auto           bytes    = std::make_shared<std::vector<uint8_t>>(sizeof halves);
+    std::memcpy(bytes->data(), halves, sizeof halves);
+    buffer.bytes = bytes;
+    auto first   = eve::frameCapturePixel(buffer, 0, 0);
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().stored[0], 4.0);
+    CHECK_EQ(first.value().decoded[1], .5);
+    auto second = eve::frameCapturePixel(buffer, 1, 0);
+    REQUIRE(second.ok());
+    CHECK_EQ(second.value().decoded[0], -2.0);
+    CHECK_EQ(second.value().decoded[1], std::ldexp(1.0, -24));
+    CHECK(std::isinf(second.value().decoded[2]));
+    CHECK(std::isnan(second.value().decoded[3]));
+    eve::FrameCaptureStore store;
+    store.configure(capabilities(32));
+    eve::FrameCaptureRequest request;
+    request.attachments = {eve::FrameAttachment::Final};
+    auto queued         = store.request(request);
+    REQUIRE(queued.ok());
+    REQUIRE(store.begin(queued.value(), 1, sizeof halves).ok());
+    REQUIRE(store.submitted(queued.value()).ok());
+    auto truncated                  = snapshot;
+    truncated.buffers.front().bytes = std::make_shared<const std::vector<uint8_t>>(8);
+    CHECK(!store.complete(queued.value(), truncated).ok());
+    CHECK(!eve::frameCapturePixel(truncated.buffers.front(), 0, 0).ok());
+    CHECK(!eve::dev::frameCapturePreview(truncated.buffers.front(), {}).ok());
+    REQUIRE(store.complete(queued.value(), snapshot).ok());
+    store.retire(queued.value());
+    auto ready = store.snapshot(queued.value());
+    REQUIRE(ready.ok());
+    CHECK_EQ(ready.value().phase, eve::FrameCapturePhase::Ready);
+    buffer.width = 1;
+    buffer.bytes = std::make_shared<const std::vector<uint8_t>>(bytes->begin(), bytes->begin() + 8);
+    eve::dev::FramePreviewOptions options;
+    options.view     = "hdrExposure";
+    options.exposure = -2;
+    auto hdr         = eve::dev::frameCapturePreview(buffer, options);
+    REQUIRE(hdr.ok());
+    auto raw = eve::dev::frameCapturePreview(buffer, {});
+    REQUIRE(raw.ok());
+    CHECK(raw.value().png != hdr.value().png);
+    auto unorm    = pixelSnapshot(eve::FrameAttachment::Final).buffers.front();
+    unorm.bytes   = std::make_shared<const std::vector<uint8_t>>(std::initializer_list<uint8_t>{255, 128, 64, 0});
+    auto expected = eve::dev::frameCapturePreview(unorm, {});
+    REQUIRE(expected.ok());
+    CHECK(raw.value().png == expected.value().png);
+}
 }  // namespace test_frame_capture_contract
 #endif
 

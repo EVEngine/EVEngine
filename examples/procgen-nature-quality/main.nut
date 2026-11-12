@@ -44,7 +44,7 @@ function makeFoliageMaterial(albedo, normal, rough, cutoff) {
     local mat = retain(gfx.newMaterial());
     if (albedo != null) mat.setAlbedoTexture(albedo);
     if (normal != null) mat.setNormalTexture(normal);
-    mat.setTint(1.0, 1.0, 1.0, 1.0);
+    mat.setTint(0.45, 0.65, 0.40, 1.0);
     mat.setMetallic(0.02);
     mat.setRoughness(rough);
     mat.setDoubleSided(true);
@@ -177,20 +177,21 @@ function buildGround() {
     local normal = makeNormal("tex.soil", gallerySeed + 1, 128);
     local mat = makeOpaqueMaterial(soil, normal, 0.92);
     if (mat != null) {
-        mat.setTint(0.85, 0.95, 0.55, 1.0);
+        mat.setTint(0.35, 0.45, 0.32, 1.0);
         ground.setMaterial(mat);
     }
     ground.setReceiveShadow(true);
 }
 
 eve_init = function() {
-    gfx.setBackgroundColor(0.38, 0.55, 0.72, 1.0);
+    gfx.setBackgroundColor(0.025, 0.045, 0.055, 1.0);
     // Strong warm key light + cooler fill ambient — closer to the video's
     // late-afternoon contrast than a flat studio look.
-    gfx.setDirectionalLight(-0.72, 0.68, 0.18, 2.55, 2.05, 1.35);
+    gfx.setDirectionalLight(-0.72, 0.68, 0.18, 1.15, 1.10, 1.0);
 
     galleryCamera = eve.Camera3D();
-    galleryCamera.setFov(34.0);
+    galleryCamera.setFov(40.0);
+    galleryCamera.setExposure(-0.5);
     galleryCamera.setAmbient(0.14, 0.16, 0.20);
     galleryCamera.setClipPlanes(0.1, 80.0);
     galleryCamera.setActive(true);
@@ -214,13 +215,13 @@ eve_init = function() {
 eve_update = function(dt) {
     galleryTime += dt;
     galleryFrame += 1;
-    galleryYaw += dt * 0.18;
+    galleryYaw += dt * 0.025;
     gfx.setCloudShadows(0.16, 4.5, galleryTime * 0.1, 0.25, 0.35, 0.45, 0.55);
 
-    local eyeX = 0.2 + 9.5 * sin(galleryYaw);
-    local eyeZ = 9.5 * cos(galleryYaw);
-    galleryCamera.setEye(eyeX, 2.8, eyeZ);
-    galleryCamera.setTarget(0.2, -1.4, 0.0);
+    local eyeX = 0.2 + 17.5 * sin(galleryYaw);
+    local eyeZ = 17.5 * cos(galleryYaw);
+    galleryCamera.setEye(eyeX, 3.6, eyeZ);
+    galleryCamera.setTarget(0.2, -0.5, 0.0);
 
     if (key_just_pressed("r") || key_just_pressed("R")) {
         gallerySeed = procgen.randomSeed();

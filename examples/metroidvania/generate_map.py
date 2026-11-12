@@ -141,13 +141,15 @@ validate_level()
 
 tileset = {
     "firstgid": 1,
-    "image": "assets/tiles.png",
+    "image": "../assets/tiles-detail.png",
     "columns": 4,
     "tilewidth": TILE,
     "tileheight": TILE,
     "imagewidth": 128,
     "imageheight": 128,
 }
+assert (Path(__file__).parent / "maps" / tileset["image"]).resolve().is_file(), "tileset image must resolve relative to map"
+
 doc = {
     "width": W,
     "height": H,

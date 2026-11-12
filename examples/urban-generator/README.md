@@ -57,4 +57,39 @@ Two output paths are exposed on `eve.Procgen()`:
 | `cellSize` (grid) / `extrude` (mesh) | 1 / 0 | raster resolution / block height |
 
 Controls: `R` reseed, `1..4` land presets, `P` street pattern, `O` optimization,
-`[`/`]` parcel count, `-`/`=` parcel size, `E` extrusion, `L` grid overlay.
+`[`/`]` parcel count, `-`/`=` parcel size, `E` extrusion, `L` overhead plan view.
+
+## Detailed street scene (2026-11-11)
+
+![Urban Gardens](../../docs/images/examples/review-2026-11-11/urban-detail/urban-generator.png)
+
+The default scene uses 68 target parcels, a 2.8-unit street width, 2-unit building
+setbacks and a 7.5-unit base building height. Cream stone, blue-grey and terracotta
+facades share dark glass windows, occasional warm window panes, entrance doors,
+roof cornices and roof service caps. Paved sidewalks separate the buildings from
+asphalt roads with dashed center lines and zebra crossings at connected junctions.
+Selected parcels become lawns with faceted trees; other trees stand in setbacks.
+
+The paused diagonal overview frames the complete land polygon. `Space` starts or
+stops orbiting; `L` switches to the overhead plan; `E` toggles the detailed scene
+and flat parcel view. Reseeding, land presets and street-pattern changes rebuild
+both the planning mesh and its details. The HUD sits above the skyline.
+
+Recipe parameters `parcelInset`, `heightVariation`, `vertexColors` and
+`presentationDetails` default to 0, 0, false and false, respectively. This example
+enables all four. Detail geometry uses the same seed and parcel/street layout,
+shares one output mesh, and requires no downloaded textures or external assets.
+The mesh metadata reports `detail.windows`, `detail.trees`, `detail.parks`,
+`detail.markings` and `detail.crossings`. Presentation details are disabled for
+flat output. Existing consumers keep their original geometry until they opt in.
+
+Setback clips against inward edge half-planes. A concave parcel uses its convex
+kernel; parcels without a buildable kernel are omitted and counted in
+`omittedFootprints`. The target parcel count describes planning subdivisions,
+not the final building count (some subdivisions become parks).
+
+[Opposite view](../../docs/images/examples/review-2026-11-11/urban-detail/opposite.png)
+· [Overhead](../../docs/images/examples/review-2026-11-11/urban-detail/plan.png)
+· [Triangle](../../docs/images/examples/review-2026-11-11/urban-detail/triangle.png)
+· [Ellipse](../../docs/images/examples/review-2026-11-11/urban-detail/ellipse.png)
+· [Another seed](../../docs/images/examples/review-2026-11-11/urban-detail/reseed.png)

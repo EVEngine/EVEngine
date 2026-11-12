@@ -7,6 +7,7 @@ Traditional overshot layout: waterwheel + watershaft + pitwheel (drive),
 vertical mainshaft with wallower/spur/crown (main), runner stone (runner),
 hinged sluice gate, and a walkable timber mill shell.
 """
+
 from __future__ import annotations
 
 import json
@@ -59,7 +60,13 @@ JOINTS = [
 ]
 
 PARTS = [
-    {"name": "building", "joint": "building", "tint": [0.30, 0.22, 0.14], "metal": 0.02, "rough": 0.92},
+    {
+        "name": "building",
+        "joint": "building",
+        "tint": [0.30, 0.22, 0.14],
+        "metal": 0.02,
+        "rough": 0.92,
+    },
     {"name": "race", "joint": "race", "tint": [0.28, 0.28, 0.26], "metal": 0.02, "rough": 0.95},
     {"name": "sluice", "joint": "sluice", "tint": [0.24, 0.14, 0.08], "metal": 0.05, "rough": 0.78},
     {"name": "drive", "joint": "drive", "tint": [0.18, 0.18, 0.19], "metal": 0.12, "rough": 0.72},
@@ -98,213 +105,6 @@ def emit_rig() -> dict:
         ],
         "parts": [{"name": part["name"], "joint": part["joint"]} for part in PARTS],
     }
-
-
-def emit_scad() -> str:
-    lines = [
-        "// Articulated overshot watermill — rotatable SCAD mechanical diagram.",
-        "// Compile one joint mesh with: openscad -D 'part=\"drive\"' -o drive.stl mill.scad",
-        'part = "building";',
-        "",
-        "module box(sx, sy, sz) { cube([sx, sy, sz], center = true); }",
-        "module cyl(h, r, r2 = undef, fn = 28) {",
-        "    cylinder(h = h, r1 = r, r2 = (r2 == undef ? r : r2), center = true, $fn = fn);",
-        "}",
-        "",
-        "module building_geom() {",
-        "    // Ground floor slab with shaft / stair wells.",
-        "    difference() {",
-        "        translate([0, 200, 80]) box(6200, 5200, 160);",
-        "        translate([0, -900, 80]) cyl(220, 220, fn = 24);",
-        "        translate([1450, -200, 80]) cyl(220, 180, fn = 24);",
-        "        translate([2200, 1400, 80]) box(900, 1400, 220);",
-        "    }",
-        "    // Stone floor (visitor / grinding level).",
-        "    difference() {",
-        "        translate([0, 200, 2760]) box(6200, 5200, 140);",
-        "        translate([0, -900, 2760]) cyl(220, 160, fn = 24);",
-        "        translate([1450, -200, 2760]) cyl(220, 420, fn = 28);",
-        "        translate([2200, 1400, 2760]) box(900, 1400, 220);",
-        "    }",
-        "    // Bin loft floor.",
-        "    difference() {",
-        "        translate([0, 200, 5160]) box(6200, 5200, 120);",
-        "        translate([0, -900, 5160]) cyl(200, 120, fn = 20);",
-        "        translate([2200, 1400, 5160]) box(900, 1400, 200);",
-        "        translate([1450, -200, 5160]) box(700, 700, 200);",
-        "    }",
-        "    // Timber posts and beams (cutaway +Y gallery keeps machinery visible).",
-        "    for (x = [-2800, 2800]) for (y = [-2100, 2400])",
-        "        translate([x, y, 2700]) box(220, 220, 5400);",
-        "    for (z = [1400, 4000]) {",
-        "        translate([0, -2100, z]) box(5600, 180, 220);",
-        "        translate([0, 2400, z]) box(5600, 180, 220);",
-        "        translate([-2800, 200, z]) box(180, 4300, 220);",
-        "        translate([2800, 200, z]) box(180, 4300, 220);",
-        "    }",
-        "    // Solid walls with door / windows; open +Y gallery wall for tour view.",
-        "    translate([-3010, 150, 2700]) box(140, 4700, 5200);",
-        "    translate([3010, 150, 2700]) difference() {",
-        "        box(140, 4700, 5200);",
-        "        translate([0, -400, 900]) box(200, 900, 1400);",
-        "        translate([0, 900, 3600]) box(200, 900, 1100);",
-        "    }",
-        "    translate([0, -2310, 2700]) difference() {",
-        "        box(6200, 140, 5200);",
-        "        translate([0, 0, 1800]) cyl(300, 180, fn = 20); // watershaft bore",
-        "        translate([-1600, 0, 3600]) box(900, 200, 1100);",
-        "        translate([1600, 0, 3600]) box(900, 200, 1100);",
-        "    }",
-        "    // Gallery rail on the open +Y side (still walkable through the gap).",
-        "    translate([0, 2550, 1100]) box(6200, 80, 80);",
-        "    translate([0, 2550, 2900]) box(6200, 80, 80);",
-        "    for (x = [-2400, -1200, 0, 1200, 2400]) translate([x, 2550, 2000]) box(80, 80, 1800);",
-        "    // Door leaf frame on +X wall.",
-        "    translate([2940, -400, 900]) box(40, 820, 1600);",
-        "    // Stairs (visitor path ground -> stone floor -> loft).",
-        "    for (i = [0:11]) translate([2200, 900 + i * 100, 120 + i * 220]) box(800, 220, 80);",
-        "    for (i = [0:10]) translate([2200, 900 + i * 110, 2860 + i * 210]) box(800, 220, 80);",
-        "    translate([2500, 1400, 2700]) box(80, 1400, 5200);",
-        "    // Roof plates + ridge (partial, keeps loft airy).",
-        "    translate([0, 0, 6200]) rotate([0, 0, 0]) box(6600, 200, 180);",
-        "    translate([-1600, 200, 6000]) rotate([0, 18, 0]) box(3600, 5600, 80);",
-        "    translate([1600, 200, 6000]) rotate([0, -18, 0]) box(3600, 5600, 80);",
-        "    // Fixed bedstone + tun shell + meal bin.",
-        "    translate([1450, -200, 2780]) cyl(120, 620, fn = 36);",
-        "    translate([1450, -200, 2920]) difference() {",
-        "        cyl(280, 660, fn = 28);",
-        "        cyl(320, 620, fn = 28);",
-        "        translate([0, 650, 0]) box(420, 200, 320);",
-        "    }",
-        "    translate([1450, 700, 2500]) box(700, 500, 900);",
-        "    // Hopper frame above the stones (grain chute).",
-        "    translate([1450, -200, 3600]) box(700, 700, 60);",
-        "    translate([1450, -200, 3900]) box(520, 520, 520);",
-        "    translate([1450, -200, 3300]) cyl(420, 70, r2 = 40, fn = 16);",
-        "    // Interior workbench and sack pile.",
-        "    translate([-1800, 1200, 550]) box(1200, 500, 700);",
-        "    translate([-1800, 1200, 950]) box(1000, 360, 80);",
-        "    translate([-900, 1600, 350]) box(500, 400, 500);",
-        "    translate([-900, 1600, 650]) box(420, 320, 280);",
-        "    // Hurst frame around the pit gears.",
-        "    translate([-700, -900, 1400]) box(120, 120, 2200);",
-        "    translate([700, -900, 1400]) box(120, 120, 2200);",
-        "    translate([0, -900, 2500]) box(1500, 120, 120);",
-        "    translate([0, -900, 1100]) box(1500, 160, 160);",
-        "}",
-        "",
-        "module race_geom() {",
-        "    // Mill pond bank, leat walls, wheel pit and stream bed.",
-        "    translate([0, -4200, -80]) box(9000, 3600, 200);",
-        "    translate([0, 200, -120]) box(9000, 7000, 160);",
-        "    translate([0, -3600, 400]) box(3200, 1400, 800); // pond volume shell",
-        "    difference() {",
-        "        translate([0, -3600, 900]) box(2800, 1200, 200);",
-        "        translate([0, -3400, 900]) box(2200, 900, 240);",
-        "    }",
-        "    // Stone wheel pit under the overshot wheel.",
-        "    translate([0, -2500, 200]) box(2400, 2200, 600);",
-        "    translate([-1300, -2500, 900]) box(200, 2200, 1800);",
-        "    translate([1300, -2500, 900]) box(200, 2200, 1800);",
-        "    translate([0, -3600, 1200]) box(2400, 200, 2400);",
-        "    // Tail race.",
-        "    translate([0, -4800, 100]) box(1600, 1800, 300);",
-        "    // Path stones to the gallery.",
-        "    for (x = [-1800, -600, 600, 1800]) translate([x, 3200, 40]) box(700, 900, 80);",
-        "    // Water surface placeholders (rendered opaque teal).",
-        "    translate([0, -3600, 700]) box(2400, 1000, 40);",
-        "    translate([0, -4800, 40]) box(1400, 1600, 40);",
-        "}",
-        "",
-        "module sluice_geom() {",
-        "    // Guillotine / flap gate at the launder lip (hinge at local origin).",
-        "    translate([0, 0, -40]) box(900, 40, 80);",
-        "    translate([0, 180, -20]) box(860, 320, 40);",
-        "    translate([0, 340, 40]) box(820, 40, 160);",
-        "    for (x = [-300, 0, 300]) translate([x, 180, 40]) box(40, 300, 40);",
-        "}",
-        "",
-        "module drive_geom() {",
-        "    // Local origin = watershaft / wheel axle.",
-        "    // Watershaft through the wall into the pit.",
-        "    rotate([0, 90, 0]) cyl(4200, 90, fn = 24);",
-        "    translate([-1400, 0, 0]) rotate([0, 90, 0]) cyl(160, 140, fn = 20);",
-        "    translate([1400, 0, 0]) rotate([0, 90, 0]) cyl(160, 140, fn = 20);",
-        "    // Overshot waterwheel (rim + buckets + spokes).",
-        "    translate([0, -700, 0]) {",
-        "        rotate([0, 90, 0]) difference() {",
-        "            cyl(280, 1600, fn = 48);",
-        "            cyl(320, 1420, fn = 48);",
-        "        }",
-        "        rotate([0, 90, 0]) cyl(220, 220, fn = 24);",
-        "        for (a = [0:30:330]) rotate([a, 0, 0]) {",
-        "            translate([0, 0, 780]) box(40, 80, 1280);",
-        "            translate([0, 40, 1480]) box(220, 160, 70); // bucket",
-        "        }",
-        "    }",
-        "    // Pitwheel (large bevel / face gear).",
-        "    translate([0, 1600, 0]) {",
-        "        rotate([0, 90, 0]) cyl(160, 900, fn = 40);",
-        "        for (a = [0:12:348]) rotate([a, 0, 0])",
-        "            translate([90, 0, 820]) box(120, 70, 160);",
-        "        for (a = [0:60:300]) rotate([a, 0, 0]) translate([0, 0, 450]) box(40, 70, 700);",
-        "    }",
-        "}",
-        "",
-        "module main_geom() {",
-        "    // Local origin near wallower; shaft rises through floors.",
-        "    cyl(5200, 110, fn = 24);",
-        "    // Wallower (bevel pinion meshing pitwheel).",
-        "    translate([0, 0, 900]) {",
-        "        cyl(140, 320, fn = 28);",
-        "        for (a = [0:15:345]) rotate([0, 0, a]) translate([300, 0, 0]) box(90, 55, 120);",
-        "    }",
-        "    // Great spur wheel.",
-        "    translate([0, 0, 2100]) {",
-        "        cyl(160, 780, fn = 40);",
-        "        for (a = [0:10:350]) rotate([0, 0, a]) translate([740, 0, 0]) box(90, 55, 140);",
-        "        for (a = [0:45:315]) rotate([0, 0, a]) translate([380, 0, 0]) box(40, 70, 560);",
-        "    }",
-        "    // Crown wheel for sack-hoist drive.",
-        "    translate([0, 0, 4000]) {",
-        "        cyl(120, 420, fn = 32);",
-        "        for (a = [0:18:342]) rotate([0, 0, a]) translate([390, 0, 0]) box(70, 45, 100);",
-        "    }",
-        "}",
-        "",
-        "module runner_geom() {",
-        "    // Spindle + stone nut + runner millstone.",
-        "    translate([0, 0, -900]) cyl(2000, 55, fn = 20);",
-        "    translate([0, 0, -700]) {",
-        "        cyl(120, 220, fn = 24);",
-        "        for (a = [0:20:340]) rotate([0, 0, a]) translate([200, 0, 0]) box(70, 45, 100);",
-        "    }",
-        "    // Runner stone with eye and harps (furrow hint).",
-        "    difference() {",
-        "        cyl(160, 600, fn = 40);",
-        "        cyl(200, 70, fn = 16);",
-        "    }",
-        "    for (a = [0:45:315]) rotate([0, 0, a]) translate([280, 0, 90]) box(260, 30, 20);",
-        "    // Rynd / mace bridge.",
-        "    translate([0, 0, -40]) box(420, 60, 40);",
-        "    translate([0, 0, -40]) box(60, 420, 40);",
-        "}",
-        "",
-        "module hoist_geom() {",
-        "    // Sack hoist drum and clutch pulley at loft level.",
-        "    cyl(220, 180, fn = 24);",
-        "    translate([0, 0, 160]) cyl(60, 220, fn = 20);",
-        "    translate([0, 0, -160]) cyl(60, 220, fn = 20);",
-        "    for (a = [0:60:300]) rotate([0, 0, a]) translate([160, 0, 0]) box(40, 50, 280);",
-        "    translate([0, 280, 0]) box(40, 360, 40); // jib arm",
-        "    translate([0, 460, -80]) cyl(120, 30, fn = 12);",
-        "}",
-        "",
-    ]
-    for name in PART_NAMES:
-        lines.append(f'if (part == "{scad_escape(name)}") {name}_geom();')
-    lines.append("")
-    return "\n".join(lines)
 
 
 def mm_to_m_yup(x: float, y: float, z: float) -> tuple[float, float, float]:
@@ -422,159 +222,15 @@ def map_tris(tris, fn):
     return [tuple(fn(v) for v in tri) for tri in tris]
 
 
-def part_triangles(name: str):
-    if name == "building":
-        tris = []
-        # Floors with walkable open plan (gallery on +Y is intentionally wall-free).
-        tris += box_triangles(0, 200, 80, 6200, 5200, 160)
-        tris += box_triangles(0, 200, 2760, 6200, 5200, 140)
-        tris += box_triangles(0, 200, 5160, 6200, 5200, 120)
-        # Corner posts + mid posts keep the shell readable without boxing the visitor in.
-        for x in (-2800, 0, 2800):
-            for y in (-2100, 400, 2400):
-                tris += box_triangles(x, y, 2700, 180, 180, 5400)
-        for z in (1400, 4000, 5400):
-            tris += box_triangles(0, -2100, z, 5600, 140, 160)
-            tris += box_triangles(0, 2400, z, 5600, 140, 160)
-            tris += box_triangles(-2800, 200, z, 140, 4300, 160)
-            tris += box_triangles(2800, 200, z, 140, 4300, 160)
-        # -X wall panels with two window bays.
-        tris += box_triangles(-3010, -1400, 900, 120, 1400, 1600)
-        tris += box_triangles(-3010, 1400, 900, 120, 1400, 1600)
-        tris += box_triangles(-3010, 0, 2700, 120, 900, 1200)
-        tris += box_triangles(-3010, 0, 4500, 120, 4200, 1400)
-        # +X wall with door bay (visitor entry) and upper window.
-        tris += box_triangles(3010, -1400, 900, 120, 1400, 1600)
-        tris += box_triangles(3010, 1400, 900, 120, 1400, 1600)
-        tris += box_triangles(3010, -400, 2000, 120, 820, 400)  # lintel
-        tris += box_triangles(3010, 0, 4500, 120, 4200, 1400)
-        # -Y wheel-side wall with shaft bore left as an open bay around the axle.
-        tris += box_triangles(-2000, -2310, 900, 2000, 120, 1600)
-        tris += box_triangles(2000, -2310, 900, 2000, 120, 1600)
-        tris += box_triangles(0, -2310, 3200, 6200, 120, 2800)
-        # Gallery rail on the open +Y visit face.
-        tris += box_triangles(0, 2550, 1100, 6200, 80, 80)
-        tris += box_triangles(0, 2550, 2900, 6200, 80, 80)
-        tris += box_triangles(0, 2550, 4700, 6200, 80, 80)
-        for x in (-2400, -1200, 0, 1200, 2400):
-            tris += box_triangles(x, 2550, 2900, 70, 70, 3600)
-        # Stairs (visitor path ground -> stone floor -> loft).
-        for i in range(12):
-            tris += box_triangles(2200, 900 + i * 100, 120 + i * 220, 800, 220, 80)
-        for i in range(11):
-            tris += box_triangles(2200, 900 + i * 110, 2860 + i * 210, 800, 220, 80)
-        tris += box_triangles(2500, 1400, 2700, 80, 1400, 5200)
-        # Roof: ridge + two plates seated on the top plate beam (not floating).
-        tris += box_triangles(0, 200, 5580, 6400, 5000, 120)
-        tris += box_triangles(0, 200, 6100, 400, 5200, 220)
-        tris += box_triangles(-1700, 200, 5850, 3400, 5000, 100)
-        tris += box_triangles(1700, 200, 5850, 3400, 5000, 100)
-        # Fixed bedstone + tun shell + meal bin + hopper.
-        tris += cyl_triangles(1450, -200, 2780, 120, 620, sides=32)
-        tris += ring_triangles(1450, -200, 2920, 280, 660, 620, sides=28)
-        tris += box_triangles(1450, 700, 2500, 700, 500, 900)
-        tris += box_triangles(1450, -200, 3600, 700, 700, 60)
-        tris += box_triangles(1450, -200, 3900, 520, 520, 520)
-        tris += cyl_triangles(1450, -200, 3300, 420, 70, sides=16, r2=40)
-        tris += box_triangles(-1800, 1200, 550, 1200, 500, 700)
-        tris += box_triangles(-1800, 1200, 950, 1000, 360, 80)
-        tris += box_triangles(-900, 1600, 350, 500, 400, 500)
-        tris += box_triangles(-900, 1600, 650, 420, 320, 280)
-        tris += box_triangles(-700, -900, 1400, 120, 120, 2200)
-        tris += box_triangles(700, -900, 1400, 120, 120, 2200)
-        tris += box_triangles(0, -900, 2500, 1500, 120, 120)
-        tris += box_triangles(0, -900, 1100, 1500, 160, 160)
-        return tris
-
-    if name == "race":
-        tris = []
-        # Stone banks / ground (muted), wheel pit, pond rim; water plates stay separate teal.
-        tris += box_triangles(0, -4200, -120, 9000, 3600, 160)
-        tris += box_triangles(0, 200, -160, 9000, 7000, 140)
-        tris += box_triangles(0, -3600, 300, 3200, 1400, 600)
-        tris += box_triangles(0, -3600, 900, 2800, 1200, 180)
-        tris += box_triangles(0, -2500, 160, 2400, 2200, 500)
-        tris += box_triangles(-1300, -2500, 900, 200, 2200, 1800)
-        tris += box_triangles(1300, -2500, 900, 200, 2200, 1800)
-        tris += box_triangles(0, -3600, 1200, 2400, 200, 2400)
-        tris += box_triangles(0, -4800, 60, 1600, 1800, 260)
-        for x in (-1800, -600, 600, 1800):
-            tris += box_triangles(x, 3200, 40, 700, 900, 80)
-        return tris
-
-    if name == "sluice":
-        tris = box_triangles(0, 0, -40, 900, 40, 80)
-        tris += box_triangles(0, 180, -20, 860, 320, 40)
-        tris += box_triangles(0, 340, 40, 820, 40, 160)
-        for x in (-300, 0, 300):
-            tris += box_triangles(x, 180, 40, 40, 300, 40)
-        return tris
-
-    if name == "drive":
-        tris = cyl_triangles(0, 0, 0, 4200, 90, axis="x", sides=20)
-        tris += cyl_triangles(-1400, 0, 0, 160, 140, axis="x", sides=16)
-        tris += cyl_triangles(1400, 0, 0, 160, 140, axis="x", sides=16)
-        # Waterwheel at y=-700
-        wy = -700
-        tris += ring_triangles(0, wy, 0, 280, 1600, 1420, axis="x", sides=40)
-        tris += cyl_triangles(0, wy, 0, 220, 220, axis="x", sides=20)
-        for a in range(0, 360, 30):
-
-            def rot_wheel(p, ang=a, y0=wy):
-                x, y, z = p
-                y2, z2 = rotate_x((0, y - y0, z), ang)[1:]
-                return (x, y0 + y2, z2)
-
-            tris += map_tris(box_triangles(0, wy, 780, 40, 80, 1280), rot_wheel)
-            tris += map_tris(box_triangles(0, wy + 40, 1480, 220, 160, 70), rot_wheel)
-        # Pitwheel at y=+1600
-        py = 1600
-        tris += cyl_triangles(0, py, 0, 160, 900, axis="x", sides=36)
-
-        def rot_pit(p, ang, y0=py):
-            x, y, z = p
-            y2, z2 = rotate_x((0, y - y0, z), ang)[1:]
-            return (x, y0 + y2, z2)
-
-        for a in range(0, 360, 12):
-            tris += map_tris(box_triangles(90, py, 820, 120, 70, 160), lambda p, ang=a: rot_pit(p, ang))
-        for a in range(0, 360, 60):
-            tris += map_tris(box_triangles(0, py, 450, 40, 70, 700), lambda p, ang=a: rot_pit(p, ang))
-        return tris
-
-    if name == "main":
-        tris = cyl_triangles(0, 0, 0, 5200, 110, sides=20)
-        tris += cyl_triangles(0, 0, 900, 140, 320, sides=24)
-        for a in range(0, 360, 15):
-            tris += map_tris(box_triangles(300, 0, 900, 90, 55, 120), lambda p, ang=a: rotate_z(p, ang))
-        tris += cyl_triangles(0, 0, 2100, 160, 780, sides=36)
-        for a in range(0, 360, 10):
-            tris += map_tris(box_triangles(740, 0, 2100, 90, 55, 140), lambda p, ang=a: rotate_z(p, ang))
-        for a in range(0, 360, 45):
-            tris += map_tris(box_triangles(380, 0, 2100, 40, 70, 560), lambda p, ang=a: rotate_z(p, ang))
-        tris += cyl_triangles(0, 0, 4000, 120, 420, sides=28)
-        for a in range(0, 360, 18):
-            tris += map_tris(box_triangles(390, 0, 4000, 70, 45, 100), lambda p, ang=a: rotate_z(p, ang))
-        return tris
-
-    if name == "runner":
-        tris = cyl_triangles(0, 0, -900, 2000, 55, sides=16)
-        tris += cyl_triangles(0, 0, -700, 120, 220, sides=20)
-        for a in range(0, 360, 20):
-            tris += map_tris(box_triangles(200, 0, -700, 70, 45, 100), lambda p, ang=a: rotate_z(p, ang))
-        tris += ring_triangles(0, 0, 0, 160, 600, 70, sides=36)
-        for a in range(0, 360, 45):
-            tris += map_tris(box_triangles(280, 0, 90, 260, 30, 20), lambda p, ang=a: rotate_z(p, ang))
-        tris += box_triangles(0, 0, -40, 420, 60, 40)
-        tris += box_triangles(0, 0, -40, 60, 420, 40)
-        return tris
-
+def mechanism_triangles(name: str):
     if name == "hoist":
         tris = cyl_triangles(0, 0, 0, 220, 180, sides=20)
         tris += cyl_triangles(0, 0, 160, 60, 220, sides=16)
         tris += cyl_triangles(0, 0, -160, 60, 220, sides=16)
         for a in range(0, 360, 60):
-            tris += map_tris(box_triangles(160, 0, 0, 40, 50, 280), lambda p, ang=a: rotate_z(p, ang))
+            tris += map_tris(
+                box_triangles(160, 0, 0, 40, 50, 280), lambda p, ang=a: rotate_z(p, ang)
+            )
         tris += box_triangles(0, 280, 0, 40, 360, 40)
         tris += cyl_triangles(0, 460, -80, 120, 30, sides=10)
         return tris
@@ -582,27 +238,367 @@ def part_triangles(name: str):
     raise KeyError(name)
 
 
-def write_obj(path: Path, triangles):
-    vertices = []
-    for tri in triangles:
-        for vertex in tri:
-            vertices.append(mm_to_m_yup(*vertex))
+# Named materials are shared by OBJ and SCAD; all geometry remains joint-local.
+PALETTE = {
+    "timber": (0.25, 0.13, 0.065),
+    "wood": (0.49, 0.29, 0.13),
+    "plaster": (0.76, 0.69, 0.53),
+    "stone": (0.43, 0.46, 0.43),
+    "roof": (0.22, 0.29, 0.31),
+    "iron": (0.12, 0.15, 0.16),
+    "earth": (0.23, 0.30, 0.20),
+    "glass": (0.18, 0.33, 0.36),
+}
+
+
+def part_groups(name, separate_solids=False):
+    groups = {key: [] for key in PALETTE}
+    solids = []
+
+    def add(material, triangles):
+        groups[material].extend(triangles)
+        solids.append((material, triangles))
+
+    def box(material, x, y, z, sx, sy, sz):
+        add(material, box_triangles(x, y, z, sx, sy, sz))
+
+    def beam(material, start, end, width=150):
+        # A rectangular beam between endpoints in the X/Z plane.
+        x, y, z = start
+        dx, dz = end[0] - x, end[2] - z
+        length = math.hypot(dx, dz)
+        angle = -math.degrees(math.atan2(dz, dx))
+        add(
+            material,
+            map_tris(
+                box_triangles(0, 0, 0, length, width, width),
+                lambda p: tuple(
+                    a + b
+                    for a, b in zip(rotate_y(p, angle), ((x + end[0]) / 2, y, (z + end[2]) / 2))
+                ),
+            ),
+        )
+
+    if name == "building":
+        # Raised stone plinth, open visitor gallery, two timber working floors.
+        for x in range(-2900, 3000, 580):
+            for y in (-2200, 2400):
+                box("stone", x, y, 220, 550, 420, 400)
+        for z in (480, 2760, 5160):
+            # Opening around the main shaft and the stairwell, rather than solid slabs.
+            for x in range(-2750, 2900, 250):
+                if -600 < x < 600:
+                    for y in (-1800, 1500):
+                        box("wood", x, y, z, 238, 1200, 100)
+                elif x > 1700:
+                    box("wood", x, -700, z, 238, 3000, 100)
+                else:
+                    box("wood", x, 100, z, 238, 4500, 100)
+        for x in (-2800, 0, 2800):
+            for y in (-2200, 2400):
+                box("timber", x, y, 3100, 190, 190, 5500)
+        for z in (600, 2700, 5100, 5480):
+            for y in (-2200, 2400):
+                box("timber", 0, y, z, 5800, 190, 180)
+            for x in (-2800, 2800):
+                box("timber", x, 100, z, 180, 4700, 180)
+
+        # Continuous infill between sill and eaves. Only framed window openings
+        # interrupt the three enclosed walls; +Y is the deliberate visitor gallery.
+        def wall_bay(center, half_width, side=None):
+            def panel(material, u, z, width, height, depth=130, offset=0):
+                if side is None:
+                    box(material, center + u, -2200 - offset, z, width, depth, height)
+                else:
+                    box(material, side * (2800 + offset), center + u, z, depth, width, height)
+
+            width = half_width * 2
+            for lo, hi in ((690, 1350), (2250, 3450), (4350, 5390)):
+                panel("plaster", 0, (lo + hi) / 2, width, hi - lo)
+            for z in (1800, 3900):
+                jamb_width = (width - 760) / 2
+                for sign in (-1, 1):
+                    panel("plaster", sign * (380 + jamb_width / 2), z, jamb_width, 900)
+                    panel("timber", sign * 405, z, 80, 980, 160, 35)
+                for h in (-490, 490):
+                    panel("timber", 0, z + h, 890, 80, 160, 35)
+                panel("glass", 0, z, 740, 880, 40)
+                panel("timber", 0, z, 45, 900, 150, 35)
+                panel("timber", 0, z, 760, 45, 150, 35)
+                panel("stone", 0, z - 550, 980, 90, 240, 65)
+            panel("timber", -half_width, 3000, 130, 4800, 180, 30)
+
+        for x in (-2100, -700, 700, 2100):
+            wall_bay(x, 700)
+        for side in (-1, 1):
+            for bay in range(3):
+                wall_bay(-2200 + (bay + 0.5) * 4600 / 3, 2300 / 3, side)
+            box("plaster", side * 2800, 100, 5597.5, 130, 4600, 415)
+        # Close the gables up to the underside of the roof, including the short
+        # vertical section above the upper beam. No daylight slot along the eaves.
+        for y in (-2200, 2400):
+            outline = [(-2800, 5390), (2800, 5390), (2800, 5805), (0, 7840), (-2800, 5805)]
+            points = [(x, y + dy, z) for dy in (-65, 65) for x, z in outline]
+            triangles = []
+            for i in range(1, 4):
+                triangles.append((points[0], points[i], points[i + 1]))
+                triangles.append((points[5], points[i + 6], points[i + 5]))
+            for i in range(5):
+                j = (i + 1) % 5
+                triangles.extend(
+                    (
+                        (points[i], points[i + 5], points[j + 5]),
+                        (points[i], points[j + 5], points[j]),
+                    )
+                )
+            add("plaster", triangles)
+        for y in (-2300,):
+            for x in (-2100, -700, 700, 2100):
+                # Braces stay below the windows instead of crossing their panes.
+                beam("timber", (x - 550, y, 2750), (x + 550, y, 3370), 110)
+        # True 36-degree gable, individual overlapping slate courses.
+        pitch = math.radians(36)
+        for side in (-1, 1):
+            for row in range(10):
+                x = side * (170 + row * 335)
+                z = 7900 - abs(x) * math.tan(pitch)
+                for col in range(11):
+                    y = -2450 + col * 500 + (row % 2) * 70
+                    add(
+                        "roof",
+                        map_tris(
+                            box_triangles(0, 0, 0, 440, 485, 75),
+                            lambda p, x=x, y=y, z=z, side=side: tuple(
+                                a + b for a, b in zip(rotate_y(p, side * 36), (x, y, z))
+                            ),
+                        ),
+                    )
+            for y in (-2300, 2450):
+                beam("timber", (0, y, 7880), (side * 3500, y, 5340), 170)
+        box("roof", 0, 100, 7940, 180, 5600, 160)
+        for y in (-2200, 2400):
+            box("timber", 0, y, 6600, 160, 160, 2300)
+            box("timber", 0, y, 5500, 5800, 170, 170)
+        # Gallery rails, stairs and fixed milling furniture.
+        for z in (1500, 3750):
+            box("timber", 0, 2500, z, 5700, 90, 100)
+            for x in range(-2700, 2800, 450):
+                box("wood", x, 2500, z - 450, 55, 55, 850)
+        for base in (500, 2800):
+            for i in range(11):
+                box("wood", 2250, 700 + i * 150, base + i * 210, 850, 240, 90)
+            for x in (1850, 2650):
+                add(
+                    "timber",
+                    map_tris(
+                        box_triangles(0, 0, 0, 110, 2680, 140),
+                        lambda p, x=x, base=base: tuple(
+                            a + b
+                            for a, b in zip(
+                                rotate_x(p, math.degrees(math.atan2(2100, 1500))),
+                                (x, 1450, base + 950),
+                            )
+                        ),
+                    ),
+                )
+        add("stone", cyl_triangles(1450, -200, 2740, 120, 650, sides=40))
+        add("wood", ring_triangles(1450, -200, 2940, 200, 690, 640, sides=40))
+        box("wood", 1450, -200, 3800, 650, 650, 500)
+        box("wood", 1450, -200, 3520, 780, 780, 80)
+        add("wood", cyl_triangles(1450, -200, 3290, 520, 65, r2=260))
+        for x in (-650, 650):
+            box("timber", x, -900, 1550, 180, 180, 2200)
+        box("timber", 0, -900, 2450, 1600, 220, 200)
+        box("wood", -1600, 1200, 1000, 1300, 650, 110)
+        for x in (-2100, -1100):
+            box("timber", x, 1200, 700, 100, 500, 650)
+    elif name == "race":
+        box("earth", -800, 0, -130, 11600, 11000, 180)
+        # Stone wheelpit below the west-side wheel; no obstruction in its sweep.
+        box("stone", -3900, -2500, -60, 1600, 4400, 160)
+        for x in (-4650, -3150):
+            for y in range(-4300, -400, 500):
+                box("stone", x, y, 120, 250, 470, 400)
+        # Aqueduct from the sluice to the top/back quadrant of the overshot wheel.
+        box("wood", -1950, -3450, 3240, 4200, 850, 120)
+        for y in (-3900, -3000):
+            box("wood", -1950, y, 3470, 4200, 100, 480)
+        for x in (-300, -2000):
+            for y in (-3900, -3000):
+                box("stone", x, y, 1600, 400, 400, 3200)
+        for x in (-900, -3000):
+            box("wood", x, -3450, 3120, 180, 1200, 180)
+        # Gate throat connects its original pivot to the aqueduct.
+        box("wood", 0, -2900, 3060, 1100, 900, 100)
+        for x in (-520, 520):
+            box("timber", x, -2670, 3340, 130, 150, 800)
+        for y in range(-4200, -1000, 650):
+            box("stone", -3200, y, 700, 260, 500, 1000)
+        for x in range(-2000, 2500, 800):
+            box("stone", x, 3300, 20, 650, 800, 100)
+    elif name == "drive":
+        add("timber", cyl_triangles(-1800, 0, 0, 5600, 145, axis="x"))
+        # Two substantial cheeks, iron hoops, twelve paired oak spokes, 30 buckets.
+        for x in (-4260, -3540):
+            add("wood", ring_triangles(x, 0, 0, 160, 1600, 1330, axis="x", sides=64))
+            add("iron", ring_triangles(x, 0, 0, 175, 1580, 1530, axis="x", sides=64))
+            add("timber", cyl_triangles(x, 0, 0, 240, 280, axis="x"))
+            for a in range(0, 360, 30):
+                add(
+                    "wood",
+                    map_tris(
+                        box_triangles(x, 0, 790, 140, 145, 1300), lambda p, a=a: rotate_x(p, a)
+                    ),
+                )
+        for a in range(0, 360, 12):
+            for mat, shape in (
+                ("wood", box_triangles(-3900, 0, 1430, 700, 265, 75)),
+                ("timber", box_triangles(-3900, 125, 1510, 700, 65, 200)),
+            ):
+                add(mat, map_tris(shape, lambda p, a=a: rotate_x(p, a)))
+        # Pitwheel remains coaxial with the watershaft, inside the mill wall.
+        add("wood", ring_triangles(0, 0, 0, 200, 1230, 880, axis="x", sides=80))
+        for a in range(0, 360, 45):
+            add(
+                "timber",
+                map_tris(box_triangles(0, 0, 600, 180, 160, 1100), lambda p, a=a: rotate_x(p, a)),
+            )
+        for i in range(80):
+            add(
+                "wood",
+                map_tris(
+                    box_triangles(100, 0, 1220, 140, 65, 120), lambda p, i=i: rotate_x(p, i * 4.5)
+                ),
+            )
+        for x in (-3350, -2800, 450):
+            add("iron", cyl_triangles(x, 0, 0, 160, 210, axis="x"))
+    elif name == "sluice":
+        for x in range(-400, 401, 100):
+            box("wood", x, 160, -20, 94, 380, 70)
+        for x in (-300, 300):
+            box("iron", x, 160, 25, 40, 380, 25)
+        add("iron", cyl_triangles(0, 0, 0, 1100, 45, axis="x"))
+    elif name in ("main", "runner"):
+        if name == "main":
+            add("iron", cyl_triangles(0, 0, 2100, 4800, 110, sides=24))
+            gears = ((900, 360, 24), (1260, 1288, 96), (4000, 420, 24))
+        else:
+            add("iron", cyl_triangles(0, 0, -380, 1100, 55, sides=20))
+            gears = ((-700, 322, 24),)
+            add("stone", ring_triangles(0, 0, 0, 160, 600, 70, sides=48))
+            for angle in range(0, 360, 45):
+                add(
+                    "iron",
+                    map_tris(
+                        box_triangles(280, 0, 85, 260, 25, 15),
+                        lambda p, angle=angle: rotate_z(p, angle),
+                    ),
+                )
+        for z, radius, teeth in gears:
+            add("wood", ring_triangles(0, 0, z, 130, radius - 30, radius * 0.68, sides=teeth))
+            add("wood", cyl_triangles(0, 0, z, 200, 165, sides=24))
+            for angle in range(0, 360, 60):
+                add(
+                    "timber",
+                    map_tris(
+                        box_triangles(radius / 2, 0, z, radius, 100, 110),
+                        lambda p, angle=angle: rotate_z(p, angle),
+                    ),
+                )
+            for i in range(teeth):
+                add(
+                    "wood",
+                    map_tris(
+                        box_triangles(radius, 0, z, 100, 40, 120),
+                        lambda p, i=i: rotate_z(p, i * 360 / teeth),
+                    ),
+                )
+    else:
+        add("wood", mechanism_triangles(name))
+    return solids if separate_solids else [(mat, tris) for mat, tris in groups.items() if tris]
+
+
+def part_triangles(name):
+    return [tri for _, tris in part_groups(name) for tri in tris]
+
+
+def emit_scad():
+    lines = [
+        "// Generated from design.py: same triangle groups as the native OBJ.",
+        'part = "all";',
+        "drive_angle = $t * 360;",
+        "gate_angle = 18;",
+        f"main_angle = -drive_angle * {DRIVE_TO_MAIN};",
+        f"runner_angle = main_angle * {MAIN_TO_RUNNER};",
+        f"hoist_angle = main_angle * {MAIN_TO_HOIST};",
+    ]
+    for name in PART_NAMES:
+        lines.append(f"module {name}() {{")
+        for mat, tris in part_groups(name, separate_solids=True):
+            points, faces, lookup = [], [], {}
+            for tri in tris:
+                face = []
+                for vertex in reversed(tri):
+                    key = tuple(round(v, 7) for v in vertex)
+                    if key not in lookup:
+                        lookup[key] = len(points)
+                        points.append(key)
+                    face.append(lookup[key])
+                faces.append(face)
+            lines.append(
+                f"color({list(PALETTE[mat])}) polyhedron(points={json.dumps(points)}, faces={json.dumps(faces)}, convexity=12);"
+            )
+        lines.append("}")
+
+    # Hierarchical pivots are the same contract used by native FK.
+    def node(joint):
+        name = joint["name"]
+        angle = (
+            "gate_angle"
+            if name == "sluice"
+            else f"{name}_angle"
+            if name in ("drive", "main", "runner", "hoist")
+            else "0"
+        )
+        result = f"translate({joint['pivot']}) rotate(a={angle}, v={joint['axis']}) {{ {name}();"
+        for child in JOINTS:
+            if child["parent"] == joint["name"]:
+                result += node(child)
+        return result + "}"
+
+    lines.append('if (part == "all") ' + node(JOINTS[0]))
+    for name in PART_NAMES:
+        lines.append(f'if (part == "{name}") {name}();')
+    return "\n".join(lines) + "\n"
+
+
+def write_obj(path, triangles, groups=None):
+    groups = groups or [("wood", triangles)]
     with path.open("w", encoding="utf-8") as out:
-        out.write("# Generated from design.py / mill.scad; metres, Y-up\ns off\n")
-        for v in vertices:
-            out.write("v %.7g %.7g %.7g\n" % v)
-        for i in range(0, len(vertices), 3):
-            a, b, c = vertices[i : i + 3]
-            u = [b[j] - a[j] for j in range(3)]
-            v = [c[j] - a[j] for j in range(3)]
-            normal = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
-            length = math.sqrt(sum(n * n for n in normal))
-            if length <= 1e-12:
-                raise ValueError(f"{path}: degenerate triangle {i // 3}")
-            out.write("vn %.9g %.9g %.9g\n" % tuple(n / length for n in normal))
-        for i in range(0, len(vertices), 3):
-            n = i // 3 + 1
-            out.write(f"f {i + 1}//{n} {i + 2}//{n} {i + 3}//{n}\n")
+        out.write("# Generated by design.py; metres Y-up\nmtllib mill.mtl\ns off\n")
+        index = 1
+        for mat, tris in groups:
+            out.write(f"g {path.stem}_{mat}\nusemtl {mat}\n")
+            for tri in tris:
+                vertices = [mm_to_m_yup(*v) for v in tri]
+                a, b, c = vertices
+                u = [b[j] - a[j] for j in range(3)]
+                v = [c[j] - a[j] for j in range(3)]
+                normal = (
+                    u[1] * v[2] - u[2] * v[1],
+                    u[2] * v[0] - u[0] * v[2],
+                    u[0] * v[1] - u[1] * v[0],
+                )
+                length = math.sqrt(sum(n * n for n in normal))
+                if length <= 1e-12:
+                    raise ValueError(f"Degenerate triangle in {path}")
+                for point in vertices:
+                    out.write("v %.7g %.7g %.7g\n" % point)
+                # Each triangle has one flat normal, shared by its three vertices.
+                out.write("vn %.9g %.9g %.9g\n" % tuple(n / length for n in normal))
+                n = (index + 2) // 3
+                out.write(f"f {index}//{n} {index + 1}//{n} {index + 2}//{n}\n")
+                index += 3
 
 
 def write_materials_nut(path: Path):
@@ -610,7 +606,7 @@ def write_materials_nut(path: Path):
     for part in PARTS:
         t = part["tint"]
         lines.append(
-            f'    {part["name"]}={{r={t[0]},g={t[1]},b={t[2]},metal={part["metal"]},rough={part["rough"]}}},'
+            f"    {part['name']}={{r={t[0]},g={t[1]},b={t[2]},metal={part['metal']},rough={part['rough']}}},"
         )
     lines.append("};")
     lines.append("")
@@ -629,6 +625,14 @@ def write_pose_constants(path: Path):
 
 def main():
     ASSETS.mkdir(parents=True, exist_ok=True)
+    (ASSETS / "mill.mtl").write_text(
+        "".join(
+            f"newmtl {name}\nKd {r} {g} {b}\nKs 0.04 0.04 0.04\nNs 12\n\n"
+            for name, (r, g, b) in PALETTE.items()
+        ).rstrip()
+        + "\n",
+        encoding="utf-8",
+    )
     (ASSETS / "mill.scad").write_text(emit_scad(), encoding="utf-8")
     (ASSETS / "mill.rig.json").write_text(
         json.dumps(emit_rig(), indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
@@ -637,7 +641,7 @@ def main():
     write_pose_constants(ROOT / "ratios.nut")
     for name in PART_NAMES:
         tris = part_triangles(name)
-        write_obj(ASSETS / f"{name}.obj", tris)
+        write_obj(ASSETS / f"{name}.obj", tris, part_groups(name))
         print(f"{name}: wrote OBJ ({len(tris)} tris)", flush=True)
 
 

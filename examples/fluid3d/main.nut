@@ -174,8 +174,15 @@ function rebuild(selected) {
         checked(surface.configureColors(0.05,0.32,0.72,0.55,0.72,1.0));
         checked(surface.configureRefraction(1.0,5.0,0.01,1));
         checked(surface.configureRefractionEnabled(true));
+        if(mode==0 || mode==1) {
+            checked(surface.configureMaterial(true,0.92,0.02,0.28,0.6,6.0));
+            checked(surface.configureSurface(1.0,0.0,0.25,6));
+            checked(surface.configureSurfaceBlurRadius(0.1));
+            checked(surface.configureSurfaceDownsample(1));
+        }
+
         if(mode == 5) surface.setCameraXYZ(0.0, 4.0, 0.1, 0.0, 1.3, 0.0, 48.0);
-        else surface.setCameraXYZ(3.4, 3.0, 5.0, 0.0, 0.9, 0.0, 48.0);
+        else surface.setCameraXYZ(2.0, 1.8, 3.0, 0.0, 0.55, 0.0, 42.0);
     }
     local definition = checked(fluids.volumeDefaults());
     definition.settings.capacity = 2048;
@@ -198,6 +205,7 @@ function rebuild(selected) {
                 particle.position = [mode == 14 ? -0.42 + x * 0.12 : -1.0 + x * 0.12,
                     0.12 + y * 0.12, -0.42 + z * 0.12];
                 if (mode == 2) particle.color = [0.55, 0.58, 0.62, 0.35];
+                if(mode==0 || mode==1) particle.color=[0.045,0.20,0.32,1.0];
                 particle.material = material;
                 definition.particles.append(particle);
             }
@@ -456,7 +464,7 @@ eve_init = function() {
     surface = fluids.newSurfaceRenderer(384, 288);
     // Build the existing fluids SSF backend before per-frame timing starts.
     checked(surface.prepare());
-    surface.setCameraXYZ(3.4, 3.0, 5.0, 0.0, 0.9, 0.0, 48.0);
+    surface.setCameraXYZ(2.0, 1.8, 3.0, 0.0, 0.55, 0.0, 42.0);
     imageModule = eve.Image();
     pixels = imageModule.newEmptyImageData(384, 288, "RGBA8");
     refractionBackground=imageModule.newEmptyImageData(384,288,"RGBA8");
@@ -479,6 +487,7 @@ eve_init = function() {
     labelFont = gfx.newFont(fontData, " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789|:.-");
     gfx.setFont(labelFont);
     rebuild(0);
+    paused=false;
 };
 
 eve_update = function(dt) {
@@ -606,7 +615,7 @@ eve_update = function(dt) {
             local reconstructionStart = clock();
             local presented = false;
             if (mode == 2) checked(surface.renderGasVolume(solver, 5.0));
-            else if (mode == 12 || mode == 17) surface.renderVolume(solver);
+            else if (mode == 0 || mode == 1 || mode == 12 || mode == 17) surface.renderVolume(solver);
             else {
                 checked(surface.renderVolumeColorToTexture(solver, gfx, texture));
                 presented = true;
@@ -655,6 +664,11 @@ eve_render = function() {
         local angle=-2.0*atan2(wheelBody.getRotZ(),wheelBody.getRotW())*180.0/3.14159265359;
         drawMillStructure(angle,false);
     }
+    if(mode==0 || mode==1) {
+        // Viewport reference grid, not a substitute for the simulator's collision boundaries.
+        for(local x=100.0;x<900.0;x+=50.0) gfx.drawSolidRect(x,170.0,1.0,450.0,0.08,0.12,0.17,1.0);
+        for(local y=170.0;y<620.0;y+=50.0) gfx.drawSolidRect(100.0,y,800.0,1.0,0.08,0.12,0.17,1.0);
+    }
     gfx.drawTexturedRect(texture, 0.0, 0.0, 960.0, 720.0, 1.0, 1.0, 1.0, 1.0);
     if(mode == 8 && wheelBody != null) {
         local angle=-2.0*atan2(wheelBody.getRotZ(),wheelBody.getRotW())*180.0/3.14159265359;
@@ -669,7 +683,7 @@ eve_render = function() {
         gfx.drawTexturedRectRotated(wheelTexture,480.0+neck[0]*183.0,360.0-(neck[1]-0.95)*183.0,
             67.0,118.0,-bottle.angle*180.0/3.14159265359,0.48,0.72,0.82,0.22);
     }
-    gfx.print("FLUID3D LAB", 24.0, 20.0, 0.8, 0.9, 1.0, 1.0, 1.4);
+    gfx.print("FLUID3D LAB / Space: pause, R: reset", 24.0, 20.0, 0.8, 0.9, 1.0, 1.0, 1.4);
     gfx.print((paused ? "Paused" : "Running") + " | particles: " + solver.getParticleCount() +
         " | dropped seconds: " + format("%.2f", droppedTime), 24.0, 58.0, 0.8, 0.9, 1.0, 1.0, 1.0);
     gfx.print(format("Last work ms | Sim %.1f | Surface %.1f | Upload %.1f",

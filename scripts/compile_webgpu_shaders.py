@@ -150,7 +150,36 @@ def compile_one(glsl_path: Path, glslc, glslang, tint, scratch: Path):
                     "-o", str(wgsl_path)],
                    check=True, capture_output=True)
     wgsl = wgsl_path.read_bytes()
+    if glsl_path.name == "pbr_gbuffer.frag":
+        # Tint's automatic combined-sampler splitting depends on reachability.
+        # Pin this variant to the forward backend's named binding ABI.
+        bindings = {"u": 0, "shadow": 6}
+        for name, binding in [(f"map{i}", 20 + 2 * i) for i in range(11)] + [
+            (f"detailMap{i}", 42 + 2 * i) for i in range(3)
+        ] + [("environmentMap", 4), ("shadowMap", 7), ("extrasMap", 9),
+             ("colorsMap", 11), ("vegetationFadeNoise", 13)]:
+            bindings[name + "_image"] = binding
+            bindings[name + "_sampler"] = binding + 1
+        text = wgsl.decode("utf-8")
+        text = re.sub(
+            r"@binding\(\d+u?\)(\s+var(?:<[^>]+>)?\s+(\w+)\s*:)",
+            lambda match: f"@binding({bindings[match[2]]}u){match[1]}", text,
+        )
+        wgsl = text.encode("utf-8")
     emit_wgsl_inc(glsl_path, wgsl)
+
+
+def compile_pbr_gbuffer(shaders_dir: Path, glslc, glslang, tint, scratch: Path):
+    """Compile the MRT variant from the same canonical PBR material evaluation."""
+    canonical = shaders_dir / "pbr_surface.frag"
+    source = expand_opaque_sampler_arrays(canonical.read_text(encoding="utf-8"), canonical.name)
+    source = source.replace("#version 450", "#version 450\n#define EVE_PBR_GBUFFER 1", 1)
+    temporary = scratch / "pbr_gbuffer.frag"
+    temporary.write_text(source, encoding="utf-8")
+    compile_one(temporary, glslc, glslang, tint, scratch)
+    generated = temporary.with_suffix(".frag_wgsl.inc")
+    if generated.exists():
+        (shaders_dir / generated.name).write_bytes(generated.read_bytes())
 
 
 def tool_failure_detail(error: subprocess.CalledProcessError) -> str:
@@ -195,6 +224,12 @@ def main():
                 except (OSError, ValueError) as error:
                     failed = True
                     print(f"[webgpu-shaders] ERROR {glsl_path.name}: {error}", file=sys.stderr)
+        if (shaders_dir / "pbr_surface.frag").exists():
+            try:
+                compile_pbr_gbuffer(shaders_dir, glslc, glslang, tint, scratch)
+            except (subprocess.CalledProcessError, OSError, ValueError) as error:
+                failed = True
+                print(f"[webgpu-shaders] ERROR PBR GBuffer: {error}", file=sys.stderr)
     return 1 if failed else 0
 
 

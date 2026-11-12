@@ -51,3 +51,9 @@ make run/macosx-debug GAME=examples/dungeon-generator-3d
 ```
 
 Press `R` to generate another deterministic layout and dressing pass.
+
+## 2026-11-11 视觉改善
+
+缺少外部素材包时，内置程序化墙体具有实际墙长/高度，门框保留通行开口，柱、床、桌、桶与箱具有不同尺寸；房间配色、灯光及地面明暗重新调整。外部资产包流程仍保留。
+
+[当前实帧](../../docs/images/examples/review-2026-11-11/next10/dungeon-generator-3d.png) · [前后对照与验证](../../docs/images/examples/QUALITY_REVIEW.md)

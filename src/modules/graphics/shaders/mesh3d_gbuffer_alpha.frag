@@ -5,6 +5,7 @@
 
 layout(location = 0) in vec3 vWorldNormal;
 layout(location = 2) in vec2 vUV;
+layout(location = 3) in vec4 vColor;
 
 layout(push_constant) uniform Push {
     mat4 mvp;
@@ -45,7 +46,7 @@ void main() {
     vec3 tint = vec3(float(packedTint & 63u), float((packedTint >> 6) & 63u),
                      float((packedTint >> 12) & 63u)) / 63.0;
     // A = linear depth so SSGI can sample albedo+depth with one sampler.
-    outAlbedo = vec4(albedo * tint, linear01);
+    outAlbedo = vec4(albedo * tint * vColor.rgb, linear01);
     outPbrParams = vec4(metallic, roughness, 1.0, 1.0);
     outEmissive = vec4(0.0);
 }

@@ -7,7 +7,7 @@ layout(location=3) in vec3 vWorldPos;
 layout(location=4) in vec3 vCameraPos;
 layout(location=5) in vec3 vViewPos;
 
-struct Light3D { vec4 posRadius; vec4 color; };
+struct Light3D { vec4 posRadius; vec4 color; vec4 spot; };
 layout(set=0,binding=0,std140) uniform Frame {
     mat4 mvp; mat4 model; vec4 lightDirIntensity; vec4 lightColor; vec4 tint;
     vec4 cameraPos; vec4 ambient; Light3D lights[8]; vec4 texBomb; vec4 parallax;
@@ -147,8 +147,7 @@ void main() {
     float cloudField=fbm(vWorldPos.xz*0.055+ubo.cloudWind.xy*time*0.018);
     float cloudMask=smoothstep(ubo.cloudWind.z-0.14,ubo.cloudWind.z+0.14,cloudField);
     color*=1.0-ubo.cloud.x*cloudMask*0.28;
-    color=1.0-exp(-color*1.22);
-    color=pow(max(color,vec3(0.0)),vec3(1.0/2.2));
+    // Scene composition owns exposure, tone mapping and display encoding.
     float distanceFog=smoothstep(31.0,52.0,length(vViewPos));
     color=mix(color,vec3(0.075,0.11,0.17),distanceFog*0.48);
     outColor=vec4(color*vTint.rgb,1.0);

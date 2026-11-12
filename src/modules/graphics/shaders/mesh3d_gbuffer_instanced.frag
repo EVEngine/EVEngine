@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 vWorldNormal;
 layout(location = 2) in vec2 vUV;
 layout(location = 3) flat in vec4 vClip;
+layout(location = 4) in vec4 vColor;
 
 layout(binding = 0) uniform sampler2D MainTex;
 
@@ -30,7 +31,7 @@ void main() {
     vec3 albedo = texture(MainTex, vUV).rgb;
     vec3 tint = vec3(float(packedTint & 63u), float((packedTint >> 6) & 63u),
                      float((packedTint >> 12) & 63u)) / 63.0;
-    outAlbedo = vec4(albedo * tint, linear01);
+    outAlbedo = vec4(albedo * tint * vColor.rgb, linear01);
     outPbrParams = vec4(metallic, roughness, 1.0, 1.0);
     outEmissive = vec4(0.0);
 }

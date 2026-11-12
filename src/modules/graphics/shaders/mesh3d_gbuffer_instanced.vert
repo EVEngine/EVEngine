@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
+layout(location = 5) in vec4 inColor;
 layout(location = 7) in vec4 inMvp0;
 layout(location = 8) in vec4 inMvp1;
 layout(location = 9) in vec4 inMvp2;
@@ -15,6 +16,7 @@ layout(location = 14) in vec4 inClip;
 layout(location = 0) out vec3 vWorldNormal;
 layout(location = 2) out vec2 vUV;
 layout(location = 3) flat out vec4 vClip;
+layout(location = 4) out vec4 vColor;
 
 void main() {
     mat4 mvp = mat4(inMvp0, inMvp1, inMvp2, inMvp3);
@@ -26,4 +28,5 @@ void main() {
     vWorldNormal = normalize(nrmMat * inNormal);
     vUV = inUV;
     vClip = inClip;
+    vColor = inColor;
 }

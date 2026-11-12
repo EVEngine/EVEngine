@@ -1,6 +1,7 @@
 #include "common/FrameCaptureImage.h"
 #include <cmath>
 #include <cstring>
+#include <limits>
 namespace eve {
 namespace {
 template <class T>
@@ -9,10 +10,11 @@ Result<T> invalid(std::string message) {
 }
 }  // namespace
 Result<FramePixel> frameCapturePixel(const FrameCaptureBuffer& b, uint32_t x, uint32_t y) {
-    if (!b.bytes || x >= b.width || y >= b.height || uint64_t(b.width) * b.height * 4 != b.bytes->size())
+    if (!framePixelBytes(b.format) || !b.bytes || x >= b.width || y >= b.height ||
+        uint64_t(b.width) * b.height * framePixelBytes(b.format) != b.bytes->size())
         return invalid<FramePixel>("PixelOutOfBoundsOrUnavailable");
     FramePixel  p;
-    const auto* src = b.bytes->data() + (size_t(y) * b.width + x) * 4;
+    const auto* src = b.bytes->data() + (size_t(y) * b.width + x) * framePixelBytes(b.format);
     p.labels        = {"r", "g", "b", "a"};
     if (b.format == FramePixelFormat::Depth32Float) {
         float depth;
@@ -20,6 +22,18 @@ Result<FramePixel> frameCapturePixel(const FrameCaptureBuffer& b, uint32_t x, ui
         p.channels  = 1;
         p.stored[0] = p.decoded[0] = depth;
         p.labels[0]                = "deviceDepth";
+    } else if (b.format == FramePixelFormat::Rgba16Float) {
+        for (size_t i = 0; i < 4; ++i) {
+            uint16_t bits;
+            std::memcpy(&bits, src + i * sizeof(bits), sizeof(bits));
+            const int    exponent = (bits >> 10) & 31;
+            const int    fraction = bits & 1023;
+            const double value    = exponent == 0    ? std::ldexp(double(fraction), -24)
+                                    : exponent == 31 ? (fraction ? std::numeric_limits<double>::quiet_NaN()
+                                                                 : std::numeric_limits<double>::infinity())
+                                                     : std::ldexp(double(1024 + fraction), exponent - 25);
+            p.stored[i] = p.decoded[i] = bits & 0x8000 ? -value : value;
+        }
     } else {
         for (size_t i = 0; i < 4; ++i) {
             const auto c = b.format == FramePixelFormat::Bgra8 && i % 2 == 0 ? 2 - i : i;

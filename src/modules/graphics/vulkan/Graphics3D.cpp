@@ -816,9 +816,9 @@ void Graphics::beginGBufferPass(int w, int h) {
     gbufferPassDraws.clear();
 }
 
-void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
-                               float motionX, float motionY, float roughness, float metallic) {
+void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                               Texture *albedo, float tintR, float tintG, float tintB, float motionX, float motionY,
+                               float roughness, float metallic, float tintA) {
     if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
     GBufferDraw d{};
@@ -843,14 +843,19 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
     d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
-    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    if (pbrSurface_) {
+        d.pbrClip    = {nearZ, farZ, motionX, motionY};
+        d.pbrFactors = {metallic, roughness};
+        drawPbrMesh(mesh, model, Color(tintR, tintG, tintB, tintA), &d);
+    } else {
+        prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    }
     gbufferPassDraws.push_back(d);
 }
 
-void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                    float nearZ, float farZ, Texture *albedo, float tintR,
-                                    float tintG, float tintB, float motionX, float motionY,
-                                    float roughness, float metallic) {
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                    Texture *albedo, float tintR, float tintG, float tintB, float motionX,
+                                    float motionY, float roughness, float metallic, float tintA) {
     if (!gbufferPassActive) throw Exception("drawMeshGBufferAlpha: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBufferAlpha: null mesh");
     GBufferDraw d{};
@@ -873,7 +878,13 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
     d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
-    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    if (pbrSurface_) {
+        d.pbrClip    = {nearZ, farZ, motionX, motionY};
+        d.pbrFactors = {metallic, roughness};
+        drawPbrMesh(mesh, model, Color(tintR, tintG, tintB, tintA), &d);
+    } else {
+        prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    }
     gbufferPassDraws.push_back(d);
 }
 

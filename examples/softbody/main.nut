@@ -122,18 +122,16 @@ eve_render = function() {
     local tankW = w * 0.42;
     local tankH = h - 96.0;
 
-    // Solid 2D draws currently keep the first fragment at overlapping pixels,
-    // so submit foreground before the panels behind it.
+    // Painter order: panels first, then the simulated cloth and fluid.
+    gfx.drawSolidRect(0.0, 0.0, tankX - 8.0, h, 0.09, 0.10, 0.13, 1.0);
+    gfx.drawSolidRect(tankX, tankY, tankW, tankH, 0.11, 0.13, 0.17, 1.0);
     cloth.draw(gfx);
     fluid.draw(gfx);
 
+    gfx.drawSolidRect(16.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
+    gfx.drawSolidRect(tankX + 12.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
     gfx.drawSolidRect(16.0, h - 28.0, 8.0 + cloth.getParticleCount() * 0.35, 10.0,
                       0.7, 0.78, 0.95, 1.0);
     gfx.drawSolidRect(tankX + 12.0, h - 28.0, 8.0 + fluid.getParticleCount() * 0.3, 10.0,
                       0.25, 0.55, 0.95, 1.0);
-    gfx.drawSolidRect(16.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
-    gfx.drawSolidRect(tankX + 12.0, h - 28.0, 220.0, 10.0, 0.2, 0.22, 0.28, 1.0);
-
-    gfx.drawSolidRect(0.0, 0.0, tankX - 8.0, h, 0.09, 0.10, 0.13, 1.0);
-    gfx.drawSolidRect(tankX, tankY, tankW, tankH, 0.11, 0.13, 0.17, 1.0);
 };

@@ -5,10 +5,10 @@ Always regenerates the authoritative SCAD/rig/OBJ sources from design.py first.
 When OpenSCAD is available, each part is also compiled with -D part="..." to verify
 the SCAD modules match the committed OBJ batches.
 """
+
 from __future__ import annotations
 
 import argparse
-import math
 import shutil
 import subprocess
 import sys
@@ -22,25 +22,6 @@ sys.path.insert(0, str(REPO / "scripts"))
 import utf8_stdio  # noqa: E402
 
 PARTS = ("building", "race", "sluice", "drive", "main", "runner", "hoist")
-
-
-def write_obj(path: Path, vertices):
-    with path.open("w", encoding="utf-8") as out:
-        out.write("# Generated from mill.scad; metres, Y-up\ns off\n")
-        for v in vertices:
-            out.write("v %.7g %.7g %.7g\n" % v)
-        for i in range(0, len(vertices), 3):
-            a, b, c = vertices[i : i + 3]
-            u = [b[j] - a[j] for j in range(3)]
-            v = [c[j] - a[j] for j in range(3)]
-            normal = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
-            length = math.sqrt(sum(n * n for n in normal))
-            if length <= 1e-12:
-                raise ValueError(f"{path}: degenerate triangle {i // 3}")
-            out.write("vn %.9g %.9g %.9g\n" % tuple(n / length for n in normal))
-        for i in range(0, len(vertices), 3):
-            n = i // 3 + 1
-            out.write(f"f {i + 1}//{n} {i + 2}//{n} {i + 3}//{n}\n")
 
 
 def bake_openscad(openscad: str, parts):
@@ -71,8 +52,9 @@ def bake_openscad(openscad: str, parts):
                     vertices.append((x / 1000, z / 1000, -y / 1000))
             if not vertices or len(vertices) % 3:
                 raise ValueError(f"{part}: invalid triangle stream")
-            write_obj(ROOT / "assets" / f"{part}.obj", vertices)
-            print(f"{part}: {len(vertices) // 3} triangles (OpenSCAD)", flush=True)
+            # STL has no material groups. Validate the CSG export without replacing
+            # the canonical, material-bearing OBJ emitted from the same geometry.
+            print(f"{part}: verified {len(vertices) // 3} triangles (OpenSCAD)", flush=True)
 
 
 def bake_eva(eve: str, openscad: str):

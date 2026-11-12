@@ -1,0 +1,19 @@
+{
+  "schema": "eve.agent-benchmark-adapter/v1",
+  "id": "deepseek",
+  "model": "cli-default-unresolved",
+  "tools": "CLI filesystem and shell; no configured MCP",
+  "command": [
+    "{python}",
+    "{benchmark}/adapters/cli.py",
+    "--backend",
+    "deepseek",
+    "--request",
+    "{request}",
+    "--result",
+    "{result}",
+    "--cli-command-json",
+    "[\"deepseek\"]"
+  ],
+  "notes": "Template only: set actual noninteractive argv and pinned model for your DeepSeek CLI implementation."
+}

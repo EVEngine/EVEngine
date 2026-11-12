@@ -1,0 +1,167 @@
+{
+  "capturedAt": "2026-11-11",
+  "head": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "workingTree": "dirty; preserve existing changes",
+  "backend": "current-source Windows MSVC Debug SHARED, engine-owned gfx.saveFramePng; unmodified PNG",
+  "build": "cmake/with-msvc.cmd cmake.exe --build build/win32-debug --target eve -j 8",
+  "sourceFingerprint": "9e2f102c9a82ff83637fc2f7e24a37fa99087911b6a18da41130a125bc6c4196",
+  "sourceFingerprintScope": "src/**/*.h,cpp,nut,cmake; names and SHA256 sorted JSON",
+  "inputs": {
+    "examples/scad-watermill/assets/building.obj": "717dec13b9e19701402bc3e546a448bfe76211f23980007fd99468b7a13cd088",
+    "examples/scad-watermill/assets/drive.obj": "73e56e05ffb7243f8aeaa2ec8c5ee7fb50c7d20c3757868af72fb60b75b343dd",
+    "examples/scad-watermill/assets/hoist.obj": "243ec01e08edceefb73b18b4b912271f3ed5ba9e48da04023657a9efe5c84d3e",
+    "examples/scad-watermill/assets/main.obj": "3e570ef0912bb2826383d2eae95739e5497719efb947e56f928a82b6b0f5cda8",
+    "examples/scad-watermill/assets/materials.nut": "b64cf85aab6c1d57c3777171dbd36ec09bd559789ef3e4104773a863243c978d",
+    "examples/scad-watermill/assets/mill.mtl": "711dd8c53ed9a9582785d831825f3ea599b6d2e53390deef8dd4ee169a9c0f4d",
+    "examples/scad-watermill/assets/mill.rig.json": "ca4dd2e453fb64bda24d3134e5fb401551c676270bd1c81db585ff8dbe94843b",
+    "examples/scad-watermill/assets/mill.scad": "3c181d41cb4a4789f9890034bebbc2c1af79dba278423348ed703f5c0e316a8d",
+    "examples/scad-watermill/assets/race.obj": "e8c2221e3190659fc146a15acf89b580bbe8b223913ac9d3f53bc97f580dafda",
+    "examples/scad-watermill/assets/runner.obj": "9770085d9fabb264cf2762df008fc01380fb04d2a00082c239542b9ac21a2a8a",
+    "examples/scad-watermill/assets/sluice.obj": "e0bafad1582480637fca702cee8b97f0d98c68f8158f927780105fe8f31f99ad",
+    "examples/scad-watermill/config.nut": "a559b9393fb2a562ed5831659264a589d7463c994e10df9e67bde9c628c5a618",
+    "examples/scad-watermill/main.nut": "7051545d8d9992f9f1b304db7a9ed809414ee6e7834d44a0a8bcdc34fbf17eb1",
+    "examples/scad-watermill/pose.nut": "7957ef0c10b50f018453e7f5298f1911084b99fefdce94a683f3251bc7c34fae",
+    "examples/scad-watermill/ratios.nut": "bb583fc961ab580272859361ca327e6f85e79f9fb8154cc25ae1f843bcc8ffc7",
+    "examples/scad-watermill/tools/bake.py": "0592a9ca0eab141111cbd4534224f9811041d8c7980f7ec16ebf7463ae983959",
+    "examples/scad-watermill/tools/design.py": "8a76fd4b57a5cec814bfede799848b1bb56dd1fc9af56e0ae6da7eed9d488314",
+    "examples/scad-watermill/tools/test_design.py": "ecfa9a58e960c39e25f2f4ab0c63224d1660edcba56c5eaa9e456aebba22fee9"
+  },
+  "captures": [
+    {
+      "label": "exterior",
+      "setup": "mill.auto=true;mill.hud=false;millApplyOrbitCamera=function(){mill.camera.setEye(-14.0,10.5,14.0);mill.camera.setTarget(-1.0,3.2,0.3);};",
+      "captured": true,
+      "runtime": {
+        "exe": "cde07fa72586c6409d9b5116d08160a8bc3713d7f8ee0ac3fdd2855ae198b4f9",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "cf4034b8441b71f3ed72b3ea7d3da07959385678ca435334e932bc49d940d227",
+          "EVDomains.dll": "d37798fd539b111c0b2a33be8d8d65ebd606262ac9e60bac17f100518bc394fa",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "c68c558a82fc5909c38b3b2fbfd85b8dba832eac35285ddfe62ff18dd3187a4d",
+          "EVFoundation.dll": "412c3076bc46afcd32dd8c5f29af24a17c0d013351b1a5564cd4e7bc3b76d4bc",
+          "EVOrchestration.dll": "4ed4ca84783e35a403fad6dc54462a2c7382ffbc04df894bc167269e823b2afe",
+          "EVPlatform.dll": "4315e97ff73fc84c121ba2cbbe939dd42cc9929eaa50339849eaa5fcfad642f8",
+          "EVWorld.dll": "4f700987e3a041c7e22235a783426d749ca5115980255760b7320a69dcba3b74",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": "exterior.png",
+      "sha256": "4ad51f70c2e16f9202a9d0acad87d5ac945aca64a4e639603fd36bf1235da9ab",
+      "frames": 120
+    },
+    {
+      "label": "wheel",
+      "setup": "mill.auto=true;mill.hud=false;millApplyOrbitCamera=function(){mill.camera.setEye(-9.5,4.7,7.8);mill.camera.setTarget(-3.2,2.2,2.1);};",
+      "captured": true,
+      "runtime": {
+        "exe": "cde07fa72586c6409d9b5116d08160a8bc3713d7f8ee0ac3fdd2855ae198b4f9",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "cf4034b8441b71f3ed72b3ea7d3da07959385678ca435334e932bc49d940d227",
+          "EVDomains.dll": "d37798fd539b111c0b2a33be8d8d65ebd606262ac9e60bac17f100518bc394fa",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "c68c558a82fc5909c38b3b2fbfd85b8dba832eac35285ddfe62ff18dd3187a4d",
+          "EVFoundation.dll": "412c3076bc46afcd32dd8c5f29af24a17c0d013351b1a5564cd4e7bc3b76d4bc",
+          "EVOrchestration.dll": "4ed4ca84783e35a403fad6dc54462a2c7382ffbc04df894bc167269e823b2afe",
+          "EVPlatform.dll": "4315e97ff73fc84c121ba2cbbe939dd42cc9929eaa50339849eaa5fcfad642f8",
+          "EVWorld.dll": "4f700987e3a041c7e22235a783426d749ca5115980255760b7320a69dcba3b74",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": "wheel.png",
+      "sha256": "27e4aaef179d619cddd2c2c9418d1569f2ff26d3d4ea5c3f72bbb1ed3bb6c362",
+      "frames": 120
+    },
+    {
+      "label": "interior",
+      "setup": "mill.auto=true;mill.hud=false;millApplyOrbitCamera=function(){mill.camera.setEye(-1.7,1.85,-2.05);mill.camera.setTarget(0.45,1.95,0.8);};",
+      "captured": true,
+      "runtime": {
+        "exe": "cde07fa72586c6409d9b5116d08160a8bc3713d7f8ee0ac3fdd2855ae198b4f9",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "cf4034b8441b71f3ed72b3ea7d3da07959385678ca435334e932bc49d940d227",
+          "EVDomains.dll": "d37798fd539b111c0b2a33be8d8d65ebd606262ac9e60bac17f100518bc394fa",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "c68c558a82fc5909c38b3b2fbfd85b8dba832eac35285ddfe62ff18dd3187a4d",
+          "EVFoundation.dll": "412c3076bc46afcd32dd8c5f29af24a17c0d013351b1a5564cd4e7bc3b76d4bc",
+          "EVOrchestration.dll": "4ed4ca84783e35a403fad6dc54462a2c7382ffbc04df894bc167269e823b2afe",
+          "EVPlatform.dll": "4315e97ff73fc84c121ba2cbbe939dd42cc9929eaa50339849eaa5fcfad642f8",
+          "EVWorld.dll": "4f700987e3a041c7e22235a783426d749ca5115980255760b7320a69dcba3b74",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": "interior.png",
+      "sha256": "df2854d8859b94c98b1f73158bb56df8888ee145c4cae0bf70da6d1518731963",
+      "frames": 120
+    },
+    {
+      "label": "stone-floor",
+      "setup": "mill.auto=true;mill.hud=false;millApplyOrbitCamera=function(){mill.camera.setEye(-1.7,4.15,-1.9);mill.camera.setTarget(1.1,3.15,0.2);};",
+      "captured": true,
+      "runtime": {
+        "exe": "cde07fa72586c6409d9b5116d08160a8bc3713d7f8ee0ac3fdd2855ae198b4f9",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "cf4034b8441b71f3ed72b3ea7d3da07959385678ca435334e932bc49d940d227",
+          "EVDomains.dll": "d37798fd539b111c0b2a33be8d8d65ebd606262ac9e60bac17f100518bc394fa",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "c68c558a82fc5909c38b3b2fbfd85b8dba832eac35285ddfe62ff18dd3187a4d",
+          "EVFoundation.dll": "412c3076bc46afcd32dd8c5f29af24a17c0d013351b1a5564cd4e7bc3b76d4bc",
+          "EVOrchestration.dll": "4ed4ca84783e35a403fad6dc54462a2c7382ffbc04df894bc167269e823b2afe",
+          "EVPlatform.dll": "4315e97ff73fc84c121ba2cbbe939dd42cc9929eaa50339849eaa5fcfad642f8",
+          "EVWorld.dll": "4f700987e3a041c7e22235a783426d749ca5115980255760b7320a69dcba3b74",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": "stone-floor.png",
+      "sha256": "353d9ca7be3ae1c13c87b7fbe7bd8a20ec7b5162aa3bf26aacdc350bbf7566dc",
+      "frames": 120
+    },
+    {
+      "label": "default",
+      "setup": "// default orbit and running machinery",
+      "captured": true,
+      "runtime": {
+        "exe": "cde07fa72586c6409d9b5116d08160a8bc3713d7f8ee0ac3fdd2855ae198b4f9",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "cf4034b8441b71f3ed72b3ea7d3da07959385678ca435334e932bc49d940d227",
+          "EVDomains.dll": "d37798fd539b111c0b2a33be8d8d65ebd606262ac9e60bac17f100518bc394fa",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "c68c558a82fc5909c38b3b2fbfd85b8dba832eac35285ddfe62ff18dd3187a4d",
+          "EVFoundation.dll": "412c3076bc46afcd32dd8c5f29af24a17c0d013351b1a5564cd4e7bc3b76d4bc",
+          "EVOrchestration.dll": "4ed4ca84783e35a403fad6dc54462a2c7382ffbc04df894bc167269e823b2afe",
+          "EVPlatform.dll": "4315e97ff73fc84c121ba2cbbe939dd42cc9929eaa50339849eaa5fcfad642f8",
+          "EVWorld.dll": "4f700987e3a041c7e22235a783426d749ca5115980255760b7320a69dcba3b74",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": "default.png",
+      "sha256": "cae6b434582e677fc49ade9f648591c09544b584535359670a8f033ebd31709c",
+      "frames": 120
+    }
+  ],
+  "baseline": {
+    "image": "before.png",
+    "sha256": "596a5f3dd87642415cfeeef92052ef794d9140ea9300e43f63f726e16fbae9a8",
+    "original": "../watermill-model/exterior.png"
+  },
+  "verification": {
+    "geometryTests": "5 passed, including sampled three-wall coverage",
+    "nativeSmoke": "PASS, normal entry alive >=2s, no error markers",
+    "visualReview": "5 fresh engine frames; exterior, wheel, transmission floor, stone floor and default view checked",
+    "nativeLinkage": "rig/pose/ratios unchanged; prior 200-frame linkage proof retained in ../watermill-model/manifest.json; not rerun in this wall-only followup",
+    "sourceChecks": "ruff and git diff --check passed; full make check not repeated; previous gate results retained in prior manifest",
+    "openscad": "not installed; optional CSG compilation not run",
+    "scope": "model geometry only, no engine API/rig schema/module/lifecycle changes or architecture exception"
+  },
+  "supersedes": "../watermill-model/manifest.json",
+  "change": "Continuous enclosed infill, complete window jambs/lintels/sills, aligned side bays, closed gables and eaves; visitor gallery remains open."
+}

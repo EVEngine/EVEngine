@@ -89,6 +89,7 @@ void Graphics::buildDeferredFrameGraphs() {
             auto albedoH = graph->importTexture("gbAlbedo", slot.albedo.image(), slot.albedo.imageView(), colorDesc);
             auto pbrParamsH =
                 graph->importTexture("gbPbrParams", slot.pbrParams.image(), slot.pbrParams.imageView(), colorDesc);
+            colorDesc.format = vk::Format::eR16G16B16A16Sfloat;
             auto emissiveH =
                 graph->importTexture("gbEmissive", slot.emissive.image(), slot.emissive.imageView(), colorDesc);
 
@@ -217,6 +218,16 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
         }
         ++drawIndex;
         if (!d.mesh || !d.mesh->gpuHandle) continue;
+        if (d.pbrPipeline) {
+            cb.bindPipeline(vk::PipelineBindPoint::eGraphics, d.pbrPipeline);
+            boundPipeline = d.pbrPipeline;
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, d.pbrLayout, 0, 1, &d.pbrSet, 0, nullptr);
+            std::array<vk::Buffer, 11> uvBuffers;
+            uvBuffers.fill(d.pbrUv);
+            cb.bindVertexBuffers(1, uvBuffers, d.pbrUvOffsets);
+            drawIndexedMesh(cb, *static_cast<GpuMesh *>(d.mesh->gpuHandle));
+            continue;
+        }
         const bool   wantAlpha = d.alphaTest && gbufferAlphaPipeline;
         const bool   skinned   = d.skinSet && d.mesh->hasGpuSkinning();
         vk::Pipeline wanted    = skinned ? (wantAlpha ? gbufferSkinAlphaPipeline : gbufferSkinPipeline)
@@ -250,14 +261,17 @@ void Graphics::prepareGBufferInstanceBatches() {
     size_t total = 0;
     for (size_t i = 0; i < gbufferPassDraws.size();) {
         const auto& first = gbufferPassDraws[i];
-        if (!first.mesh || !first.mesh->gpuHandle || first.mesh->hasGpuSkinning() || first.alphaTest || first.skinSet) {
+        if (!first.mesh || !first.mesh->gpuHandle || first.mesh->hasGpuSkinning() || first.alphaTest || first.skinSet ||
+            first.pbrPipeline) {
             ++i;
             continue;
         }
         size_t end = i + 1;
         while (end < gbufferPassDraws.size()) {
             const auto& next = gbufferPassDraws[end];
-            if (next.mesh != first.mesh || next.albedo != first.albedo || next.alphaTest || next.skinSet) break;
+            if (next.mesh != first.mesh || next.albedo != first.albedo || next.alphaTest || next.skinSet ||
+                next.pbrPipeline)
+                break;
             ++end;
         }
         if (end - i >= 128) {

@@ -5,7 +5,7 @@ layout(location=2) in vec4 vTint;
 layout(location=3) in vec3 vWorldPos;
 layout(location=4) in vec3 vCameraPos;
 layout(location=5) in vec3 vViewPos;
-struct Light3D { vec4 posRadius; vec4 color; };
+struct Light3D { vec4 posRadius; vec4 color; vec4 spot; };
 layout(set=0,binding=0,std140) uniform Frame {
     mat4 mvp; mat4 model; vec4 lightDirIntensity; vec4 lightColor; vec4 tint;
     vec4 cameraPos; vec4 ambient; Light3D lights[8]; vec4 texBomb; vec4 parallax;
@@ -87,10 +87,7 @@ void main() {
     float visibility = terrainShadow(vWorldPos, viewDepth);
     vec3 color = albedo * (sky + ubo.lightColor.rgb * wrap * visibility) +
                  ubo.lightColor.rgb * spec * visibility;
-    color = color / (color + vec3(0.72));
-    float nearZ = max(ubo.clipInfo.x, 1e-4);
-    float farZ = max(ubo.clipInfo.y, nearZ + 1e-3);
-    float linearDepth = clamp((viewDepth - nearZ) / (farZ - nearZ), 0.0, 1.0);
-    outColor = vec4(color, linearDepth);
+    // Opaque linear scene color; the scene pipeline owns tone mapping.
+    outColor = vec4(color, 1.0);
 }
 

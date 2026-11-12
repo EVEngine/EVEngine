@@ -1,0 +1,190 @@
+{
+  "schema": "evengine.mountain-example-visual-review",
+  "version": 1,
+  "date": "2026-11-11",
+  "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "sourceState": "dirty",
+  "sourcePatchSha256": "632e135f52a640be33407eb0820b2f26ce06370eeb433209956b5ade426bc7d2",
+  "exampleSourceAndShaderHashes": {
+    "examples/terrain-smooth-mountain/main.nut": "e74d0f722922624a12f680b22dc119c20280872bd9fa6e084d29f9530912c47f",
+    "examples/terrain-smooth-mountain/config.nut": "84c5d4a13ab9789572c295a5973d8abe4895ea2bcd9cf7c94e534f838a8508a8",
+    "examples/terrain-smooth-mountain/shaders/mountain.frag": "8a65e57527ed7a1fcac8e46f3d8738519b2204efe9e73d309935a89cee2d6976",
+    "examples/terrain-smooth-mountain/shaders/mountain.frag.spv": "8a4474a3d214ec54ef9e5ab30049f0b3c27cb519c0ffab16734c333f439c4483",
+    "examples/terrain-smooth-mountain/shaders/mountain.vert": "ba91888b875a4554264435233494c24f4e84673f3ff1a16ba9a3afc5c3cb4cc5",
+    "examples/terrain-smooth-mountain/shaders/mountain.vert.spv": "fb6f126e539f45b5dbd45ffc987297134d29c572830bd69de6988b08c764192b"
+  },
+  "configuration": "Current-source Windows MSVC Debug SHARED strict; 203 modules; eve rebuilt",
+  "method": "scripts/capture_example.ps1 -> gfx.saveFramePng; 120 frames; unedited PNGs",
+  "before": {
+    "path": "before.png",
+    "sha256": "3d3193f0ee80416e02c13b8b06df260fd868e32f76b8acae1ec75e2718dde19a",
+    "width": 1200,
+    "height": 800
+  },
+  "baselineManifest": "../manifest.json",
+  "after": {
+    "path": "terrain-smooth-mountain.png",
+    "sha256": "faa80500a157d1300277b42b8f72db147559750aaaf14e485189a2ba7e47f3a8",
+    "width": 1440,
+    "height": 1000
+  },
+  "defaultRun": {
+    "example": "terrain-smooth-mountain",
+    "captured": true,
+    "frames": 120,
+    "seconds": 6.6,
+    "runtime": {
+      "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+      "dlls": {
+        "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+        "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+        "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+        "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+        "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+        "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+        "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+        "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+        "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+        "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+        "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+      }
+    }
+  },
+  "variants": [
+    {
+      "example": "terrain-smooth-mountain",
+      "label": "ridge-close",
+      "setup": "setMountainView(1);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+          "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+          "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+          "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+          "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+          "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "ridge-close.png",
+        "sha256": "f900a8659cdfc209ac254e33f934c030eff6149cfcc15709de0684e9372e17b3",
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "example": "terrain-smooth-mountain",
+      "label": "overhead",
+      "setup": "setMountainView(2);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+          "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+          "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+          "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+          "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+          "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "overhead.png",
+        "sha256": "d0b107a3de60236ecf64cb92eb5dbbbbe537b85ce5a6b2c37ecfd17eb46aab0b",
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "example": "terrain-smooth-mountain",
+      "label": "bare-overview",
+      "setup": "setMountainVegetation(false);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+          "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+          "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+          "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+          "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+          "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "bare-overview.png",
+        "sha256": "8d0d890026bd788570bd1f76d969319b9f79343e2d3ba2365215fe326f8d51c2",
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    {
+      "example": "terrain-smooth-mountain",
+      "label": "bare-ridge",
+      "setup": "setMountainVegetation(false);setMountainView(1);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+          "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+          "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+          "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+          "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+          "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "bare-ridge.png",
+        "sha256": "4567665c4a82e2c7abda0b08b07a9a562bfba9778ac3ddd5f5e652edca038b2e",
+        "width": 1440,
+        "height": 1000
+      }
+    }
+  ],
+  "runtimeAudit": [
+    "MOUNTAIN_FOREST panel=1 trees=29 maxHeight=7.8 maxSlope2=0.48",
+    "MOUNTAIN_FOREST panel=2 trees=30 maxHeight=7.8 maxSlope2=0.48",
+    "MOUNTAIN_COMPARE row=40 differentSamples=9915 maxDelta=0.999974 corners=equal",
+    "MOUNTAIN_FOREST panel=3 trees=30 maxHeight=7.8 maxSlope2=0.48",
+    "MOUNTAIN_FOREST panel=4 trees=28 maxHeight=7.8 maxSlope2=0.48",
+    "MOUNTAIN_COMPARE row=0 differentSamples=3541 maxDelta=1.40897 corners=equal",
+    "SMOOTH_MOUNTAIN_READY panels=4 meshSamples=5955"
+  ],
+  "validation": {
+    "build": "current-source eve build passed",
+    "shader": "vertex and fragment compiled with Vulkan SDK 1.4.357.0 glslc; both spirv-val passed",
+    "native": "2/2 official focused SmoothRaise center/edge/mask/invalid-fade and snapshot/restore CTests passed",
+    "smoke": "standard two-second terrain-smooth-mountain smoke passed, no error markers",
+    "quality": "make check CI_BASE=HEAD passed; default origin/dev has five previously verified unchanged Database.h API lifetime documentation failures",
+    "scope": "Windows Vulkan; five static frames and scripted camera/vegetation presets; no claim of browser or all keyboard interactions tested"
+  },
+  "comparisonContract": "same base, stamps, settings, shader, lighting and local vegetation candidates for each pair; only blend operation differs; post-blend slope/height can reject different tree candidates",
+  "unknownFieldPolicy": "ignore"
+}

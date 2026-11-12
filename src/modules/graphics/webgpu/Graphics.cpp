@@ -1340,6 +1340,7 @@ void Graphics::createGbufferPipelines() {
     }
 
     WGPURenderPipelineDescriptor pd{};
+    targets[4].format             = WGPUTextureFormat_RGBA16Float;
     pd.label                      = sv("eve_gbuffer");
     pd.layout                     = gbufferPipelineLayout.Get();
     wgpu::ShaderModule vertModule = makeWgslModule(device, kMesh3DGbufferVertWgsl);
@@ -3714,7 +3715,7 @@ void Graphics::beginGBufferPass(int width, int height) {
 
 void Graphics::drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
                                Texture* albedo, float tintR, float tintG, float tintB, float motionX, float motionY,
-                               float roughness, float metallic) {
+                               float roughness, float metallic, float tintA) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh      = mesh;
@@ -3728,12 +3729,29 @@ void Graphics::drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4
     d.roughness = roughness;
     d.metallic  = metallic;
     d.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
+    if (mesh3dPbrSurface) {
+        auto& pbr              = d.pbrDraw.emplace();
+        pbr.mesh               = mesh;
+        pbr.model              = model;
+        pbr.tint               = Color(tintR, tintG, tintB, tintA);
+        pbr.pbrSurface         = mesh3dPbrSurface;
+        pbr.gbufferClip        = glm::vec4(nearZ, farZ, motionX, motionY);
+        pbr.gbufferMvp         = mvp;
+        pbr.view               = mesh3dView;
+        pbr.cameraPos          = mesh3dCameraPos;
+        pbr.metallic           = metallic;
+        pbr.roughness          = roughness;
+        pbr.surfaceMode        = d.alphaTest ? SurfaceMode::Masked : SurfaceMode::Opaque;
+        pbr.alphaCutoff        = mesh3dAlphaCutoff;
+        pbr.doubleSided        = mesh3dSurfaceDoubleSided;
+        pbr.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
+    }
     gbufferPassDraws.push_back(d);
 }
 
 void Graphics::drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
                                     Texture* albedo, float tintR, float tintG, float tintB, float motionX,
-                                    float motionY, float roughness, float metallic) {
+                                    float motionY, float roughness, float metallic, float tintA) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh      = mesh;
@@ -3748,6 +3766,23 @@ void Graphics::drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm:
     d.metallic  = metallic;
     d.alphaTest = true;
     d.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
+    if (mesh3dPbrSurface) {
+        auto& pbr              = d.pbrDraw.emplace();
+        pbr.mesh               = mesh;
+        pbr.model              = model;
+        pbr.tint               = Color(tintR, tintG, tintB, tintA);
+        pbr.pbrSurface         = mesh3dPbrSurface;
+        pbr.gbufferClip        = glm::vec4(nearZ, farZ, motionX, motionY);
+        pbr.gbufferMvp         = mvp;
+        pbr.view               = mesh3dView;
+        pbr.cameraPos          = mesh3dCameraPos;
+        pbr.metallic           = metallic;
+        pbr.roughness          = roughness;
+        pbr.surfaceMode        = d.alphaTest ? SurfaceMode::Masked : SurfaceMode::Opaque;
+        pbr.alphaCutoff        = mesh3dAlphaCutoff;
+        pbr.doubleSided        = mesh3dSurfaceDoubleSided;
+        pbr.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
+    }
     gbufferPassDraws.push_back(d);
 }
 
@@ -4039,7 +4074,9 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoView     = slot.albedo.CreateView();
         slot.pbrParams      = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
         slot.pbrParamsView  = slot.pbrParams.CreateView();
-        slot.emissive       = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        auto emissiveDesc   = td;
+        emissiveDesc.format = WGPUTextureFormat_RGBA16Float;
+        slot.emissive       = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&emissiveDesc));
         slot.emissiveView   = slot.emissive.CreateView();
         slot.depth          = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&dd));
         slot.depthView      = slot.depth.CreateView();
@@ -4447,11 +4484,15 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
     if (gbufferPassDraws.empty() || gbufferSlots.empty()) return;
     if (!mesh3dGbufferPipeline) createGbufferPipelines();
     auto& uboArena = currentUboArena();
-    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 256);
+    ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 4096);
     for (auto& d : gbufferPassDraws) {
         auto* gpuMesh = static_cast<GpuMesh*>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
+        if (d.pbrDraw) {
+            drawPbrMesh(pass, WGPUTextureFormat_RGBA8Unorm, true, *d.pbrDraw, *gpuMesh);
+            continue;
+        }
         pass.SetPipeline(d.alphaTest ? mesh3dGbufferAlphaPipeline : mesh3dGbufferPipeline);
 
         SkinPassUBO ubo;
@@ -5237,7 +5278,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         static WGPUDepthStencilState ds{};
         ds.format            = WGPUTextureFormat_Depth32Float;
         ds.depthWriteEnabled = depthWrite ? WGPUOptionalBool_True : WGPUOptionalBool_False;
-        ds.depthCompare      = WGPUCompareFunction_Less;
+        ds.depthCompare      = hair ? WGPUCompareFunction_Less : WGPUCompareFunction_LessEqual;
         pd.depthStencil      = &ds;
     }
     pd.multisample.count = sampleCount ? sampleCount : 1;

@@ -2646,6 +2646,9 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         assert(graph.validateResult().ok);
         local result = graph.executeResult("source");
         assert(result.ok && result.hasValue && result.value.getCount() == 1);
+        result.value.setStringAttribute(0, "biome", "forest");
+        local prunedSnapshot = procgen.selfPrune(result.value, 0.1);
+        assert(prunedSnapshot.ok && prunedSnapshot.value.getStringAttribute(0, "biome", "") == "forest");
         local objectLayer = eve.ProcgenObjectBuildLayer();
         assert(objectLayer.addAsset("props/rock", 1.0).ok);
         objectLayer.setSeed(99);
@@ -2732,6 +2735,13 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         assert(retry.ok && retry.value != null);
         assert(runtime.failGenerationJob(retry.value).ok);
         assert(!runtime.failGenerationJob(retry.value).ok);
+        graph = null;
+        collectgarbage();
+        assert(result.value.getCount() == 1);
+        assert(result.value.getStringAttribute(0, "biome", "") == "forest");
+        result = null;
+        collectgarbage();
+        assert(prunedSnapshot.value.getCount() == 1);
     )"));
 }
 

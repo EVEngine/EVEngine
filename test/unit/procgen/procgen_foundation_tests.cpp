@@ -665,6 +665,32 @@ TEST_CASE("procgen.marchingCubes.invalidBufferShapeAndField_haveExplicitErrors")
 }
 
 TEST_CASE("procgen.meshRecipes.shapeReplayParameterAndValidationContract") {
+    SUB_CASE("skyscraper facades face outward and every setback tier has a roof") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        Params params;
+        params.setInt("tiers", 3);
+        params.setFloat("setback", 0.15f);
+        params.setFloat("windowDepth", 0.2f);
+        params.setFloat("spireHeight", 0.f);
+        MeshBuild   mesh;
+        std::string error;
+        REQUIRE(registry.generate("mesh.skyscraper", params, mesh, error));
+        int roofs[3] = {};
+        int windows  = 0;
+        for (int v = 0; v < mesh.getVertexCount(); ++v) {
+            const float z = mesh.getPositionZ(v), nz = mesh.getNormalZ(v);
+            if (std::fabs(nz) > 0.9f) {
+                REQUIRE_GT(z * nz, 0.f);
+                if (mesh.getUvU(v) > 0.5f) ++windows;
+            }
+            if (mesh.getNormalY(v) > 0.9f)
+                for (int tier = 0; tier < 3; ++tier)
+                    if (std::fabs(mesh.getPositionY(v) - float(tier + 1) * 6.f) < 0.001f) ++roofs[tier];
+        }
+        REQUIRE_GT(windows, 0);
+        for (int count : roofs) REQUIRE_GE(count, 4);
+    };
     SUB_CASE("registered shapes replay and produce valid triangle topology") {
         auto& registry = MeshRecipeRegistry::instance();
         registry.registerBuiltins();
@@ -1173,6 +1199,18 @@ TEST_CASE("procgen.hexTerrain.seededMesh_replaysHydrologyAndBiomeCounts") {
     const float bx = coordinate(2, 0) - coordinate(0, 0);
     const float bz = coordinate(2, 2) - coordinate(0, 2);
     CHECK(az * bx - ax * bz > 0.0f);
+    float seaMin = 1e9f, seaMax = -1e9f;
+    int   seaVertices = 0;
+    for (int v = 0; v < first.getVertexCount(); ++v) {
+        const int biome = int(std::floor(first.getUvU(v)));
+        if (first.getNormalY(v) > 0.99f && biome >= 0 && biome <= 1) {
+            seaMin = std::min(seaMin, first.getPositionY(v));
+            seaMax = std::max(seaMax, first.getPositionY(v));
+            ++seaVertices;
+        }
+    }
+    REQUIRE_GT(seaVertices, 0);
+    REQUIRE_LT(seaMax - seaMin, 1e-5f);
     CHECK_EQ(first.getMeta("algorithm", ""), "mesh.hexterrain");
     CHECK(std::stoi(first.getMeta("cells.ocean", "0")) > 0);
     CHECK(std::stoi(first.getMeta("cells.grassland", "0")) > 0);

@@ -9,6 +9,7 @@ entry rules, do-nots, ownership map, and gold examples. Full manuals stay in
 | --- | --- |
 | [`evescript`](evescript/SKILL.md) | Writing `.nut`, `eve.*` APIs, language / concept map |
 | [`eve-agent-loop`](eve-agent-loop/SKILL.md) | Discover → Modify → Run → Observe → Verify sessions |
+| [`eve-scene-search`](eve-scene-search/SKILL.md) | Semantic object discovery, spatial frames, MCP query / paging / recovery |
 | [`eve-game-loop`](eve-game-loop/SKILL.md) | New playable game: authority, persist, save, HUD |
 | [`eve-arpg`](eve-arpg/SKILL.md) | Action RPG: action → combat → settlement → RPG/inventory |
 | [`eve-rpg`](eve-rpg/SKILL.md) | Attributes, buffs, skills, vitals, quests, turn battle |
