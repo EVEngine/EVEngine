@@ -1868,10 +1868,26 @@ private:
     // Screen-space G-buffer (normal / linear-depth / albedo + HW depth).
     struct GBufferPush {
         glm::mat4 mvp{1.f};
+        // The three rows hold the precomputed inverse-transpose normal matrix.
         glm::vec4 modelR0{1.f, 0.f, 0.f, 0.f};
         glm::vec4 modelR1{0.f, 1.f, 0.f, 0.f};
         glm::vec4 modelR2{0.f, 0.f, 1.f, 0.f};
         glm::vec4 clip{0.1f, 100.f, 0.f, 0.f};
+        /** @brief Describes the per-instance vertex binding. @param binding Binding index. @return Vulkan binding
+         * description. */
+        static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
+            return {binding, sizeof(GBufferPush), vk::VertexInputRate::eInstance};
+        }
+        /** @brief Describes the eight instance attributes. @param binding Binding index. @return Attribute
+         * descriptions.
+         *  @cost Allocates eight descriptions once when the G-buffer pipeline is created. */
+        static std::vector<vk::VertexInputAttributeDescription> getAttributeDescription(uint32_t binding) {
+            std::vector<vk::VertexInputAttributeDescription> attributes;
+            attributes.reserve(8);
+            for (uint32_t i = 0; i < 8; ++i)
+                attributes.push_back({7u + i, binding, vk::Format::eR32G32B32A32Sfloat, i * 16u});
+            return attributes;
+        }
     };
     static_assert(sizeof(GBufferPush) == 128, "GBuffer push constants must be 128 bytes");
     struct GBufferDraw {
@@ -1891,6 +1907,8 @@ private:
         uint32_t skinUboOffset = 0;
     };
     struct GBufferSlot {
+        vkb::GenericBuffer instanceBuffer;
+        size_t             instanceCapacity = 0;
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
@@ -1925,6 +1943,7 @@ private:
     vkb::BuiltRenderPass gbufferVisRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
+    vk::Pipeline             gbufferInstancedPipeline{};
     vk::Pipeline gbufferAlphaPipeline{};
     vk::Pipeline gbufferSkinPipeline{};
     vk::Pipeline gbufferSkinAlphaPipeline{};
@@ -1932,6 +1951,14 @@ private:
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
+    struct GBufferInstancedBatch {
+        size_t         first = 0;
+        uint32_t       count = 0;
+        vk::Buffer     buffer{};
+        vk::DeviceSize offset = 0;
+    };
+    std::vector<GBufferInstancedBatch> gbufferInstancedBatches;
+    void                               prepareGBufferInstanceBatches();
     GBufferSlot *currentGBufferSlot();
 
     // Screen-space decal layer: box-projected decals write albedo/normal/params
