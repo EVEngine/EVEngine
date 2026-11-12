@@ -820,6 +820,12 @@ public:
     /** @brief Draws mesh shader. */
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
+    /** @brief Native ordinary-material batching; see Graphics ownership and frame-fence contract. */
+    [[nodiscard]] bool supportsMeshInstancing() const override { return initialized; }
+    /** @brief Copy borrowed transforms into frame-owned storage and record one ordinary-material draw. */
+    [[nodiscard]] Result<void> drawMeshInstances(Mesh &mesh, std::span<const glm::mat4> models,
+                                                 OptionalRef<Texture> texture, const Color &tint) override;
+
     /** @brief Draws mesh shader instances. */
     [[nodiscard]] Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
                                                        const Color &tint, std::uint32_t first,
@@ -993,16 +999,15 @@ public:
     /** @brief Begins g buffer pass. */
     void beginGBufferPass(int width, int height) override;
     /** @brief Draws mesh g buffer. */
-    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                         float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
-                         float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
-                         float roughness = 0.45f, float metallic = 0.f) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                         Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                         float tintA = 1.f) override;
     /** @brief Draws mesh g buffer alpha. */
-    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                              float farZ, Texture *albedo = nullptr, float tintR = 1.f,
-                              float tintG = 1.f, float tintB = 1.f, float motionX = 0.f,
-                              float motionY = 0.f, float roughness = 0.45f,
-                              float metallic = 0.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                              Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                              float tintA = 1.f) override;
     /** @brief Ends g buffer pass. */
     void endGBufferPass() override;
 
@@ -1142,7 +1147,7 @@ public:
 
 private:
     void drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint, Shader *shader,
-                             std::uint32_t first, std::uint32_t count);
+                             std::uint32_t first, std::uint32_t count, std::span<const glm::mat4> models);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;
 
@@ -1174,7 +1179,9 @@ private:
     std::unique_ptr<PbrResources, void (*)(PbrResources*)> pbrResources_{nullptr, &deletePbrResources};
     std::optional<PbrSurface>                              pbrSurface_;
     void                                                   destroyPbrResources();
-    void          drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint);
+    void                                                   destroyPbrGBufferResources();
+    struct GBufferDraw;
+    void drawPbrMesh(Mesh *mesh, const glm::mat4 &model, const Color &tint, GBufferDraw *gbuffer = nullptr);
     void createMesh3DPipeline();
     void createMesh3DClusteredPipeline();
     void                                                   createDeferredLightingPipeline();
@@ -1867,21 +1874,47 @@ private:
     // Screen-space G-buffer (normal / linear-depth / albedo + HW depth).
     struct GBufferPush {
         glm::mat4 mvp{1.f};
+        // The three rows hold the precomputed inverse-transpose normal matrix.
         glm::vec4 modelR0{1.f, 0.f, 0.f, 0.f};
         glm::vec4 modelR1{0.f, 1.f, 0.f, 0.f};
         glm::vec4 modelR2{0.f, 0.f, 1.f, 0.f};
         glm::vec4 clip{0.1f, 100.f, 0.f, 0.f};
+        /** @brief Describes the per-instance vertex binding. @param binding Binding index. @return Vulkan binding
+         * description. */
+        static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
+            return {binding, sizeof(GBufferPush), vk::VertexInputRate::eInstance};
+        }
+        /** @brief Describes the eight instance attributes. @param binding Binding index. @return Attribute
+         * descriptions.
+         *  @cost Allocates eight descriptions once when the G-buffer pipeline is created. */
+        static std::vector<vk::VertexInputAttributeDescription> getAttributeDescription(uint32_t binding) {
+            std::vector<vk::VertexInputAttributeDescription> attributes;
+            attributes.reserve(8);
+            for (uint32_t i = 0; i < 8; ++i)
+                attributes.push_back({7u + i, binding, vk::Format::eR32G32B32A32Sfloat, i * 16u});
+            return attributes;
+        }
     };
     static_assert(sizeof(GBufferPush) == 128, "GBuffer push constants must be 128 bytes");
     struct GBufferDraw {
         Mesh *mesh = nullptr;
         Texture *albedo = nullptr;
         GBufferPush push{};
+        // Immutable frame-slot resources prepared on the render thread; workers only bind them.
+        vk::Pipeline                   pbrPipeline{};
+        vk::PipelineLayout             pbrLayout{};
+        vk::DescriptorSet              pbrSet{};
+        vk::Buffer                     pbrUv{};
+        std::array<vk::DeviceSize, 11> pbrUvOffsets{};
+        glm::vec4                      pbrClip{};
+        glm::vec2                      pbrFactors{};
         bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
         vk::DescriptorSet skinSet{};
         uint32_t skinUboOffset = 0;
     };
     struct GBufferSlot {
+        vkb::GenericBuffer instanceBuffer;
+        size_t             instanceCapacity = 0;
         vkb::ColorTarget normal;
         vkb::ColorTarget depthColor;
         vkb::ColorTarget albedo;
@@ -1916,6 +1949,7 @@ private:
     vkb::BuiltRenderPass gbufferVisRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
     vk::Pipeline gbufferPipeline{};
+    vk::Pipeline             gbufferInstancedPipeline{};
     vk::Pipeline gbufferAlphaPipeline{};
     vk::Pipeline gbufferSkinPipeline{};
     vk::Pipeline gbufferSkinAlphaPipeline{};
@@ -1923,6 +1957,14 @@ private:
     bool gbufferPassActive = false;
     bool gbufferPending = false;
     std::vector<GBufferDraw> gbufferPassDraws;
+    struct GBufferInstancedBatch {
+        size_t         first = 0;
+        uint32_t       count = 0;
+        vk::Buffer     buffer{};
+        vk::DeviceSize offset = 0;
+    };
+    std::vector<GBufferInstancedBatch> gbufferInstancedBatches;
+    void                               prepareGBufferInstanceBatches();
     GBufferSlot *currentGBufferSlot();
 
     // Screen-space decal layer: box-projected decals write albedo/normal/params

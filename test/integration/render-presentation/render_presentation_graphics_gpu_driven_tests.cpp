@@ -1720,6 +1720,64 @@ GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
 }  // namespace
 
 /**
+ * @brief Automatic instancing retains registered GPU tables across submissions.
+ */
+TEST_CASE("GpuDriven.automaticInstancingPreservesRegisteredTablesAcrossFrames") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!gfx->supportsGpuDriven3D()) {
+        win->close();
+        return;
+    }
+
+    auto *cam = Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 8.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setOrthographic(4.f);
+    cam->setAmbient(1.f, 1.f, 1.f);
+    auto *mesh     = gfx->newMeshCube(1.f);
+    auto *material = gfx->newMaterial();
+    // Use a primary color: presentation tone mapping can lift nonzero green
+    // enough to defeat the 2:1 dominance check on an UNORM surface.
+    material->setAlbedoTexture(gdSolid(gfx, 220, 0, 0));
+    // Exercise the examples' automatic path with the explicit feature disabled.
+    // All 128 visible objects share one registered mesh and textured material.
+    for (int y = 0; y < 8; ++y) {
+        for (int x = 0; x < 16; ++x) {
+            auto *object = Renderable3D::create();
+            object->setMesh(mesh);
+            object->setMaterial(material);
+            object->setPosition((float(x) - 7.5f) * .3f, (float(y) - 3.5f) * .3f, 0.f);
+            object->setScale(.2f, .2f, .2f);
+        }
+    }
+    auto *rc = gfx->getRenderControl();
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
+    rc->disable("gpuDriven");
+    rc->disable("clustered");
+    gdWarmPresent(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
+    const auto first = gdCaptureLuma(gfx);
+    gdWarmPresent(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
+    int   redPixels = 0;
+    float maxDelta  = 0.f;
+    for (int y = 0; y < gfx->getHeight(); y += 4) {
+        for (int x = 0; x < gfx->getWidth(); x += 4) {
+            const auto pixel = gfx->getPixel(x, y);
+            if (pixel.r > .1f && pixel.r > pixel.g * 2.f && pixel.r > pixel.b * 2.f) ++redPixels;
+            maxDelta = std::max(maxDelta, std::fabs(gdLuma(pixel) - first[size_t(y * gfx->getWidth() + x)]));
+        }
+    }
+    CHECK(redPixels > 64);
+    CHECK(maxDelta < .03f);
+    win->close();
+}
+
+/**
  * @brief The opaque forward pass must produce the same image with the legacy
  * per-draw path and the GPU-driven (indirect + bindless) path.
  */
@@ -2848,6 +2906,120 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         REQUIRE_EQ(emptyPixels[center], uint8_t(255));
         graphics->begin3DFrame();
         graphics->present();
+    }
+}
+
+TEST_CASE("graphics.deferredTargets.pbrTextureEvaluation") {
+    using namespace eve::graphics;
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 96;
+    settings.height = 64;
+    REQUIRE(window->setWindowSettings(settings));
+    const float    positions[] = {-1, -1, .5f, 1, -1, .5f, 1, 1, .5f, -1, 1, .5f};
+    const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
+    const float    uv[]        = {0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
+    auto          *mesh        = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    // A nonzero UV set and transform must select the right texel, independently
+    // of the normal/ORM/emissive bindings, including their sampler contracts.
+    const std::array<float, 8> uv1{0, 0, 0, 0, 0, 0, 0, 0};
+    REQUIRE(mesh->setTexcoordSet(1, uv1).ok());
+    const uint8_t basePixels[] = {255, 0, 0, 0, 128, 64, 32, 160};
+    auto         *base         = gfx->newTexture(2, 1, basePixels);
+    auto          texture      = [&](std::array<uint8_t, 4> pixel) { return gfx->newTexture(1, 1, pixel.data()); };
+    PbrSurface    surface;
+    surface.cullMode              = PbrCullMode::None;
+    surface.textures[0].texture   = base;
+    surface.textures[0].texcoord  = 1;
+    surface.textures[0].offset    = {.75f, .5f};
+    surface.textures[0].minFilter = surface.textures[0].magFilter = 9728;
+    surface.textures[1].texture                                   = texture({255, 128, 64, 255});
+    surface.textures[2].texture                                   = texture({204, 128, 230, 255});
+    surface.textures[3].texture                                   = texture({64, 255, 255, 255});
+    surface.textures[4].texture                                   = texture({128, 64, 32, 255});
+    surface.textures[5].texture                                   = texture({255, 255, 255, 128});
+    surface.occlusionStrength                                     = .5f;
+    surface.specularFactor                                        = .6f;
+    surface.emissive                                              = {4.f, .5f, .25f};
+    surface.emissiveStrength                                      = 2.f;
+    const auto linear                                             = [](float value) {
+        return value <= .04045f ? value / 12.92f : std::pow((value + .055f) / 1.055f, 2.4f);
+    };
+    auto checkChannel = [&](float actual, float expected) { CHECK(std::abs(actual - expected) < .012f); };
+    for (int size : {64, 80}) {
+        if (size == 80) {
+            const uint16_t joints[16]{};
+            const float    weights[] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
+            REQUIRE(gfx->setMeshSkinningData(mesh, joints, weights, 4));
+            glm::mat4 pose(1.f);
+            pose[0][0] = pose[1][1] = pose[2][2] = .5f;
+            REQUIRE(mesh->setSkinPalette(&pose[0][0], 1).ok());
+        }
+        gfx->beginGBufferPass(size, size);
+        gfx->setMesh3DSurface(SurfaceMode::Masked, BlendMode::Opaque, true, true, .5f);
+        REQUIRE(gfx->setMesh3DPbrSurface(&surface).ok());
+        glm::mat4 left(1.f);
+        left[0][0] = .5f;
+        left[3][0] = -.5f;
+        gfx->drawMeshGBufferAlpha(mesh, left, left, .1f, 100.f, nullptr, .5f, 1.f, 1.f, .2f, -.3f, .8f, .5f);
+        // A second material in the same queued pass must not mutate the first.
+        PbrSurface plain;
+        plain.cullMode = PbrCullMode::None;
+        REQUIRE(gfx->setMesh3DPbrSurface(&plain).ok());
+        glm::mat4 right(1.f);
+        right[0][0] = .5f;
+        right[3][0] = .5f;
+        gfx->drawMeshGBuffer(mesh, right, right, .1f, 100.f, nullptr, 1, 1, 1, 0, 0, .7f, .2f);
+        REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
+        gfx->endGBufferPass();
+        auto read = [&](const char *attachment) {
+            auto result = std::unique_ptr<eve::image::ImageData>(gfx->readGBufferToImageData(attachment));
+            REQUIRE(result != nullptr);
+            return result;
+        };
+        auto albedo = read("albedo");
+        auto a      = albedo->getPixel(size / 4, size / 2);
+        checkChannel(a.r, linear(128.f / 255) * .5f);
+        checkChannel(a.g, linear(64.f / 255));
+        checkChannel(a.b, linear(32.f / 255));
+        if (size == 80) checkChannel(albedo->getPixel(size / 4, size / 8).r, 0.f);
+        auto params = read("pbrParams");
+        auto p      = params->getPixel(size / 4, size / 2);
+        checkChannel(p.r, .5f * 64 / 255);
+        checkChannel(p.g, .8f * 128 / 255);
+        checkChannel(p.b, .5f + .5f * 64 / 255);
+        checkChannel(p.a, .6f * 128 / 255);
+        auto neutral = params->getPixel(3 * size / 4, size / 2);
+        checkChannel(neutral.r, .2f);
+        checkChannel(neutral.g, .7f);
+        checkChannel(neutral.b, 1.f);
+        checkChannel(neutral.a, 1.f);
+        auto normal = read("normal");
+        auto n      = normal->getPixel(size / 4, size / 2);
+        REQUIRE(n.r > .75f);
+        REQUIRE(n.b > .85f);
+        auto emission = read("emissive");
+        auto e        = emission->getPixel(size / 4, size / 2);
+        // Readback is an RGBA8 preview; HDR values clamp, but other channels keep
+        // the linear emission. GPU consumers use the original RGBA16F target.
+        checkChannel(e.r, 1.f);
+        checkChannel(e.g, linear(64.f / 255));
+        checkChannel(e.b, linear(32.f / 255) * .5f);
+        gfx->begin3DFrame();
+        gfx->present();
+        gfx->beginGBufferPass(size, size);
+        gfx->setMesh3DSurface(SurfaceMode::Masked, BlendMode::Opaque, true, true, .5f);
+        REQUIRE(gfx->setMesh3DPbrSurface(&surface).ok());
+        gfx->drawMeshGBufferAlpha(mesh, glm::mat4(1), glm::mat4(1), .1f, 100.f, nullptr, 1, 1, 1, 0, 0, .8f, .5f, .5f);
+        REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
+        gfx->endGBufferPass();
+        auto clipped = read("albedo");
+        checkChannel(clipped->getPixel(size / 2, size / 2).r, 0.f);
+        gfx->begin3DFrame();
+        gfx->present();
     }
 }
 

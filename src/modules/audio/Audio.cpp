@@ -28,18 +28,28 @@ namespace audio {
 Module_IMPL(Audio, new Audio());
 
 Audio::Audio() {
-    registerAudioCapabilities();
     StartupStage stage("audio: OpenAL device/context + worker thread");
-    device = alcOpenDevice(nullptr);
+    std::unique_ptr<ALCdevice, decltype(&alcCloseDevice)> deviceOwner(alcOpenDevice(nullptr), &alcCloseDevice);
+    device = deviceOwner.get();
     if (!device) throw eve::Exception("Could not open OpenAL device");
-    context = alcCreateContext(device, nullptr);
+    const auto releaseContext = [](ALCcontext* value) {
+        if (alcGetCurrentContext() == value) alcMakeContextCurrent(nullptr);
+        alcDestroyContext(value);
+    };
+    std::unique_ptr<ALCcontext, decltype(releaseContext)> contextOwner(alcCreateContext(device, nullptr),
+                                                                       releaseContext);
+    context = contextOwner.get();
     if (!context || !alcMakeContextCurrent(context)) throw eve::Exception("Could not create OpenAL context");
     alListenerf(AL_GAIN, masterVolume);
+    capabilities_ = std::make_unique<AudioCapabilities>(*this);
     worker = std::thread([this] { workerMain(); });
     bindAudioEventSinkOwner(this);
+    (void)contextOwner.release();
+    (void)deviceOwner.release();
 }
 
 Audio::~Audio() {
+    capabilities_.reset();
     bindAudioEventSinkOwner(nullptr);
     running = false;
     cv.notify_all();

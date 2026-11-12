@@ -39,3 +39,11 @@ The built-in Spine loader accepts only its documented subset. When a demo model
 uses unsupported features (such as IK or Bezier timelines), the example reports
 the unavailable visual and draws a colored, collision-sized actor with a facing
 marker. Movement, combat, and enemy behavior remain playable.
+
+## 2026-11-11 视觉改善
+
+修正图集路径必须相对 maps/world.json 解析的问题，避免默认色块替代真实贴图。新增自有程序化石砌/背景素材及兼容角色轮廓；地图碰撞数据保持不变。Spine IK 支持未在本轮扩展，兼容显示没有冒充完整 Spine 动画。通过既有 8 秒移动/跳跃/攻击输入回放的无帧错误检查。
+
+[当前实帧](../../docs/images/examples/review-2026-11-11/next10/metroidvania.png) · [前后对照与验证](../../docs/images/examples/QUALITY_REVIEW.md)
+
+新增细节图集与背景由本例 generate_visuals.py 生成；原有素材及 Kenney CC0 声明保留。重新生成时先运行 generate_visuals.py，再运行 generate_map.py。

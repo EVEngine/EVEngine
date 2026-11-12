@@ -178,6 +178,11 @@ FrameArena &Graphics::currentFrameArena() {
 
 void Graphics::createBindlessSet() {
     if (!gpuDrivenCaps_.gpuDrivenAvailable()) return;
+    // Submission also calls initGpuDrivenResources(). Keep the tables and
+    // descriptor sets that already own registered mesh/material/texture slots;
+    // replacing their buffers leaves those CPU registrations pointing at
+    // uninitialized GPU records (and invalidates earlier recorded draws).
+    if (bindlessSetLayout_) return;
     if (!whiteTexture || !whiteTexture->gpuHandle) return;
     if (!defaultBindlessCube || !defaultBindlessCube->gpuHandle) return;
     auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);

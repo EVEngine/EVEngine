@@ -34,3 +34,9 @@ environment with a sun disc and night stars), the clear color, and the camera
 ambient. Below the horizon the named night-light systems come alive as `Light3D`
 entities: a cool moon directional light, a starlight ambient boost, a warm fire
 point light and a ring of gently-drifting fireflies.
+
+## 2026-11-11 视觉改善
+
+修正相机命名与云层相机一致性、面板锚点、云层尺度/亮度和地面配色，增加篝火石圈。默认停在 17:00，Space 可按 0.35 小时/秒恢复周期；另记录正午与夜间同机位。
+
+[当前实帧](../../docs/images/examples/review-2026-11-11/next10/daynight.png) · [前后对照与验证](../../docs/images/examples/QUALITY_REVIEW.md)

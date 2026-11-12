@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <array>
 #include <cstdint>
 #include <limits>
@@ -62,7 +64,8 @@ struct PbrVariantPlan {
  * @return A stable variant plan, or a structured Unsupported diagnostic before GPU mutation.
  * @thread Worker-safe and reentrant; no texture pointer is dereferenced.
  */
-[[nodiscard]] Result<PbrVariantPlan> planPbrVariant(const PbrSurface& surface, bool environment, bool shadows,
-                                                    const PbrVariantLimits& limits = {});
+[[nodiscard]] EVENGINE_API_BACKENDS Result<PbrVariantPlan> planPbrVariant(const PbrSurface& surface, bool environment,
+                                                                          bool                    shadows,
+                                                                          const PbrVariantLimits& limits = {});
 
 }  // namespace eve::graphics::webgpu

@@ -1,8 +1,11 @@
 #include "procgen/PointGraphScript.h"
 
+#include "common/Assert.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "procgen/PointGraph.h"
+#include "procgen/ProcgenLive.h"
+#include "procgen/ProcgenScriptSupport.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -94,10 +97,19 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("executeResult", [vm = graph.getHandle()](PointGraph* self, const std::string& output) {
         auto result = self->executeResult(output);
         if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
-        auto instance = eve::script::makeOwnedSquirrelInstance<PointSet>(
-            vm, std::make_unique<PointSet>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
-        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
+        auto* module = liveProcgen();
+        if (!module)
+            return eve::script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Procgen module is no longer loaded",
+                                                      "executeResult")));
+        auto reference = module->newPointSetHandle();
+        if (!reference.ok()) return eve::script::projectStatusResult(vm, reference.status());
+        // The module registry owns the complete snapshot, including point attributes.
+        // Use the same handle-backed proxy as sampling and checked publication.
+        auto snapshot = module->resolvePointSet(reference.value());
+        EV_ASSERT(snapshot.isBound(), "new PointSet handle must resolve on the owning script thread");
+        *snapshot = std::move(result).takeValue();
+        return makeOwnedPointSetProxy(vm, std::move(reference));
     });
     graph.addFunc("validateResult", [vm = graph.getHandle()](PointGraph* self) {
         return eve::script::projectResult(vm, self->validateResult());

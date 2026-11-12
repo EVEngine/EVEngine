@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
+#include <glm/gtc/packing.hpp>
 #include <memory>
 #include <vector>
 #include "common/Exception.h"
@@ -274,7 +275,17 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
         return nullptr;
 
     std::vector<uint8_t> rgba;
-    if (!copyTextureToCpu(instance, device, queue, src, gbufferWidth, gbufferHeight, rgba)) return nullptr;
+    const bool           hdr = attachment == "emissive";
+    if (!copyTextureToCpu(instance, device, queue, src, gbufferWidth, gbufferHeight, rgba, hdr ? 8 : 4)) return nullptr;
+    if (hdr) {
+        const size_t channels = size_t(gbufferWidth) * size_t(gbufferHeight) * 4;
+        for (size_t i = 0; i < channels; ++i) {
+            uint16_t half;
+            std::memcpy(&half, rgba.data() + i * 2, sizeof(half));
+            rgba[i] = uint8_t(std::lround(std::clamp(glm::unpackHalf1x16(half), 0.f, 1.f) * 255.f));
+        }
+        rgba.resize(channels);
+    }
     auto *image = new image::ImageData(gbufferWidth, gbufferHeight, "RGBA8");
     std::memcpy(image->getData(), rgba.data(), rgba.size());
     if (attachment == "depth") {

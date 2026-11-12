@@ -43,3 +43,9 @@ HouseLayout JSON 往返、碰撞映射和无效参数拒绝。实景截图在 `q
 
 `map-data.nut` 与 `assets/riverside.json` 为已有地图数据；`build_assets.py` 仍是可选的地图维护工具。
 角色原图、提示词及来源记录保留在各自资产目录。地图/角色工具不参与房屋生成，运行场景无需 Python。
+
+## 2026-11-12 画面改善
+
+补河岸石块与芦苇、桥栏、树木、长椅和广场边缘装饰，调低曝光/景深/泛光；树木与长椅的同一 authored 位置也供行走阻挡使用，保留原角色移动、房屋生成和旋转观察。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/hd2d-riverside.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

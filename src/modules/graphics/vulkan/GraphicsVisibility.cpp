@@ -35,7 +35,7 @@ Result<eve::graphics::VisibilityPixels> Graphics::captureVisibilityPixels(
     scratch.depthColor = device.createColorTarget(maskW, maskH, format);
     scratch.albedo     = device.createColorTarget(maskW, maskH, format);
     scratch.pbrParams  = device.createColorTarget(maskW, maskH, format);
-    scratch.emissive   = device.createColorTarget(maskW, maskH, format);
+    scratch.emissive   = device.createColorTarget(maskW, maskH, vk::Format::eR16G16B16A16Sfloat);
     vk::ImageCreateInfo depthInfo{};
     depthInfo.imageType   = vk::ImageType::e2D;
     depthInfo.format      = vk::Format::eD32Sfloat;

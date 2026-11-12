@@ -13,6 +13,7 @@
 
 - [share/eve/ai/SKILL.md](share/eve/ai/SKILL.md): EveScript + conventions + concept map (compat copy)
 - [.cursor/skills/README.md](.cursor/skills/README.md): skill index (language + mature game paradigms)
+- [.cursor/skills/eve-scene-search/SKILL.md](.cursor/skills/eve-scene-search/SKILL.md): semantic scene queries and spatial evidence; model bridge setup additionally requires the source repository
 - Paradigm skills under `.cursor/skills/`: `evescript`, `eve-agent-loop`, `eve-game-loop`, `eve-arpg`, `eve-rpg`, `eve-rts`, `eve-action-guide`
 - [share/eve/ai/eve-api.json](share/eve/ai/eve-api.json): this SDK build's Binding Contracts (`eve.binding-api`)
 - [share/eve/ai/eve-api.d.ts](share/eve/ai/eve-api.d.ts): TypeScript-shaped signatures (not a second runtime)

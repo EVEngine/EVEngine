@@ -33,3 +33,9 @@ make run/win32-debug GAME=examples/armored-command-3d
 - Poly Pizza GLB mirror and metadata:
   <https://poly.pizza/bundle/Animated-Tank-Pack-0tfvbeAJkU>
 - Kenney Modular Buildings, CC0 1.0; license retained beside the GLB files.
+
+## 2026-11-12 画面改善
+
+提高坦克模型辨识度，收窄道路并补路标、边界、掩体和地面分区，校准曝光；C 可切换跟随选中坦克的近景，保留原 ECS 运动、骨骼、弹道与战斗。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/armored-command-3d.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

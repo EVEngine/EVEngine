@@ -108,7 +108,7 @@ Module_IMPL(SceneEditorModule, new SceneEditorModule());
 
 SceneEditorModule::SceneEditorModule()
     : payloads_(std::make_unique<scene_editing::SceneComponentPayloadRegistry>()),
-      scriptComponents_(std::make_unique<ScriptComponentPayloadProvider>([this](const scene_editing::TargetId& t) {
+      scriptComponents_(std::make_shared<ScriptComponentPayloadProvider>([this](const scene_editing::TargetId& t) {
           const auto found = targetHosts_.find(t.value());
           return found == targetHosts_.end() ? std::string{} : found->second;
       })),
@@ -116,7 +116,7 @@ SceneEditorModule::SceneEditorModule()
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !scene_editing::registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register scene editing commands");
-    payloads_->registerProvider(scriptComponents_.get())
+    payloads_->registerProvider(scriptComponents_)
         .ignore("this module owns both the registry and the provider; a duplicate can only come from a bug here");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }

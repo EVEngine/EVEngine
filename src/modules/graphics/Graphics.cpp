@@ -17,6 +17,7 @@
 #include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/TreeWind.h"
 #include "graphics/hair/GroomInstance.h"
 
@@ -168,7 +169,8 @@ void setShaderScript(Graphics* gfx, ssq::Object obj) {
 
 }  // namespace
 
-Graphics::Graphics() : frameCaptures_(std::make_unique<FrameCaptureStore>()) {
+Graphics::Graphics()
+    : rayTracing_(eve::cap::ProviderRef<IRayTracing>::bind()), frameCaptures_(std::make_unique<FrameCaptureStore>()) {
     primitiveScene_ = std::make_shared<PrimitiveScene>();
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
@@ -179,6 +181,11 @@ Graphics::Graphics() : frameCaptures_(std::make_unique<FrameCaptureStore>()) {
     eve::cap::provide<IRenderFrameCapture>(frameCaptures_.get());
     registerGraphicsCapabilities();
     registerGraphicsArtifactProvider(this);
+}
+
+eve::OptionalRef<IRayTracing> Graphics::rayTracingService() const noexcept {
+    if (!rayTracing_) return std::nullopt;
+    return std::ref(*rayTracing_);
 }
 
 Graphics::~Graphics() {

@@ -13,6 +13,8 @@
 
 - [.cursor/skills/README.md](.cursor/skills/README.md): skill index (language + mature game paradigms)
 - [.cursor/skills/evescript/SKILL.md](.cursor/skills/evescript/SKILL.md): EveScript + conventions + concept map
+- [.cursor/skills/eve-scene-search/SKILL.md](.cursor/skills/eve-scene-search/SKILL.md): semantic scene-object discovery, explicit spatial frames and MCP paging/recovery
+- [docs/usr/modules/scene/semantic-search.md](docs/usr/modules/scene/semantic-search.md): local embedding setup, natural-text MCP connection and spatial-query walkthrough
 - Paradigm skills (load by task): `eve-agent-loop`, `eve-game-loop`, `eve-arpg`, `eve-rpg`, `eve-rts`, `eve-action-guide`
 - [docs/dev/AI知识补偿.md](docs/dev/AI知识补偿.md): why pretrained knowledge is missing and how to compensate
 - [docs/usr/EVESCRIPT.md](docs/usr/EVESCRIPT.md): full language tutorial (humans)

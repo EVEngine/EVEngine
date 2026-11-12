@@ -9,12 +9,14 @@
 //   鈥?Camera auto-orbits the diorama
 
 persist uiReady = false
-persist preset = "clear"
+persist preset = "rain"
 persist camAngle = 0.0
-persist autoOrbit = true
+persist autoOrbit = false
 persist autoCycle = false
 persist cycleTimer = 0.0
 persist props = []
+persist weatherGround = null
+persist puddles = []
 persist strikeWasDown = false
 
 
@@ -79,6 +81,7 @@ function buildProp(kind, x, z) {
 
 function buildScene() {
     local ground = eve.Renderable3D();
+    weatherGround = ground;
     ground.setMesh(gfx.newMeshCylinder(48, 1, true));
     ground.setPosition(0.0, 0.0, 0.0);
     ground.setScale(30.0, 0.06, 30.0);
@@ -97,6 +100,18 @@ function buildScene() {
     buildProp("rock", -3.0, 5.0);
     buildProp("rock", 7.0, 5.0);
     buildProp("rock", -1.0, -9.0);
+    for(local i=0;i<7;++i) {
+        local slab=eve.Renderable3D();slab.setMesh(gfx.newMeshCube(1.0));
+        slab.setPosition(-5.0+i*1.5,0.12,1.0);slab.setScale(1.3,0.15,1.8);
+        slab.setTint(0.16,0.18,0.20,1.0);slab.setRoughness(0.5);props.push(slab);
+    }
+    for(local i=0;i<4;++i) {
+        local puddle=eve.Renderable3D();puddle.setMesh(gfx.newMeshSphere(20,8));
+        puddle.setPosition(-4.0+i*2.8,0.09,-1.8+(i%2)*5.0);puddle.setScale(2.0,0.025,1.2);
+        puddle.setTint(0.018,0.07,0.10,1.0);puddle.setRoughness(0.05);puddle.setMetallic(0.3);
+        props.push(puddle);puddles.push(puddle);
+    }
+
 }
 
 function syncSliders() {
@@ -122,6 +137,13 @@ function updateHud() {
 function applyPreset() {
     local p = presets[preset];
     weather.setPreset(preset);
+    if(weatherGround!=null) {
+        local wet=preset=="rain" || preset=="storm" || preset=="drizzle";
+        local snowy=preset=="snow" || preset=="blizzard";
+        weatherGround.setRoughness(wet?0.14:0.9);
+        weatherGround.setTint(snowy?0.6:(wet?0.055:0.12),snowy?0.67:(wet?0.075:0.17),snowy?0.72:(wet?0.085:0.10),1.0);
+        foreach(puddle in puddles) puddle.setVisible(wet);
+    }
     weather.setIntensity(p.intensity);
     weather.setWindSpeed(p.wind);
     weather.setWindDirection(p.dir);
@@ -169,7 +191,7 @@ function buildPanel() {
     if (!ui.mountBuildAs("panel")) throw "Weather panel mount failed";
     ui.select("panel");
     ui.setHostOverlay(true);
-    ui.setHostPos(760.0, 12.0, 0.0, 0.0);
+    ui.setHostPos(1010.0, 12.0, 0.0, 0.0);
     ui.setHostSize(250.0, 470.0);
 
     ui.beginBuild();
@@ -183,7 +205,7 @@ function buildPanel() {
     ui.select("hud");
     ui.setHostOverlay(true);
     ui.setHostPos(20.0, 20.0, 0.0, 0.0);
-    ui.setHostSize(300.0, 130.0);
+    ui.setHostSize(280.0, 180.0);
 
     uiReady = true;
 }
@@ -298,9 +320,9 @@ eve_update = function(dt) {
 
     weather.update(dt, gfx);
     camera.setAmbient(
-        weather.getAmbientBrightness(),
-        weather.getAmbientBrightness(),
-        weather.getAmbientBrightness());
+        weather.getAmbientBrightness()*0.55,
+        weather.getAmbientBrightness()*0.55,
+        weather.getAmbientBrightness()*0.55);
 };
 
 eve_render = function() {

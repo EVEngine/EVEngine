@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <string_view>
 #include <string>
 
@@ -24,13 +26,15 @@ struct PbrSpecializedSources {
  * @return Process-lifetime views; callers must specialize resource declarations before pipeline creation.
  * @thread Worker-safe and reentrant.
  */
-[[nodiscard]] PbrVariantSources pbrVariantBaseSources();
+[[nodiscard]] EVENGINE_API_BACKENDS PbrVariantSources pbrVariantBaseSources();
 
 /**
  * @brief Specialize the generated WGSL for the resource reachability encoded by a checked plan.
+ * @param gbuffer Select the five-attachment material evaluation variant instead of forward lighting.
  * @param plan Plan returned by planPbrVariant for the same immutable draw snapshot.
  * @return Owning stages whose static texture declarations match the reachable resource set.
  */
-[[nodiscard]] PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan);
+[[nodiscard]] EVENGINE_API_BACKENDS PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan,
+                                                                                      bool gbuffer = false);
 
 }  // namespace eve::graphics::webgpu

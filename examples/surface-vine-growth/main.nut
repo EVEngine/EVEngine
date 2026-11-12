@@ -1,3 +1,4 @@
+dofile("botany.nut");
 // Sci-fi surface vines: 7–10 crawl tips stick to World3D colliders, fork, and leave trails.
 dofile("vines.nut");
 
@@ -81,7 +82,7 @@ function vineBuildScene(world, cube) {
     vineAddBoxCollider(world, -2.6, 3.2, 0.0, 2.5, 0.5, 3.6);
 
     // East mountain first riser (near face ~ x=+1.45).
-    vinePlace(cube, 2.4, 1.1, 0.4, 1.9, 2.2, 2.8, 0.30, 0.32, 0.36);
+    vinePlace(cube, 2.4, 1.1, 0.4, 1.9, 2.2, 2.8, 0.28, 0.30, 0.24);
     vineAddBoxCollider(world, 2.4, 1.1, 0.4, 1.9, 2.2, 2.8);
     vinePlace(cube, 3.6, 2.4, 0.8, 1.7, 2.0, 2.2, 0.34, 0.36, 0.40);
     vineAddBoxCollider(world, 3.6, 2.4, 0.8, 1.7, 2.0, 2.2);
@@ -120,7 +121,7 @@ function vineSyncBranchVisuals() {
         local pts = branch.points;
         if (pts.len() < 6) continue;
         if (branch.polyline == null) {
-            branch.polyline = vineMakePolyline(pts, 0.25, 1.0, 0.55, 1.0, 3.2);
+            branch.polyline = vineMakePolyline(pts, 0.20, 0.30, 0.10, 1.0, 2.0);
             branch.glow = vineMakePolyline(pts, 0.05, 0.55, 0.35, 0.45, 7.5);
             branch.dirty = false;
         } else if (branch.dirty) {
@@ -129,8 +130,8 @@ function vineSyncBranchVisuals() {
             branch.dirty = false;
         }
         local aliveAlpha = branch.alive ? 1.0 : 0.55;
-        vineRequire(branch.polyline.setColor(0.35, 1.0, 0.62, aliveAlpha), "vine core color");
-        vineRequire(branch.glow.setColor(0.08, 0.65, 0.42, 0.28 * aliveAlpha), "vine glow color");
+        vineRequire(branch.polyline.setColor(0.21, 0.32, 0.10, aliveAlpha), "vine core color");
+        vineRequire(branch.glow.setColor(0.08, 0.65, 0.42, vineDebugTips ? 0.20 : 0.0), "vine glow color");
     }
 }
 
@@ -142,7 +143,7 @@ function vineSyncTipMarkers() {
         if (i >= vineTipMarkers.len()) break;
         local marker = vineTipMarkers[i];
         if (tip.alive) {
-            marker.setVisible(true);
+            marker.setVisible(vineDebugTips);
             marker.setPosition(tip.x + tip.nx * 0.04, tip.y + tip.ny * 0.04, tip.z + tip.nz * 0.04);
             local pulse = 0.08 + 0.04 * sin(vineAge * 14.0 + i.tofloat());
             marker.setScale(pulse, pulse, pulse);
@@ -197,6 +198,7 @@ function vineCastAt(x, y, z, nx, ny, nz) {
     vineSyncBranchVisuals();
     vineSyncTipMarkers();
     vineScreenshotSaved = false;
+    if(vineOriginMarker!=null)vineOriginMarker.setVisible(vineDebugTips);
     print(format("SURFACE_VINE_CAST roots=%d seed=%d cast=%d at=(%.2f,%.2f,%.2f) n=(%.2f,%.2f,%.2f)\n",
         count, vineSettings.seed, vineCasts, x, y, z, n[0], n[1], n[2]));
 }
@@ -231,7 +233,7 @@ function vinePickSurface(screenX, screenY) {
 
 function vineClickOverUi(screenX, screenY) {
     // Host overlay panel is mounted at (12,12) with size ~300x420.
-    return screenX >= 8.0 && screenX <= 330.0 && screenY >= 8.0 && screenY <= 450.0;
+    return screenX >= 8.0 && screenX <= 370.0 && screenY >= 8.0 && screenY <= 550.0;
 }
 
 function vineHandleClick() {
@@ -248,6 +250,7 @@ function vineHandleClick() {
 }
 
 function vineControl(id) {
+    if (id == "debug") {vineDebugTips=!vineDebugTips;vineSyncTipMarkers();vineOriginMarker.setVisible(vineDebugTips);}
     if (id == "cast") vineCast();
     if (id == "clear") {
         vineClearVisuals();
@@ -263,28 +266,28 @@ function vineControl(id) {
 
 function vineBuildUi() {
     ui.setTheme("dark");
-    ui.setScale(0.78);
     ui.beginBuild();
     ui.beginWindow("SURFACE VINES", "root");
     ui.text("贴面爬藤 / surface crawl", "title");
-    ui.text("7-10 tips stick to house / ground / mountain and fork", "subtitle");
+    ui.textWrapped("Surface crawl / branching / leaf growth",310.0,"subtitle");
     ui.beginRow("transport", 6.0);
     ui.button("Cast", "cast");
     ui.button("Clear", "clear");
     ui.button("Pause", "pause");
+    ui.button("Tips", "debug");
     ui.end();
     ui.slider("Speed", vineSettings.speed, 0.4, 3.5, "speed");
-    ui.slider("Fork spacing / m", vineSettings.forkSpacing, 0.4, 2.5, "forkSpacing");
-    ui.slider("Fork angle", vineSettings.forkAngle, 0.2, 1.4, "forkAngle");
-    ui.slider("Yaw noise", vineSettings.yawNoise, 0.0, 1.5, "yawNoise");
+    ui.slider("Spacing", vineSettings.forkSpacing, 0.4, 2.5, "forkSpacing");
+    ui.slider("Angle", vineSettings.forkAngle, 0.2, 1.4, "forkAngle");
+    ui.slider("Noise", vineSettings.yawNoise, 0.0, 1.5, "yawNoise");
     ui.slider("Orbit", vineOrbit, 0.0, 6.28318530718, "orbit");
-    ui.text("Left-click scene to grow   ·   Space = recast", "hint");
-    ui.text("", "status");
+    ui.textWrapped("Click a surface to grow | Space recast",310.0,"hint");
+    ui.textWrapped("",310.0,"status");
     ui.end();
     ui.mountBuildAs("vine");
     ui.select("vine");
     ui.setHostPos(12.0, 12.0, 0.0, 0.0);
-    ui.setHostSize(300.0, 440.0);
+    ui.setHostSize(350.0, 565.0);
     ui.setHostOverlay(true);
 }
 
@@ -325,6 +328,7 @@ eve_init <- function() {
     local physicsMod = eve.Physics();
     vineWorld = physicsMod.newWorld3D(0.0, 0.0, 0.0, false);
     vineBuildScene(vineWorld, vineCube);
+    vineDressCourtyard();
     vineProbeWalls(vineWorld);
 
     vineOriginMarker = vinePlace(vineSphere, 0.0, 0.12, 0.0, 0.18, 0.18, 0.18, 0.55, 1.0, 0.75, false);
@@ -341,13 +345,15 @@ eve_init <- function() {
     vineCamera.setEye(-0.4 + cos(vineOrbit) * 11.5, 5.8, 0.2 + sin(vineOrbit) * 11.5);
     vineCamera.setTarget(-0.6, 1.8, 0.0);
     vineCamera.setActive(true);
-    gfx.setDirectionalLight(-0.45, -1.0, -0.25, 1.05, 1.0, 0.92);
+    gfx.setDirectionalLight(-0.45, 1.0, -0.25, 0.95, 0.94, 0.84);
 
     vineBuildUi();
-    // Seed courtyard via the same pick→cast path left-click uses (screen ray into the pad).
-    local seedHit = vinePickSurface(gfx.getWidth().tofloat() * 0.52, gfx.getHeight().tofloat() * 0.58);
-    if (seedHit != null) vineCastAt(seedHit.x, seedHit.y, seedHit.z, seedHit.nx, seedHit.ny, seedHit.nz);
-    else vineCastAt(0.0, 0.08, 0.0, 0.0, 1.0, 0.0);
+    // Start on the lower visible wall, using the same real ray hit and cast
+    // entry as a user click, rather than an incidental upper-face screen pixel.
+    vineWorld.rayCast(7.0,1.55,0.4,0.0,1.55,0.4);
+    if(!vineWorld.hasRayHit())throw "Default ivy wall not reachable";
+    vineCastAt(vineWorld.getRayHitX(),vineWorld.getRayHitY(),vineWorld.getRayHitZ(),
+        vineWorld.getRayHitNormalX(),vineWorld.getRayHitNormalY(),vineWorld.getRayHitNormalZ());
     // Headless proof that a wall click resolves a vertical normal (mouse uses the same vineCastAt).
     vineWorld.rayCast(0.0, 1.2, 0.0, -4.0, 1.2, 0.0);
     if (vineWorld.hasRayHit()) {
@@ -391,7 +397,8 @@ eve_update <- function(dt) {
         }
     }
 
-    local eyeR = 11.5;
+    vineSyncBotany();
+    local eyeR = 10.5;
     local eyeY = 5.8;
     vineCamera.setEye(-0.4 + cos(vineOrbit) * eyeR, eyeY, 0.2 + sin(vineOrbit) * eyeR);
     vineCamera.setTarget(-0.6, 1.8, 0.0);

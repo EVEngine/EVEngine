@@ -4804,11 +4804,12 @@ void discardPending(eve::editor::LocalTransactionBackend& transactions) { REQUIR
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_payload_reads_declared_fields") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     // 一类槽只允许一个提供方（脚本组件刻意共用一个类型槽）。
-    REQUIRE_EQ(static_cast<int>(registry.registerProvider(&provider).code()), static_cast<int>(EditorStatus::Conflict));
+    REQUIRE_EQ(static_cast<int>(registry.registerProvider(providerOwner).code()),
+               static_cast<int>(EditorStatus::Conflict));
 
     const TargetId sceneTarget("editorprobe");
     const ObjectId objectId("probe");
@@ -4888,9 +4889,9 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_write_is_undoable_and_visible_to_script") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     const TargetId sceneTarget("editorprobe");
 
     auto references = registry.componentPayloads(sceneTarget, ObjectId("probe"));
@@ -4955,9 +4956,9 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_wri
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_planner_refuses_invalid_edits") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     const TargetId sceneTarget("editorprobe");
 
     auto references = registry.componentPayloads(sceneTarget, ObjectId("probe"));
@@ -5005,9 +5006,9 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pla
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_write_refuses_stale_and_missing_targets") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     const TargetId sceneTarget("editorprobe");
 
     auto references = registry.componentPayloads(sceneTarget, ObjectId("probe"));
@@ -5069,9 +5070,9 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_wri
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_write_is_refused_when_the_data_is_gone") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     const TargetId sceneTarget("editorprobe");
 
     auto references = registry.componentPayloads(sceneTarget, ObjectId("probe"));
@@ -5119,9 +5120,9 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_wri
 TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_reset_restores_the_declared_default") {
     REQUIRE(callScript("buildInspectorScene"));
 
-    eve::scene_editor::ScriptComponentPayloadProvider provider;
+    auto providerOwner = std::make_shared<eve::scene_editor::ScriptComponentPayloadProvider>();
     SceneComponentPayloadRegistry                     registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     const TargetId sceneTarget("editorprobe");
 
     auto references = registry.componentPayloads(sceneTarget, ObjectId("probe"));

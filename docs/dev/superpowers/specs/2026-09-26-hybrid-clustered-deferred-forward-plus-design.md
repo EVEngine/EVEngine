@@ -446,7 +446,7 @@ lighting 内忽略（文档化质量降级）。桌面 Hybrid 默认 **禁止** 
 - [x] 落地四色附 + `pbrParams` / `emissive` API（Vulkan + WebGPU；vis RP 暂仍独立）
 - [x] GBuffer fill：轻量 Material 写出 metallic/roughness（7-bit pack）+ 默认 occlusion/specular；
   保留 normal.a 3-bit 与 albedo.a 深度供 SSR/SSGI
-- [ ] ForwardPlus 模式下 opaque 仍走今日 lit forward（GBuffer 仅供 post）— 行为未改
+- [x] ForwardPlus opaque 保留 lit forward，GBuffer 服务后处理；`RenderSystem3D.cpp` 仅在 doDeferredLighting 为真时执行 deferredLighting 并排除相应核心 opaque forward 绘制（2026-11-11 源码核验，非本轮图像验收）
 - [x] 图像审计：`pbrParams` / `emissive` 读回（`graphics.deferredTargets.*`）
 - [ ] GBuffer fill 消费完整 `PbrSurface` 贴图子集（MR/normal/occlusion/emissive 贴图求值）
 

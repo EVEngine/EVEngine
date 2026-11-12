@@ -23,10 +23,12 @@
 #include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
 #include "scene/SceneObject.h"
+#include "scene/SceneSearch.h"
 #include "scene/TransformSystem.h"
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,6 +36,8 @@
 // scene.cpp
 namespace scene_contract {
 using namespace eve::scene;
+using eve::SceneEmbeddingBatch;
+using eve::SceneSearchQuery;
 
 SceneHost* host(const char* name, NodeDesc desc) {
     auto created = SceneHost::createHost(name);
@@ -50,6 +54,201 @@ SceneNode* find(SceneHost* host, const char* id) {
 }
 
 bool near(float a, float b) { return std::fabs(a - b) < 1e-4f; }
+
+TEST_CASE("scene.search.realHostFiltersBeforeRankingAndPages") {
+    auto* h = host(
+        "search-contract",
+        node("root",
+             {node("door").withName("Wooden mine entrance").withTags({"door", "interactable"}).withPosition(2, 0, 0),
+              node("decoy").withName("Decorative gate").withTag("door").withPosition(1, 0, 0),
+              node("far").withName("Wooden door").withTags({"door", "interactable"}).withPosition(100, 0, 0),
+              node("second").withName("Iron door").withTags({"door", "interactable"}).withPosition(3, 0, 0)})
+            .withPosition(10, 0, 0));
+    SceneSearch search;
+    auto        prepared = search.prepare("search-contract");
+    REQUIRE(prepared.ok());
+    const auto snapshot = prepared.value();
+    CHECK_EQ(snapshot.records.size(), std::size_t{5});
+    CHECK_EQ(snapshot.records[1].position[0], 12.0);
+    CHECK(h->tree()->transformDirty);  // Read-only capture never runs link propagation.
+    SceneSearchQuery query;
+    query.snapshot  = snapshot.token;
+    query.tags      = {"interactable"};
+    query.center    = std::array<double, 3>{10, 0, 0};
+    query.radius    = 5;
+    query.limit     = 1;
+    auto structured = search.query(query);
+    REQUIRE(structured.ok());
+    CHECK_EQ(structured.value().matched, std::size_t{2});
+    CHECK(structured.value().indexSnapshot.empty());
+    query.model     = "fixture@immutable:mean-l2";
+    query.embedding = {1, 0};
+    CHECK(!search.query(query).ok());  // Explicit provider-absent state.
+    SceneEmbeddingBatch batch{snapshot.token, query.model, {{0, 1}, {.8, .2}, {1, 0}, {1, 0}, {.5, .5}}};
+    REQUIRE(search.publish(batch).ok());
+    auto first = search.query(query);
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().hits[0].record.id, std::string("door"));
+    CHECK_EQ(first.value().matched, std::size_t{2});
+    CHECK_EQ(first.value().indexSnapshot, snapshot.token);
+    query.pageToken = first.value().pageToken;
+    auto changed    = query;
+    changed.radius  = 200;
+    CHECK(!search.query(changed).ok());
+    auto second = search.query(query);
+    REQUIRE(second.ok());
+    CHECK_EQ(second.value().hits[0].record.id, std::string("second"));
+    CHECK(second.value().pageToken.empty());
+    CHECK(!search.query(query).ok());  // Consumed continuation cannot be replayed.
+}
+
+TEST_CASE("scene.search.atomicPublicationAndSourceInvalidation") {
+    auto*       h = host("search-stale", node("root", {node("door").withName("Door")}));
+    SceneSearch search;
+    auto        prepared = search.prepare("search-stale");
+    REQUIRE(prepared.ok());
+    SceneSearchQuery query;
+    query.snapshot  = prepared.value().token;
+    query.model     = "model@revision:mean-l2";
+    query.embedding = {1, 0};
+    SceneEmbeddingBatch batch{query.snapshot, query.model, {{0, 1}, {1, 0}}};
+    REQUIRE(search.publish(batch).ok());
+    batch.vectors[1] = {0, 0};
+    CHECK(!search.publish(batch).ok());
+    REQUIRE(search.query(query).ok());
+    batch.vectors[1] = {1};
+    CHECK(!search.publish(batch).ok());
+    batch.vectors[1] = {std::numeric_limits<double>::quiet_NaN(), 0};
+    CHECK(!search.publish(batch).ok());
+    auto wrongModel  = query;
+    wrongModel.model = "other";
+    CHECK(!search.query(wrongModel).ok());
+    auto wrongDimensions      = query;
+    wrongDimensions.embedding = {1};
+    CHECK(!search.query(wrongDimensions).ok());
+    auto budget       = query;
+    budget.scanBudget = 1;
+    CHECK(!search.query(budget).ok());
+    find(h, "door")->x = 8;  // Even writes bypassing dirty flags are detected.
+    REQUIRE(search.query(query).ok());
+    auto live = search.status();
+    REQUIRE(live.ok());
+    CHECK_EQ(live.value().records[1].position[0], 8.0);
+    CHECK_EQ(live.value().token, query.snapshot);
+    find(h, "door")->name = "Changed door";
+    CHECK(!search.query(query).ok());
+    CHECK(!search.publish(batch).ok());
+    auto refreshed = search.prepare("search-stale");
+    REQUIRE(refreshed.ok());
+    CHECK(!search.query(query).ok());
+    query.snapshot = refreshed.value().token;
+    query.embedding.clear();
+    REQUIRE(search.query(query).ok());
+    h->setTree(node("root"));  // Deletion cannot return a ghost hit.
+    CHECK(!search.query(query).ok());
+}
+
+TEST_CASE("scene.search.ancestryVisibilityReparentAndHostLifetime") {
+    auto* h =
+        host("search-lifetime", node("root", {node("child"), node("parent").withPosition(7, 0, 0).withVisible(false)}));
+    // Valid reparenting can put the parent later in the arena.
+    find(h, "child")->parent = h->findIndexById("parent");
+    SceneSearch search;
+    auto        prepared = search.prepare("search-lifetime");
+    REQUIRE(prepared.ok());
+    CHECK_EQ(prepared.value().records[1].position[0], 7.0);
+    CHECK(!prepared.value().records[1].visible);
+    SceneSearchQuery query;
+    query.snapshot = prepared.value().token;
+    ecs::DestroyEntity(h);
+    CHECK(!search.query(query).ok());
+    host("search-lifetime", node("root", {node("child"), node("parent").withPosition(7, 0, 0).withVisible(false)}));
+    CHECK(!search.query(query).ok());
+    CHECK(!search.prepare("missing-host").ok());
+    auto next = search.prepare("search-lifetime");
+    REQUIRE(next.ok());
+    query.snapshot = next.value().token;
+    search.invalidate();
+    CHECK(!search.query(query).ok());
+}
+
+TEST_CASE("scene.search.spatialFramesAndLiveGeometry") {
+    auto*       h = host("search-spatial", node("root", {node("anchor").withBounds(-1, -1, -1, 1, 1, 1),
+                                                         node("left").withTag("candidate").withPosition(-2, 0, 0),
+                                                         node("right").withTag("candidate").withPosition(2, 0, 0),
+                                                         node("front").withTag("candidate").withPosition(0, 0, 2),
+                                                         node("back").withTag("candidate").withPosition(0, 0, -2),
+                                                         node("up").withTag("candidate").withPosition(0, 2, 0),
+                                                         node("down").withTag("candidate").withPosition(0, -2, 0),
+                                                         node("inside").withTag("candidate").withPosition(.5f, 0, 0),
+                                                         node("observer").withRotation(1.57079632679f)})
+                                               .withPosition(10, 0, 0));
+    SceneSearch search;
+    auto        prepared = search.prepare("search-spatial");
+    REQUIRE(prepared.ok());
+    SceneSearchQuery query;
+    query.snapshot = prepared.value().token;
+    query.tags     = {"candidate"};
+    eve::SceneSpatialConstraint constraint;
+    constraint.reference = "anchor";
+    const std::vector<std::pair<eve::SceneSpatialRelation, std::string>> cases{
+        {eve::SceneSpatialRelation::Left, "left"},   {eve::SceneSpatialRelation::Above, "up"},
+        {eve::SceneSpatialRelation::Below, "down"},  {eve::SceneSpatialRelation::Front, "front"},
+        {eve::SceneSpatialRelation::Behind, "back"}, {eve::SceneSpatialRelation::Inside, "inside"}};
+    for (const auto& [relation, expected] : cases) {
+        constraint.relation = relation;
+        query.spatial       = {constraint};
+        auto result         = search.query(query);
+        REQUIRE(result.ok());
+        REQUIRE_EQ(result.value().hits.size(), std::size_t{1});
+        CHECK_EQ(result.value().hits[0].record.id, expected);
+        CHECK_EQ(result.value().hits[0].spatial.size(), std::size_t{1});
+    }
+    constraint.relation = eve::SceneSpatialRelation::Left;
+    constraint.frame    = eve::SceneSpatialFrame::Observer;
+    constraint.observer = "observer";
+    query.spatial       = {constraint};
+    auto observer       = search.query(query);
+    REQUIRE(observer.ok());
+    CHECK_EQ(observer.value().hits[0].record.id, std::string("front"));
+    CHECK_LT(observer.value().hits[0].spatial[0].offset[0], -1.9);
+    find(h, "front")->z = -3;
+    auto moved          = search.query(query);
+    REQUIRE(moved.ok());
+    CHECK(moved.value().hits.empty());
+    query.spatial[0].reference = "missing";
+    CHECK(!search.query(query).ok());
+}
+
+TEST_CASE("scene.search.hnswCandidateWindowAndGeometryBoundPagination") {
+    auto*       h = host("search-hnsw", node("root", {node("a"), node("b"), node("c")}));
+    SceneSearch search;
+    auto        prepared = search.prepare("search-hnsw");
+    REQUIRE(prepared.ok());
+    SceneSearchQuery query;
+    query.snapshot   = prepared.value().token;
+    query.model      = "fixture:v1";
+    query.embedding  = {1, 0};
+    query.limit      = 1;
+    query.candidates = 2;
+    REQUIRE(search.publish({query.snapshot, query.model, {{0, 1}, {1, 0}, {.8, .2}, {.5, .5}}}).ok());
+    auto result = search.query(query);
+    REQUIRE(result.ok());
+    CHECK(result.value().approximate);
+    CHECK(result.value().candidateTruncated);
+    CHECK_EQ(result.value().matched, std::size_t{4});
+    CHECK_EQ(result.value().hits[0].record.id, std::string("a"));
+    query.pageToken = result.value().pageToken;
+    find(h, "b")->x = 20;
+    CHECK(!search.query(query).ok());
+    query.pageToken.clear();
+    REQUIRE(search.query(query).ok());
+    eve::SceneSpatialConstraint bad;
+    bad.reference = "a";
+    bad.relation  = eve::SceneSpatialRelation::Inside;
+    query.spatial = {bad};
+    CHECK(!search.query(query).ok());
+}
 
 TEST_CASE("scene.tree.declarativeNestedIdsBuildParentAndPathIndex") {
     auto* h =

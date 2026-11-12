@@ -92,3 +92,9 @@ native pixel scale and their feet remain fixed on their isometric tile centres.
 Only the two runtime atlases are part of the example. Generation prompts,
 individual frames, previews and QA reports are intentionally kept out of the
 repository.
+
+## 2026-11-12 画面改善
+
+将四象限材质拼板改为沿实际河床的沙岸/草地分布，补自制等距岸石与树丛，收紧帮助面板。保留原权威水量数组、流动、增减水和双网格拓扑。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/dynamic-water-grid.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

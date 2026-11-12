@@ -2439,6 +2439,39 @@ TEST_CASE("scriptModule.resolvesCachesAndInstantiatesDependencyGraph") {
     CHECK_EQ(metadata->get().dependencies, dependencies);
 }
 
+TEST_CASE("scriptModule.providerCanWithdrawDuringResolutionWithoutInvalidatingDispatch") {
+    bool               destroyed          = false;
+    bool               withdrewWhileAlive = false;
+    Runtime            runtime(512, ssq::Libs::ALL);
+    struct Withdrawing final : script::IScriptModuleProvider {
+        script::ScriptModuleResolver&            resolver;
+        bool&                                    destroyed;
+        bool&                                    withdrewWhileAlive;
+        script::ScriptModuleResolver::ProviderId id = 0;
+        Withdrawing(script::ScriptModuleResolver& resolver, bool& destroyed, bool& withdrewWhileAlive)
+            : resolver(resolver), destroyed(destroyed), withdrewWhileAlive(withdrewWhileAlive) {}
+        ~Withdrawing() override { destroyed = true; }
+        script::ScriptModuleStatus resolve(const script::ScriptModuleRequest&, std::string&, std::string&) override {
+            withdrewWhileAlive = resolver.unregisterProvider(id) && !destroyed;
+            return script::ScriptModuleStatus::NotHandled;
+        }
+        script::ScriptModuleStatus load(std::string_view, script::ScriptModuleSource&, std::string&) override {
+            return script::ScriptModuleStatus::NotHandled;
+        }
+    };
+    auto memory                          = std::make_shared<MemoryModuleProvider>();
+    memory->sources["mem:/snapshot.nut"] = "export const VALUE = 42\n";
+    REQUIRE(runtime.scriptModules().registerProvider(memory, 100) != 0);
+    auto withdrawing = std::make_shared<Withdrawing>(runtime.scriptModules(), destroyed, withdrewWhileAlive);
+    withdrawing->id  = runtime.scriptModules().registerProvider(withdrawing, 200);
+    REQUIRE(withdrawing->id != 0);
+    withdrawing.reset();
+    runtime.runSource("import { VALUE } from \"mem:/snapshot.nut\"\nsnapshot_result <- VALUE\n", "game:/main.nut");
+    CHECK(destroyed);
+    CHECK(withdrewWhileAlive);
+    CHECK_EQ(runtime.vm().get<int64_t>("snapshot_result"), int64_t{42});
+}
+
 TEST_CASE("scriptModule.rejectsCyclesBeforeExecution") {
     Runtime runtime(512, ssq::Libs::ALL);
     auto    provider                = std::make_shared<MemoryModuleProvider>();

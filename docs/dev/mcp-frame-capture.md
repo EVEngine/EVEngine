@@ -54,7 +54,7 @@ eve_frame_capture_status {"token":"<jobToken>"}
 - scalar 用 channel 选择 0 至 3 通道，再按 rangeMin/rangeMax 映射为灰度。PBR 的通道依次是 metallic、roughness、occlusion、specularFactor。
 - normalWorld 将解码的世界法线映射到 RGB；velocity 显示打包的运动方向。
 - linearDepth 仅适用于 gbuffer.hwDepth，利用捕获时的逆投影矩阵重建正的视空间深度，支持透视、正交与反向 Z；范围使用引擎世界单位。D32 和 linearDepth 只允许 channel=0。
-- hdrExposure 对颜色附件使用 exposure 指定的曝光预览；当前 RGBA8 自发光附件没有完整 HDR 精度。
+- hdrExposure 对颜色附件使用 exposure 指定的曝光预览；自发光附件的原生格式为 RGBA16_SFLOAT（每像素 8 字节），保留线性 HDR 值；像素查询不钳制，预览才进行曝光映射。
 
 gbuffer.depth 的 R 是线性归一化深度，G/B 同时存储速度；velocity 是同一物理资源的逻辑视图，不重复读回。法线 alpha、Albedo alpha 也有打包语义，以 manifest 的 encoding 为准。pixel 查询返回存储数值与解码后的命名通道；深度还返回 linearViewDepth。PNG 是显示预览，不能替代原始数值。
 

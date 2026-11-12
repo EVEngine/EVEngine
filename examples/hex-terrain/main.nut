@@ -31,6 +31,7 @@ function rebuildWorld() {
 eve_init=function(){
     rebuildWorld();
     hexCamera=eve.Camera3D(); hexCamera.setFov(45.0); hexCamera.setAmbient(0.36,0.40,0.46);
+    hexCamera.setClipPlanes(0.1, 180.0);
     hexCamera.setActive(true);
     gfx.setBackgroundColor(0.075,0.11,0.17,1.0);
     gfx.setDirectionalLight(-0.55,0.78,0.32,1.55,1.38,1.12);
@@ -41,7 +42,7 @@ eve_update=function(dt){
     gfx.setCloudShadows(0.22,5.5,hexTime,0.35,0.38,0.56,0.65);
     if(key_just_pressed("r")||key_just_pressed("R")){hexSeed=procgen.randomSeed();rebuildWorld();}
     hexYaw+=dt*0.045;
-    local cx=17.0,cz=15.0,dist=25.5;
+    local cx=17.2,cz=14.8,dist=54.0;
     hexCamera.setEye(cx+dist*cos(hexPitch)*sin(hexYaw),dist*sin(hexPitch)+7.0,
                      cz+dist*cos(hexPitch)*cos(hexYaw));
     hexCamera.setTarget(cx,0.8,cz);

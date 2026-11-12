@@ -8,6 +8,10 @@ This English guide is maintained by hand. The Chinese documentation is authorita
 
 The [online documentation](https://evengine.github.io/EVEngine/) includes user guides and the generated C++ API reference. For callable EveScript methods, use the SDK's `share/eve/ai/eve-api.json`, editor completion or MCP API lookup; C++ public methods are not necessarily script bindings. See [API conventions](API-CONVENTIONS.md).
 
+For finding real objects such as "the door left of the chest", see the
+[scene semantic-search tutorial (Chinese)](../../usr/modules/scene/semantic-search.md).
+It covers local embeddings, the HNSW index, natural-text MCP setup and spatial evidence.
+
 ## 1. Download the SDK
 
 **You do not need to compile the engine to make a game.** Download an SDK for your target platform from [GitHub Releases](https://github.com/EVEngine/EVEngine/releases).

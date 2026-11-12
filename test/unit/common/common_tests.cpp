@@ -3594,6 +3594,83 @@ TEST_CASE("Caller owned provider binds once and moved references release their s
     CHECK(first.get() == nullptr);
     CHECK_EQ(moved->value(), 42);
 }
+
+TEST_CASE("Provider snapshots retain withdrawn generations and isolate callback mutations") {
+    eve::cap::ProviderRegistry<IWidget> registry;
+    CHECK(!registry.acquire("widget").ok());
+    REQUIRE(!registry.publish("widget", {}).ok());
+    auto original = registry.publish("widget", std::make_shared<Widget>(7));
+    REQUIRE(original.ok());
+    auto snapshot = registry.snapshot();
+    REQUIRE_EQ(snapshot.size(), size_t{1});
+    // This is the same mutation boundary used by script and scene dispatch.
+    REQUIRE(registry.withdraw(original.value()).ok());
+    auto replacement = registry.publish("widget", std::make_shared<Widget>(9));
+    REQUIRE(replacement.ok());
+    CHECK(replacement.value().generation > original.value().generation);
+    CHECK(!registry.acquire(original.value()).ok());
+    CHECK(!registry.withdraw(original.value()).ok());
+    CHECK_EQ(snapshot.front().provider->value(), 7);
+    auto current = registry.acquire(replacement.value());
+    REQUIRE(current.ok());
+    CHECK_EQ(current.value().provider->value(), 9);
+}
+
+TEST_CASE("Provider leases outlive their registry and release outside its lock") {
+    using Store = eve::cap::ProviderRegistry<IWidget>;
+    std::shared_ptr<IWidget> retained;
+    {
+        Store registry;
+        auto  published = registry.publish("widget", std::make_shared<Widget>(42));
+        REQUIRE(published.ok());
+        auto acquired = registry.acquire(published.value());
+        REQUIRE(acquired.ok());
+        retained = acquired.value().provider;
+    }
+    CHECK_EQ(retained->value(), 42);
+
+    Store            registry;
+    struct Reentrant final : IWidget {
+        Store& registry;
+        bool&  destroyed;
+        Reentrant(Store& registry, bool& destroyed) : registry(registry), destroyed(destroyed) {}
+        ~Reentrant() override { destroyed = registry.snapshot().empty(); }
+        int value() const override { return 1; }
+    };
+    bool destroyed = false;
+    auto published = registry.publish("callback", std::make_shared<Reentrant>(registry, destroyed));
+    REQUIRE(published.ok());
+    {
+        auto removed = registry.withdraw(published.value());
+        REQUIRE(removed.ok());
+        CHECK(!destroyed);
+    }
+    CHECK(destroyed);
+}
+
+TEST_CASE("Provider teardown rejects destructor publication without holding a lock") {
+    using Store   = eve::cap::ProviderRegistry<IWidget>;
+    bool rejected = false;
+    {
+        Store                 registry;
+        struct DuringShutdown final : IWidget {
+            Store& registry;
+            bool&  rejected;
+            DuringShutdown(Store& registry, bool& rejected) : registry(registry), rejected(rejected) {}
+            ~DuringShutdown() override {
+                const bool empty               = registry.snapshot().empty();
+                auto       publication         = registry.publish("replacement", std::make_shared<Widget>(2));
+                const bool publicationRejected = !publication.ok();
+                rejected                       = empty && publicationRejected;
+            }
+            int value() const override { return 1; }
+        };
+        REQUIRE(registry.publish("shutdown", std::make_shared<DuringShutdown>(registry, rejected)).ok());
+    }
+    CHECK(rejected);
+}
+
+
 }  // namespace test_owned_capability_contract
 #endif
 

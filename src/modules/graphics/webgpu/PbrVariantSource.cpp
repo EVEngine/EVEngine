@@ -6,6 +6,7 @@
 #include <string>
 #include <array>
 
+#include "graphics/shaders/pbr_gbuffer.frag_wgsl.inc"
 #include "graphics/shaders/pbr_surface.frag_wgsl.inc"
 #include "graphics/shaders/pbr_surface.vert_wgsl.inc"
 
@@ -106,8 +107,9 @@ PbrVariantSources pbrVariantBaseSources() {
             sourceView(pbr_surface_frag_wgsl, pbr_surface_frag_wgsl_count)};
 }
 
-PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan) {
-    const auto base = pbrVariantBaseSources();
+PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan, bool gbuffer) {
+    auto base = pbrVariantBaseSources();
+    if (gbuffer) base.fragment = sourceView(pbr_gbuffer_frag_wgsl, pbr_gbuffer_frag_wgsl_count);
     PbrSpecializedSources result{std::string(base.vertex), std::string(base.fragment)};
     static constexpr std::array<std::string_view, 11> maps{
         "map0", "map1", "map2", "map3", "map4", "map5", "map6", "map7", "map8", "map9", "map10"};

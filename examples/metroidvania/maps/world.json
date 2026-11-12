@@ -8,7 +8,7 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "image": "assets/tiles.png",
+      "image": "../assets/tiles-detail.png",
       "columns": 4,
       "tilewidth": 32,
       "tileheight": 32,

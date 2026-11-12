@@ -380,6 +380,7 @@ if(_has_asset)
   target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/filesystem/BuildSettings.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
@@ -484,6 +485,7 @@ if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/ui/BuildSettings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/scene/BuildSettings.cmake")
 
 # WebP headers remain private to the image codec implementation.
 if(TARGET EVImage)

@@ -112,7 +112,7 @@ void Graphics::createDeferredLightingPipeline() {
         sd.magFilter                   = WGPUFilterMode_Nearest;
         sd.minFilter                   = WGPUFilterMode_Nearest;
         sd.mipmapFilter                = WGPUMipmapFilterMode_Nearest;
-        sd.maxAnisotropy               = 1.f;
+        sd.maxAnisotropy               = 1;
         deferredLightingNearestSampler = device.CreateSampler(reinterpret_cast<const wgpu::SamplerDescriptor*>(&sd));
     }
 }

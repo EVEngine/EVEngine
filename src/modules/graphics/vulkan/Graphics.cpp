@@ -557,6 +557,7 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             } else {
                 maxSamplerAnisotropy = 1.f;
             }
+            if (supported.independentBlend) phys.features.independentBlend = VK_TRUE;
             // Probe Vulkan 1.2 GPU-driven capabilities (bindless tables + GPU
             // cull chain). The vendored headers omit `computeShader` / draw
             // features from VkPhysicalDeviceFeatures; compute is core and
@@ -1034,6 +1035,7 @@ void Graphics::dropPendingOffscreenPasses() {
     for (auto& d : shadowCascadeDraws) d.clear();
     gbufferPending = false;
     gbufferPassDraws.clear();
+    gbufferInstancedBatches.clear();
     decalPending = false;
     decalPassDraws.clear();
 }

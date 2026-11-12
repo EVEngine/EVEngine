@@ -6,7 +6,7 @@ SOURCE_QUALITY_TARGETS := check/depgraph check/bindings check/test-manifest \
     check/test-case-lines check/test-case-names check/test-assert-level \
     check/sq-call-sites check/examples check/nodiscard check/adhoc-result-tables \
     check/versions check/quality-metadata check/profile-matrix \
-    check/architecture-lint check/scripts
+    check/architecture-lint check/scripts check/agent-benchmark
 
 .PHONY: $(SOURCE_QUALITY_TARGETS) check/source-targets check/architecture-lint
 check/source-targets:

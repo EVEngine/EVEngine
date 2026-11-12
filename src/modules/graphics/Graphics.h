@@ -1,4 +1,5 @@
 #pragma once
+#include "common/BorrowedRef.h"
 #include "common/Export.h"
 
 
@@ -11,6 +12,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include "common/Capability.h"
 #include "common/FramePresentation.h"
 #include "common/Module.h"
 #include "common/Result.h"
@@ -47,6 +49,7 @@ struct ShaderResourceInputs;
 
 
 class AmbientOcclusion;
+class IRayTracing;
 class AntiAliasing;
 class Bloom;
 class ContactShadow;
@@ -133,6 +136,15 @@ public:
     Module_REG(Graphics);
     /** @brief Graphics. */
     Graphics();
+    /**
+     * @brief Borrow the optional ray-tracing service resolved at graphics construction.
+     * @ownership Provider-owned; the statically registered service outlives Graphics.
+     * @lifetime Immediate render-thread borrow; no lookup or lazy construction occurs.
+     * @thread Render thread only. @reentrancy Does not invoke callbacks.
+     * @return Empty when the build supplies no ray-tracing provider; use SSR instead.
+     */
+    [[nodiscard]] eve::OptionalRef<IRayTracing> rayTracingService() const noexcept;
+
     /** @brief Graphics. */
     ~Graphics() override;
 
@@ -995,21 +1007,27 @@ public:
      * After endGBufferPass, textures are available via getRenderControl()->getGBuffer().
      */
     virtual void beginGBufferPass(int width, int height) = 0;
-    /** @brief Draws mesh g buffer. */
-    virtual void drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                                 Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+    /** @brief Queue a GBuffer surface using the currently bound PBR material when present.
+     * @param tintA Base-color alpha multiplier for bound PBR materials; legacy RGB packing is unchanged.
+     * @ownership Mesh and texture are borrowed and must outlive queued GPU work.
+     * @thread Render-thread only; material parameters are copied at submission, no callbacks.
+     */
+    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                 Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
                                  float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
-                                 float metallic = 0.f)   = 0;
+                                 float metallic = 0.f, float tintA = 1.f) = 0;
     /**
      * @brief GBuffer fill with alpha-cutout discard (card/billboard geometry such as
      * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
-     * texels are discarded so depth/normal follow the silhouette. No-op on
-     * backends without the alpha pipeline (WebGPU).
+     * texels are discarded so depth/normal follow the silhouette. Bound PBR
+     * uses the material cutoff and tintA on Vulkan and WebGPU.
+     * @ownership Mesh and texture are borrowed through GPU completion.
+     * @thread Render-thread only; no callbacks.
      */
-    virtual void drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                                      Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                      Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
                                       float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
-                                      float roughness = 0.45f, float metallic = 0.f) = 0;
+                                      float roughness = 0.45f, float metallic = 0.f, float tintA = 1.f) = 0;
     /** @brief Ends g buffer pass. */
     virtual void endGBufferPass() = 0;
 
@@ -1068,7 +1086,8 @@ public:
 
     /**
      * @brief Read a G-buffer attachment back to CPU as RGBA8. name is one of
-     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo".
+     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo",
+     * "pbrParams", or "emissive" (linear HDR clamped to 0..1 for this RGBA8 preview).
      * Valid only after a G-buffer or entity-ID offscreen pass filled it.
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */
@@ -1110,6 +1129,35 @@ public:
     /** @brief Draw mesh with an explicit Mesh3D Shader (nullptr = default PBR pipeline). */
     virtual void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                                 Shader *shader) = 0;
+
+    /** @brief Whether the initialized backend can instance ordinary opaque meshes without bindless textures.
+     * @thread Render thread; query only, no callbacks or resource preparation.
+     */
+    [[nodiscard]] virtual bool supportsMeshInstancing() const { return false; }
+
+    /** @brief Draw a batch of static meshes using the current ordinary material and lighting bindings.
+     * @param mesh Graphics-owned mesh, borrowed for this call; skinning is unsupported.
+     * @param models Borrowed world matrices, copied synchronously; an empty batch is a validated no-op.
+     * @param texture Optional Graphics-owned albedo texture, borrowed for this call; absent selects white.
+     * @param tint Shared material tint.
+     * @ownership Graphics owns the uploaded snapshot; inputs are never retained.
+     * @lifetime Each snapshot survives until its frame-slot fence completes, including subsequent draws/resizes.
+     * @thread Render thread, in an open 3D pass; no callbacks or reentrancy.
+     * @cost One linear matrix upload and one draw per batch, amortizing material binding over all instances.
+     * Storage grows on first use of each frame slot and is reused after its fence.
+     * @return Unsupported on other backends or nonordinary material state; InvalidArgument before recording
+     * for invalid resources/matrices/range. Recording failures return Failed; fail the frame rather than retry.
+     */
+    [[nodiscard]] virtual Result<void> drawMeshInstances(Mesh &mesh, std::span<const glm::mat4> models,
+                                                         OptionalRef<Texture> texture, const Color &tint) {
+        (void)mesh;
+        (void)models;
+        (void)texture;
+        (void)tint;
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "Ordinary mesh instancing is unavailable on this backend",
+                                                       "graphics.meshInstances"));
+    }
 
     /** @brief Draw a checked range from a resource shader's immutable instance matrix buffer.
      * @ownership Mesh
@@ -2238,6 +2286,7 @@ protected:
      * Backends with synchronous offscreen work use the default shared target. Allocation failures throw. */
     virtual Canvas                    &prepareFramePostTarget(FramePostTarget target, int width, int height);
     Canvas                            *sharedFramePostTargets_[2]{};
+    eve::cap::ProviderRef<IRayTracing> rayTracing_;
     std::unique_ptr<FrameCaptureStore> frameCaptures_;
     /** @brief DeferredFileTexture public API. */
     struct DeferredFileTexture {

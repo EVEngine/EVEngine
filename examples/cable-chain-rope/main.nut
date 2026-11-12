@@ -5,11 +5,12 @@
 
 persist lab = {
     items = [],
+    supports = [],
     active = 0,
-    segments = 6,
+    segments = 4,
     segLength = 1.0,
     seed = 1847,
-    autoSpin = true,
+    autoSpin = false,
     yaw = 0.0,
     camera = null,
     uiReady = false,
@@ -148,15 +149,19 @@ function rebuild() {
     for (local i = 0; i < lab.items.len(); i++) {
         local item = lab.items[i]
         if (item == null || item.ent == null) continue
-        item.ent.setVisible(i == lab.active)
+        item.ent.setVisible(true)
+        item.ent.setPosition((-lab.segments*lab.segLength*0.5).tofloat(),0.0,(i-1)*1.1)
     }
     if (lab.uiReady) {
         local cur = lab.items[lab.active]
         local name = cur != null ? cur.label : "?"
         ui.select("lab")
+        ui.setValue("segments",lab.segments.tofloat())
+        ui.setValue("segLength",lab.segLength)
         ui.setText("status", name + "  segs=" + lab.segments + "  seed=" + lab.seed)
         if (cur != null) ui.setText("recipe", cur.mesh + " + " + cur.pbr)
     }
+    fitFixtureGallery()
     print("CABLE_CHAIN_ROPE_PASS active=" + lab.active + " segments=" + lab.segments)
 }
 
@@ -165,21 +170,22 @@ function buildPanel() {
     ui.setNavKeyboard(true)
     ui.beginBuild()
     ui.beginWindow("CABLE / CHAIN / ROPE", "root")
-    ui.text("PROCEDURAL LINEAR FIXTURES", "eyebrow")
-    ui.text("mesh.cable + pbr.cable.steel", "recipe")
-    ui.slider("Segments", lab.segments.tofloat(), 1.0, 24.0, "segments")
-    ui.slider("Unit length", lab.segLength, 0.4, 3.0, "segLength")
+    ui.textWrapped("Steel / iron / hemp : back to front",300.0,"eyebrow")
+    ui.textWrapped("mesh.cable + pbr.cable.steel",300.0,"recipe")
+    ui.slider("Units", lab.segments.tofloat(), 1.0, 24.0, "segments")
+    ui.slider("Length", lab.segLength, 0.4, 3.0, "segLength")
     ui.button("Next fixture", "next")
     ui.button("New seed", "randomize")
     ui.button("Rebuild", "rebuild")
     ui.button("Pause rotation", "spin")
-    ui.text("Tab cycle · +/- segments · R reseed", "hint")
-    ui.text("Ready.", "status")
+    ui.textWrapped("Tab select | +/- segments | R reseed",300.0,"hint")
+    ui.textWrapped("Ready.",300.0,"status")
     ui.end()
     ui.mountBuildAs("lab")
     ui.select("lab")
     ui.setHostOverlay(true)
-    ui.setHostPos(900.0, 30.0, 340.0, 420.0)
+    ui.setHostPos(config.width-18.0, 20.0, 1.0, 0.0)
+    ui.setHostSize(340.0,570.0)
     lab.uiReady = true
 }
 
@@ -198,9 +204,10 @@ eve_init = function() {
 eve_update = function(dt) {
     if (lab.autoSpin) {
         lab.yaw += dt * 0.45
-        local ex = math.polarX(3.4, lab.yaw)
-        local ez = math.polarY(3.4, lab.yaw)
-        lab.camera.setEye(ex, 1.1, ez)
+        local distance=fixtureMax(6.0,lab.segments*lab.segLength*1.45)
+        local ex = sin(lab.yaw)*distance
+        local ez = cos(lab.yaw)*distance
+        lab.camera.setEye(ex, 3.0, ez)
         lab.camera.setTarget(0.0, 0.0, 0.0)
     }
 
@@ -272,3 +279,23 @@ eve_render = function() {
     gfx.render3D()
     ui.beginFrameAndRender()
 }
+
+function fitFixtureGallery() {
+    local half=lab.segments*lab.segLength*0.5;
+    lab.camera.setClipPlanes(0.05,500.0);
+    lab.camera.setEye(0.5,fixtureMax(3.2,half*0.75),fixtureMax(6.0,half*3.1));
+    lab.camera.setTarget(0.65,-0.1,0.0);
+    if(lab.supports.len()==0)for(local i=0;i<7;i++) {
+        local e=eve.Renderable3D();e.setMesh(gfx.newMeshCube(1.0));e.setRoughness(0.85);
+        e.setTint(0.18,0.23,0.25,1.0);lab.supports.push(e);
+    }
+    local i=0;
+    for(local row=-1;row<=1;row++)for(local side=-1;side<=1;side+=2) {
+        local e=lab.supports[i++];e.setPosition(side*half,-0.25,row*1.1);
+        e.setScale(0.20,0.55,0.42);
+        e.setTint(row==lab.active-1?0.48:0.18,row==lab.active-1?0.33:0.23,0.18,1.0);
+    }
+    lab.supports[6].setPosition(0.0,-0.59,0.0);lab.supports[6].setScale(half*2+1.0,0.15,3.5);
+}
+
+function fixtureMax(a,b) {return a>b?a:b;}

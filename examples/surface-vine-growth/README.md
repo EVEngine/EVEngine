@@ -55,3 +55,9 @@ MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh surface-vine-growth
 引擎读回预览（约 2.8s 生长后自动写出）：
 
 ![贴面爬藤生长画面](surface-vine-growth.png)
+
+## 2026-11-12 画面改善
+
+根据原有贴面生长轨迹生成有粗细变化的茎干与叶片，显示缓存上限 900；端点与发光线可用 Tips 独立查看。补砌体/木构细节、可读控制面板，并从真实墙面射线命中开始默认生长。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/surface-vine-growth.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

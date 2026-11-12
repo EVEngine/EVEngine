@@ -58,3 +58,9 @@ input → weapon.fireAt / update
 ## 刻意不做（后续 Phase）
 
 Viewmodel 双 FOV、配件槽、敌人 AI、NavMesh（见计划 D–G）。
+
+## 2026-11-12 画面改善
+
+补地面分缝、墙肋、导向标线、靶面识别和分件武器轮廓；武器跟随真实相机、ADS 和射击状态，靶面装饰随 CombatRuntime 存活状态显示。保留命中、弹药、步态与碰撞路径。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/fps-arena.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

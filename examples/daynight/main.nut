@@ -13,7 +13,7 @@
 
 persist uiReady = false
 persist camAngle = 0.0
-persist autoOrbit = true
+persist autoOrbit = false
 persist props = []
 persist clouds = null
 persist cloudPreviewTime = 0.0
@@ -38,14 +38,14 @@ function buildProp(kind, x, z) {
         canopy.setMesh(gfx.newMeshSphere(20, 12));
         canopy.setPosition(x, 2.2, z);
         canopy.setScale(1.4, 1.0, 1.4);
-        canopy.setTint(0.20, 0.45, 0.22, 1.0);
+        canopy.setTint(0.035, 0.18, 0.065, 1.0);
         canopy.setRoughness(0.85);
         props.push(canopy);
     } else if (kind == "pillar") {
         root.setMesh(gfx.newMeshCylinder(16, 1, true));
         root.setPosition(x, 1.0, z);
         root.setScale(0.6, 2.0, 0.6);
-        root.setTint(0.62, 0.58, 0.54, 1.0);
+        root.setTint(0.24, 0.21, 0.17, 1.0);
         root.setRoughness(0.6);
         root.setMetallic(0.05);
     } else if (kind == "rock") {
@@ -64,7 +64,7 @@ function buildScene() {
     ground.setMesh(gfx.newMeshCylinder(48, 1, true));
     ground.setPosition(0.0, 0.0, 0.0);
     ground.setScale(30.0, 0.06, 30.0);
-    ground.setTint(0.28, 0.34, 0.25, 1.0);
+    ground.setTint(0.055, 0.095, 0.045, 1.0);
     ground.setRoughness(0.95);
     ground.setReceiveShadow(true);
     props.push(ground);
@@ -79,6 +79,17 @@ function buildScene() {
     buildProp("rock", -3.0, 5.0);
     buildProp("rock", 7.0, 5.0);
     buildProp("rock", -1.0, -9.0);
+    for(local i=0;i<12;++i) {
+        local a=i*0.523599;
+        buildProp("rock",math.polarX(1.8,a),math.polarY(1.8,a));
+        local stone=props[props.len()-1];stone.setScale(0.45,0.35,0.55);
+    }
+    for(local i=0;i<4;++i) {
+        local log=eve.Renderable3D();log.setMesh(gfx.newMeshCylinder(8,1,true));
+        log.setPosition((i%2)*0.5-0.25,0.25,(i/2)*0.5-0.25);
+        log.setScale(0.25,0.5,0.25);log.setTint(0.08,0.035,0.018,1.0);props.push(log);
+    }
+
 }
 
 function buildPanel() {
@@ -99,15 +110,18 @@ function buildPanel() {
     ui.mountBuildAs("panel");
     ui.select("panel");
     ui.setHostOverlay(true);
-    ui.setHostPos(760.0, 24.0, 250.0, 260.0);
+    ui.setHostPos(18.0, 18.0, 0.0, 0.0);
+    ui.setHostSize(300.0, 400.0);
     uiReady = true;
 }
 
 eve_init = function() {
-    camera = eve.Camera3D();
-    camera.setEye(0.0, 5.0, 18.0);
-    camera.setTarget(0.0, 7.0, 0.0);
-    camera.setFov(55.0);
+    cycleCamera <- eve.Camera3D();
+    cycleCamera.setEye(12.0, 9.0, 18.0);
+    cycleCamera.setTarget(0.0, 2.5, 0.0);
+    cycleCamera.setFov(55.0);
+    cycleCamera.setClipPlanes(0.1,500.0);
+    cycleCamera.setExposure(-0.7);
 
     buildScene();
     if (!uiReady) buildPanel();
@@ -115,7 +129,8 @@ eve_init = function() {
     // Configure the cycle.
     daynight.init(gfx);
     daynight.setTimeOfDay(17.0);         // golden hour showcases warm cloud scattering
-    daynight.setSpeed(0.0);
+    daynight.setSpeed(0.35);
+    daynight.setPaused(true);
     daynight.setFirePosition(0.0, 0.6, 0.0);
     foreach (f in fireflies) {
         daynight.addFirefly(f[0], f[1], f[2]);
@@ -133,10 +148,10 @@ eve_init = function() {
     clouds = gfx.newVolumetric();
     clouds.setMode("cloud");
     clouds.setQuality("high");
-    clouds.setCloudLayer(9.0, 18.0);
-    clouds.setCloudCoverage(0.42);
-    clouds.setCloudDensity(0.75);
-    clouds.setCloudScale(30.0);
+    clouds.setCloudLayer(30.0, 80.0);
+    clouds.setCloudCoverage(0.46);
+    clouds.setCloudDensity(0.12);
+    clouds.setCloudScale(28.0);
     clouds.setCloudWind(0.7, 0.22);
 };
 
@@ -145,7 +160,7 @@ eve_update = function(dt) {
     if (autoOrbit) {
         camAngle += dt * 0.18;
         local r = 17.0;
-        camera.setEye(math.polarX(r, camAngle), 5.0, math.polarY(r, camAngle));
+        cycleCamera.setEye(math.polarX(r, camAngle), 5.0, math.polarY(r, camAngle));
     }
 
     // Hotkeys.
@@ -159,14 +174,15 @@ eve_update = function(dt) {
 
     daynight.update(dt, gfx);
 
-    clouds.setCamera(math.polarX(17.0, camAngle), 5.0, math.polarY(17.0, camAngle),
-        0.0, 7.0, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 100.0);
+    clouds.setCamera(autoOrbit ? math.polarX(17.0, camAngle) : 12.0, autoOrbit ? 5.0 : 9.0,
+        autoOrbit ? math.polarY(17.0, camAngle) : 18.0,
+        0.0, 2.5, 0.0, 0.0, 1.0, 0.0, 55.0, 1.6, 0.1, 500.0);
     clouds.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
-    clouds.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
+    clouds.setCloudLightColor(daynight.getSunR()*0.35, daynight.getSunG()*0.35, daynight.getSunB()*0.35);
     clouds.setTime(daynight.getTimeOfDay() * 12.0);
 
     // Feed the module's ambient / sky into the camera each frame.
-    camera.setAmbient(daynight.getAmbientR(), daynight.getAmbientG(), daynight.getAmbientB());
+    cycleCamera.setAmbient(daynight.getAmbientR(), daynight.getAmbientG(), daynight.getAmbientB());
 
     // Refresh the status panel.
     if (uiReady) {

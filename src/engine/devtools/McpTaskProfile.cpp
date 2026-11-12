@@ -147,7 +147,7 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
     // Session / agent tools stay reachable so the Agent can escalate, status, and complete.
     // Asset kits are read-only pixel contracts; available on every profile before art gen.
     if (isAgentSessionTool(tool) || tool == "eve_status" || tool == "eve_game_world" ||
-        startsWith(tool, "eve_asset_kit_"))
+        startsWith(tool, "eve_asset_kit_") || tool == "eve_scene_search" || startsWith(tool, "eve_scene_search_"))
         return true;
 
     if (isDangerEvalTool(tool)) {
