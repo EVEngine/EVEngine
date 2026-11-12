@@ -178,6 +178,9 @@ FrameArena &Graphics::currentFrameArena() {
 
 void Graphics::createBindlessSet() {
     if (!gpuDrivenCaps_.gpuDrivenAvailable()) return;
+    // These sets and their tables belong to the device, not an individual
+    // submission. Recreating them would discard already registered GPU records.
+    if (!bindlessSets_.empty()) return;
     if (!whiteTexture || !whiteTexture->gpuHandle) return;
     if (!defaultBindlessCube || !defaultBindlessCube->gpuHandle) return;
     auto *white = static_cast<GpuTexture *>(whiteTexture->gpuHandle);

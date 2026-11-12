@@ -66,11 +66,17 @@ jobs:
           sudo apt-get update \
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
             -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
-          sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build libvulkan-dev \
-            libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
-            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
+          packages_ok=0
+          for attempt in 1 2 3; do
+            sudo apt-get install -y --no-install-recommends \
+              -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
+              build-essential cmake ninja-build libvulkan-dev \
+              libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
+              libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+              libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev && { packages_ok=1; break; }
+            [ "$attempt" -lt 3 ] && sleep 20
+          done
+          [ "$packages_ok" -eq 1 ] || exit 1
 
       - name: Configure profile
         timeout-minutes: 30

@@ -231,6 +231,32 @@ lane's isolated Noble source file uses the verified x64 replica directly, retain
 its Ubuntu key and suites. This closes the remaining preparation paths for the
 applicable CI/SDK matrix rather than fixing only the initial SDK producer.
 
+## Expanded preview regression follow-up
+
+At79956d6ca8, ordinary CI and all nine SDK producer/consumer gates passed.
+The expanded example smoke passed229 examples but crashed dungeon-generator-3d
+and topdown-procmap at their first rendered frame. The exact hosted Linux runtime
+reproduced the dungeon crash under local Lavapipe. Hiding the scene prevented the
+crash; disabling shadows did not. A debugger-only control that preserved the first
+bindless-table initialization and skipped later initializations let both original
+examples present and continue, without changing their scripts or the executable.
+The repeated initialization replaced GPU mesh/material buffers after their CPU
+records had already been registered. The repair keeps these resources with their
+existing Graphics/device owner instead of recreating them on each submission.
+No public API, ECS shape, persistent format, module boundary or dependency source
+changes are required. The existing native resident-submit contract now observes
+actual red/blue pixels over repeated submissions and a material update, rather
+than accepting only a successful submission status/draw count.
+
+The headless profile separately failed while downloading system packages after
+15.9MB had transferred: the registered HTTPS replica's IPv4 connection timed out.
+Other profiles using the same signed repository passed. Profile installation now
+has three bounded attempts with30-second transport timeouts, preserving the exact
+package list, signature/hash checks and the existing15-minute step bound. Failure
+after those attempts still fails the job. No profile, example or assertion is skipped.
+Raw transcripts, the official runtime and isolated debugging probes remain local
+under ignored build/pixelfx-validation.
+
 ## Validation and review gates
 
 Run against the final PR base/head:
