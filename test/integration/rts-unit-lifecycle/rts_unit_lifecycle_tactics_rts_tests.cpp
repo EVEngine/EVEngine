@@ -2814,7 +2814,12 @@ TEST_CASE("rts.rootSnapshot.projectileFileRejectsUnknownAndUnclosedFacts") {
         if (mode == 1) root.at("version") = std::int64_t(2);
         if (mode == 2) root.at("capacity") = "0";
         if (mode == 3) root.at("slots").getIf<Value::Array>()->front().getIf<Value::Array>()->front() = "4294967296";
-        if (mode == 4) root.at("payloads") = Value::Array{Value::Array{}};
+        if (mode == 4) {
+            // Explicit Value prevents an empty inner vector selecting the outer vector copy constructor.
+            root.at("payloads") = Value::Array{Value(Value::Array{})};
+            REQUIRE_EQ(root.at("payloads").getIf<Value::Array>()->size(), std::size_t(1));
+            REQUIRE(root.at("payloads").at(0).getIf<Value::Array>()->empty());
+        }
         REQUIRE(!rts::RTSProjectileSystemSnapshot::prepareState(value).ok());
     }
 }

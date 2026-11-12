@@ -237,13 +237,13 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
         assert(editor.publishTemplate(asset("template.json")).ok);
         openEditor <- function() {return editor.open(nativeWindow(),actualFiles(),asset("binding.json"),
             "{\"schema\":\"eve.map.object-contract\",\"version\":1,\"types\":[]}",storageRoot(),"test-editor","content://test-editor.json","test-export.json");};
-        assert(openEditor().ok);
-        assert(editor.isOpen());
+        local opened = openEditor(); assert(opened.ok, "openEditor: " + opened.status.summary);
+        assert(editor.isOpen(), "editor must remain open");
         assert(!openEditor().ok);
         assert(!editor.publishUnit(asset("unit.json")).ok);
         assert(!editor.render(actualGraphics(),null,actualUi()).ok);
         assert(!editor.shutdown(nativeWindow(),"require_clean").ok);
-        assert(editor.isOpen());
+        assert(editor.isOpen(), "editor must remain open");
     )"));
     auto*     native = static_cast<SDL_Window*>(graphics.win->getHandle());
     auto*     events = eve::platform_event::PlatformEvent::create();
@@ -254,7 +254,11 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     REQUIRE_EQ(SDL_PushEvent(&close), 1);
     events->pump();
     while (auto message = events->pollOwned()) REQUIRE(message->name != "quit");
-    vm.run(vm.compileSource("assert(editor.update(nativeWindow(),actualUi()).ok); assert(editor.isOpen());"));
+    vm.run(vm.compileSource(R"(
+        local updated = editor.update(nativeWindow(),actualUi());
+        assert(updated.ok, "close request update: " + updated.status.summary);
+        assert(editor.isOpen(), "close request must keep editor open");
+    )"));
     graphics.gfx->setScreenReadbackEnabled(true);
     graphics.gfx->clearScreen();
     vm.run(vm.compileSource(R"(
@@ -319,13 +323,13 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     events->pump();
     vm.run(vm.compileSource(R"(
         local overloaded=editor.update(nativeWindow(),actualUi());
-        assert(!overloaded.ok);
+        assert(!overloaded.ok, "1100 queued input events must report overflow");
         assert(overloaded.status.summary.find("overflow") != null);
-        assert(editor.isOpen());
-        assert(editor.update(nativeWindow(),actualUi()).ok);
+        assert(editor.isOpen(), "editor must remain open");
+        local updated = editor.update(nativeWindow(),actualUi()); assert(updated.ok, "update: " + updated.status.summary);
         assert(editor.shutdown(nativeWindow(),"discard").ok);
-        assert(!editor.isOpen());
-        assert(openEditor().ok);
+        assert(!editor.isOpen(), "editor must be closed");
+        local opened = openEditor(); assert(opened.ok, "openEditor: " + opened.status.summary);
     )"));
     graphics.gfx->setScreenReadbackEnabled(false);
     ui->shutdownBackend();
@@ -333,9 +337,9 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     vm.run(vm.compileSource(R"(
         assert(!editor.update(nativeWindow(),actualUi()).ok);
         assert(!editor.shutdown(nativeWindow(),"require_clean").ok);
-        assert(editor.isOpen());
+        assert(editor.isOpen(), "editor must remain open");
         assert(editor.shutdown(nativeWindow(),"discard").ok);
-        assert(!editor.isOpen());
+        assert(!editor.isOpen(), "editor must be closed");
     )"));
     REQUIRE(!std::filesystem::exists(storage / "Content/test-editor.json"));
     std::vector<std::uint8_t> sourceBytes;
@@ -355,10 +359,10 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     graphics.gfx->setScreenReadbackEnabled(true);
     graphics.gfx->clearScreen();
     vm.run(vm.compileSource(R"(
-        assert(openEditor().ok);
+        local opened = openEditor(); assert(opened.ok, "openEditor: " + opened.status.summary);
         local result=editor.render(actualGraphics(),targetCanvas(),actualUi());
         assert(!result.ok);
-        assert(editor.isOpen());
+        assert(editor.isOpen(), "editor must remain open");
     )"));
     graphics.gfx->present();
     ui->dispatchEvents();
@@ -374,9 +378,9 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
             storageRoot(),"test-template","content://test-template.json","test-template-export.json");};
         assert(!editor.openTemplate(nativeWindow(),actualFiles(),"{}",storageRoot(),"bad",
             "content://bad-template.json","bad.json").ok);
-        assert(!editor.isOpen());
+        assert(!editor.isOpen(), "editor must be closed");
         assert(openTemplate().ok);
-        assert(editor.isOpen());
+        assert(editor.isOpen(), "editor must remain open");
         assert(!editor.startPreview(actualFiles(),"01900000-0000-7000-8000-000000000032",42,6.0).ok);
         assert(!editor.stepPreview(1000000000).ok);
         assert(!editor.stopPreview().ok);
@@ -397,10 +401,10 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     events->pump();
     while (auto message = events->pollOwned()) REQUIRE(message->name != "quit");
     vm.run(vm.compileSource(R"(
-        assert(editor.update(nativeWindow(),actualUi()).ok);
-        assert(editor.isOpen());
+        local updated = editor.update(nativeWindow(),actualUi()); assert(updated.ok, "update: " + updated.status.summary);
+        assert(editor.isOpen(), "editor must remain open");
         assert(editor.shutdown(nativeWindow(),"discard").ok);
-        assert(!editor.isOpen());
+        assert(!editor.isOpen(), "editor must be closed");
     )"));
     REQUIRE(!std::filesystem::exists(storage / "Content/test-template.json"));
     std::vector<std::uint8_t> templateBytes;
@@ -429,7 +433,7 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     vm.run(vm.compileSource(R"(
         assert(openTemplate().ok);
         assert(editor.shutdown(nativeWindow(),"require_clean").ok);
-        assert(!editor.isOpen());
+        assert(!editor.isOpen(), "editor must be closed");
     )"));
     store
         .compareAndSwap("content://test-template.json", renamed.revision, renamed.contentHash,
@@ -446,7 +450,7 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
                           .expect("persist actual event configuration");
     graphics.gfx->clearScreen();
     vm.run(vm.compileSource(R"(
-        assert(openEditor().ok);
+        local opened = openEditor(); assert(opened.ok, "openEditor: " + opened.status.summary);
         assert(editor.startPreview(actualFiles(),"01900000-0000-7000-8000-000000000032",42,6.0).ok);
         assert(editor.stepPreview(1000000000).ok);
         assert(editor.render(actualGraphics(),targetCanvas(),actualUi()).ok);
@@ -480,7 +484,7 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
                               .expect("persist proximity configuration");
     graphics.gfx->clearScreen();
     vm.run(vm.compileSource(R"(
-        assert(openEditor().ok);
+        local opened = openEditor(); assert(opened.ok, "openEditor: " + opened.status.summary);
         assert(editor.startPreview(actualFiles(),"01900000-0000-7000-8000-000000000032",42,6.0).ok);
         assert(editor.applyPreviewPlayers("[[450,224]]").ok);
         assert(editor.render(actualGraphics(),targetCanvas(),actualUi()).ok);
@@ -514,7 +518,7 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     vm.run(vm.compileSource(R"(
         assert(!editor.update(nativeWindow(),actualUi()).ok);
         assert(editor.shutdown(nativeWindow(),"require_clean").ok);
-        assert(!editor.isOpen());
+        assert(!editor.isOpen(), "editor must be closed");
     )"));
     graphics.gfx->setScreenReadbackEnabled(false);
 }
