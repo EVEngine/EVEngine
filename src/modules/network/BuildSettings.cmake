@@ -19,7 +19,7 @@ endfunction()
 # The full test binary also contains Vulkan consumers. Classify dependency
 # headers only for the standalone TLS fixture TU, in each owning test directory.
 function(eve_network_external_test_headers)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  if(NOT MSVC AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     eve_network_external_include_roots(_roots)
     foreach(_root IN LISTS _roots)
       set_property(SOURCE
