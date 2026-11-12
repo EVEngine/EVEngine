@@ -1301,8 +1301,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     // Repeated opaque mesh/material pairs are cheaper as one instanced indirect
     // draw. Keep the explicit feature for smaller scenes and other backends.
     bool autoInstance = false;
-    if (!rc->isEnabled("gpuDriven") && !doDeferredLighting && !useClustered && defaultCam &&
-        gfx.getBackendName() == "vulkan" && gfx.supportsGpuDriven3D()) {
+    if (rc->autoInstancingPath() == RenderControl::AutoInstancingPath::Auto && !rc->isEnabled("gpuDriven") &&
+        !doDeferredLighting && !useClustered && defaultCam && gfx.getBackendName() == "vulkan" &&
+        gfx.supportsGpuDriven3D()) {
         std::unordered_map<Material*, std::unordered_map<Mesh*, uint32_t>> counts;
         for (const CulledItem& item : items) {
             if (!item.inView || item.shadowsOnly || item.camIdx != 0 || !item.material ||

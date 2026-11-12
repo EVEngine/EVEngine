@@ -18,6 +18,11 @@ C++ 可通过 `supportsMeshInstancing()` 查询后端支持，用 `drawMeshInsta
 调用必须位于渲染线程的开放 3D pass 中。既有 render tracer 的
 `drawMeshInstances` 事件可用于确认自动合批实际发生。
 
+C++ 的 `RenderControl::setAutoInstancingPath(AutoInstancingPath::Ordinary)` 可以明确选择
+普通自动实例化，即使设备支持 bindless。默认 `Auto` 保留原有后端选择；显式启用的
+`gpuDriven` 特性仍优先。此选择不改变光照、材质或可见性，不支持普通实例化时逐物体
+绘制，无需重新 `compile()`。这也让普通路径的回归测试在所有设备上验证同一管线。
+
 ### 可编译渲染控制与 GBuffer
 
 `RenderControl` 用字符串特性开关，再 `compile()` 成有序 Pass（默认：shadow → forward → hair）：

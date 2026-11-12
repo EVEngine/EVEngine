@@ -66,6 +66,19 @@ void comparePixels(const std::vector<Color> &expected, const std::vector<Color> 
 }
 }  // namespace
 
+TEST_CASE("graphics.meshInstances.automaticPathSelectionIsCheckedAndDefaultsToAuto") {
+    RenderControl control;
+    using Path = RenderControl::AutoInstancingPath;
+    CHECK(control.autoInstancingPath() == Path::Auto);
+    REQUIRE(control.setAutoInstancingPath(Path::Ordinary).ok());
+    CHECK(control.autoInstancingPath() == Path::Ordinary);
+    auto invalid = control.setAutoInstancingPath(static_cast<Path>(-1));
+    REQUIRE(!invalid.ok());
+    CHECK(control.autoInstancingPath() == Path::Ordinary);
+    REQUIRE(control.setAutoInstancingPath(Path::Auto).ok());
+    CHECK(control.autoInstancingPath() == Path::Auto);
+}
+
 TEST_CASE("graphics.meshInstances.snapshotsMatchIndividualDrawsAndValidateBeforeRecording") {
     GfxFixture fixture(192, 128);
     auto      &gfx  = *fixture.gfx;
@@ -135,6 +148,9 @@ TEST_CASE("graphics.meshInstances.sharedMaterialCompositionMatchesIndividualGeom
         return;
     }
     simpleForward(gfx);
+    // Exercise this API's ordinary pipeline on bindless-capable devices as well.
+    // Auto intentionally retains the existing GPU-driven route on those devices.
+    REQUIRE(gfx.getRenderControl()->setAutoInstancingPath(RenderControl::AutoInstancingPath::Ordinary).ok());
     auto *camera = Camera3D::createCamera();
     camera->setEye(0, 0, 10);
     camera->setTarget(0, 0, 0);
@@ -172,6 +188,7 @@ TEST_CASE("graphics.meshInstances.sharedMaterialCompositionMatchesIndividualGeom
             RenderSystem3D::render(gfx);
             gfx.present();
         }
+        REQUIRE(!gfx.gpuDrivenEnabled());
         return pixels(gfx);
     };
     const auto reference = render();

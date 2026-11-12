@@ -45,3 +45,15 @@ draws after instancing, multiple frame-slot reuse, invalid matrices, and explici
 provider absence on WebGPU. Composition compares individual materials against a
 shared material and verifies batching through the existing render tracer. Desktop
 bindless eligibility and its original route are unchanged.
+
+The Linux composition regression exposed a route-selection ambiguity: a shared
+material also activates the existing automatic bindless path on capable devices,
+so the ordinary-path test compared different shader pipelines and could not emit
+its required ordinary batch trace. RenderControl now owns an explicit native
+AutoInstancingPath selection. Auto remains the default; Ordinary excludes only
+automatic bindless selection, retaining explicit gpuDriven priority. Unsupported
+ordinary backends still draw individually. The selection is copied render-thread
+state, read once before batching, with checked invalid-enum handling, no new
+capability, script/tool face or format. The composition test selects Ordinary for
+both its individual and instanced phases; reference geometry, pixel thresholds,
+state-separation assertions and signatures remain unchanged.
