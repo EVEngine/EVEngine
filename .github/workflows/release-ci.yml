@@ -384,7 +384,7 @@ jobs:
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
             libgl1-mesa-dev libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
-            libvulkan-dev glslc glslang-tools \
+            libvulkan-dev glslc glslang-tools spirv-tools libspirv-cross-c-shared-dev \
             mesa-vulkan-drivers vulkan-tools vulkan-validationlayers xvfb xauth
 
       - name: Setup native software Vulkan
