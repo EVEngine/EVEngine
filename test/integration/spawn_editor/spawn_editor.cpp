@@ -1895,6 +1895,15 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
         REQUIRE(std::move(capture).expect("native capture").capturePointer);
         REQUIRE((SDL_GetWindowFlags(sdlWindow) & SDL_WINDOW_MOUSE_CAPTURE) != 0);
         REQUIRE(app->closeState().pointerCapture);
+        // Exercise a real circle drag: a down-only gesture has a zero-radius contour.
+        SDL_Event motion{};
+        motion.type            = SDL_MOUSEMOTION;
+        motion.motion.windowID = windowId;
+        motion.motion.which    = appEvent.button.which;
+        motion.motion.x        = 72;
+        motion.motion.y        = 40;
+        ui->processEvent(&motion);
+        app->processWindowEvent(motion, *sdlWindow, false, false).expect("native circle preview drag");
     } else {
         REQUIRE(!capture.ok());
         REQUIRE_EQ(capture.status().primaryDiagnostic()->code(), eve::DiagnosticCode::PreconditionViolation);
@@ -1926,7 +1935,13 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
     REQUIRE(appBackground.g > 0.1f);
     REQUIRE(gfx->getPixel(200, 96).g < 0.05f);
     if (foreground) {
-        auto appPreview = gfx->getPixel(40, 40);
+        // Sample the expected contour, allowing backend pixel-center coverage to differ.
+        auto appPreview = gfx->getPixel(72, 40);
+        for (int y = 7; y <= 73; ++y)
+            for (int x = 7; x <= 73; ++x) {
+                auto pixel = gfx->getPixel(x, y);
+                if (pixel.r > appPreview.r) appPreview = pixel;
+            }
         REQUIRE(appPreview.r > 0.9f);
         appEvent.type     = SDL_MOUSEBUTTONUP;
         appEvent.button.x = 700;

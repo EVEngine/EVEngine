@@ -3932,7 +3932,7 @@ TEST_CASE("rts.rootSnapshot.completeFileRejectsUnknownNativeHandlesAndBrokenRoot
     (*bad.getIf<Value::Object>())["extra"] = 1;
     rejects(bad);
     bad                                      = value;
-    (*bad.getIf<Value::Object>())["version"] = 2;
+    (*bad.getIf<Value::Object>())["version"] = 3;
     rejects(bad);
     bad                                              = value;
     (*bad.getIf<Value::Object>())["snapshotVersion"] = 2;
