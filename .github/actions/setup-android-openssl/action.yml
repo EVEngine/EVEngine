@@ -1,0 +1,23 @@
+name: Set up Windows Android OpenSSL tools
+description: Install a complete matching POSIX Perl and Make for Android source builds.
+runs:
+  using: composite
+  steps:
+    - name: Install complete MSYS2 tools
+      id: msys2
+      uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2
+      with:
+        msystem: MSYS
+        path-type: inherit
+        install: perl make
+    - name: Verify Perl modules and export the tool root
+      shell: bash
+      env:
+        TOOL_ROOT: ${{ steps.msys2.outputs.msys2-location }}
+      run: |
+        set -euo pipefail
+        test -n "$TOOL_ROOT"
+        "$TOOL_ROOT/usr/bin/perl.exe" -MIPC::Cmd -MLocale::Maketext::Simple -e 'print "Complete Android OpenSSL Perl: $^O\n"'
+        "$TOOL_ROOT/usr/bin/make.exe" --version
+        "$TOOL_ROOT/usr/bin/cygpath.exe" -u "$TOOL_ROOT"
+        echo "EVE_OPENSSL_MSYS2_ROOT=$TOOL_ROOT" >> "$GITHUB_ENV"

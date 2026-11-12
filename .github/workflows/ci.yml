@@ -379,6 +379,10 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Install Android OpenSSL POSIX tools
+        timeout-minutes: 15
+        uses: ./.github/actions/setup-android-openssl
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
