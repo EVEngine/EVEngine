@@ -60,6 +60,29 @@
 #include "zeroerr/unittest.h"
 namespace test_spawn_editor {
 namespace {
+// Fixed fixture geometry: center (40,40), radius 32 logical pixels. Each octant
+// must contain an opaque stroke sample within one pixel of the expected circle.
+// Center/exterior probes also exclude a filled patch masquerading as a contour.
+struct CirclePreviewCoverage {
+    float r;
+    float offContourRed;
+};
+template <class ReadRed>
+CirclePreviewCoverage circlePreviewCoverage(ReadRed readRed) {
+    std::array<float, 8> octants{};
+    for (int y = 7; y <= 73; ++y)
+        for (int x = 7; x <= 73; ++x) {
+            const double dx = x + 0.5 - 40.0, dy = y + 0.5 - 40.0;
+            if (std::abs(std::hypot(dx, dy) - 32.0) > 1.0) continue;
+            const double angle = std::atan2(dy, dx) + 3.141592653589793;
+            const auto sector = std::min(std::size_t(7), static_cast<std::size_t>(angle * 8 / (2 * 3.141592653589793)));
+            octants[sector]   = std::max(octants[sector], readRed(x, y));
+        }
+    float off = 0;
+    for (const auto& p : std::array<std::array<int, 2>, 5>{{{40, 40}, {4, 40}, {76, 40}, {40, 4}, {40, 76}}})
+        off = std::max(off, readRed(p[0], p[1]));
+    return {*std::min_element(octants.begin(), octants.end()), off};
+}
 struct Content final : eve::spawn::ITemplateResolver, eve::spawn::IUnitDefinitionResolver {
     std::function<void()> onValidate;
     eve::Result<void>     validate(const eve::DefinitionRef&) const override {
@@ -1658,7 +1681,49 @@ TEST_CASE("Spawn host GPU background clips real tiles and restores the prior can
     gesture.phase = Event::Phase::Cancel;
     host->pointerEvent(gesture, false).expect("cancel annotation gesture");
     REQUIRE_EQ(asset->form()->sourceRevision().value(), std::uint64_t(1));
+    // The same spatial oracle runs against an actual host overlay without requiring OS focus.
+    host.reset();
+    SpawnHostLayout spatialLayout{
+        {0, 0, 96, 96}, {96, 0, 200, 200}, {296, 0, 200, 200}, {96, 200, 200, 80}, {296, 200, 200, 80}};
+    auto* spatialTarget = gfx->newCanvas(96, 96);
+    REQUIRE(spatialTarget != nullptr);
+    host = SpawnEditorHost::create(table, asset, filesystem->observeAtomicWrites(), {{0, 0}, 1}, {0, 0, 0, 0, 1},
+                                   spatialLayout, "spawns.json")
+               .expect("spatial preview host");
+    auto spatialControls = host->workspace().controlsPanel().build();
+    find(find, spatialControls, "Edit region: north")->onClick();
+    host->renderBackground({}, *gfx, *spatialTarget).expect("no-preview background");
+    const auto absent = circlePreviewCoverage([&](int x, int y) { return spatialTarget->getPixel(x, y).r; });
+    REQUIRE(absent.r < 0.9f);
+    gesture.phase = Event::Phase::Down;
+    gesture.x     = 40;
+    gesture.y     = 40;
+    host->pointerEvent(gesture, false).expect("spatial preview down");
+    gesture.phase = Event::Phase::Move;
+    gesture.x     = 72;
+    host->pointerEvent(gesture, false).expect("spatial preview drag");
+    host->renderOverlay(*gfx, *spatialTarget).expect("spatial preview pixels");
+    const auto appPreview = circlePreviewCoverage([&](int x, int y) { return spatialTarget->getPixel(x, y).r; });
+    REQUIRE(appPreview.r > 0.9f);
+    REQUIRE(appPreview.offContourRed < 0.05f);
+    gesture.phase = Event::Phase::Cancel;
+    host->pointerEvent(gesture, false).expect("spatial preview cancel");
     gfx->setCanvas();
+}
+TEST_CASE("Spawn preview spatial oracle rejects missing misplaced and unrelated red pixels") {
+    auto contour = [](int x, int y, double cx, double cy, double radius) {
+        return std::abs(std::hypot(x + 0.5 - cx, y + 0.5 - cy) - radius) < 0.5 ? 1.f : 0.f;
+    };
+    const auto valid = circlePreviewCoverage([&](int x, int y) { return contour(x, y, 40, 40, 32); });
+    REQUIRE(valid.r > 0.9f);
+    REQUIRE(valid.offContourRed < 0.05f);
+    REQUIRE(circlePreviewCoverage([](int, int) { return 0.f; }).r < 0.9f);
+    REQUIRE(circlePreviewCoverage([&](int x, int y) { return contour(x, y, 48, 40, 32); }).r < 0.9f);
+    REQUIRE(circlePreviewCoverage([&](int x, int y) { return contour(x, y, 40, 40, 24); }).r < 0.9f);
+    REQUIRE(circlePreviewCoverage([](int x, int y) { return x == 40 && y == 40 ? 1.f : 0.f; }).r < 0.9f);
+    REQUIRE(circlePreviewCoverage([](int x, int y) { return x == 71 && y == 40 ? 1.f : 0.f; }).r < 0.9f);
+    const auto filled = circlePreviewCoverage([](int, int) { return 1.f; });
+    REQUIRE(filled.offContourRed > 0.9f);
 }
 TEST_CASE("Spawn native window presents real panels background and SDL editing events") {
     using namespace eve::spawn_editor;
@@ -1935,14 +2000,9 @@ TEST_CASE("Spawn native window presents real panels background and SDL editing e
     REQUIRE(appBackground.g > 0.1f);
     REQUIRE(gfx->getPixel(200, 96).g < 0.05f);
     if (foreground) {
-        // Sample the expected contour, allowing backend pixel-center coverage to differ.
-        auto appPreview = gfx->getPixel(72, 40);
-        for (int y = 7; y <= 73; ++y)
-            for (int x = 7; x <= 73; ++x) {
-                auto pixel = gfx->getPixel(x, y);
-                if (pixel.r > appPreview.r) appPreview = pixel;
-            }
+        const auto appPreview = circlePreviewCoverage([&](int x, int y) { return gfx->getPixel(x, y).r; });
         REQUIRE(appPreview.r > 0.9f);
+        REQUIRE(appPreview.offContourRed < 0.05f);
         appEvent.type     = SDL_MOUSEBUTTONUP;
         appEvent.button.x = 700;
         appEvent.button.y = 80;
