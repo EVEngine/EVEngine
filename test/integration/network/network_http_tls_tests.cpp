@@ -438,3 +438,19 @@ TEST_CASE("network.Http.reentrantPumpCancellationDropsCompletion") {
     CHECK(events->pollOwned() == nullptr);
     CHECK(network.telemetrySnapshot().completions == 1);
 }
+
+TEST_CASE("network.Http.requestVerificationOverrideRejectsInvalidCa") {
+    Network network;
+    Events  events;
+    network.setVerifySsl(false);
+    auto request = network.makeHttp("GET", "https://127.0.0.1:1/");
+    request->setVerifySsl(true);
+    // Invalid trust configuration must fail before attempting a connection.
+    // The mandatory TLS backend replaces the former no-backend error fixture.
+    request->setCaLocation(std::string(1, '\0'));
+    REQUIRE(request->submit());
+    const auto failure = events.wait(network, request.get());
+    REQUIRE(failure->name == "neterr");
+    CHECK(failure->args[1].s == "tls");
+    CHECK(!network.getVerifySsl());
+}

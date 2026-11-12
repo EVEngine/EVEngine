@@ -2020,29 +2020,6 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     delete req;
 }
 
-TEST_CASE("network.Http.httpsReturnsTlsWithoutSslBackend") {
-    auto* net = eve::network::Network::create();
-    REQUIRE(net != nullptr);
-    net->setVerifySsl(false);
-    auto* http = net->newHttp("GET", "https://example.com/");
-    REQUIRE(http != nullptr);
-    http->setVerifySsl(true);  // request-level override is stored / resolved in submit()
-    REQUIRE(http->submit());
-
-    auto* ev = eve::platform_event::PlatformEvent::create();
-    REQUIRE(ev != nullptr);
-    bool gotTls = false;
-    for (int i = 0; i < 200 && !gotTls; ++i) {
-        net->pump();
-        while (auto msg = ev->pollOwned()) {
-            if (msg->name == "neterr" && msg->args.size() >= 2 && msg->args[1].s == "tls") gotTls = true;
-        }
-        if (!gotTls) std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-    CHECK(gotTls);
-    delete http;
-}
-
 TEST_CASE("network.NetWriterReaderRoundtrip") {
     eve::network::NetWriter w;
     w.writeU8(0xAB);

@@ -1,4 +1,5 @@
 enable_testing()
+eve_network_external_test_headers()
 include("${CMAKE_SOURCE_DIR}/cmake/host_backtrace.cmake")
 set(_eve_network_links)
 foreach(_eve_network_module network data platform_event common)
