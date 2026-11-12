@@ -1,5 +1,9 @@
 # Example 画面质量复查（2026-11-11 水车磨坊模型重做）
 
+**11-12 九项改善：** [前后与状态实帧](review-2026-11-12/nine-improved/README.md) · [指纹清单](review-2026-11-12/nine-improved/manifest.json)。除 `tree-generator` 外九个示例已修改；下方此前的候选清单保留为基线。
+
+**11-12 新一轮复查：** [另十个待改善场景与当前源码实帧](review-2026-11-12/next10-candidates/README.md)，10/10 重新抓帧成功。下方 11-11 修复记录保留。
+
 [最新 10 项抓帧清单](review-2026-11-11/next10/manifest.json) · [山体抓帧清单](review-2026-11-11/mountain-detail/manifest.json) · [最新城市抓帧清单](review-2026-11-11/urban-detail/manifest.json) · [截图画廊](README.md) · [English gallery](README.en.md) · [11-11 抓帧与指纹清单](review-2026-11-11/manifest.json) · [11-09 清单](review-2026-11-09/manifest.json) · [11-07 完整历史报告](QUALITY_REVIEW-2026-11-07.md)
 
 11-09 已先从本工作区当前源码完整编译引擎，再复跑旧报告的 **31 个 P1，31/31 均取得有效引擎帧**。构建为 `v0.7.0-dev / d9df15920770+dirty`，Windows MSVC Debug、SHARED、严格警告、203/203 模块；依赖复用与源码锁定版本一致的预编译库，不复用旧引擎程序或引擎 DLL。修复前后均使用当前源码构建，每张图由 `gfx.saveFramePng()` 原样输出。
@@ -229,7 +233,7 @@
 | [anime-character-lab](../../../examples/anime-character-lab/README.md) | 11-09 当前源码；前置条件已明确 | <a href="review-2026-11-09/anime-character-lab.png"><img src="review-2026-11-09/anime-character-lab.png" width="180" alt="anime-character-lab"></a> |
 | [archspace-editor](../../../examples/archspace-editor/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/archspace-editor.png"><img src="review-2026-11-07/archspace-editor.png" width="180" alt="archspace-editor"></a> |
 | [archspace-floorplan](../../../examples/archspace-floorplan/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/archspace-floorplan.png"><img src="review-2026-11-07/archspace-floorplan.png" width="180" alt="archspace-floorplan"></a> |
-| [armored-command-3d](../../../examples/armored-command-3d/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/armored-command-3d.png"><img src="review-2026-11-07/armored-command-3d.png" width="180" alt="armored-command-3d"></a> |
+| [armored-command-3d](../../../examples/armored-command-3d/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/armored-command-3d.png"><img src="review-2026-11-12/nine-improved/armored-command-3d.png" width="180" alt="armored-command-3d"></a> |
 | [arpg-loop](../../../examples/arpg-loop/README.md) | 11-07；抓帧失败 | 无新图 |
 | [atmospheric-fog](../../../examples/atmospheric-fog/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/atmospheric-fog.png"><img src="review-2026-11-09/atmospheric-fog.png" width="180" alt="atmospheric-fog"></a> |
 | [attack-vfx](../../../examples/attack-vfx/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/attack-vfx.png"><img src="review-2026-11-07/attack-vfx.png" width="180" alt="attack-vfx"></a> |
@@ -243,22 +247,22 @@
 | [blender_hot_reload](../../../examples/blender_hot_reload/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/blender_hot_reload.png"><img src="review-2026-11-07/blender_hot_reload.png" width="180" alt="blender_hot_reload"></a> |
 | [building](../../../examples/building/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/building.png"><img src="review-2026-11-07/building.png" width="180" alt="building"></a> |
 | [building-3d](../../../examples/building-3d/README.md) | 11-09 当前源码；定位更正 | <a href="review-2026-11-09/building-3d.png"><img src="review-2026-11-09/building-3d.png" width="180" alt="building-3d"></a> |
-| [building-tilemap](../../../examples/building-tilemap/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/building-tilemap.png"><img src="review-2026-11-07/building-tilemap.png" width="180" alt="building-tilemap"></a> |
+| [building-tilemap](../../../examples/building-tilemap/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/building-tilemap.png"><img src="review-2026-11-12/nine-improved/building-tilemap.png" width="180" alt="building-tilemap"></a> |
 | [building_village](../../../examples/building_village/README.md) | 11-07；抓帧失败 | 无新图 |
 | [bullet-time](../../../examples/bullet-time/README.md) | 11-07；抓帧失败 | 无新图 |
 | [bush-fog-volumes](../../../examples/bush-fog-volumes/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/bush-fog-volumes.png"><img src="review-2026-11-07/bush-fog-volumes.png" width="180" alt="bush-fog-volumes"></a> |
 | [bush-generator](../../../examples/bush-generator/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/bush-generator.png"><img src="review-2026-11-07/bush-generator.png" width="180" alt="bush-generator"></a> |
-| [cable-chain-rope](../../../examples/cable-chain-rope/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/cable-chain-rope.png"><img src="review-2026-11-07/cable-chain-rope.png" width="180" alt="cable-chain-rope"></a> |
+| [cable-chain-rope](../../../examples/cable-chain-rope/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/cable-chain-rope.png"><img src="review-2026-11-12/nine-improved/cable-chain-rope.png" width="180" alt="cable-chain-rope"></a> |
 | [camera-controllers](../../../examples/camera-controllers/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/camera-controllers.png"><img src="review-2026-11-07/camera-controllers.png" width="180" alt="camera-controllers"></a> |
 | [cardgame](../../../examples/cardgame/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/cardgame.png"><img src="review-2026-11-07/cardgame.png" width="180" alt="cardgame"></a> |
-| [castle-generator](../../../examples/castle-generator/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/castle-generator.png"><img src="review-2026-11-07/castle-generator.png" width="180" alt="castle-generator"></a> |
+| [castle-generator](../../../examples/castle-generator/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/castle-generator.png"><img src="review-2026-11-12/nine-improved/castle-generator.png" width="180" alt="castle-generator"></a> |
 | [cave-generator](../../../examples/cave-generator/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/cave-generator.png"><img src="review-2026-11-07/cave-generator.png" width="180" alt="cave-generator"></a> |
 | [character-atelier](../../../examples/character-atelier/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/character-atelier.png"><img src="review-2026-11-07/character-atelier.png" width="180" alt="character-atelier"></a> |
 | [character-cape-hair](../../../examples/character-cape-hair/README.md) | 11-07；抓帧失败 | 无新图 |
 | [character-motion-lab](../../../examples/character-motion-lab/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/character-motion-lab.png"><img src="review-2026-11-07/character-motion-lab.png" width="180" alt="character-motion-lab"></a> |
 | [cinematic-story-camera](../../../examples/cinematic-story-camera/README.md) | 11-07；抓帧失败 | 无新图 |
 | [climbing-motion-matching](../../../examples/climbing-motion-matching/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/climbing-motion-matching.png"><img src="review-2026-11-07/climbing-motion-matching.png" width="180" alt="climbing-motion-matching"></a> |
-| [climbing-playground](../../../examples/climbing-playground/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/climbing-playground.png"><img src="review-2026-11-07/climbing-playground.png" width="180" alt="climbing-playground"></a> |
+| [climbing-playground](../../../examples/climbing-playground/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/climbing-playground.png"><img src="review-2026-11-12/nine-improved/climbing-playground.png" width="180" alt="climbing-playground"></a> |
 | [combat-action-editor](../../../examples/combat-action-editor/README.md) | 11-07；抓帧失败 | 无新图 |
 | [combat-arena](../../../examples/combat-arena/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/combat-arena.png"><img src="review-2026-11-07/combat-arena.png" width="180" alt="combat-arena"></a> |
 | [commandery-rts](../../../examples/commandery-rts/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/commandery-rts.png"><img src="review-2026-11-09/commandery-rts.png" width="180" alt="commandery-rts"></a> |
@@ -276,7 +280,7 @@
 | [dialogue](../../../examples/dialogue/README.md) | 11-07；抓帧失败 | 无新图 |
 | [dual-grid-material-gallery](../../../examples/dual-grid-material-gallery/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/dual-grid-material-gallery.png"><img src="review-2026-11-07/dual-grid-material-gallery.png" width="180" alt="dual-grid-material-gallery"></a> |
 | [dungeon-generator-3d](../../../examples/dungeon-generator-3d/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/dungeon-generator-3d.png"><img src="review-2026-11-11/next10/dungeon-generator-3d.png" width="180" alt="dungeon-generator-3d"></a> |
-| [dynamic-water-grid](../../../examples/dynamic-water-grid/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/dynamic-water-grid.png"><img src="review-2026-11-07/dynamic-water-grid.png" width="180" alt="dynamic-water-grid"></a> |
+| [dynamic-water-grid](../../../examples/dynamic-water-grid/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/dynamic-water-grid.png"><img src="review-2026-11-12/nine-improved/dynamic-water-grid.png" width="180" alt="dynamic-water-grid"></a> |
 | [ecs](../../../examples/ecs/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/ecs.png"><img src="review-2026-11-07/ecs.png" width="180" alt="ecs"></a> |
 | [editor-api-v2](../../../examples/editor-api-v2/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/editor-api-v2.png"><img src="review-2026-11-07/editor-api-v2.png" width="180" alt="editor-api-v2"></a> |
 | [editor-host-world](../../../examples/editor-host-world/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/editor-host-world.png"><img src="review-2026-11-09/editor-host-world.png" width="180" alt="editor-host-world"></a> |
@@ -291,7 +295,7 @@
 | [flame-jet](../../../examples/flame-jet/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/flame-jet.png"><img src="review-2026-11-11/next10/flame-jet.png" width="180" alt="flame-jet"></a> |
 | [flight-vehicle-controllers](../../../examples/flight-vehicle-controllers/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/flight-vehicle-controllers.png"><img src="review-2026-11-07/flight-vehicle-controllers.png" width="180" alt="flight-vehicle-controllers"></a> |
 | [fluid3d](../../../examples/fluid3d/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/fluid3d.png"><img src="review-2026-11-11/next10/fluid3d.png" width="180" alt="fluid3d"></a> |
-| [fps-arena](../../../examples/fps-arena/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/fps-arena.png"><img src="review-2026-11-07/fps-arena.png" width="180" alt="fps-arena"></a> |
+| [fps-arena](../../../examples/fps-arena/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/fps-arena.png"><img src="review-2026-11-12/nine-improved/fps-arena.png" width="180" alt="fps-arena"></a> |
 | [galaxy](../../../examples/galaxy/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/galaxy.png"><img src="review-2026-11-07/galaxy.png" width="180" alt="galaxy"></a> |
 | [galgame](../../../examples/galgame/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/galgame.png"><img src="review-2026-11-07/galgame.png" width="180" alt="galgame"></a> |
 | [game-tutorial](../../../examples/game-tutorial/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/game-tutorial.png"><img src="review-2026-11-07/game-tutorial.png" width="180" alt="game-tutorial"></a> |
@@ -301,7 +305,7 @@
 | [gpu-formation](../../../examples/gpu-formation/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/gpu-formation.png"><img src="review-2026-11-07/gpu-formation.png" width="180" alt="gpu-formation"></a> |
 | [ground-fissure](../../../examples/ground-fissure/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/ground-fissure.png"><img src="review-2026-11-07/ground-fissure.png" width="180" alt="ground-fissure"></a> |
 | [growth](../../../examples/growth/README.md) | 11-07；抓帧失败 | 无新图 |
-| [hd2d-riverside](../../../examples/hd2d-riverside/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/hd2d-riverside.png"><img src="review-2026-11-07/hd2d-riverside.png" width="180" alt="hd2d-riverside"></a> |
+| [hd2d-riverside](../../../examples/hd2d-riverside/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/hd2d-riverside.png"><img src="review-2026-11-12/nine-improved/hd2d-riverside.png" width="180" alt="hd2d-riverside"></a> |
 | [hex-levels](../../../examples/hex-levels/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/hex-levels.png"><img src="review-2026-11-07/hex-levels.png" width="180" alt="hex-levels"></a> |
 | [hex-planet](../../../examples/hex-planet/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/hex-planet.png"><img src="review-2026-11-09/hex-planet.png" width="180" alt="hex-planet"></a> |
 | [hex-terrain](../../../examples/hex-terrain/README.md) | 11-11 重新整改；见上文 | <a href="review-2026-11-11/hex-terrain.png"><img src="review-2026-11-11/hex-terrain.png" width="180" alt="hex-terrain"></a> |
@@ -409,7 +413,7 @@
 | [squad-boss-3d](../../../examples/squad-boss-3d/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/squad-boss-3d.png"><img src="review-2026-11-07/squad-boss-3d.png" width="180" alt="squad-boss-3d"></a> |
 | [stylized-meadow](../../../examples/stylized-meadow/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/stylized-meadow.png"><img src="review-2026-11-07/stylized-meadow.png" width="180" alt="stylized-meadow"></a> |
 | [stylized-water-shore](../../../examples/stylized-water-shore/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/stylized-water-shore.png"><img src="review-2026-11-07/stylized-water-shore.png" width="180" alt="stylized-water-shore"></a> |
-| [surface-vine-growth](../../../examples/surface-vine-growth/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/surface-vine-growth.png"><img src="review-2026-11-07/surface-vine-growth.png" width="180" alt="surface-vine-growth"></a> |
+| [surface-vine-growth](../../../examples/surface-vine-growth/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/surface-vine-growth.png"><img src="review-2026-11-12/nine-improved/surface-vine-growth.png" width="180" alt="surface-vine-growth"></a> |
 | [swappable-tilesets](../../../examples/swappable-tilesets/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/swappable-tilesets.png"><img src="review-2026-11-07/swappable-tilesets.png" width="180" alt="swappable-tilesets"></a> |
 | [sword-slash-trail](../../../examples/sword-slash-trail/README.md) | 11-07；已抓帧；P3 | <a href="review-2026-11-07/sword-slash-trail.png"><img src="review-2026-11-07/sword-slash-trail.png" width="180" alt="sword-slash-trail"></a> |
 | [tactics](../../../examples/tactics/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/tactics.png"><img src="review-2026-11-07/tactics.png" width="180" alt="tactics"></a> |

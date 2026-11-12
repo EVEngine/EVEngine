@@ -13,6 +13,7 @@
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/Export.h"
+#include "common/ProviderRegistry.h"
 #include "common/Result.h"
 #include "common/Status.h"
 
@@ -25,19 +26,6 @@
 #include <utility>
 
 namespace eve::cap {
-
-/**
- * @brief Generation-qualified id for one owned capability provider.
- *
- * @ownership Caller-owned value; the registry owns the implementation behind it.
- * @lifetime Remains acquireable until `unloadOwned` succeeds for the same generation.
- */
-struct OwnedProviderHandle {
-    std::string   id;
-    std::uint64_t generation = 0;
-
-    [[nodiscard]] friend bool operator==(const OwnedProviderHandle&, const OwnedProviderHandle&) = default;
-};
 
 /**
  * @brief Owning lease that keeps a `shared_ptr` provider alive while borrowed.
@@ -87,48 +75,10 @@ private:
 
 namespace detail {
 
-struct OwnedEntryBase {
-    virtual ~OwnedEntryBase() = default;
-    /**
-     * @brief Borrowed type-erased pointer to the published provider.
-     * @ownership Borrowed; owned by the shared_ptr held in this entry.
-     * @lifetime Valid until the entry is erased and the last shared_ptr owner releases.
-     */
-    virtual void* raw() noexcept = 0;
-    /**
-     * @brief Shared ownership of the type-erased provider.
-     * @ownership Shared with the registry slot and any outstanding leases.
-     * @lifetime Keeps the provider alive until the last shared_ptr is destroyed.
-     */
-    virtual std::shared_ptr<void> shared() const noexcept = 0;
-};
-
-template <class I>
-struct OwnedEntry final : OwnedEntryBase {
-    explicit OwnedEntry(std::shared_ptr<I> provider) : provider(std::move(provider)) {}
-    /**
-     * @brief Borrowed typed provider as `void*`.
-     * @ownership Borrowed; owned by `provider`.
-     * @lifetime Valid while this entry (or a shared copy) remains alive.
-     */
-    void* raw() noexcept override { return provider.get(); }
-    /**
-     * @brief Shared ownership of the typed provider, type-erased.
-     * @ownership Shared with the registry slot and any outstanding leases.
-     * @lifetime Keeps the provider alive until the last shared_ptr is destroyed.
-     */
-    std::shared_ptr<void> shared() const noexcept override { return provider; }
-    std::shared_ptr<I> provider;
-};
-
-struct OwnedSlot {
-    OwnedProviderHandle             handle;
-    std::unique_ptr<OwnedEntryBase> entry;
-};
-
-EVENGINE_API_FOUNDATION std::mutex& ownedMutex();
-EVENGINE_API_FOUNDATION std::unordered_map<std::string, OwnedSlot>& ownedSlots(const char* capabilityName);
-EVENGINE_API_FOUNDATION std::unordered_map<std::string, std::uint64_t>& ownedGenerations(const char* capabilityName);
+/** @brief Process-owned type-erased store; one canonical instance across link groups. */
+EVENGINE_API_FOUNDATION std::mutex& ownedPublicationMutex();
+EVENGINE_API_FOUNDATION ProviderRegistry<void>& ownedRegistry(const char* capabilityName);
+/** @brief Clear publications for isolated tests after borrowed dispatch has stopped. */
 EVENGINE_API_FOUNDATION void clearOwnedRaw();
 
 }  // namespace detail
@@ -148,26 +98,12 @@ public:
      * @return Generation-qualified handle, or Conflict when `id` is already published.
      */
     [[nodiscard]] static Result<OwnedProviderHandle> provide(std::string id, std::shared_ptr<I> provider) {
-        if (id.empty() || !provider) {
-            return Result<OwnedProviderHandle>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "owned capability requires id and implementation", "id"));
-        }
-        std::scoped_lock lock(detail::ownedMutex());
-        auto&            slots = detail::ownedSlots(I::capabilityName);
-        if (slots.contains(id)) {
-            return Result<OwnedProviderHandle>::failure(Diagnostic::error(
-                DiagnosticCode::Conflict, "owned capability id is already published", "id"));
-        }
-        auto& generations = detail::ownedGenerations(I::capabilityName);
-        OwnedProviderHandle handle{id, ++generations[id]};
-        auto [it, inserted] =
-            slots.emplace(std::move(id), detail::OwnedSlot{handle, std::make_unique<detail::OwnedEntry<I>>(
-                                                                         std::move(provider))});
-        (void)inserted;
-        // Also expose the current generation through the borrowed single-provider slot so
-        // existing `query` / `ProviderRef` consumers see the same instance.
-        detail::provideRaw(I::capabilityName, it->second.entry->raw());
-        return Result<OwnedProviderHandle>::success(std::move(handle), Status::success(StatusCode::Applied));
+        std::unique_lock lock(detail::ownedPublicationMutex());
+        auto             result = detail::ownedRegistry(I::capabilityName).publish(std::move(id), provider);
+        if (!result.ok()) return result;
+        detail::provideRaw(I::capabilityName, provider.get());
+        lock.unlock();
+        return result;
     }
 
     /**
@@ -175,61 +111,33 @@ public:
      * @return Unsupported when absent, Conflict when the generation is stale.
      */
     [[nodiscard]] static Result<OwnedProviderLease<I>> acquire(const OwnedProviderHandle& handle) {
-        std::scoped_lock lock(detail::ownedMutex());
-        auto&            slots = detail::ownedSlots(I::capabilityName);
-        const auto       found = slots.find(handle.id);
-        if (found == slots.end()) {
-            const auto& generations = detail::ownedGenerations(I::capabilityName);
-            const bool  seen        = generations.contains(handle.id);
-            return Result<OwnedProviderLease<I>>::failure(Diagnostic::error(
-                seen ? DiagnosticCode::Conflict : DiagnosticCode::Unsupported,
-                seen ? "owned capability handle is stale" : "owned capability provider is not available", "handle"));
-        }
-        if (found->second.handle != handle) {
-            return Result<OwnedProviderLease<I>>::failure(
-                Diagnostic::error(DiagnosticCode::Conflict, "owned capability handle is stale", "handle"));
-        }
-        auto typed = std::static_pointer_cast<I>(found->second.entry->shared());
-        return Result<OwnedProviderLease<I>>::success(OwnedProviderLease<I>(handle, std::move(typed)),
-                                                      Status::success(StatusCode::Applied));
+        auto record = detail::ownedRegistry(I::capabilityName).acquire(handle);
+        if (!record.ok()) return Result<OwnedProviderLease<I>>::failure(record.status());
+        return Result<OwnedProviderLease<I>>::success(
+            OwnedProviderLease<I>(record.value().handle, std::static_pointer_cast<I>(record.value().provider)),
+            Status::success(StatusCode::Applied));
     }
 
     /**
      * @brief Acquire the current generation published under `id`.
      */
     [[nodiscard]] static Result<OwnedProviderLease<I>> acquire(std::string_view id) {
-        std::scoped_lock lock(detail::ownedMutex());
-        auto&            slots = detail::ownedSlots(I::capabilityName);
-        const auto       found = slots.find(std::string(id));
-        if (found == slots.end()) {
-            return Result<OwnedProviderLease<I>>::failure(Diagnostic::error(
-                DiagnosticCode::Unsupported, "owned capability provider is not available", "id"));
-        }
-        auto typed = std::static_pointer_cast<I>(found->second.entry->shared());
+        auto record = detail::ownedRegistry(I::capabilityName).acquire(id);
+        if (!record.ok()) return Result<OwnedProviderLease<I>>::failure(record.status());
         return Result<OwnedProviderLease<I>>::success(
-            OwnedProviderLease<I>(found->second.handle, std::move(typed)), Status::success(StatusCode::Applied));
+            OwnedProviderLease<I>(record.value().handle, std::static_pointer_cast<I>(record.value().provider)),
+            Status::success(StatusCode::Applied));
     }
 
     /**
      * @brief Unpublish one exact provider generation and clear the borrowed slot when it matches.
      */
     [[nodiscard]] static Result<void> unload(const OwnedProviderHandle& handle) {
-        std::shared_ptr<void> keepAlive;
-        {
-            std::scoped_lock lock(detail::ownedMutex());
-            auto&            slots = detail::ownedSlots(I::capabilityName);
-            const auto       found = slots.find(handle.id);
-            if (found == slots.end() || found->second.handle != handle) {
-                return Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::Conflict, "owned capability handle is stale", "handle"));
-            }
-            // Use auto (not void*) so the local is not linted as a public pointer API.
-            const auto borrowed = found->second.entry->raw();
-            keepAlive = found->second.entry->shared();
-            slots.erase(found);
-            detail::revokeRaw(I::capabilityName, borrowed);
-        }
-        (void)keepAlive;
+        std::unique_lock lock(detail::ownedPublicationMutex());
+        auto             removed = detail::ownedRegistry(I::capabilityName).withdraw(handle);
+        if (!removed.ok()) return Result<void>::failure(removed.status());
+        detail::revokeRaw(I::capabilityName, removed.value().provider.get());
+        lock.unlock();
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 };

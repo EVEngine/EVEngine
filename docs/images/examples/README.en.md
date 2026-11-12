@@ -1,5 +1,7 @@
 # Example Render Gallery
 
+**Nov 12:** Nine more examples improved; tree-generator is unchanged. [Before/after and runtime states](review-2026-11-12/nine-improved/README.md).
+
 Wall follow-up fixes infill gaps, window frames and gables: [latest native frame](review-2026-11-11/watermill-walls/exterior.png).
 
 **Watermill model rebuilt:** thicker timber wheel, pitched slate roof, half-timbered shell and watercourse, preserving the articulated drivetrain. [Exterior, wheel, interior frames and validation](QUALITY_REVIEW.md#11-11-水车磨坊从-designpy-重做模型).

@@ -14,3 +14,9 @@ Controls:
 - `R`: reset the player marker.
 
 Run on Windows with `make run/win32-debug GAME=examples/climbing-playground`.
+
+## 2026-11-12 画面改善
+
+增加随权威 feet/phase 移动的分件角色、训练道标识、可读 HUD 和近景/总览切换；修正复位点超出探测范围、旧错误字段和移动平台升高后低位射线落空的场景配置。原模块净空、胶囊和拒绝检查保留。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/climbing-playground.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

@@ -3732,10 +3732,12 @@ Result<TransactionReceipt> commit(IDomainOperationTarget& target, LocalTransacti
 }  // namespace
 
 TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_and_undo") {
-    HealthPayloadProvider         provider;
+    auto                          providerOwner = std::make_shared<HealthPayloadProvider>();
+    auto&                         provider      = *providerOwner;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
-    CHECK_EQ(static_cast<int>(registry.registerProvider(&provider).code()), static_cast<int>(EditorStatus::Conflict));
+    REQUIRE(registry.registerProvider(providerOwner).ok());
+    CHECK_EQ(static_cast<int>(registry.registerProvider(providerOwner).code()),
+             static_cast<int>(EditorStatus::Conflict));
 
     SceneDocumentTarget scene("scene");
     scene.bindComponentPayloads(&registry);
@@ -3774,9 +3776,10 @@ TEST_CASE("editor.scene.component_payload_registry_routes_schema_transactions_an
 }
 
 TEST_CASE("editor.scene.component_payload_registry_rejects_mixed_and_stale_references") {
-    HealthPayloadProvider         provider;
+    auto                          providerOwner = std::make_shared<HealthPayloadProvider>();
+    auto&                         provider      = *providerOwner;
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&provider).ok());
+    REQUIRE(registry.registerProvider(providerOwner).ok());
     auto references = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(references.ok());
     SceneComponentPayloadRef stale = references.value().front();
@@ -3800,9 +3803,12 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
     AudioSourceTarget              audio("hero-audio");
     PhysicsColliderTarget          collider("hero-collider", 3);
     MaterialDocumentTarget         material("hero-material");
-    SceneComponentPropertyBindings audioBindings("audio.source");
-    SceneComponentPropertyBindings physicsBindings("physics.collider3d");
-    SceneComponentPropertyBindings materialBindings("graphics.material");
+    auto  audioBindingsOwner    = std::make_shared<SceneComponentPropertyBindings>("audio.source");
+    auto& audioBindings         = *audioBindingsOwner;
+    auto  physicsBindingsOwner  = std::make_shared<SceneComponentPropertyBindings>("physics.collider3d");
+    auto& physicsBindings       = *physicsBindingsOwner;
+    auto  materialBindingsOwner = std::make_shared<SceneComponentPropertyBindings>("graphics.material");
+    auto& materialBindings      = *materialBindingsOwner;
 
     const TargetId scene("scene");
     const ObjectId hero("hero");
@@ -3825,9 +3831,9 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
             .ok());
 
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&audioBindings).ok());
-    REQUIRE(registry.registerProvider(&physicsBindings).ok());
-    REQUIRE(registry.registerProvider(&materialBindings).ok());
+    REQUIRE(registry.registerProvider(audioBindingsOwner).ok());
+    REQUIRE(registry.registerProvider(physicsBindingsOwner).ok());
+    REQUIRE(registry.registerProvider(materialBindingsOwner).ok());
     auto all = registry.componentPayloads(scene, hero);
     REQUIRE(all.ok());
     REQUIRE_EQ(all.value().size(), size_t{3});
@@ -3887,14 +3893,15 @@ TEST_CASE("editor.scene.component_bindings_reuse_audio_physics_and_material_targ
 TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversible") {
     RecordingAudioSink             sink;
     AudioSourcePublishingTarget    live("live-audio", &sink);
-    SceneComponentPropertyBindings bindings("audio.source");
+    auto                           bindingsOwner = std::make_shared<SceneComponentPropertyBindings>("audio.source");
+    auto&                          bindings      = *bindingsOwner;
     REQUIRE(bindings
                 .bind({TargetId("scene"), ObjectId("hero"), StableId("hero.audio"), "audio.source", 1, 0},
                       {SelectionDomain::Scene, TargetId(live.targetId()), StableId("source"), "audio.source"},
                       &live.authoringTarget(), &live, [&] { return live.authoringTarget().validate(); })
                 .ok());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).ok());
+    REQUIRE(registry.registerProvider(bindingsOwner).ok());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(components.ok());
     auto selection = makeSceneComponentSelection("inspector", components.value());
@@ -3933,14 +3940,15 @@ TEST_CASE("editor.scene.audio_component_publication_is_staged_live_and_reversibl
 TEST_CASE("editor.scene.material_component_publication_is_staged_live_and_reversible") {
     RecordingMaterialSink          sink;
     MaterialPublishingTarget       live("live-material", &sink);
-    SceneComponentPropertyBindings bindings("graphics.material");
+    auto  bindingsOwner = std::make_shared<SceneComponentPropertyBindings>("graphics.material");
+    auto& bindings      = *bindingsOwner;
     REQUIRE(bindings
                 .bind({TargetId("scene"), ObjectId("hero"), StableId("hero.material"), "graphics.material", 2, 0},
                       {SelectionDomain::Asset, TargetId(live.targetId()), StableId("material"), "graphics.material"},
                       &live.authoringTarget(), &live, [&] { return live.authoringTarget().validate(); })
                 .ok());
     SceneComponentPayloadRegistry registry;
-    REQUIRE(registry.registerProvider(&bindings).ok());
+    REQUIRE(registry.registerProvider(bindingsOwner).ok());
     auto components = registry.componentPayloads(TargetId("scene"), ObjectId("hero"));
     REQUIRE(components.ok());
     auto selection = makeSceneComponentSelection("inspector", components.value());

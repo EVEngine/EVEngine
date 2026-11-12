@@ -385,6 +385,7 @@ if(_has_asset)
   target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/filesystem/BuildSettings.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/stylize/BuildSettings.cmake")
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
@@ -19,7 +20,7 @@ class WebGpuSequence;
  * @brief Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V
  * input is rejected (browsers only accept WGSL at runtime).
  */
-class WebGpuComputeShader final : public ComputeShader {
+class EVENGINE_API_WORLD WebGpuComputeShader final : public ComputeShader {
 public:
     /** @brief Constructs a WebGpuComputeShader. */
     WebGpuComputeShader() = default;
@@ -50,7 +51,7 @@ private:
 };
 
 /** @brief Storage / staging buffer for the WebGPU backend. */
-class WebGpuGpuBuffer final : public GpuBuffer {
+class EVENGINE_API_WORLD WebGpuGpuBuffer final : public GpuBuffer {
 public:
     /** @brief Constructs a WebGpuGpuBuffer. */
     WebGpuGpuBuffer() = default;
@@ -95,13 +96,13 @@ public:
 /** @brief Webgpu gpgpu ready. */
 bool webgpuGpgpuReady();
 /** @brief Webgpu new shader from wgsl. */
-WebGpuComputeShader *webgpuNewShaderFromWgsl(const std::string &wgsl);
+EVENGINE_API_WORLD WebGpuComputeShader *webgpuNewShaderFromWgsl(const std::string &wgsl);
 /** @brief Webgpu new shader from spirv. */
-WebGpuComputeShader *webgpuNewShaderFromSpirv(const std::vector<uint32_t> &spv);
+EVENGINE_API_WORLD WebGpuComputeShader *webgpuNewShaderFromSpirv(const std::vector<uint32_t> &spv);
 /** @brief Webgpu new buffer. */
-WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage);
+EVENGINE_API_WORLD WebGpuGpuBuffer *webgpuNewBuffer(int byteSize, const std::string &usage);
 /** @brief Webgpu dispatch. */
-void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ);
+EVENGINE_API_WORLD void webgpuDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ);
 /** @brief Webgpu sequence create. */
 WebGpuSequence *webgpuSequenceCreate();
 /** @brief Webgpu sequence destroy. */

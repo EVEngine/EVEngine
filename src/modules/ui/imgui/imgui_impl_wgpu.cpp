@@ -18,6 +18,8 @@
 
 #include <limits.h>
 #include <string.h>
+#include <limits>
+#include <vector>
 
 // Avoid clashes with Windows headers.
 #if defined(WIN32) && defined(min)
@@ -207,7 +209,7 @@ static void ImGui_ImplWGPU_CreatePipeline() {
     WGPURenderPipelineDescriptor desc{};
     desc.layout = pipelineLayout;
     desc.vertex.module = vsModule;
-    desc.vertex.entryPoint = WGPUStringView{"vs_main", 6};
+    desc.vertex.entryPoint          = WGPUStringView{"vs_main", sizeof("vs_main") - 1};
     desc.vertex.bufferCount = 1;
     desc.vertex.buffers = &vbLayout;
     desc.primitive.topology = WGPUPrimitiveTopology_TriangleList;
@@ -216,11 +218,12 @@ static void ImGui_ImplWGPU_CreatePipeline() {
     desc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     WGPUFragmentState fragState{};
     fragState.module = fsModule;
-    fragState.entryPoint = WGPUStringView{"fs_main", 6};
+    fragState.entryPoint   = WGPUStringView{"fs_main", sizeof("fs_main") - 1};
     fragState.targetCount = 1;
     fragState.targets = &colorTarget;
     desc.fragment = &fragState;
     desc.multisample.count = 1;
+    desc.multisample.mask  = UINT32_MAX;
     bd->renderPipeline = wgpuDeviceCreateRenderPipeline(device, &desc);
 }
 
@@ -245,6 +248,7 @@ bool ImGui_ImplWGPU_CreateFontsTexture() {
     int width, height, size;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &size);
     size_t stride = static_cast<size_t>(width) * 4;
+    if (width <= 0 || height <= 0 || stride > std::numeric_limits<uint32_t>::max()) return false;
 
     WGPUTextureDescriptor texDesc{};
     texDesc.dimension = WGPUTextureDimension_2D;
@@ -259,7 +263,7 @@ bool ImGui_ImplWGPU_CreateFontsTexture() {
 
     WGPUTexelCopyBufferLayout layout{};
     layout.offset = 0;
-    layout.bytesPerRow = stride;
+    layout.bytesPerRow  = static_cast<uint32_t>(stride);
     layout.rowsPerImage = height;
     WGPUTexelCopyTextureInfo copyDst{};
     copyDst.texture = bd->fontTexture;
@@ -278,6 +282,8 @@ bool ImGui_ImplWGPU_CreateFontsTexture() {
     bd->fontTextureView = wgpuTextureCreateView(bd->fontTexture, &viewDesc);
 
     WGPUSamplerDescriptor samplerDesc{};
+    samplerDesc.maxAnisotropy = 1;
+    samplerDesc.lodMaxClamp   = 32.f;
     samplerDesc.minFilter = WGPUFilterMode_Linear;
     samplerDesc.magFilter = WGPUFilterMode_Linear;
     samplerDesc.mipmapFilter = WGPUMipmapFilterMode_Linear;
@@ -329,6 +335,7 @@ bool ImGui_ImplWGPU_Init(WGPUDevice device, int num_frames_in_flight, WGPUTextur
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
     bd->wgpuDevice = device;
+    wgpuDeviceAddRef(device);
     bd->rtFormat = rt_format;
     bd->numFramesInFlight = num_frames_in_flight;
     bd->defaultQueue = wgpuDeviceGetQueue(device);
@@ -389,11 +396,15 @@ void ImGui_ImplWGPU_RenderDrawData(ImDrawData *draw_data, WGPURenderPassEncoder 
         wgpuQueueWriteBuffer(bd->defaultQueue, vb, 0, cmd_list->VtxBuffer.Data, vbSize);
 
         WGPUBufferDescriptor ibDesc{};
-        ibDesc.size = ibSize;
+        const size_t         alignedIbSize = (ibSize + 3) & ~size_t(3);
+        ibDesc.size                        = alignedIbSize;
         ibDesc.usage = WGPUBufferUsage_Index | WGPUBufferUsage_CopyDst;
         ibDesc.mappedAtCreation = false;
         ib = wgpuDeviceCreateBuffer(bd->wgpuDevice, &ibDesc);
-        wgpuQueueWriteBuffer(bd->defaultQueue, ib, 0, cmd_list->IdxBuffer.Data, ibSize);
+        // writeBuffer requires four-byte sizes, including odd 16-bit index counts.
+        std::vector<unsigned char> indexUpload(alignedIbSize, 0);
+        memcpy(indexUpload.data(), cmd_list->IdxBuffer.Data, ibSize);
+        wgpuQueueWriteBuffer(bd->defaultQueue, ib, 0, indexUpload.data(), alignedIbSize);
 
         wgpuRenderPassEncoderSetVertexBuffer(pass_encoder, 0, vb, 0, vbSize);
         wgpuRenderPassEncoderSetIndexBuffer(pass_encoder, ib,
@@ -441,6 +452,8 @@ void ImGui_ImplWGPU_RenderDrawData(ImDrawData *draw_data, WGPURenderPassEncoder 
                     WGPUBindGroup bg = wgpuDeviceCreateBindGroup(bd->wgpuDevice, &bgDesc);
                     wgpuRenderPassEncoderSetBindGroup(pass_encoder, 0, bg, 0, nullptr);
                     wgpuBindGroupRelease(bg);
+                } else {
+                    wgpuRenderPassEncoderSetBindGroup(pass_encoder, 0, bd->bindGroup, 0, nullptr);
                 }
 
                 wgpuRenderPassEncoderDrawIndexed(pass_encoder, pcmd->ElemCount, 1,

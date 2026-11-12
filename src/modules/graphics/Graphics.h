@@ -11,6 +11,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include "common/Capability.h"
 #include "common/FramePresentation.h"
 #include "common/Module.h"
 #include "common/Result.h"
@@ -47,6 +48,7 @@ struct ShaderResourceInputs;
 
 
 class AmbientOcclusion;
+class IRayTracing;
 class AntiAliasing;
 class Bloom;
 class ContactShadow;
@@ -133,6 +135,15 @@ public:
     Module_REG(Graphics);
     /** @brief Graphics. */
     Graphics();
+    /**
+     * @brief Borrow the optional ray-tracing service resolved at graphics construction.
+     * @ownership Provider-owned; the statically registered service outlives Graphics.
+     * @lifetime Immediate render-thread borrow; no lookup or lazy construction occurs.
+     * @thread Render thread only. @reentrancy Does not invoke callbacks.
+     * @return Empty when the build supplies no ray-tracing provider; use SSR instead.
+     */
+    [[nodiscard]] eve::OptionalRef<IRayTracing> rayTracingService() const noexcept;
+
     /** @brief Graphics. */
     ~Graphics() override;
 
@@ -2245,6 +2256,7 @@ protected:
      * Backends with synchronous offscreen work use the default shared target. Allocation failures throw. */
     virtual Canvas                    &prepareFramePostTarget(FramePostTarget target, int width, int height);
     Canvas                            *sharedFramePostTargets_[2]{};
+    eve::cap::ProviderRef<IRayTracing> rayTracing_;
     std::unique_ptr<FrameCaptureStore> frameCaptures_;
     /** @brief DeferredFileTexture public API. */
     struct DeferredFileTexture {
