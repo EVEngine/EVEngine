@@ -1,5 +1,7 @@
 # Example 画面质量复查（2026-11-11 水车磨坊模型重做）
 
+**PR 当前版本：** 合入最新 dev 后，构建、默认基线完整源码门禁和九项烟测通过；[九张默认图与十三张状态图](review-2026-11-13/pr-current/README.md)。
+
 **车轮复查：** flight-vehicle-controllers 已修正圆形轮胎与轮毂，补车速联动；[近景与行驶实帧](review-2026-11-13/round-wheels/README.md)。
 
 **11-13 新一批九项：** map-fog、vehicle、flight-vehicle-controllers、archspace-floorplan、automatic-bridge、archspace-editor、hud-gallery、mesh-modifier-lab、ik-spider 已优化并以当前源码重新运行。cardgame 按用户要求跳过。[最新前后对照、十一张状态图及验证边界](review-2026-11-13/nine-improved/README.md)。以下日期较早的条目保留为历史，不作为这九项的最新画面。
@@ -235,14 +237,14 @@
 | [ai-stage](../../../examples/ai-stage/README.md) | 11-09 当前源码；定位更正 | <a href="review-2026-11-09/ai-stage.png"><img src="review-2026-11-09/ai-stage.png" width="180" alt="ai-stage"></a> |
 | [animation-clip-editor](../../../examples/animation-clip-editor/README.md) | 11-07；抓帧失败 | 无新图 |
 | [anime-character-lab](../../../examples/anime-character-lab/README.md) | 11-09 当前源码；前置条件已明确 | <a href="review-2026-11-09/anime-character-lab.png"><img src="review-2026-11-09/anime-character-lab.png" width="180" alt="anime-character-lab"></a> |
-| [archspace-editor](../../../examples/archspace-editor/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/archspace-editor.png"><img src="review-2026-11-13/nine-improved/archspace-editor.png" width="180" alt="archspace-editor"></a> |
-| [archspace-floorplan](../../../examples/archspace-floorplan/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/archspace-floorplan.png"><img src="review-2026-11-13/nine-improved/archspace-floorplan.png" width="180" alt="archspace-floorplan"></a> |
+| [archspace-editor](../../../examples/archspace-editor/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/archspace-editor.png"><img src="review-2026-11-13/pr-current/archspace-editor.png" width="180" alt="archspace-editor"></a> |
+| [archspace-floorplan](../../../examples/archspace-floorplan/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/archspace-floorplan.png"><img src="review-2026-11-13/pr-current/archspace-floorplan.png" width="180" alt="archspace-floorplan"></a> |
 | [armored-command-3d](../../../examples/armored-command-3d/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/armored-command-3d.png"><img src="review-2026-11-12/nine-improved/armored-command-3d.png" width="180" alt="armored-command-3d"></a> |
 | [arpg-loop](../../../examples/arpg-loop/README.md) | 11-07；抓帧失败 | 无新图 |
 | [atmospheric-fog](../../../examples/atmospheric-fog/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/atmospheric-fog.png"><img src="review-2026-11-09/atmospheric-fog.png" width="180" alt="atmospheric-fog"></a> |
 | [attack-vfx](../../../examples/attack-vfx/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/attack-vfx.png"><img src="review-2026-11-07/attack-vfx.png" width="180" alt="attack-vfx"></a> |
 | [audio-source-editor](../../../examples/audio-source-editor/README.md) | 11-07；抓帧失败 | 无新图 |
-| [automatic-bridge](../../../examples/automatic-bridge/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/automatic-bridge.png"><img src="review-2026-11-13/nine-improved/automatic-bridge.png" width="180" alt="automatic-bridge"></a> |
+| [automatic-bridge](../../../examples/automatic-bridge/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/automatic-bridge.png"><img src="review-2026-11-13/pr-current/automatic-bridge.png" width="180" alt="automatic-bridge"></a> |
 | [autotile-production](../../../examples/autotile-production/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/autotile-production.png"><img src="review-2026-11-07/autotile-production.png" width="180" alt="autotile-production"></a> |
 | [avatar-document-editor](../../../examples/avatar-document-editor/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/avatar-document-editor.png"><img src="review-2026-11-07/avatar-document-editor.png" width="180" alt="avatar-document-editor"></a> |
 | [basic](../../../examples/basic/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/basic.png"><img src="review-2026-11-07/basic.png" width="180" alt="basic"></a> |
@@ -297,7 +299,7 @@
 | [explosion-lab](../../../examples/explosion-lab/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/explosion-lab.png"><img src="review-2026-11-07/explosion-lab.png" width="180" alt="explosion-lab"></a> |
 | [factory](../../../examples/factory/README.md) | 11-07；抓帧失败 | 无新图 |
 | [flame-jet](../../../examples/flame-jet/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/flame-jet.png"><img src="review-2026-11-11/next10/flame-jet.png" width="180" alt="flame-jet"></a> |
-| [flight-vehicle-controllers](../../../examples/flight-vehicle-controllers/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/round-wheels/default.png"><img src="review-2026-11-13/round-wheels/default.png" width="180" alt="flight-vehicle-controllers"></a> |
+| [flight-vehicle-controllers](../../../examples/flight-vehicle-controllers/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/flight-vehicle-controllers.png"><img src="review-2026-11-13/pr-current/flight-vehicle-controllers.png" width="180" alt="flight-vehicle-controllers"></a> |
 | [fluid3d](../../../examples/fluid3d/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/fluid3d.png"><img src="review-2026-11-11/next10/fluid3d.png" width="180" alt="fluid3d"></a> |
 | [fps-arena](../../../examples/fps-arena/README.md) | 11-12 九项改善；当前源码实帧 | <a href="review-2026-11-12/nine-improved/fps-arena.png"><img src="review-2026-11-12/nine-improved/fps-arena.png" width="180" alt="fps-arena"></a> |
 | [galaxy](../../../examples/galaxy/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/galaxy.png"><img src="review-2026-11-07/galaxy.png" width="180" alt="galaxy"></a> |
@@ -316,9 +318,9 @@
 | [hex-terrain-3d](../../../examples/hex-terrain-3d/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/hex-terrain-3d.png"><img src="review-2026-11-09/hex-terrain-3d.png" width="180" alt="hex-terrain-3d"></a> |
 | [house-collapse](../../../examples/house-collapse/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/house-collapse.png"><img src="review-2026-11-07/house-collapse.png" width="180" alt="house-collapse"></a> |
 | [housegen](../../../examples/housegen/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/housegen.png"><img src="review-2026-11-07/housegen.png" width="180" alt="housegen"></a> |
-| [hud-gallery](../../../examples/hud-gallery/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/hud-gallery.png"><img src="review-2026-11-13/nine-improved/hud-gallery.png" width="180" alt="hud-gallery"></a> |
+| [hud-gallery](../../../examples/hud-gallery/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/hud-gallery.png"><img src="review-2026-11-13/pr-current/hud-gallery.png" width="180" alt="hud-gallery"></a> |
 | [i18n](../../../examples/i18n/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/i18n.png"><img src="review-2026-11-07/i18n.png" width="180" alt="i18n"></a> |
-| [ik-spider](../../../examples/ik-spider/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/ik-spider.png"><img src="review-2026-11-13/nine-improved/ik-spider.png" width="180" alt="ik-spider"></a> |
+| [ik-spider](../../../examples/ik-spider/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/ik-spider.png"><img src="review-2026-11-13/pr-current/ik-spider.png" width="180" alt="ik-spider"></a> |
 | [ik-spider-3d](../../../examples/ik-spider-3d/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/ik-spider-3d.png"><img src="review-2026-11-07/ik-spider-3d.png" width="180" alt="ik-spider-3d"></a> |
 | [impact-arena](../../../examples/impact-arena/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/impact-arena.png"><img src="review-2026-11-07/impact-arena.png" width="180" alt="impact-arena"></a> |
 | [impasto-paint](../../../examples/impasto-paint/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/impasto-paint.png"><img src="review-2026-11-07/impasto-paint.png" width="180" alt="impasto-paint"></a> |
@@ -339,11 +341,11 @@
 | [level-designer](../../../examples/level-designer/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/level-designer.png"><img src="review-2026-11-07/level-designer.png" width="180" alt="level-designer"></a> |
 | [lighting-showcase](../../../examples/lighting-showcase/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/lighting-showcase.png"><img src="review-2026-11-11/next10/lighting-showcase.png" width="180" alt="lighting-showcase"></a> |
 | [linear-structures](../../../examples/linear-structures/README.md) | 11-07；已抓帧；P2 | <a href="review-2026-11-07/linear-structures.png"><img src="review-2026-11-07/linear-structures.png" width="180" alt="linear-structures"></a> |
-| [map-fog](../../../examples/map-fog/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/map-fog.png"><img src="review-2026-11-13/nine-improved/map-fog.png" width="180" alt="map-fog"></a> |
+| [map-fog](../../../examples/map-fog/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/map-fog.png"><img src="review-2026-11-13/pr-current/map-fog.png" width="180" alt="map-fog"></a> |
 | [material-editor](../../../examples/material-editor/README.md) | 11-07；抓帧失败 | 无新图 |
 | [mesh-contact-fusion](../../../examples/mesh-contact-fusion/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/mesh-contact-fusion.png"><img src="review-2026-11-07/mesh-contact-fusion.png" width="180" alt="mesh-contact-fusion"></a> |
 | [mesh-impact-lab](../../../examples/mesh-impact-lab/README.md) | 11-07；已抓帧；P3 | <a href="review-2026-11-07/mesh-impact-lab.png"><img src="review-2026-11-07/mesh-impact-lab.png" width="180" alt="mesh-impact-lab"></a> |
-| [mesh-modifier-lab](../../../examples/mesh-modifier-lab/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/mesh-modifier-lab.png"><img src="review-2026-11-13/nine-improved/mesh-modifier-lab.png" width="180" alt="mesh-modifier-lab"></a> |
+| [mesh-modifier-lab](../../../examples/mesh-modifier-lab/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/mesh-modifier-lab.png"><img src="review-2026-11-13/pr-current/mesh-modifier-lab.png" width="180" alt="mesh-modifier-lab"></a> |
 | [meteor-impact](../../../examples/meteor-impact/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/meteor-impact.png"><img src="review-2026-11-07/meteor-impact.png" width="180" alt="meteor-impact"></a> |
 | [metroidvania](../../../examples/metroidvania/README.md) | 11-11 逐项改善并检查实帧 | <a href="review-2026-11-11/next10/metroidvania.png"><img src="review-2026-11-11/next10/metroidvania.png" width="180" alt="metroidvania"></a> |
 | [model-converter](../../../examples/model-converter/README.md) | 11-09 当前源码；前置条件已明确 | <a href="review-2026-11-09/model-converter.png"><img src="review-2026-11-09/model-converter.png" width="180" alt="model-converter"></a> |
@@ -442,7 +444,7 @@
 | [unity-vfx-port-lab](../../../examples/unity-vfx-port-lab/README.md) | 11-09 当前源码；已修复 | <a href="review-2026-11-09/unity-vfx-port-lab.png"><img src="review-2026-11-09/unity-vfx-port-lab.png" width="180" alt="unity-vfx-port-lab"></a> |
 | [urban-generator](../../../examples/urban-generator/README.md) | 11-11 细节续改已运行检查 | <a href="review-2026-11-11/urban-detail/urban-generator.png"><img src="review-2026-11-11/urban-detail/urban-generator.png" width="180" alt="urban-generator"></a> |
 | [uv-texture-paint](../../../examples/uv-texture-paint/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/uv-texture-paint.png"><img src="review-2026-11-07/uv-texture-paint.png" width="180" alt="uv-texture-paint"></a> |
-| [vehicle](../../../examples/vehicle/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/nine-improved/vehicle.png"><img src="review-2026-11-13/nine-improved/vehicle.png" width="180" alt="vehicle"></a> |
+| [vehicle](../../../examples/vehicle/README.md) | 11-13；已改善；默认及状态实帧 | <a href="review-2026-11-13/pr-current/vehicle.png"><img src="review-2026-11-13/pr-current/vehicle.png" width="180" alt="vehicle"></a> |
 | [venom-transform](../../../examples/venom-transform/README.md) | 11-09 当前源码；取帧更正 | <a href="review-2026-11-09/venom-transform.png"><img src="review-2026-11-09/venom-transform.png" width="180" alt="venom-transform"></a> |
 | [virtual-texture-blending](../../../examples/virtual-texture-blending/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/virtual-texture-blending.png"><img src="review-2026-11-07/virtual-texture-blending.png" width="180" alt="virtual-texture-blending"></a> |
 | [virtualgeometry](../../../examples/virtualgeometry/README.md) | 11-07；已抓帧 | <a href="review-2026-11-07/virtualgeometry.png"><img src="review-2026-11-07/virtualgeometry.png" width="180" alt="virtualgeometry"></a> |

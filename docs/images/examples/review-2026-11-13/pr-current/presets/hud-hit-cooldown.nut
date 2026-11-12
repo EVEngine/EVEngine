@@ -1,0 +1,1 @@
+qaOld<-eve_update;qaFrame<-0;eve_update=function(dt){qaOld(dt);qaFrame++;if(qaFrame==90){takeDamage();cast();if(hudState.hp>0.64 || hudState.cooldown<=0.0)throw "HUD damage/cast command failed";}};

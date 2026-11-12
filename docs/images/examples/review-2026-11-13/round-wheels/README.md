@@ -1,5 +1,7 @@
 # flight-vehicle-controllers 圆形车轮复查
 
+**PR 合入 dev 后复查：** [最新运行实帧与默认基线门禁结果](../pr-current/README.md)。下面保留本轮修改时的历史证据。
+
 修正上一版仍使用方块轮胎的问题。四个轮胎改为 40 段圆柱体，包含圆形轮毂、中心盖和五辐条；轮辐以控制器的实际车速 / 轮胎半径积累转角。新增 C 近景切换。载具碰撞和固定步进动力学保持由原 VehicleController 与 Box2D 驱动。
 
 [上一版方轮](before.png) · [当前默认帧](default.png) · [圆轮近景](close.png) · [行驶状态](driving.png) · [运行与源码指纹](manifest.json)
