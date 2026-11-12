@@ -91,7 +91,8 @@ function buildPanel() {
     ui.mountBuildAs("mc");
     ui.select("mc");
     ui.setHostOverlay(true);
-    ui.setHostPos(760.0, 30.0, 300.0, 420.0);
+    ui.setHostPos(config.width - 24.0, 30.0, 1.0, 0.0);
+    ui.setHostSize(300.0, 420.0);
     uiReady = true;
 }
 

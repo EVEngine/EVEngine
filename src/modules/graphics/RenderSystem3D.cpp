@@ -1247,6 +1247,8 @@ void RenderSystem3D::render(Graphics& gfx) {
         const int         gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
         const int         gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
         gfx.beginGBufferPass(gw, gh);
+        gfx.setMesh3DView(cv.view);
+        gfx.setMesh3DCameraPos(cv.eye);
         for (const auto& item : items) {
             // X-ray targets are skipped so their pixels record the occluder depth
             // behind them; the X-ray shader samples that to detect occlusion.
@@ -1258,17 +1260,28 @@ void RenderSystem3D::render(Graphics& gfx) {
             const float tg        = item.material ? item.material->getTintG() : item.mr->g;
             const float tb        = item.material ? item.material->getTintB() : item.mr->b;
             const float roughness = item.material ? item.material->getRoughness() : item.mr->roughness;
+            const float tintA     = item.material ? item.material->getTintA() : item.mr->a;
             const float metallic  = item.material ? item.material->getMetallic() : item.mr->metallic;
+            if (item.material) {
+                auto bound = item.material->bind(gfx);
+                if (!bound) throw Exception("%s", bound.error()->message().c_str());
+            } else {
+                auto reset = gfx.setMesh3DPbrSurface(nullptr);
+                if (!reset) throw Exception("%s", reset.error()->message().c_str());
+            }
             gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
             eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
             if (item.surfaceMode == SurfaceMode::Masked)
                 gfx.drawMeshGBufferAlpha(item.mesh, cv.viewProj * item.model, item.model, cv.data->nearZ, cv.data->farZ,
                                          alb, tr, tg, tb, item.temporalMotion.x, item.temporalMotion.y, roughness,
-                                         metallic);
+                                         metallic, tintA);
             else
                 gfx.drawMeshGBuffer(item.mesh, cv.viewProj * item.model, item.model, cv.data->nearZ, cv.data->farZ, alb,
-                                    tr, tg, tb, item.temporalMotion.x, item.temporalMotion.y, roughness, metallic);
+                                    tr, tg, tb, item.temporalMotion.x, item.temporalMotion.y, roughness, metallic,
+                                    tintA);
         }
+        auto resetGBufferMaterial = gfx.setMesh3DPbrSurface(nullptr);
+        if (!resetGBufferMaterial) throw Exception("%s", resetGBufferMaterial.error()->message().c_str());
         // Extra G-buffer contributors (billboard/card geometry not in the ECS).
         for (const auto& drawer : g_gbufferDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
         gfx.endGBufferPass();
@@ -1432,8 +1445,8 @@ void RenderSystem3D::render(Graphics& gfx) {
             const std::string model = mat->getShadingModel();
             if (model != "pbr") return false;
             if (!mat->getReceiveLight()) return false;
-            // The core G-buffer does not carry the dedicated PBR surface's
-            // texture bindings, authored normal mode or vegetation factors.
+            // Dedicated PBR surfaces still use forward lighting for extensions
+            // not represented by the five core G-buffer attachments.
             if (mat->hasPbrSurface()) return false;
         } else {
             if (item.mr->texBombStrength > 0.f) return false;
@@ -1929,15 +1942,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                 // Queue AO only after selecting the final composition target;
                 // switching targets with a pending AO draw presents too early.
                 if (rtgiTexture || ssrTexture) {
-                    if (gfx.getBackendName() == "vulkan" && !doRTX) {
-                        applyAO();
-                        if (rtgiTexture)
-                            gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
-                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
-                        if (ssrTexture)
-                            gfx.drawTexturedRectShaderUV(ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
-                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
-                    } else if (Canvas* composite = gfx.pipelineReflectionComposite(int(dw), int(dh))) {
+                    if (Canvas* composite = gfx.pipelineReflectionComposite(int(dw), int(dh))) {
                         // Register before setCanvas(): switching away from the scene target
                         // closes its pass and queues the final resolve immediately.
                         gfx.setFinalSceneTexture(composite->getTexture());

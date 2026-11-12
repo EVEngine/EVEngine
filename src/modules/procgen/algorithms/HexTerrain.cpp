@@ -179,8 +179,7 @@ void classify(Cell& c, float sea) {
 float surfaceHeight(const Cell& c, float sea, float heightScale) {
     float y = (c.elevation - sea) * heightScale;
     if (c.lake) return y - 0.035f * heightScale;
-    if (c.biome == DeepOcean || c.biome == Ocean)
-        return std::min(y, -0.08f * heightScale);
+    if (c.biome == DeepOcean || c.biome == Ocean) return -0.08f * heightScale;
 
     const float land = std::max(0.f, c.elevation - sea);
     if (c.biome == Hills) y += (0.08f + land * 0.16f) * heightScale;

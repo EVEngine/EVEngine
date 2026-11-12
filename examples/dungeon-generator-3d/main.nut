@@ -7,12 +7,14 @@ persist dungeonInstances = []
 persist dungeonLights = []
 persist dungeonTemplates = {}
 persist dungeonSeed = 20260828
+persist dungeonOverviewSize = 190.0
 persist dungeonFloorMesh = null
 persist dungeonFloorMaterials = {}
 persist dungeonFloorMeshes = []
 persist dungeonAssetPackAvailable = null
 persist dungeonFallbackMesh = null
 persist dungeonFallbackMaterial = null
+persist dungeonFallbackCylinder = null
 
 const DUNGEON_W = 42;
 const DUNGEON_H = 32;
@@ -25,7 +27,7 @@ function modelPath(id) {
 if (dungeonAssetPackAvailable == null) {
     dungeonAssetPackAvailable = file_exists(modelPath(dungeonAssets.wall));
     if (!dungeonAssetPackAvailable)
-        print("dungeon-generator-3d: configured asset pack is unavailable; using procedural placeholders\n");
+        print("dungeon-generator-3d: configured asset pack is unavailable; using built-in procedural architecture\n");
 }
 
 function templatesFor(id) {
@@ -59,15 +61,44 @@ function addAsset(id, x, y, z, yaw, sx=1.0, sy=1.0, sz=1.0,
         tintG *= dungeonAssets.assetTint[1];
         tintB *= dungeonAssets.assetTint[2];
     }
+    if(!dungeonAssetPackAvailable && id.find("doorway")!=null) {
+        if(dungeonFallbackMesh==null) dungeonFallbackMesh=gfx.newMeshCube(1.0);
+        for(local j=0;j<3;++j) {
+            local side=j==0?-1.75:(j==1?1.75:0.0);
+            local o=eve.Renderable3D();o.setMesh(dungeonFallbackMesh);
+            o.setPosition(x+cos(yaw)*side,y+(j==2?2.8:1.4),z-sin(yaw)*side);o.setYaw(yaw);
+            o.setScale(j==2?4.0:0.5,j==2?0.4:2.8,0.65);o.setTint(0.22,0.26,0.30,1.0);
+            o.setRoughness(0.9);dungeonInstances.append(o);
+        }
+        return;
+    }
     foreach (template in templatesFor(id)) {
         local instance = eve.Renderable3D();
         instance.setMesh(template.mesh);
-        instance.setMaterial(template.material);
+        if(dungeonAssetPackAvailable) instance.setMaterial(template.material);
         instance.setPosition(x, y, z);
+        if(!dungeonAssetPackAvailable) {
+            // Procedural architecture has authored dimensions, not a one-unit stand-in for every role.
+            if(id.find("wall")!=null) { sx*=4.0;sy*=3.0;sz*=0.45;y+=1.5; }
+            else if(id.find("pillar")!=null) {sx*=0.8;sy*=3.4;sz*=0.8;y+=1.7;}
+            else if(id.find("barrel")!=null) {
+                if(dungeonFallbackCylinder==null) dungeonFallbackCylinder=gfx.newMeshCylinder(10,1,true);
+                instance.setMesh(dungeonFallbackCylinder);sx*=1.2;sy*=1.5;sz*=1.2;y+=0.75;
+            }
+            else if(id.find("bed")!=null) {sx*=1.8;sy*=0.45;sz*=2.6;y+=0.225;}
+            else if(id.find("table")!=null) {sx*=1.8;sy*=0.3;sz*=1.4;y+=1.0;}
+            else if(id.find("chest")!=null) {sx*=1.5;sy*=0.9;sz*=1.0;y+=0.45;}
+            else if(id.find("torch")!=null) {sx*=0.22;sy*=0.8;sz*=0.22;y+=0.4;}
+            else {sx*=1.2;sy*=0.9;sz*=1.2;y+=0.45;}
+            instance.setPosition(x,y,z);
+        }
+
         instance.setYaw(yaw);
         instance.setScale(sx, sy, sz);
-        instance.setReceiveLight(receiveLight);
-        instance.setTint(tintR, tintG, tintB, 1.0);
+        local torch = !dungeonAssetPackAvailable && id.find("torch")!=null;
+        instance.setReceiveLight(torch?false:receiveLight);
+        instance.setTint(dungeonAssetPackAvailable?tintR:0.22, dungeonAssetPackAvailable?tintG:0.26, dungeonAssetPackAvailable?tintB:0.30, 1.0);
+        if(torch) instance.setTint(0.95,0.38,0.055,1.0);
         instance.setCastShadow(receiveLight);
         instance.setReceiveShadow(true);
         dungeonInstances.append(instance);
@@ -103,9 +134,9 @@ function addFloor(x, z, variant, tone) {
     local shade = 0.018 * ((variant % 5) - 2);
     floor.setTint(tone[0] + shade, tone[1] + shade, tone[2] + shade, 1.0);
     floor.setRoughness(0.96);
-    floor.setReceiveLight(false);
+    floor.setReceiveLight(true);
     floor.setCastShadow(false);
-    floor.setReceiveShadow(false);
+    floor.setReceiveShadow(true);
     dungeonInstances.append(floor);
 }
 
@@ -162,9 +193,9 @@ function buildMergedFloor(group) {
     local floor = eve.Renderable3D();
     floor.setMesh(mesh);
     floor.setMaterial(floorMaterial(group.tone));
-    floor.setReceiveLight(false);
+    floor.setReceiveLight(true);
     floor.setCastShadow(false);
-    floor.setReceiveShadow(false);
+    floor.setReceiveShadow(true);
     dungeonInstances.append(floor);
 }
 
@@ -175,13 +206,14 @@ function floorTone(x, y) {
         if (x < rx || y < ry || x >= rx + dungeonGrid.getObjectWidth(i) ||
             y >= ry + dungeonGrid.getObjectHeight(i)) continue;
         local theme = dungeonGrid.getObjectAsset(i);
-        if (theme == "storage") return [0.43, 0.43, 0.42];
-        if (theme == "quarters") return [0.50, 0.46, 0.41];
-        if (theme == "dining") return [0.48, 0.44, 0.38];
-        if (theme == "armory") return [0.40, 0.43, 0.45];
-        if (theme == "treasury") return [0.49, 0.46, 0.39];
-        if (theme == "shrine") return [0.50, 0.49, 0.46];
-        return [0.43, 0.39, 0.34];
+        if (theme == "storage") return [0.19, 0.17, 0.14];
+        if (theme == "quarters") return [0.17, 0.24, 0.21];
+        if (theme == "dining") return [0.27, 0.21, 0.14];
+        if (theme == "armory") return [0.15, 0.20, 0.28];
+        if (theme == "treasury") return [0.27, 0.24, 0.13];
+        if (theme == "shrine") return [0.24, 0.21, 0.29];
+        local palette=[[0.18,0.23,0.27],[0.26,0.21,0.15],[0.17,0.25,0.21],[0.25,0.18,0.20]];
+        return palette[i%4];
     }
     return [0.44, 0.45, 0.45];
 }
@@ -396,7 +428,8 @@ function rebuildDungeon() {
     local diagonalCells = (maxWalkX - minWalkX + 1) + (maxWalkY - minWalkY + 1);
     dungeonCamera.setTarget(targetX, 0.0, targetZ);
     dungeonCamera.setEye(targetX + 100.0, 120.0, targetZ - 120.0);
-    dungeonCamera.setOrthographic(diagonalCells * DUNGEON_CELL * 0.49);
+    dungeonOverviewSize=diagonalCells * DUNGEON_CELL * 0.49;
+    dungeonCamera.setOrthographic(dungeonOverviewSize);
 
     local lightCandidates = [];
     for (local i = 0; i < dungeonGrid.getObjectCount(); ++i) {
@@ -467,15 +500,26 @@ if (dungeonCamera == null) {
     dungeonCamera.setFov(58.0);
     dungeonCamera.setOrthographic(190.0);
     dungeonCamera.setClipPlanes(0.1, 400.0);
-    dungeonCamera.setAmbient(0.76, 0.78, 0.84);
+    dungeonCamera.setAmbient(0.24, 0.28, 0.34);
+    dungeonCamera.setExposure(0.8);
     dungeonCamera.setActive(true);
-    gfx.setDirectionalLight(-0.45, -1.0, -0.25, 2.05, 1.92, 1.76);
+    gfx.setDirectionalLight(-0.45, 1.0, -0.25, 1.1, 1.02, 0.88);
 }
 if (dungeonGrid == null) rebuildDungeon();
-gfx.setBackgroundColor(0.070, 0.025, 0.130, 1.0);
+gfx.setBackgroundColor(0.018, 0.026, 0.035, 1.0);
 
+function eve_init() {
+    ui.beginBuild();ui.beginWindow("Dungeon", "root");
+    ui.text("DUNGEON / ROOMS + PASSAGES", "title");
+    ui.text("R: new layout   1: overview   2: room view", "keys");
+    ui.end();ui.mountBuildAs("dungeon-hud");ui.select("dungeon-hud");
+    ui.setHostOverlay(true);ui.setHostPos(18.0,16.0,0.0,0.0);ui.setHostSize(430.0,100.0);
+}
 function eve_update(dt) {
-    if (keyboard.isDown("r") || keyboard.isDown("R")) {
+    if(key_just_pressed("1")) dungeonCamera.setOrthographic(dungeonOverviewSize);
+    if(key_just_pressed("2")) dungeonCamera.setOrthographic(55.0);
+
+    if (key_just_pressed("r") || key_just_pressed("R")) {
         dungeonSeed = procgen.randomSeed();
         rebuildDungeon();
     }
@@ -484,4 +528,5 @@ function eve_update(dt) {
 function eve_render() {
     gfx.clear();
     gfx.render3D();
+    ui.beginFrameAndRender();
 }

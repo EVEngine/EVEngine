@@ -14,10 +14,10 @@ persist mill = {
     wheelSpeed = 28.0, // deg/sec at the waterwheel
     selected = 3, // drive
     hud = true,
-    mode = "visit", // visit | orbit — open on the gallery looking into the mill
-    orbit = 2.55,
-    orbitRadius = 13.5,
-    orbitElev = 5.2,
+    mode = "orbit", // visit | orbit — open on the gallery looking into the mill
+    orbit = -0.85,
+    orbitRadius = 20.0,
+    orbitElev = 9.0,
     visit = {x = 0.35, y = 1.70, z = -2.35, yaw = 3.05, pitch = -0.05},
     keyWas = {v = false, o = false, space = false, h = false, r = false},
     jointNames = ["building", "race", "sluice", "drive", "main", "runner", "hoist"]
@@ -38,12 +38,12 @@ function millLoadPart(name) {
     for (local i = 0; i < data.getMeshCount(); ++i) {
         local part = model3d.createRenderable(gfx, data, i);
         local material = part.getMaterial();
-        material.setTint(mat.r, mat.g, mat.b, 1.0);
+        // Preserve the material groups authored by design.py / mill.mtl.
         material.setMetallic(mat.metal);
         material.setRoughness(mat.rough);
         material.setCastShadow(true);
         material.setReceiveShadow(true);
-        part.setTint(mat.r, mat.g, mat.b, 1.0);
+        part.setTint(1.0, 1.0, 1.0, 1.0);
         part.setMetallic(mat.metal);
         part.setRoughness(mat.rough);
         part.setCastShadow(true);
@@ -64,16 +64,6 @@ function millBuildAssembly() {
     foreach (name in mill.jointNames) {
         local batch = millLoadPart(name);
         foreach (part in batch) {
-            // Race stonework stays earthy; separate water plate is the teal accent.
-            if (name == "race") {
-                local material = part.e.getMaterial();
-                material.setTint(0.28, 0.28, 0.26, 1.0);
-                material.setRoughness(0.95);
-                material.setMetallic(0.02);
-                part.e.setTint(0.28, 0.28, 0.26, 1.0);
-                part.e.setRoughness(0.95);
-                part.e.setMetallic(0.02);
-            }
             assembly.parts.push(part);
         }
     }
@@ -202,16 +192,16 @@ eve_init = function() {
     mill.camera = eve.Camera3D();
     mill.camera.setUp(0.0, 1.0, 0.0);
     mill.camera.setFov(48.0);
-    mill.camera.setAmbient(0.13, 0.135, 0.14);
-    mill.camera.setExposure(0.38);
+    mill.camera.setAmbient(0.35, 0.36, 0.38);
+    mill.camera.setExposure(0.3);
     mill.camera.setBloom(0.0, 1.0);
     mill.camera.setActive(true);
-    millApplyVisitCamera();
+    millApplyOrbitCamera();
 
     local sun = eve.Light3D();
     sun.setType("directional");
-    sun.setDirection(-0.35, -1.0, 0.25);
-    sun.setColor(0.95, 0.92, 0.88, 0.55);
+    sun.setDirection(-0.35, 1.0, 0.25);
+    sun.setColor(0.95, 0.92, 0.88, 1.0);
     sun.setCastShadow(true);
     sun.setShadowMethod("csm");
     sun.setShadowStrength(0.78);
@@ -222,8 +212,8 @@ eve_init = function() {
     // Pond + tail-race water plates (opaque teal accents on stone racework).
     mill.water = eve.Renderable3D();
     mill.water.setMesh(gfx.newMeshCube(1.0));
-    mill.water.setPosition(0.0, 0.70, 3.60);
-    mill.water.setScale(2.35, 0.025, 0.95);
+    mill.water.setPosition(-1.95, 3.32, 3.45);
+    mill.water.setScale(4.15, 0.025, 0.78);
     mill.water.setTint(0.16, 0.42, 0.50, 1.0);
     mill.water.setMetallic(0.15);
     mill.water.setRoughness(0.18);
@@ -231,8 +221,8 @@ eve_init = function() {
     mill.water.setReceiveShadow(true);
     mill.tailWater = eve.Renderable3D();
     mill.tailWater.setMesh(gfx.newMeshCube(1.0));
-    mill.tailWater.setPosition(0.0, 0.08, 4.80);
-    mill.tailWater.setScale(1.35, 0.02, 1.50);
+    mill.tailWater.setPosition(-3.90, 0.10, 2.70);
+    mill.tailWater.setScale(1.15, 0.02, 4.10);
     mill.tailWater.setTint(0.14, 0.38, 0.46, 1.0);
     mill.tailWater.setMetallic(0.12);
     mill.tailWater.setRoughness(0.22);
@@ -279,7 +269,7 @@ eve_update = function(dt) {
         mill.assembly.angles.drive = 0.0;
         mill.assembly.angles.sluice = 18.0;
         millSyncGears(mill.assembly);
-        mill.orbit = 2.55;
+        mill.orbit = -0.85;
         millResetVisit();
         if (mill.mode == "orbit") millApplyOrbitCamera();
         else millApplyVisitCamera();
@@ -337,7 +327,7 @@ eve_update = function(dt) {
         if (i == mill.selected) marker.e.setTint(1.0, 0.45, 0.12, 1.0);
         else marker.e.setTint(0.15, 0.95, 0.55, 1.0);
         // Hide markers while visiting so they do not clutter the interior.
-        marker.e.setVisible(mill.mode == "orbit");
+        marker.e.setVisible(mill.hud && mill.mode == "orbit");
     }
 
     if (mill.hud) {

@@ -490,6 +490,7 @@ if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/ui/BuildSettings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/scene/BuildSettings.cmake")
 
 # WebP headers remain private to the image codec implementation.
 if(TARGET EVImage)

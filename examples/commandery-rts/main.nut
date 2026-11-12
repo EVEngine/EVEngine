@@ -760,9 +760,8 @@ function drawHospital(p) {
 }
 
 function drawUnit(u){if(!u.alive)return;local blue=u.faction==game.crown;local s=u.kind=="tank"?30.0:18.0;
-    // Health bar is submitted first because the solid batch draws in reverse order.
-    gfx.drawSolidRect(u.x-s/2.0,u.y-s/2.0-10.0,s*clamp(u.hp/u.maxHp,0.0,1.0),4.0,0.25,0.9,0.35,1.0);
     gfx.drawSolidRect(u.x-s/2.0,u.y-s/2.0-10.0,s,4.0,0.12,0.12,0.14,1.0);
+    gfx.drawSolidRect(u.x-s/2.0,u.y-s/2.0-10.0,s*clamp(u.hp/u.maxHp,0.0,1.0),4.0,0.25,0.9,0.35,1.0);
     if(u.kind=="tank") {
         // Five barrel segments follow the independently tracked turret direction.
         for(local k=5;k>=1;k-=1)gfx.drawSolidRect(u.x+u.aimX*k*4.0-2.5,u.y+u.aimY*k*4.0-2.5,5.0,5.0,0.10,0.12,0.11,1.0);
@@ -807,14 +806,17 @@ function drawParticle(p){
     else gfx.drawSolidRect(p.x-s/2.0,p.y-s/2.0,s,s,1.0,0.28+0.55*t,0.05,t);
 }
 function eve_render(){gfx.clear();
-    // Solid primitives currently preserve reverse submission order inside the
-    // batch, so foreground objects are submitted first and terrain last.
+    // Painter order: terrain and structures precede units and effects.
+    gfx.drawSolidRect(20.0,80.0,920.0,600.0,0.12,0.24,0.16,1.0);
+    gfx.drawSolidRect(465.0,80.0,80.0,600.0,0.08,0.28,0.44,1.0);
+    gfx.drawSolidRect(20.0,340.0,920.0,48.0,0.34,0.30,0.22,1.0);
+    gfx.drawSolidRect(465.0,340.0,80.0,48.0,0.42,0.38,0.28,1.0);
+    drawBase(115.0,245.0,social.ownerOf(game.baseId),500.0);drawBase(875.0,245.0,game.frontier,500.0);
     if(selectionDrag.active){local x0=selectionDrag.sx<selectionDrag.x?selectionDrag.sx:selectionDrag.x;
         local y0=selectionDrag.sy<selectionDrag.y?selectionDrag.sy:selectionDrag.y;
         local w=selectionDrag.x-selectionDrag.sx,h=selectionDrag.y-selectionDrag.sy;
         if(w<0.0)w=-w;if(h<0.0)h=-h;
-        // Never submit zero-sized solid rectangles: the current reverse-order
-        // batch cannot safely rasterize that degenerate geometry.
+        // Keep all four selection edges non-degenerate.
         if(w*w+h*h>49.0){local rw=w<2.0?2.0:w,rh=h<2.0?2.0:h;
             gfx.drawSolidRect(x0,y0,rw,2.0,0.25,0.95,0.45,1.0);gfx.drawSolidRect(x0,y0+rh-2.0,rw,2.0,0.25,0.95,0.45,1.0);
             gfx.drawSolidRect(x0,y0,2.0,rh,0.25,0.95,0.45,1.0);gfx.drawSolidRect(x0+rw-2.0,y0,2.0,rh,0.25,0.95,0.45,1.0);}}
@@ -828,10 +830,5 @@ function eve_render(){gfx.clear();
         if(isHospital(p)) drawHospital(p);
         else gfx.drawSolidRect(p.x-14.0,p.y-14.0,28.0,28.0,blue?0.20:0.78,0.72,blue?0.95:0.18,1.0);
     }
-    drawBase(115.0,245.0,social.ownerOf(game.baseId),500.0);drawBase(875.0,245.0,game.frontier,500.0);
-    gfx.drawSolidRect(465.0,340.0,80.0,48.0,0.42,0.38,0.28,1.0);
-    gfx.drawSolidRect(20.0,340.0,920.0,48.0,0.34,0.30,0.22,1.0);
-    gfx.drawSolidRect(465.0,80.0,80.0,600.0,0.08,0.28,0.44,1.0);
-    gfx.drawSolidRect(20.0,80.0,920.0,600.0,0.12,0.24,0.16,1.0);
     ui.beginFrameAndRender();
 }

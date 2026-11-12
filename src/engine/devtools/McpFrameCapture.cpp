@@ -52,9 +52,10 @@ Object::Ptr bufferJson(const FrameCaptureBuffer& b) {
     o->set("width", b.width);
     o->set("height", b.height);
     o->set("producerFrameId", static_cast<Poco::UInt64>(b.producerFrameId));
-    o->set("format", b.format == FramePixelFormat::Depth32Float ? "D32_SFLOAT"
-                     : b.format == FramePixelFormat::Bgra8      ? "BGRA8"
-                                                                : "RGBA8");
+    o->set("format", b.format == FramePixelFormat::Depth32Float  ? "D32_SFLOAT"
+                     : b.format == FramePixelFormat::Rgba16Float ? "RGBA16_SFLOAT"
+                     : b.format == FramePixelFormat::Bgra8       ? "BGRA8"
+                                                                 : "RGBA8");
     o->set("encoding", b.encoding);
     o->set("colorSpace", b.colorSpace);
     o->set("status", b.bytes ? "available" : "unavailable");

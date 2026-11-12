@@ -28,9 +28,10 @@ struct PbrSpecializedSources {
 
 /**
  * @brief Specialize the generated WGSL for the resource reachability encoded by a checked plan.
+ * @param gbuffer Select the five-attachment material evaluation variant instead of forward lighting.
  * @param plan Plan returned by planPbrVariant for the same immutable draw snapshot.
  * @return Owning stages whose static texture declarations match the reachable resource set.
  */
-[[nodiscard]] PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan);
+[[nodiscard]] PbrSpecializedSources specializePbrVariantSources(const PbrVariantPlan& plan, bool gbuffer = false);
 
 }  // namespace eve::graphics::webgpu

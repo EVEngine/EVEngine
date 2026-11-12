@@ -51,6 +51,8 @@
       "RenderSystem3D.dynamicVertexRingTracksLatestUpdate",
       "RenderSystem3D.entityIdMaskPixels",
       "RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters",
+      "RenderSystem3D.reflectionLightingPreservesOpaqueScene",
+      "RenderSystem3D.gbufferPreservesMeshVertexColors",
       "RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters",
       "RenderSystem3D.lightingAffectsPixels",
       "RenderSystem3D.parallaxChangesPixels",
@@ -786,6 +788,66 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
         }
     }
 
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.reflectionLightingPreservesOpaqueScene") {
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
+    openGfxWindow(win, gfx, 96, 96);
+    resetScene3D();
+    auto* camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 5.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(0.5f, 0.5f, 0.5f);
+    auto* box = Renderable3D::create();
+    box->setMesh(gfx->newMeshCube(2.f));
+    box->setTint(0.9f, 0.05f, 0.02f, 1.f);
+    box->setRoughness(0.7f);
+    RenderSystem3D::setDirectionalLight(-0.3f, -1.f, -0.5f, 1.f, 1.f, 1.f);
+    gfx->setScreenReadbackEnabled(true);
+    auto* control = gfx->getRenderControl();
+    for (const char* feature : {"ssr", "rtgi", "reflectionChain"}) {
+        control->disable("reflectionChain");
+        control->disable("ssr");
+        control->disable("rtgi");
+        control->disable("rtx");
+        control->enable(feature);
+        control->compile();
+        for (int frame = 0; frame < 5; ++frame) {
+            gfx->clear(Color(0.02f, 0.02f, 0.02f, 1.f), std::nullopt, std::nullopt);
+            gfx->render3D();
+            gfx->present();
+        }
+        const Color center = gfx->getPixel(48, 48);
+        REQUIRE_GT(center.r, 0.2f);
+        REQUIRE_GT(center.r, center.g + 0.1f);
+    }
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.gbufferPreservesMeshVertexColors") {
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
+    openGfxWindow(win, gfx, 96, 96);
+    resetScene3D();
+    const float    positions[] = {-1.f, -1.f, .5f, 1.f, -1.f, .5f, 0.f, 1.f, .5f};
+    const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float    uv[]        = {0.f, 0.f, 1.f, 0.f, .5f, 1.f};
+    const float    colors[]    = {.02f, .7f, .06f, 1.f, .02f, .7f, .06f, 1.f, .02f, .7f, .06f, 1.f};
+    const uint32_t indices[]   = {0, 2, 1};
+    auto*          mesh        = gfx->newMeshFromArraysColored(positions, normals, uv, colors, 3, indices, 3);
+    REQUIRE(mesh != nullptr);
+    gfx->beginGBufferPass(96, 96);
+    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), glm::mat4(1.f), .1f, 100.f);
+    gfx->endGBufferPass();
+    std::unique_ptr<eve::image::ImageData> albedo(gfx->readGBufferToImageData("albedo"));
+    REQUIRE(albedo != nullptr);
+    const auto*  pixels = static_cast<const uint8_t*>(albedo->getData());
+    const size_t center = (48u * 96u + 48u) * 4u;
+    REQUIRE_GT(pixels[center + 1], 150);
+    REQUIRE_LT(pixels[center], 30);
+    REQUIRE_LT(pixels[center + 2], 45);
     win->close();
 }
 
@@ -4494,6 +4556,26 @@ TEST_CASE("volumetric.froxelAtlasCompositesIntegratedMedia") {
     const Color center = out->getPixel(32, 24);
     CHECK(center.a > 0.02f);
     CHECK(luma(center) > 0.01f);
+    auto* froxel = vol.get();
+    SUB_CASE("volumetric.froxelPartialAtlasPreservesScatteringAtTileBoundary") {
+        froxel->setCamera(0.f, 5.f, 15.f, 0.f, 1.4f, -15.f, 0.f, 1.f, 0.f, 55.f, 1.7777778f, 0.1f, 100.f);
+        // 32 slices produce six columns with a partially filled final row.
+        froxel->configureFroxelGrid(80, 45, 32, 0.1f, 100.f);
+        froxel->clearFroxelGrid();
+        froxel->injectFroxelHeightFog(0.035f, 0.72f, 0.82f, 0.98f, 0.f, 0.16f, -2.f, 10.f);
+        froxel->integrateFroxel(0.55f, 0.62f, 0.78f);
+        froxel->uploadFroxel(gfx);
+        REQUIRE_GT(froxel->getAtmosphereVolume()->integratedAt(40, 29, 24).r, 0.05f);
+        // This depth interpolates slices 24/25. Float mod previously addressed
+        // a nonexistent column at slice 24 and produced a black horizontal band.
+        bd.boxDepth = bd.floorDepth = 0.20f;
+        auto* boundaryDepth         = froxel->newLinearDepthTexture(gfx, bd.w, bd.h, boxDepth01, &bd);
+        gfx->setCanvas(out);
+        gfx->clear(Color(0.f, 0.f, 0.f, 0.f), std::nullopt, std::nullopt);
+        froxel->applyFroxel(gfx, boundaryDepth);
+        gfx->setCanvas(nullptr);
+        for (int y = 20; y < 40; y += 2) REQUIRE_GT(luma(out->getPixel(32, y)), 0.03f);
+    };
     win->close();
 }
 }  // namespace test_Volumetric

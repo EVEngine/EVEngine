@@ -995,21 +995,27 @@ public:
      * After endGBufferPass, textures are available via getRenderControl()->getGBuffer().
      */
     virtual void beginGBufferPass(int width, int height) = 0;
-    /** @brief Draws mesh g buffer. */
-    virtual void drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                                 Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+    /** @brief Queue a GBuffer surface using the currently bound PBR material when present.
+     * @param tintA Base-color alpha multiplier for bound PBR materials; legacy RGB packing is unchanged.
+     * @ownership Mesh and texture are borrowed and must outlive queued GPU work.
+     * @thread Render-thread only; material parameters are copied at submission, no callbacks.
+     */
+    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                 Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
                                  float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
-                                 float metallic = 0.f)   = 0;
+                                 float metallic = 0.f, float tintA = 1.f) = 0;
     /**
      * @brief GBuffer fill with alpha-cutout discard (card/billboard geometry such as
      * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
-     * texels are discarded so depth/normal follow the silhouette. No-op on
-     * backends without the alpha pipeline (WebGPU).
+     * texels are discarded so depth/normal follow the silhouette. Bound PBR
+     * uses the material cutoff and tintA on Vulkan and WebGPU.
+     * @ownership Mesh and texture are borrowed through GPU completion.
+     * @thread Render-thread only; no callbacks.
      */
-    virtual void drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                                      Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                      Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
                                       float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
-                                      float roughness = 0.45f, float metallic = 0.f) = 0;
+                                      float roughness = 0.45f, float metallic = 0.f, float tintA = 1.f) = 0;
     /** @brief Ends g buffer pass. */
     virtual void endGBufferPass() = 0;
 
@@ -1068,7 +1074,8 @@ public:
 
     /**
      * @brief Read a G-buffer attachment back to CPU as RGBA8. name is one of
-     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo".
+     * "depth" (RGBA8 linear depth), "normal" (world normal*0.5+0.5), "albedo",
+     * "pbrParams", or "emissive" (linear HDR clamped to 0..1 for this RGBA8 preview).
      * Valid only after a G-buffer or entity-ID offscreen pass filled it.
      * Caller owns the returned ImageData*. Returns nullptr when unsupported.
      */

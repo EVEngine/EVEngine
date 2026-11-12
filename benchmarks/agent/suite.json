@@ -1,0 +1,94 @@
+{
+  "schema": "eve.agent-benchmark-suite/v1",
+  "id": "evengine-agent-core",
+  "version": 1,
+  "fixture": "examples/ai-game",
+  "seeds": [
+    17,
+    42,
+    83
+  ],
+  "tasks": [
+    {
+      "id": "contract-observation",
+      "category": "contract",
+      "prompt": "修复 game.agent.json 的 combat-alive 观察路径，使它与 main.nut 的权威状态一致。保持其他合同字段完全不变。",
+      "allowedFiles": [
+        "game.agent.json"
+      ],
+      "mutation": {
+        "file": "game.agent.json",
+        "old": "\"path\": \"gameState\"",
+        "new": "\"path\": \"missingState\""
+      },
+      "grader": "contract",
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "combat-damage",
+      "category": "repair",
+      "prompt": "修复玩家攻击反而给敌人回血的问题。保持其他玩法行为、攻击力、攻击间隔、初始生命和 UI 不变。",
+      "allowedFiles": [
+        "main.nut"
+      ],
+      "mutation": {
+        "file": "main.nut",
+        "old": "gameState.enemy.hp -= gameState.player.attack;",
+        "new": "gameState.enemy.hp += gameState.player.attack;"
+      },
+      "grader": "engine",
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "combat-balance",
+      "category": "balance",
+      "prompt": "调整玩家 attack 参数，使 80 HP 敌人在仿真开始后 3.0 至 4.5 秒内被击败，玩家存活。保持敌人攻击、回血、初始生命、攻击间隔及其余行为不变。",
+      "allowedFiles": [
+        "main.nut"
+      ],
+      "mutation": {
+        "file": "main.nut",
+        "old": "attack = 14.0",
+        "new": "attack = 8.0"
+      },
+      "grader": "engine",
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "restart-parameters",
+      "category": "restart",
+      "prompt": "修复参数重启不应用 enemyHp 的问题。支持不同 seed、enemyHp 和 playerHp，生命值和 maxHp 都要一致。保留其他行为。",
+      "allowedFiles": [
+        "main.nut"
+      ],
+      "mutation": {
+        "file": "main.nut",
+        "old": "state.enemy.maxHp = hp;\n        state.enemy.hp = hp;",
+        "new": "state.enemy.maxHp = 80.0;\n        state.enemy.hp = 80.0;"
+      },
+      "grader": "engine",
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "checkpoint-recovery",
+      "category": "recovery",
+      "prompt": "修复 gameState 未注册到 DevTools 导致的检查点恢复问题。检查点恢复应精确恢复 tick、时间和战斗状态。保留其他行为。",
+      "allowedFiles": [
+        "main.nut"
+      ],
+      "mutation": {
+        "file": "main.nut",
+        "old": "eve.dev.markStateRoot(\"gameState\");",
+        "new": "eve.dev.markStateRoot(\"unrelatedState\");"
+      },
+      "grader": "engine",
+      "timeoutSeconds": 300
+    }
+  ],
+  "inputTextSha256": {
+    "examples/ai-game/main.nut": "1dd97066eb078731ae3a9cbf3a02b159bfbdf475c1e4ff84e45a2ffee1ce365d",
+    "examples/ai-game/config.nut": "9657a6806e2dc14ecad0c1fe5a14f5fef8deb2336cb3ad66875e4ca97218140b",
+    "examples/ai-game/game.agent.json": "f97714078cc0ce0ce4703f2020d96f4669b7a82788d7546a38b70ad8c42c441b",
+    ".cursor/skills/evescript/SKILL.md": "653c1342a84ab3f99e7a42ed253fa4b694ae083b43369b87ddbc79f9000de677"
+  }
+}

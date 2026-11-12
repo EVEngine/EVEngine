@@ -6,3 +6,7 @@ check/agent:
 	cmake --build "$(AGENT_TEST_BUILD)" -j $(JOBS)
 	ctest --test-dir "$(AGENT_TEST_BUILD)" --output-on-failure
 
+# Agent productivity harness tests do not call paid models or start the engine.
+.PHONY: check/agent-benchmark
+check/agent-benchmark:
+	python3 -m unittest discover -s benchmarks/agent/tests -p 'test_*.py' -v
