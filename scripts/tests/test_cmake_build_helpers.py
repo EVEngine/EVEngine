@@ -20,6 +20,70 @@ class BuildHelperTests(unittest.TestCase):
             command = [str(ROOT / "cmake" / "with-msvc.cmd"), *command]
         return subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace")
 
+    def test_macos_deployment_reaches_real_dependency_build_without_explicit_architecture(self):
+        for deployment in ("", "14.0"):
+            with self.subTest(deployment=deployment), tempfile.TemporaryDirectory() as directory:
+                source = Path(directory).resolve()
+                child = source / "probe"
+                child.mkdir()
+                (source / "cmake").mkdir()
+                shutil.copyfile(ROOT / "cmake/write_third_party_version.cmake",
+                                source / "cmake/write_third_party_version.cmake")
+                (child / "probe.c").write_text("int probe(void) { return 7; }\n", encoding="utf-8")
+                (child / "CMakeLists.txt").write_text('''cmake_minimum_required(VERSION 3.21)
+project(DeploymentProbe C)
+if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+  message(FATAL_ERROR "Dependency received an empty deployment target")
+endif()
+file(WRITE "${CMAKE_BINARY_DIR}/deployment.txt" "${CMAKE_OSX_DEPLOYMENT_TARGET}")
+add_library(probe STATIC probe.c)
+if(APPLE)
+  target_compile_options(probe PRIVATE "-mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}")
+endif()
+install(TARGETS probe ARCHIVE DESTINATION lib)
+''', encoding="utf-8")
+                (source / "CMakeLists.txt").write_text(f'''cmake_minimum_required(VERSION 3.21)
+project(EngineDeploymentContract C)
+set(CMAKE_SYSTEM_NAME Darwin)
+set(BUILD_PLATFORM macosx)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_OSX_ARCHITECTURES "")
+set(CMAKE_OSX_DEPLOYMENT_TARGET "{deployment}" CACHE STRING "" FORCE)
+include("{(ROOT / "cmake/platforms/macosx_deployment.cmake").as_posix()}")
+file(WRITE "${{CMAKE_BINARY_DIR}}/deployment.txt" "${{CMAKE_OSX_DEPLOYMENT_TARGET}}")
+add_library(eve_engine_includes INTERFACE)
+function(eve_external_include path)
+endfunction()
+set(TP_BUILD_PATH contract)
+include("{(ROOT / "cmake/third_party_build.cmake").as_posix()}")
+check_third_party_project(probe "")
+''', encoding="utf-8")
+                build = source / "build-parent"
+                configured = self.run_cmake("-G", "Ninja", "-S", source, "-B", build)
+                self.assertEqual(configured.returncode, 0, configured.stdout + configured.stderr)
+                compiled = self.run_cmake("--build", build, "--target", "probe", "--parallel", "2")
+                self.assertEqual(compiled.returncode, 0, compiled.stdout + compiled.stderr)
+                expected = deployment or "13.3"
+                self.assertEqual((build / "deployment.txt").read_text(encoding="utf-8"), expected)
+                self.assertEqual((source / "build/probe/contract/deployment.txt").read_text(encoding="utf-8"),
+                                 expected)
+                self.assertTrue(any((source / "build/probe-binary/contract/lib").iterdir()))
+
+    def test_desktop_deployment_policy_does_not_change_cross_targets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            script = Path(directory) / "policy.cmake"
+            script.write_text(f'''foreach(system IN ITEMS iOS Android Emscripten Linux Windows)
+  set(CMAKE_SYSTEM_NAME "${{system}}")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "" CACHE STRING "" FORCE)
+  include("{(ROOT / "cmake/platforms/macosx_deployment.cmake").as_posix()}")
+  if(CMAKE_OSX_DEPLOYMENT_TARGET)
+    message(FATAL_ERROR "Desktop policy leaked into ${{system}}")
+  endif()
+endforeach()
+''', encoding="utf-8")
+            result = self.run_cmake("-P", script)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_imgui_renderer_matches_backend_for_both_linkages(self):
         for backend in ("webgpu", "win32"):
             for linkage in ("SHARED", "OBJECT"):
