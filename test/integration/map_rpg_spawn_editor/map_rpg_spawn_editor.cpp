@@ -247,6 +247,13 @@ TEST_CASE("RPG spawn editor launch keeps close requests and overflow observable 
     )"));
     auto*     native = static_cast<SDL_Window*>(graphics.win->getHandle());
     auto*     events = eve::platform_event::PlatformEvent::create();
+    // A native hover may precede the close request before any instance is selected.
+    SDL_Event hover{};
+    hover.type            = SDL_MOUSEMOTION;
+    hover.motion.windowID = SDL_GetWindowID(native);
+    hover.motion.x        = 20;
+    hover.motion.y        = 20;
+    REQUIRE_EQ(SDL_PushEvent(&hover), 1);
     SDL_Event close{};
     close.type            = SDL_WINDOWEVENT;
     close.window.windowID = SDL_GetWindowID(native);

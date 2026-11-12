@@ -264,6 +264,9 @@ Result<editor::ToolResponse> SpawnEditorWorkspace::pointerEvent(const editor::Ed
     auto state = impl_->state;
     if (state->busy)
         return failed<editor::ToolResponse>(DiagnosticCode::PreconditionViolation, "Workspace mutation reentry");
+    // Native hover is normal before an explicit instance selection; it starts no edit.
+    if (!state->viewport && event.phase == editor::EditorPointerEvent::Phase::Move)
+        return Result<editor::ToolResponse>::success(editor::ToolResponse::ignored());
     if (!state->viewport)
         return failed<editor::ToolResponse>(DiagnosticCode::NotFound, "Select a spawn instance first");
     Guard guard(state->busy);

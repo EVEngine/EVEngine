@@ -1035,6 +1035,13 @@ TEST_CASE("Spawn owning workspace binds real source shape and frame controls and
         event.pointerId = 3;
         return workspace->pointerEvent(event);
     };
+    const auto initialRevision = form->sourceRevision();
+    const auto hover           = pointer(Event::Phase::Move, 20, 30).expect("unselected native hover");
+    REQUIRE(!hover.handled);
+    REQUIRE(!hover.capturePointer);
+    REQUIRE(!workspace->hasPointerCapture());
+    REQUIRE_EQ(form->sourceRevision().value(), initialRevision.value());
+    REQUIRE(workspace->diagnostics().empty());
     REQUIRE(!pointer(Event::Phase::Down, 20, 30).ok());
     auto initial = workspace->controlsPanel().build();
     find(find, initial, "Edit region: north")->onClick();

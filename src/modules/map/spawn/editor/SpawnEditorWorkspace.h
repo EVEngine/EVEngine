@@ -44,7 +44,8 @@ public:
      */
     [[nodiscard]] Result<void> setFrame(MapViewportFrame frame);
     /** @brief Route host-hit-tested canvas input to the selected actual viewport.
-     * @return Protocol response or missing selection/projection/reentry failure; interaction diagnostics are visible.
+     * @return Unselected moves are ignored; edit input requires selection. Projection/reentry failures and interaction
+     * diagnostics remain visible.
      * @cost Constant routing plus the existing tool start/commit costs; moves perform no source lookup here.
      */
     [[nodiscard]] Result<editor::ToolResponse> pointerEvent(const editor::EditorPointerEvent& event);
