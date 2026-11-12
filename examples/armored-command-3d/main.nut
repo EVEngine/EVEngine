@@ -12,6 +12,7 @@ local sceneryMaterials = [];
 local tankSys = null;
 local shellSys = null;
 local buildingSys = null;
+persist battleClose = false
 persist selected = 0
 persist prevRight = false
 persist hudBuilt = false
@@ -20,7 +21,7 @@ persist combatLog = []
 persist assetReport = []
 
 const PI = 3.1415926535;
-const TANK_SCALE = 0.21;
+const TANK_SCALE = 0.30;
 
 tankPaths <- [
     "assets/quaternius-animated-tanks/tank-a/Tank.glb",
@@ -261,6 +262,7 @@ function rayGround(out) {
 }
 
 function updateInput() {
+    if(key_just_pressed("c"))battleClose=!battleClose;
     if (blueTanks.len() == 0) return;
     local current = blueTanks[selected];
     local right=mouse.isDown(2);
@@ -274,8 +276,9 @@ function updateInput() {
 }
 
 function setupScene() {
-    cube(0,-0.18,0,68,0.25,48,0.14,0.2,0.14); cube(0,-0.02,0,13,0.04,48,0.25,0.24,0.2);
+    cube(0,-0.18,0,62,0.25,48,0.14,0.2,0.14); cube(0,-0.02,0,8,0.04,48,0.19,0.20,0.19);
     for(local z=-20;z<=20;z+=8){cube(-17,0.35,z,0.9,0.7,0.9,0.34,0.3,0.22);cube(17,0.35,z+2,1.1,0.7,0.8,0.3,0.28,0.22);}
+    dressBattlefield();
     createBuilding(-24,-14,0); createBuilding(24,14,1);
 }
 
@@ -300,8 +303,8 @@ eve_init = function() {
     if ("dev" in eve) { eve.dev.ai.setVisible(false); eve.dev.console.setVisible(false); }
     if(models==null)models=eve.Model3D(); if(animation==null)animation=eve.Animation(); if(particleSystem==null)particleSystem=eve.Particles();
     particleSystem.setBudget(5000,96); particleSystem.setQualityLevel(3);
-    cam=eve.Camera3D();cam.setEye(36.0,30.0,40.0);cam.setTarget(0.0,0.0,0.0);cam.setUp(0.0,1.0,0.0);cam.setFov(46.0);cam.setAmbient(1.08,1.1,1.14);cam.setActive(true);
-    gfx.setDirectionalLight(0.48,1.0,0.32,2.15,2.02,1.82);
+    cam=eve.Camera3D();cam.setEye(36.0,30.0,40.0);cam.setTarget(0.0,0.0,0.0);cam.setUp(0.0,1.0,0.0);cam.setFov(46.0);cam.setAmbient(0.27,0.30,0.31);cam.setExposure(-0.6);cam.setActive(true);
+    gfx.setDirectionalLight(0.48,1.0,0.32,1.05,1.0,0.88);
     if(assets.len()==0){assetReport.clear();foreach(path in tankPaths)assets.push(loadTank(path));}
     if(tankSys==null){tankSys=TankSystem();shellSys=ShellSystem();buildingSys=BuildingSystem();}
     if(eve.view(Tank).len()==0){
@@ -316,8 +319,8 @@ eve_init = function() {
         foreach (u in blueTanks) u.selected=false;
         blueTanks[selected].selected=true;
     }
-    if(!hudBuilt){ui.setTheme("dark");ui.beginBuild();ui.beginWindow("ARMORED COMMAND 3D","root");ui.text("New API end-to-end quality demo","sub");ui.text("","status");ui.text("TAB select | RMB move | SPACE volley","help");ui.separator("sep");ui.text("","log");ui.end();ui.mountBuildAs("rts-hud");ui.select("rts-hud");ui.setHostOverlay(true);ui.setHostPos(14.0,12.0,0.0,0.0);hudBuilt=true;}
-    logLine("4 CC0 animated tank variants loaded");logLine("45-bone track rigs + 4 clips verified");
+    if(!hudBuilt){ui.setTheme("dark");ui.beginBuild();ui.beginWindow("ARMORED COMMAND 3D","root");ui.text("BORDER ROAD / ARMORED PATROL","sub");ui.text("","status");ui.textWrapped("TAB select | RMB move | SPACE volley | C close",440.0,"help");ui.separator("sep");ui.text("","log");ui.end();ui.mountBuildAs("rts-hud");ui.select("rts-hud");ui.setHostOverlay(true);ui.setHostPos(14.0,12.0,0.0,0.0);ui.setHostSize(480.0,220.0);hudBuilt=true;}
+    logLine("Select a blue tank, then right-click to move");logLine("SPACE fires a coordinated volley");
 };
 
 eve_update = function(dt) {
@@ -325,6 +328,8 @@ eve_update = function(dt) {
     battleClock+=dt;updateInput();tankSys.update(dt);shellSys.update(dt);buildingSys.update(dt);
     for(local i=vfxBursts.len()-1;i>=0;--i){vfxBursts[i].life-=dt;if(vfxBursts[i].life<=0){vfxBursts[i].emitter.stop();vfxBursts.remove(i);}}
     particleSystem.update(dt);updateHud();
+    if(battleClose && blueTanks.len()>0) {local u=blueTanks[selected];cam.setEye(u.x+12.0,8.0,u.z+15.0);cam.setTarget(u.x,0.6,u.z);}
+    else {cam.setEye(36.0,30.0,40.0);cam.setTarget(0.0,0.0,0.0);}
 };
 
 eve_render = function() {
@@ -357,3 +362,18 @@ eve_before_reload <- function() {
 
 eve_reload <- function() { eve_init(); };
 
+
+function dressBattlefield() {
+    for(local z=-22;z<23;z+=4)cube(0,0.025,z,0.14,0.025,1.8,0.69,0.61,0.38);
+    for(local side=-1;side<=1;side+=2) {
+        cube(side*4.15,0.02,0,0.18,0.03,46,0.47,0.44,0.32);
+        for(local z=-19;z<=19;z+=6) {
+            cube(side*12,0.0,z,4.3,0.04,3.1,0.23,0.26,0.17);
+            for(local k=0;k<3;k++)cube(side*(10.0+k*0.52),0.32,z,0.5,0.64,1.9,0.37,0.32,0.22);
+        }
+        for(local z=-20;z<=20;z+=10) {
+            cube(side*29,0.6,z,0.2,1.2,0.2,0.28,0.24,0.16);
+            cube(side*29,0.75,z+4.5,0.12,0.12,9,0.38,0.34,0.23);
+        }
+    }
+}

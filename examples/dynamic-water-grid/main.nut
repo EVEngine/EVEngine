@@ -1,3 +1,4 @@
+dofile("dressing.nut");
 dofile("water_field.nut");
 
 persist waterDemo = null
@@ -229,8 +230,8 @@ function rebuildExample() {
     terrainLayer.setTilesetTileSize(TILE_W.tointeger(), TILE_H.tointeger());
     for (local y = 0; y < FIELD_H; ++y) {
         for (local x = 0; x < FIELD_W; ++x) {
-            local material = (x < FIELD_W / 2 ? 0 : 1) +
-                (y < FIELD_H / 2 ? 0 : 2);
+            local distance=fabs(y-waterField.channelCenter(x));
+            local material=distance<3.25?2:(sin(x*0.26)+cos(y*0.38)>0.6?0:1);
             terrainLayer.setTile(x, y, 1 + material);
         }
     }
@@ -241,6 +242,7 @@ function rebuildExample() {
     shoreLayer.setTileset(shoreTexture, 1, 4, 0, 0);
     shoreLayer.setTilesetTileSize(ATLAS_TILE_W, ATLAS_TILE_H);
     configureHeroLayer();
+    waterBuildGarden();
 
     fieldCanvas = gfx.newCanvas(FIELD_W, FIELD_H);
     waterShader = loadWaterShader();
@@ -305,13 +307,14 @@ function buildHud() {
     ui.text("", "mode");
     ui.text("LMB add water | RMB drain | drag supported", "mouseHelp");
     ui.text("Space pause | R reset | F source | N node markers", "keyHelp");
-    ui.text("Arrow / WASD preview both heroes' 8 walk directions", "heroHelp");
-    ui.text("Land below | riverbed dual-grid | transparent water above", "assetHelp");
+
+
     ui.end();
     ui.mountBuildAs("water-hud");
     ui.select("water-hud");
     ui.setHostOverlay(true);
     ui.setHostPos(14.0, 12.0, 0.0, 0.0);
+    ui.setHostSize(435.0,185.0);
     hudBuilt = true;
 }
 
@@ -388,6 +391,7 @@ eve_render = function() {
 
     gfx.clear();
 
+    waterGarden.setVisible(false);
     // Pass 1: replaceable land materials, then the beige riverbed overlay.
     terrainLayer.setVisible(true);
     shoreLayer.setVisible(true);
@@ -400,7 +404,8 @@ eve_render = function() {
     gfx.drawCanvas(fieldCanvas, 0.0, 0.0, config.width.tofloat(), config.height.tofloat());
     gfx.setShader(null);
 
-    // Pass 3: characters stay above the water surface.
+    // Pass 3: characters and dry-bank props stay above the water surface.
+    waterGarden.setVisible(true);
     terrainLayer.setVisible(false);
     shoreLayer.setVisible(false);
     heroLayer.setVisible(true);

@@ -1,3 +1,4 @@
+dofile("landscape.nut");
 dofile("map-data.nut");
 dofile("house-settings.nut");
 dofile("house-native.nut");
@@ -45,6 +46,7 @@ function validateRiversideData() {
 }
 
 function blocked(x, z) {
+    if(riverDecorBlocked(x,z))return true;
     local radius = 6.0;
     foreach (dx in [-radius, radius]) foreach (dz in [-radius, radius]) {
         local tx = floor((x + dx) / 32.0).tointeger();
@@ -133,14 +135,15 @@ eve_init = function() {
     camera.setFov(43.0);
     camera.setClipPlanes(1.0, 3000.0);
     camera.setActive(true);
-    camera.setAmbient(0.25, 0.28, 0.34);
+    camera.setAmbient(0.22, 0.25, 0.28);
+    camera.setExposure(-0.4);
     // HD2DURP-style miniature look: shallow DOF + mild bloom. Sprites keep
     // depth write via masked cutout so characters stay sharp in the focus band.
     local look = hd2d.newLook();
     look.setFocusDistance(900.0);
     look.setFocusRange(420.0);
-    look.setMaxBlur(5.0);
-    look.setBloomIntensity(0.28);
+    look.setMaxBlur(2.2);
+    look.setBloomIntensity(0.10);
     look.setBloomThreshold(1.25);
     look.apply(camera);
     look.applyPixelSampler(gfx, atlas);
@@ -151,6 +154,7 @@ eve_init = function() {
     sun.setCastShadow(true);
     sun.setShadowStrength(0.7);
     initializeNativeHouses();
+    riverDress();
     listenNativeHouseKeys();
     foreach (spawn in riversideData.spawns) {
         local sprite = hd2d.newSprite(gfx);

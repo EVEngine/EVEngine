@@ -41,3 +41,9 @@ C14 提供地表；石基木屋（2×2）和石质哨塔（1×1）由内置 imag
 ## 干净检出运行
 
 默认 `config.assetSource = "starter"` 使用仓库自带的程序绘制基础素材，无需外部资源即可启动。运行第三方素材提取脚本后，将其改为 `"assets"` 使用完整素材。基础素材可用 `python scripts/generate_building_starter_assets.py`（需要 Pillow）重新生成。
+
+## 2026-11-12 画面改善
+
+默认由 2 栋扩为 9 个原生 PlacementWorld 建筑（含码头），补自制等距树丛装饰；装饰依据权威占用和地表隐藏，保留绘地、建造、拆除、旋转和重置。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/building-tilemap.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)
