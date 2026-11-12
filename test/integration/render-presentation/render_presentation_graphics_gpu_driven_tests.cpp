@@ -1339,6 +1339,9 @@ TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
 
     Mesh          *mesh       = gfx->newMeshSphere(12, 8);
     Material      *material   = gfx->newMaterial();
+    material->setTint(0.9f, 0.1f, 0.1f, 1.f);
+    material->setReceiveLight(false);
+    material->setReceiveShadow(false);
     const uint32_t meshId     = gfx->gpuDrivenMeshRecord(mesh);
     const uint32_t materialId = gfx->gpuDrivenMaterialRecord(material);
     REQUIRE(meshId != kInvalidGpuDrivenSlot);
@@ -1368,7 +1371,9 @@ TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
     gfx->setMesh3DViewProj(proj * view);
     gfx->setMesh3DView(view);
     gfx->setMesh3DCameraPos(eye);
+    gfx->setScreenReadbackEnabled(true);
     gfx->gpuDrivenSetEnabled(true);
+    gfx->clear(Color{0.f, 0.f, 0.f, 1.f}, std::nullopt, 1.0);
     gfx->begin3DFrame();
     REQUIRE(gfx->had3DThisFrame());
     GpuResidentInstanceBatch invalid = batch;
@@ -1386,6 +1391,24 @@ TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
     CHECK(int(submitted) == int(GpuResidentSubmitStatus::Submitted));
     gfx->present();
     CHECK_EQ(vg->debugLastGpuDrivenDrawCount(), uint32_t(1));
+    const Color red = gfx->getPixel(160, 120);
+    REQUIRE(red.r > 0.1f);
+    CHECK(red.r > red.g * 2.f);
+    CHECK(red.r > red.b * 2.f);
+
+    // Submission may lazily ensure resources, but must preserve the device's
+    // registered tables and texture slots across frames and material updates.
+    material->setTint(0.1f, 0.1f, 0.9f, 1.f);
+    CHECK_EQ(gfx->gpuDrivenMaterialRecord(material), materialId);
+    CHECK_EQ(gfx->gpuDrivenMeshRecord(mesh), meshId);
+    gfx->clear(Color{0.f, 0.f, 0.f, 1.f}, std::nullopt, 1.0);
+    gfx->begin3DFrame();
+    CHECK(int(gfx->gpuDrivenSubmitResident(batch)) == int(GpuResidentSubmitStatus::Submitted));
+    gfx->present();
+    const Color blue = gfx->getPixel(160, 120);
+    REQUIRE(blue.b > 0.1f);
+    CHECK(blue.b > blue.r * 2.f);
+    CHECK(blue.b > blue.g * 2.f);
 
     delete resident;
     win->close();

@@ -60,16 +60,23 @@ jobs:
       - name: Install profile toolchain
         timeout-minutes: 15
         run: |
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           # Only Ubuntu indexes are needed for this toolchain.
           test -s /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update \
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
             -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
-          sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build libvulkan-dev \
-            libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
-            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
+          packages_ok=0
+          for attempt in 1 2 3; do
+            sudo apt-get install -y --no-install-recommends \
+              -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
+              build-essential cmake ninja-build libvulkan-dev \
+              libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
+              libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+              libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev && { packages_ok=1; break; }
+            [ "$attempt" -lt 3 ] && sleep 20
+          done
+          [ "$packages_ok" -eq 1 ] || exit 1
 
       - name: Configure profile
         timeout-minutes: 30
@@ -112,6 +119,40 @@ jobs:
           name: macosx-native-metal-probe
           path: build/macosx-x86_64-metal-probe.log
           if-no-files-found: error
+
+  pixelfx-native-intel:
+    name: PixelFX CPU contracts (Intel macOS, ${{ matrix.configuration }})
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install build tools
+        timeout-minutes: 10
+        run: brew install ninja
+
+      - name: Validate CPU PixelFX contracts before the engine build
+        timeout-minutes: 20
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          build_type=Release
+          if [ "$CONFIGURATION" = debug ]; then build_type=Debug; fi
+          cmake -S scripts/pixelfx -B build/pixelfx-intel -G Ninja \
+            -DCMAKE_BUILD_TYPE="$build_type" -DCMAKE_CXX_FLAGS_DEBUG="-O2 -g0"
+          cmake --build build/pixelfx-intel --target pixelfx_contracts -j 4
+          build/pixelfx-intel/pixelfx_contracts \
+            --testcase='^stylize.pixelfx.(holy.featherBurstPhasesMaterialsAndTransactions|ice.blizzardVortexSourceLayersAndConfiguration|impacts.bluntHitPhasesMaterialsAndTransactions)$'
+
 
   macos-x86_64:
     name: macOS x86_64 (${{ matrix.configuration }}, build + test)
@@ -368,10 +409,18 @@ jobs:
 
       - name: Install native system packages
         timeout-minutes: 25
-        # Preserve the ARM ports mirror supplied by the runner image.
+        # Keep ARM ports on their own Ubuntu-signed archive replica.
         run: |
-          sudo apt-get update -o Acquire::Retries=2 \
-            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get --error-on=any update -o Acquire::Retries=2 \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build lld gdb \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -464,11 +513,7 @@ jobs:
         # time for an active transfer to finish.
         timeout-minutes: 25
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -1015,11 +1060,7 @@ jobs:
         # time for an active transfer to finish.
         timeout-minutes: 25
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -1121,11 +1162,7 @@ jobs:
         # Keep parity with the debug lane's full native dependency install.
         timeout-minutes: 15
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -1266,8 +1303,7 @@ jobs:
         # Keep parity with the other full native Linux dependency installs.
         timeout-minutes: 15
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true

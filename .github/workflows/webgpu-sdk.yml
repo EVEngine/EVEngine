@@ -37,11 +37,7 @@ jobs:
       - name: Install system packages
         timeout-minutes: 10
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -50,7 +46,7 @@ jobs:
           test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
-            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+            timeout 120 sudo apt-get update --error-on=any -o Acquire::Retries=2 \
               -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
               -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
@@ -89,18 +85,23 @@ jobs:
         timeout-minutes: 10
         run: |
           set -euo pipefail
+          source "$HOME/emsdk/emsdk_env.sh"
           mkdir -p artifacts/webgpu-dependencies
           archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
-          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
+          # Same locked v20260423.175430 asset via the release API; the verifier
+          # below still checks its lock-file hash and archive contents.
+          url="https://api.github.com/repos/google/dawn/releases/assets/404253185"
           if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
-            --output "$archive" "$url"; then
+            --header 'Accept: application/octet-stream' --output "$archive" "$url"; then
             python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
             exit 1
           fi
+          webgpu_ports="$(em-config PORTS)"
           python3 scripts/verify_webgpu_dependencies.py \
             --lock cmake/webgpu_dependencies.json \
             --archive "$archive" \
             --emscripten-version "$EMSCRIPTEN_VERSION" \
+            --port-cache "$webgpu_ports" \
             --result-json artifacts/webgpu-dependencies/ci-result.json
 
       - name: Prewarm Emscripten WebGPU port

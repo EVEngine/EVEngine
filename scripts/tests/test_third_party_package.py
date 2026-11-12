@@ -2,7 +2,9 @@
 
 import json
 import hashlib
+import http.client
 import io
+import ssl
 import sys
 import subprocess
 import tempfile
@@ -33,6 +35,9 @@ class ThirdPartyPackageTests(unittest.TestCase):
         self.assertFalse((self.root / "install").exists())
 
     def setUp(self):
+        sleep = patch.object(tp.time, "sleep")
+        self.sleep = sleep.start()
+        self.addCleanup(sleep.stop)
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
@@ -56,6 +61,80 @@ class ThirdPartyPackageTests(unittest.TestCase):
                     bundle.write(path, path.relative_to(self.prefix).as_posix())
             bundle.writestr("eve-third-party-package.json", json.dumps(manifest))
         return archive
+
+    def test_gateway_failure_and_partial_transfer_recover_before_install(self):
+        archive = self.archive()
+        content = archive.read_bytes()
+        sums = f"{hashlib.sha256(content).hexdigest()}  {archive.name}\n".encode("utf-8")
+
+        class Interrupted(io.BytesIO):
+            def read(self, size=-1):
+                if self.tell():
+                    raise http.client.IncompleteRead(b"partial")
+                return super().read(size)
+
+        responses = [tp.urllib.error.HTTPError("https://github.com", 504, "Gateway Time-out", {}, None),
+                     io.BytesIO(sums), Interrupted(b"partial"), io.BytesIO(content)]
+        with patch.object(tp.urllib.request, "urlopen", side_effect=responses) as request:
+            destination = self.root / "install"
+            tp.fetch("EVEngine/third-party", "v1.0.0", "win32", "Debug", destination, "x86_64")
+        self.assertEqual((destination / "lib/api.lib").read_bytes(), b"library")
+        self.assertEqual(request.call_count, 4)
+        self.assertEqual(self.sleep.call_count, 2)
+        self.assertEqual(request.call_args_list[0], request.call_args_list[1])
+        self.assertEqual(request.call_args_list[2], request.call_args_list[3])
+
+    def test_gateway_retries_have_a_three_attempt_limit(self):
+        errors = [tp.urllib.error.HTTPError("https://github.com", 504, "Gateway Time-out", {}, None)
+                  for _ in range(3)]
+        with patch.object(tp.urllib.request, "urlopen", side_effect=errors) as request:
+            with self.assertRaises(tp.DownloadUnavailable):
+                tp.download("https://github.com/asset", self.root / "archive")
+        self.assertEqual(request.call_count, 3)
+        self.assertEqual([call.args[0] for call in self.sleep.call_args_list], [2, 4])
+
+    def test_access_and_rate_denials_never_retry_or_select_source(self):
+        for status in (401, 403, 429):
+            with self.subTest(status=status):
+                error = tp.urllib.error.HTTPError("https://github.com", status, "Denied", {}, None)
+                with patch.object(tp.urllib.request, "urlopen", side_effect=error) as request:
+                    with self.assertRaisesRegex(ValueError, f"HTTP {status}"):
+                        tp.download("https://github.com/asset", self.root / "archive")
+                self.assertEqual(request.call_count, 1)
+        self.sleep.assert_not_called()
+
+    def test_server_retry_time_is_respected_and_bounded(self):
+        for retry, succeeds in (("12", True), ("120", False)):
+            with self.subTest(retry=retry):
+                self.sleep.reset_mock()
+                error = tp.urllib.error.HTTPError("https://github.com", 503, "Unavailable",
+                                                 {"Retry-After": retry}, None)
+                with patch.object(tp.urllib.request, "urlopen", side_effect=[error, io.BytesIO(b"complete")]) as request:
+                    if succeeds:
+                        tp.download("https://github.com/asset", self.root / "archive")
+                        self.sleep.assert_called_once_with(12)
+                        self.assertEqual(request.call_count, 2)
+                    else:
+                        with self.assertRaises(tp.DownloadUnavailable):
+                            tp.download("https://github.com/asset", self.root / "archive")
+                        self.sleep.assert_not_called()
+                        self.assertEqual(request.call_count, 1)
+
+    def test_certificate_failure_is_fatal_without_retry(self):
+        error = tp.urllib.error.URLError(ssl.SSLCertVerificationError("certificate rejected"))
+        with patch.object(tp.urllib.request, "urlopen", side_effect=error) as request:
+            with self.assertRaisesRegex(ValueError, "TLS certificate"):
+                tp.download("https://github.com/asset", self.root / "archive")
+        self.assertEqual(request.call_count, 1)
+        self.sleep.assert_not_called()
+
+    def test_http_date_retry_time_uses_remaining_wait_budget(self):
+        error = tp.urllib.error.HTTPError("https://github.com", 503, "Unavailable",
+                                         {"Retry-After": "Thu, 01 Jan 1970 00:00:20 GMT"}, None)
+        with patch.object(tp.time, "time", return_value=5):
+            with patch.object(tp.urllib.request, "urlopen", side_effect=[error, io.BytesIO(b"complete")]):
+                tp.download("https://github.com/asset", self.root / "archive")
+        self.sleep.assert_called_once_with(15)
 
     def test_fetch_checks_release_checksum_and_installs(self):
         archive = self.archive()

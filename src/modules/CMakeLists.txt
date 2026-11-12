@@ -387,6 +387,7 @@ endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/filesystem/BuildSettings.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/stylize/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
 if(_has_ik)
@@ -395,11 +396,11 @@ endif()
 
 eve_module_enabled(animation _has_animation)
 eve_module_enabled(model3d _has_model3d_for_animation_includes)
-if(_has_animation AND _has_model3d_for_animation_includes)
+if(_has_animation AND _has_model3d_for_animation_includes AND NOT EVENGINE_THIRD_PARTY_BINARY_DIR)
   # Assimp import bridge TUs only; runtime animation sources do not include Assimp.
+  # The selected install prefix is already propagated by eve_engine_includes.
+  # Guessed build-tree prefixes can shadow it after switching to a prebuilt SDK.
   target_include_directories(EVAnimation PRIVATE
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
-    ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include
     ${CMAKE_SOURCE_DIR}/third-party/medialoader/include
     ${CMAKE_SOURCE_DIR}/third-party/medialoader/assimp/include
   )

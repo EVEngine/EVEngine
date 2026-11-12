@@ -238,6 +238,10 @@ jobs:
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -379,6 +383,10 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -492,6 +500,10 @@ jobs:
       - name: Install tools
         timeout-minutes: 10
         run: brew install ninja || true
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -755,11 +767,7 @@ jobs:
         # time for an active transfer to finish.
         timeout-minutes: 25
         run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -786,6 +794,10 @@ jobs:
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
             xvfb ffmpeg python3-pil
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -959,8 +971,7 @@ jobs:
         # Sanitizer jobs use the same full dependency set as the debug lane.
         timeout-minutes: 20
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
           sudo pkill -f "unattended-upgrade" || true
@@ -987,6 +998,10 @@ jobs:
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
             xvfb
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -1090,12 +1105,17 @@ jobs:
       - name: Install fuzz toolchain
         timeout-minutes: 5
         run: |
+          sudo bash .github/scripts/configure-ubuntu-mirror.sh
           # Only Ubuntu indexes are needed for this toolchain.
           test -s /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update \
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
             -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends clang ninja-build
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
