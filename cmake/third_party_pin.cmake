@@ -1,6 +1,6 @@
 # Single source of truth for the aggregate third-party revision. CI cache keys
 # hash this file, so moving the pin automatically selects a new binary cache.
-set(EVENGINE_THIRD_PARTY_PIN "59d57c4e6b9e4719347be55f2dcfcc4aafff3fb2" CACHE STRING
+set(EVENGINE_THIRD_PARTY_PIN "6eaff88f3ea87f5b622369570c030fc744781124" CACHE STRING
     "Pinned commit for the EVEngine/third-party aggregate checkout. The checkout is
      moved onto this commit at configure time (or verified against it), and every
      prebuilt third-party tree must be built from it.")
