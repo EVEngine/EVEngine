@@ -46,7 +46,7 @@ jobs:
           test -s /etc/apt/sources.list.d/ubuntu.sources
           apt_ok=0
           for i in 1 2 3; do
-            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+            timeout 120 sudo apt-get update --error-on=any -o Acquire::Retries=2 \
               -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
               -o Dir::Etc::sourceparts=- \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }

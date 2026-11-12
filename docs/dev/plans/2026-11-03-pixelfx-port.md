@@ -280,6 +280,33 @@ has different FeatherBurst behavior and is not substituted for native Intel CI
 evidence. Raw full planes and transcripts remain in ignored build/. Collect
 native Intel complete-scenario evidence before proposing any additional boundary.
 
+## Signed APT mirror failover follow-up
+
+At e4123ec21a, Linux SDK job131069841677 and WebGPU Debug job131086758341
+failed before compilation: Kernel.org IPv4 connections timed out and IPv6 was
+unreachable. APT update returned success with stale indexes, so the bounded
+update loop did not retry and installation subsequently exited100.
+
+For hosted mirror+file sources, retain the normalized registered replica and
+prefer the canonical HTTPS Ubuntu archive in the same mirror list, retaining
+the registered replica as the alternative. Use
+APT's built-in per-file mirror switching for both signed indexes and archives;
+do not add a custom downloader or weaken TLS, signatures, validity or hashes.
+Preserve the canonical alternative on repeated normalizer invocations. ARM ports
+retain their separate archive and never receive the x64 alternative. SDK and
+shared WebGPU update commands use --error-on=any so incomplete index refreshes
+cannot satisfy the update loop with stale metadata.
+
+Eight real-Bash contract cases cover idempotence, existing alternatives,
+signature/validity/suite preservation, ARM separation and unrelated sources.
+An isolated real APT run with an unreachable first HTTPS mirror fetched all four
+Noble suite indexes from the canonical alternative, verified each InRelease with
+the existing Ubuntu2018 keyring, and downloaded the real cmake-data package with
+APT's hash validation. With all mirrors unreachable, the same old-index state
+returned100 under --error-on=any. No packages were installed and no host sources
+were changed. Raw evidence remains under ignored build/pixelfx-validation.
+The18 proposed Intel pixel positions remain unapproved and unapplied.
+
 ## Validation and review gates
 
 Run against the final PR base/head:

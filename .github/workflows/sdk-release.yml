@@ -408,7 +408,7 @@ jobs:
           sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
           apt_ok=0
           for i in 1 2 3; do
-            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+            timeout 120 sudo apt-get update --error-on=any -o Acquire::Retries=2 \
               -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
             [ "$i" -lt 3 ] && sleep 20
           done
@@ -604,7 +604,7 @@ jobs:
         timeout-minutes: 25
         run: |
           sudo bash .github/scripts/configure-ubuntu-mirror.sh
-          sudo apt-get update -o Acquire::Retries=2
+          sudo apt-get update --error-on=any -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends cmake build-essential \
             mesa-vulkan-drivers libvulkan1 xvfb xauth libasound2t64 libx11-6 \
             libxi6 libxcursor1 libxrandr2 libxinerama1 libxss1 libgl1
@@ -763,7 +763,7 @@ jobs:
         timeout-minutes: 10
         run: |
           sudo bash .github/scripts/configure-ubuntu-mirror.sh
-          sudo apt-get update -qq
+          sudo apt-get update --error-on=any -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
             libxxf86vm1 libasound2t64 libgl1 \
@@ -995,7 +995,7 @@ jobs:
         timeout-minutes: 10
         run: |
           sudo bash .github/scripts/configure-ubuntu-mirror.sh
-          sudo apt-get update -qq
+          sudo apt-get update --error-on=any -qq
           sudo apt-get install -y --no-install-recommends \
             libx11-6 libxrandr2 libxi6 libxcursor1 libxss1 libxinerama1 \
             libxxf86vm1 libasound2t64 libgl1 \

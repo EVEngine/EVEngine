@@ -54,7 +54,7 @@ class UbuntuMirrorTests(unittest.TestCase):
             self.assertEqual(source.read_text(encoding="utf-8"), expected)
             self.assertEqual(
                 (root / "apt-mirrors.txt").read_text(encoding="utf-8"),
-                "https://mirrors.edge.kernel.org/ubuntu/ priority:1\n",
+                "https://mirrors.edge.kernel.org/ubuntu/ priority:1\n\nhttps://archive.ubuntu.com/ubuntu/\tpriority:0\n",
             )
             self.assertEqual(
                 legacy.read_text(encoding="utf-8"), "deb https://mirrors.edge.kernel.org/ubuntu/ noble main\n"
@@ -62,6 +62,32 @@ class UbuntuMirrorTests(unittest.TestCase):
             first = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
             self.assertEqual(self.run_script(root).returncode, 0)
             self.assertEqual(first, {p: p.read_bytes() for p in first})
+
+    def test_existing_canonical_https_alternative_is_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mirrorlist = root / "apt-mirrors.txt"
+            original = (
+                "https://mirrors.edge.kernel.org/ubuntu/\tpriority:1\n"
+                "https://archive.ubuntu.com/ubuntu/\tpriority:2\n"
+            )
+            mirrorlist.write_text(original, encoding="utf-8")
+            self.assertEqual(self.run_script(root).returncode, 0)
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), original.replace("priority:2", "priority:0"))
+            self.assertEqual(self.run_script(root).returncode, 0)
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), original.replace("priority:2", "priority:0"))
+
+    def test_canonical_only_https_list_receives_registered_alternative(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mirrorlist = root / "apt-mirrors.txt"
+            original = "https://archive.ubuntu.com/ubuntu/\tpriority:1\n"
+            mirrorlist.write_text(original, encoding="utf-8")
+            self.assertEqual(self.run_script(root).returncode, 0)
+            expected = original.replace("priority:1", "priority:0") + "\nhttps://mirrors.edge.kernel.org/ubuntu/\tpriority:1\n"
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), expected)
+            self.assertEqual(self.run_script(root).returncode, 0)
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), expected)
 
     def test_ports_use_the_separate_signed_arm_archive(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -85,6 +111,26 @@ class UbuntuMirrorTests(unittest.TestCase):
             first = source.read_bytes()
             self.assertEqual(self.run_script(root).returncode, 0)
             self.assertEqual(source.read_bytes(), first)
+
+    def test_ports_mirrorlist_never_receives_x64_archive(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mirrorlist = root / "apt-mirrors.txt"
+            mirrorlist.write_text("http://ports.ubuntu.com/ubuntu-ports/\n", encoding="utf-8")
+            self.assertEqual(self.run_script(root).returncode, 0)
+            expected = "https://mirrors.ocf.berkeley.edu/ubuntu-ports/\n"
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), expected)
+            self.assertEqual(self.run_script(root).returncode, 0)
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), expected)
+
+    def test_unrelated_mirrorlist_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            mirrorlist = root / "apt-mirrors.txt"
+            original = "https://packages.microsoft.com/ubuntu/24.04/prod\n"
+            mirrorlist.write_text(original, encoding="utf-8")
+            self.assertEqual(self.run_script(root).returncode, 0)
+            self.assertEqual(mirrorlist.read_text(encoding="utf-8"), original)
 
     def test_unrelated_repositories_are_unchanged(self):
         with tempfile.TemporaryDirectory() as directory:
