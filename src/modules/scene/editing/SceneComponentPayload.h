@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/ProviderRegistry.h"
 
 
 #include "scene/editing/SceneEditingTypes.h"
@@ -139,11 +140,19 @@ public:
         const SceneComponentPayloadRef& component) const = 0;
 };
 
-/** @brief Non-owning registry and scene-facing router for component payload providers. */
+/** @brief Owning registry and scene-facing router for component payload providers. */
 class EVENGINE_API_BACKENDS SceneComponentPayloadRegistry final : public ISceneComponentPayloadTarget {
 public:
-    /** @brief Register one provider; component types must be non-empty and unique. */
-    Result<void> registerProvider(ISceneComponentPayloadProvider* provider);
+    /** @brief Construct a registry owning its provider publications. */
+    SceneComponentPayloadRegistry()                                                = default;
+    SceneComponentPayloadRegistry(const SceneComponentPayloadRegistry&)            = delete;
+    SceneComponentPayloadRegistry& operator=(const SceneComponentPayloadRegistry&) = delete;
+    /** @brief Share ownership of one provider; component types must be non-empty and unique.
+     * @lifetime Dispatch takes an owning snapshot; unregister affects subsequent calls.
+     * Returned property/operation pointers are immediate borrows, invalid after unregister or registry destruction.
+     * @thread Main/editor thread only, including callbacks. @reentrancy Callbacks may unregister providers.
+     */
+    [[nodiscard]] Result<void> registerProvider(std::shared_ptr<ISceneComponentPayloadProvider> provider);
     /** @brief Remove a provider only when the exact registered instance matches. */
     SceneComponentChange unregisterProvider(ISceneComponentPayloadProvider* provider);
 
@@ -159,8 +168,8 @@ public:
         const SceneComponentPayloadRef& component) const override;
 
 private:
-    Result<ISceneComponentPayloadProvider*> resolve(const SelectionSnapshot& selection) const;
-    std::map<std::string, ISceneComponentPayloadProvider*> providers_;
+    Result<std::shared_ptr<ISceneComponentPayloadProvider>>    resolve(const SelectionSnapshot& selection) const;
+    eve::cap::ProviderRegistry<ISceneComponentPayloadProvider> providers_;
 };
 
 /** @brief Build a property selection for one or more homogeneous component references. */

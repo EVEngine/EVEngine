@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "graphics/webgpu/wgpu_types.h"
 #include "graphics/webgpu/Capabilities.h"
 
@@ -42,7 +44,7 @@ struct DeviceDone {
  * typed stages, replacing the scattered std::atomic<bool> flags and
  * waitForAdapter/waitForDevice helpers in Graphics.cpp.
  */
-class InitFlow {
+class EVENGINE_API_BACKENDS InitFlow {
 public:
     /** @brief Create a wgpu Instance (native requests the TimedWaitAny feature). */
     static InstanceDone createInstance();

@@ -7,6 +7,8 @@
 #include <iostream>
 
 #include "GraphicsParitySupport.h"
+#include "common/Capability.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/RenderControl.h"
 #include "graphics/webgpu/Graphics.h"
@@ -22,7 +24,61 @@ using namespace eve::graphics::webgpu;
 namespace {
 Texture* marker(std::uintptr_t value) { return reinterpret_cast<Texture*>(value); }
 
+class UnavailableRayTracing final : public IRayTracing {
+    template <class T>
+    static eve::Result<T> unavailable() {
+        return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "test provider"));
+    }
+
+public:
+    bool                        isAvailable() const override { return false; }
+    RayTracingCaps              caps() const override { return {}; }
+    eve::Result<PathSceneToken> preparePathScene(eve::graphics::Graphics*, const PathSceneDescription&) override {
+        return unavailable<PathSceneToken>();
+    }
+    eve::Result<PathSceneToken> updatePathInstances(PathSceneToken, std::span<const PathInstance>) override {
+        return unavailable<PathSceneToken>();
+    }
+    eve::Result<void> renderPaths(PathSceneToken, Canvas*, const PathTraceView&) override {
+        return unavailable<void>();
+    }
+    eve::Result<PathFrameToken> preparePathFrame(PathSceneToken, uint32_t, uint32_t) override {
+        return unavailable<PathFrameToken>();
+    }
+    eve::Result<Texture*> recordPathFrame(PathSceneToken, PathFrameToken, const PathTraceView&) override {
+        return unavailable<Texture*>();
+    }
+    eve::Result<void> applyReflections(eve::graphics::Graphics*, Texture*, Texture*, Texture*, Canvas*,
+                                       const glm::mat4&, const glm::mat4&, const glm::vec3&) override {
+        return unavailable<void>();
+    }
+    eve::Result<void>     rebuildScene() override { return unavailable<void>(); }
+    eve::Result<uint32_t> addTriangleMesh(const float*, int, const uint32_t*, int, const glm::mat4&) override {
+        return unavailable<uint32_t>();
+    }
+    eve::Result<uint32_t> addMesh(Mesh*, const glm::mat4&) override { return unavailable<uint32_t>(); }
+    void                  clearScene() override {}
+};
+
 }  // namespace
+
+TEST_CASE("graphics.webgpu.rayTracingDependencyBindsOnceWithPresentAndAbsentProviders") {
+    UnavailableRayTracing provider;
+    struct Restore {
+        IRayTracing* previous;
+        ~Restore() { eve::cap::provide<IRayTracing>(previous); }
+    } restore{eve::cap::query<IRayTracing>()};
+    eve::cap::provide<IRayTracing>(nullptr);
+    webgpu::Graphics absent;
+    REQUIRE(!absent.rayTracingService());
+    eve::cap::provide<IRayTracing>(&provider);
+    webgpu::Graphics present;
+    auto             bound = present.rayTracingService();
+    REQUIRE(bound.has_value());
+    REQUIRE(&bound->get() == &provider);
+    CHECK(!bound->get().isAvailable());
+    CHECK(!absent.rayTracingService());
+}
 
 TEST_CASE("graphics.webgpu.baselineLimitUsesForwardPasses") {
     webgpu::Graphics gfx;

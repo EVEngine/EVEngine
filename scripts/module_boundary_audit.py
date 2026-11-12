@@ -23,7 +23,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import fnmatch
 import json
 import os
 import re
@@ -31,10 +30,10 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import check_module_manifest
 import utf8_stdio
 
 REPO = Path(__file__).resolve().parent.parent
-MANIFEST_DIR = REPO / "cmake" / "module_manifest"
 SRC = REPO / "src"
 
 DECLARE_OPEN = "eve_declare_module("
@@ -52,7 +51,7 @@ VALUE_KEYS = {
     "THIRDPARTY",
     "GROUP",
 }
-FLAG_KEYS = {"REQUIRED", "CORE"}
+FLAG_KEYS = {"REQUIRED", "CORE", "HEADER_ONLY"}
 
 # Files that *define* the capability primitives rather than use them.
 PRIMITIVE_FILES = {SRC / "engine" / "common" / "Capability.h"}
@@ -257,8 +256,9 @@ def _declare_bodies(text: str) -> list[str]:
 def parse_manifests() -> list[Module]:
     modules: list[Module] = []
     by_name: dict[str, Module] = {}
-    for path in sorted(MANIFEST_DIR.glob("*.cmake")):
+    for path in check_module_manifest.manifest_files(REPO / "cmake/module_manifest.cmake"):
         text = path.read_text(encoding="utf-8", errors="replace")
+        text = re.sub(r"(?m)#.*$", "", text)
         for body in _declare_bodies(text):
             mod: Module | None = None
             key: str | None = None
@@ -297,60 +297,10 @@ def parse_manifests() -> list[Module]:
     return modules
 
 
-def resolve_root(mod: Module) -> Path | None:
-    candidates: list[Path] = []
-    if mod.src_dir:
-        candidates.append(SRC / "modules" / mod.src_dir)
-    if mod.name in ("common", "cmdline", "devtools"):
-        candidates.append(SRC / "engine" / mod.name)
-    candidates.append(SRC / "modules" / mod.name)
-    for cand in candidates:
-        if cand.is_dir():
-            return cand
-    return None
-
-
-# --- Ports of cmake/modules.cmake so the audit sees the build's real dirs. ---
-
-PACKAGE_ROOT_OVERRIDES = {
-    "biome": "procgen/biome",
-    "domain_gizmo": "editor/gizmo",
-    "localization": "i18n",
-    "material": "graphics/material",
-    "lighting": "graphics/lighting",
-    "input": "editor/input",
-    "queue": "editor/queue",
-    "level": "map/level",
-    "sceneloader": "scene/loader",
-}
-
-SATELLITE_FACETS = ("streaming", "graphics", "physics", "procgen", "import", "replay", "scene", "thread")
-
-
-def eve_package_root(stem: str) -> str:
-    return PACKAGE_ROOT_OVERRIDES.get(stem, stem)
-
-
-def eve_default_module_dir(name: str) -> str:
-    """Mirror of eve_default_module_dir() in cmake/modules.cmake."""
-    for suffix, facet in (("_graphics_editing", "graphics_editing"), ("_editing", "editing"), ("_editor", "editor")):
-        if name.endswith(suffix):
-            stem = name[: -len(suffix)]
-            return f"{eve_package_root(stem)}/{facet}"
-    if name == "buildingfx":
-        return "building/fx"
-    for facet in SATELLITE_FACETS:
-        suffix = f"_{facet}"
-        if name.endswith(suffix):
-            stem = name[: -len(suffix)]
-            return f"{eve_package_root(stem)}/{facet}"
-    return eve_package_root(name)
-
-
 def compute_scan_dirs(mods: list[Module]) -> None:
     """Fill mod.scan_dir for every module, exactly as the build resolves it."""
     for mod in mods:
-        mod.scan_dir = mod.src_dir or eve_default_module_dir(mod.name)
+        mod.scan_dir = mod.src_dir or check_module_manifest.default_module_dir(mod.name)
         if mod.name in ("common", "cmdline", "devtools"):
             mod.base = SRC / "engine"
         else:
@@ -592,43 +542,21 @@ def capability_matrix(mods: list[Module]) -> dict:
     }
 
 
-def load_catalogue() -> list[dict]:
-    """Retired JSON catalogue — always empty; coverage is report-only."""
-    return []
+def finding_status(check_id: str) -> str:
+    """Separate mechanical facts from review candidates and missing evidence."""
+    if check_id == "B0":
+        return "FAIL"
+    if check_id == "E2-OPT":
+        return "UNVERIFIED"
+    return "CANDIDATE"
 
 
-def catalogue_scope_match(mod: Module, entry: dict) -> bool:
-    """True when one of the module's own source files falls in the entry scope.
-
-    A blanket scope such as ``src/**`` is a policy statement covering the whole
-    tree; it is deliberately not accepted as per-module evidence.
-    """
-    scope = entry.get("scope", "")
-    if not scope or scope in ("src/**", "src/**/*"):
-        return False
-    return any(fnmatch.fnmatch(path, scope) for path in mod.source_paths)
-
-
-def catalogue_rules_for(mod: Module, catalogue: list[dict]) -> set[str]:
-    """Rules whose entry is scoped to this module (blanket `src/**` excluded)."""
-    out: set[str] = set()
-    for entry in catalogue:
-        scope = entry.get("scope", "")
-        if scope in ("src/**", "src/**/*"):
-            continue
-        if catalogue_scope_match(mod, entry):
-            out.add(entry.get("rule", ""))
-    return out
-
-
-def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str, str]]:
+def findings(mod: Module, matrix: dict) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
 
     if mod.root is None:
         out.append(("B0", "manifest 声明了模块，但找不到对应源码目录"))
         return out
-
-    rules = catalogue_rules_for(mod, catalogue)
 
     # E1/E2: capabilities this module touches that nobody declares, or that it
     # declares but never provides.
@@ -637,7 +565,7 @@ def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str
         out.append(
             (
                 "E2-ORPHAN",
-                f"声明但仓内无人提供（in-tree 恒缺席）: {', '.join(orphan_decl)}",
+                f"扫描未找到仓内提供方（可能经别名、模板或外部插件提供）: {', '.join(orphan_decl)}",
             )
         )
 
@@ -657,7 +585,7 @@ def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str
         if not matrix[c]["consumed_by"] and not mod.consumes.get(c)
     ]
     if unconsumed:
-        out.append(("E1-DEAD", f"提供但无人消费: {', '.join(unconsumed)}"))
+        out.append(("E1-DEAD", f"扫描未找到仓内消费方: {', '.join(unconsumed)}"))
 
     if mod.unresolved_caps:
         out.append(
@@ -686,30 +614,29 @@ def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str
             )
         )
 
-    if mod.links and "link" not in rules:
+    if mod.links:
         out.append(
             (
                 "E3-LINK",
-                f"注册/使用 Link 种类（{len(mod.links)} 处）但 catalogue 无本模块的 link 条目: "
+                f"注册/使用 Link 种类（{len(mod.links)} 处）；需人工核对源码与测试中的所有权、销毁顺序和 stale 契约: "
                 + "; ".join(mod.links[:3]),
             )
         )
 
-    if mod.ecs and "ecs-system" not in rules:
+    if mod.ecs:
         out.append(
             (
                 "E3-ECS",
-                f"定义 ECS 系统契约（{len(mod.ecs)} 处）但 catalogue 无本模块的 ecs-system 条目: "
+                f"定义 ECS 系统契约（{len(mod.ecs)} 处）；需人工核对 View、读写集、结构变更与执行阶段: "
                 + "; ".join(mod.ecs[:3]),
             )
         )
 
-    if mod.optional_deps and "optional-capability" not in rules:
+    if mod.optional_deps:
         out.append(
             (
                 "E2-OPT",
-                f"声明 OPTIONAL_DEPS（{', '.join(mod.optional_deps)}）但 catalogue 无本模块级的 "
-                "optional-capability 证据（present/absent 探针）",
+                f"声明 OPTIONAL_DEPS（{', '.join(mod.optional_deps)}）；本工具未验证构建及运行产物，需提供 present/absent 探针证据",
             )
         )
 
@@ -717,7 +644,7 @@ def findings(mod: Module, matrix: dict, catalogue: list[dict]) -> list[tuple[str
         out.append(
             (
                 "M2",
-                f"{len(mod.homemade_registry)} 处自造 provider 注册表迹象: "
+                f"{len(mod.homemade_registry)} 处 provider 注册/句柄语法信号（需核对是否复用既有机制）: "
                 + "; ".join(mod.homemade_registry[:4]),
             )
         )
@@ -768,16 +695,17 @@ def print_capabilities(mods: list[Module], matrix: dict) -> None:
         print(f"| `{cap}` | {key_cell} | {declared} | {providers} | {consumers} |")
 
 
-def print_findings(mods: list[Module], matrix: dict, catalogue: list[dict]) -> None:
+def print_findings(mods: list[Module], matrix: dict) -> None:
     by_id: dict[str, int] = defaultdict(int)
     modules_hit = 0
     for mod in mods:
-        items = findings(mod, matrix, catalogue)
+        items = findings(mod, matrix)
         if not items:
             continue
         modules_hit += 1
         for cid, _ in items:
             by_id[cid] += 1
+    print("信号仅供取证：CANDIDATE 需人工审查；UNVERIFIED 缺少运行证据；均不代表 FAIL。\n")
     print(f"# 清单发现（{modules_hit}/{len(mods)} 个模块）\n")
     print("| 检查项 | 命中模块数 |")
     print("| --- | --- |")
@@ -785,12 +713,12 @@ def print_findings(mods: list[Module], matrix: dict, catalogue: list[dict]) -> N
         print(f"| {cid} | {n} |")
     print()
     for mod in sorted(mods, key=lambda m: m.name):
-        items = findings(mod, matrix, catalogue)
+        items = findings(mod, matrix)
         if not items:
             continue
         print(f"\n## {mod.name}  (L{mod.layer or '?'}, {mod.root.relative_to(REPO).as_posix() if mod.root else '?'})")
         for cid, detail in items:
-            print(f"- [{cid}] {detail}")
+            print(f"- [{finding_status(cid)}][{cid}] {detail}")
 
 
 def main() -> int:
@@ -819,10 +747,12 @@ def main() -> int:
             scan_module(mod, sources[mod.name], known)
 
     matrix = capability_matrix(mods)
-    catalogue = load_catalogue()
 
     if args.json:
         payload = {
+            "schema_id": "eve.module-boundary-audit",
+            "schema_version": 2,
+            "unknown_fields": "ignore",
             "modules": [
                 {
                     "name": m.name,
@@ -844,10 +774,9 @@ def main() -> int:
                     "homemade_registry": m.homemade_registry,
                     "hot_candidates": m.hot_candidates,
                     "owning_return_census": m.expensive_without_cost,
-                    "catalogue_rules": sorted(catalogue_rules_for(m, catalogue)),
                     "cost_tags": m.cost_tags,
                     "findings": [
-                        {"id": cid, "detail": d} for cid, d in findings(m, matrix, catalogue)
+                        {"id": cid, "status": finding_status(cid), "detail": d} for cid, d in findings(m, matrix)
                     ],
                 }
                 for m in sorted(mods, key=lambda x: x.name)
@@ -861,7 +790,7 @@ def main() -> int:
     if args.capabilities:
         print_capabilities(mods, matrix)
     if args.findings:
-        print_findings(mods, matrix, catalogue)
+        print_findings(mods, matrix)
     if not (args.capabilities or args.findings or args.json):
         print_summary(mods, matrix)
     return 0
