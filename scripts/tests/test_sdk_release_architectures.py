@@ -102,12 +102,13 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
         for directory in (
             "src/engine/common", "external/zeroerr/include/zeroerr", "examples/basic",
             "assets/styles", "tools/eve-mcp", ".cursor/skills/evescript", "cmake/sdk",
-            "cmake/sdk/asset-kits",
+            "cmake/sdk/asset-kits", "scripts", "canonical/vkbuilder",
         ):
             (source / directory).mkdir(parents=True, exist_ok=True)
         for filename in ("LICENSE", "LICENSE-COMMERCIAL", "LICENSE-OPENSOURCE",
                          ".cursor/skills/evescript/SKILL.md", "cmake/sdk/llms.txt",
-                         "cmake/sdk/asset-kits/catalog.json"):
+                         "cmake/sdk/asset-kits/catalog.json", "scripts/apple_package.py", "scripts/utf8_stdio.py",
+                         "canonical/vkbuilder.hpp", "canonical/vkbuilder/framegraph.hpp"):
             (source / filename).write_text("fixture", encoding="utf-8")
         for filename in ("EVEngineConfig.cmake.in", "EVEnginePlugin.cmake"):
             shutil.copyfile(ROOT / "cmake" / filename, source / "cmake" / filename)
@@ -133,6 +134,7 @@ set(EVENGINE_MAJOR_VERSION 1)
 set(EVENGINE_MINOR_VERSION 2)
 set(EVENGINE_PATCH_VERSION 3)
 set(EVE_ENABLED_MODULES "")
+set(EVENGINE_VKBUILDER_INCLUDE_DIR "{source.as_posix()}/canonical")
 include("{(ROOT / 'cmake/install_sdk.cmake').as_posix()}")
 """, encoding="utf-8")
         dependency = self.root / "resolved x86_64 dependency prefix"
@@ -149,6 +151,12 @@ include("{(ROOT / 'cmake/install_sdk.cmake').as_posix()}")
         ):
             result = subprocess.run(command, capture_output=True, encoding="utf-8", check=False)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((installed / "include/vkbuilder.hpp").read_bytes(),
+                         (source / "canonical/vkbuilder.hpp").read_bytes())
+        self.assertEqual((installed / "include/vkbuilder/framegraph.hpp").read_bytes(),
+                         (source / "canonical/vkbuilder/framegraph.hpp").read_bytes())
+        self.assertTrue((installed / "share/eve/tools/apple_package.py").is_file())
+        self.assertTrue((installed / "share/eve/tools/utf8_stdio.py").is_file())
         self.assertEqual((installed / "lib/libfixture.dylib").read_text(encoding="utf-8"), "x86_64")
         self.assertEqual((installed / "include/squirrel.h").read_text(encoding="utf-8"), "x86_64 header")
         self.assertEqual((installed / "share/eve/TARGET_ARCHITECTURE").read_text(encoding="utf-8").strip(), "x86_64")

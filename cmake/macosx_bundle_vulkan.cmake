@@ -6,7 +6,7 @@
 #   <prefix>/bin/eve
 #   <prefix>/lib/libvulkan.1.dylib    loader (LC_ID_DYLIB -> @rpath/libvulkan.1.dylib)
 #   <prefix>/lib/libMoltenVK.dylib    ICD   (LC_ID_DYLIB -> @rpath/libMoltenVK.dylib)
-#   <prefix>/lib/MoltenVK_icd.json    ICD manifest (library_path -> libMoltenVK.dylib)
+#   <prefix>/lib/MoltenVK_icd.json    ICD manifest (library_path -> ./libMoltenVK.dylib)
 #
 # eve is rebased to load "@rpath/libvulkan.1.dylib" and carries
 # INSTALL_RPATH "@loader_path/../lib" (set in install_sdk.cmake), so the whole
@@ -73,7 +73,7 @@ else()
     file(READ "${_eve_icd}" _eve_icd_json)
     string(REGEX REPLACE
         "\"library_path\"[ \t\r\n]*:[ \t\r\n]*\"[^\"]*\""
-        "\"library_path\" : \"libMoltenVK.dylib\""
+        "\"library_path\" : \"./libMoltenVK.dylib\""
         _eve_icd_json "${_eve_icd_json}")
     file(WRITE "${_eve_lib}/MoltenVK_icd.json" "${_eve_icd_json}")
 endif()

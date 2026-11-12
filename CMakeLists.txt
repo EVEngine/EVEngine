@@ -66,6 +66,7 @@ endif()
 
 project(EVEngine)
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/platforms/macosx_deployment.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/native_arm64.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/native_macos_x86_64.cmake")
 
@@ -282,8 +283,7 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
-    include("${CMAKE_SOURCE_DIR}/third-party/cmake/engine_headers.cmake")
-    eve_prepare_vkbuilder_headers()
+    include("${CMAKE_SOURCE_DIR}/cmake/vkbuilder_headers.cmake")
     include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
     load_image_webp()
     load_asset_zstd()

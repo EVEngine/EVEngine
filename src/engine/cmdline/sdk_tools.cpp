@@ -12,6 +12,10 @@
 
 #include <zlib.h>
 
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
 #if defined(_WIN32)
 #include <windows.h>
 #include <process.h>
@@ -304,6 +308,15 @@ std::string findSdkRoot(const std::string& sdkArg) {
     if (GetModuleFileNameW(nullptr, buf, MAX_PATH) != 0) {
         const auto exeDir = std::filesystem::path(buf).parent_path();
         if (isSdkRoot(exeDir.parent_path())) return exeDir.parent_path().string();
+    }
+#elif defined(__APPLE__)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    std::vector<char> executable(size);
+    if (size != 0 && _NSGetExecutablePath(executable.data(), &size) == 0) {
+        const auto resolved = std::filesystem::canonical(executable.data(), ec);
+        if (!ec && isSdkRoot(resolved.parent_path().parent_path()))
+            return resolved.parent_path().parent_path().string();
     }
 #else
     char buf[4096] = {0};

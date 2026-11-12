@@ -32,5 +32,10 @@ for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -products * -requires %EV
 echo error: %EVE_VCVARS% not found via vswhere >&2
 exit /b 1
 :run
+rem GNU Make exports flags and command-line overrides in its own syntax.
+rem Native tools such as NMake also read MAKEFLAGS, but parse a different
+rem grammar. Keep the isolation inside setlocal; explicit build args survive.
+set "MAKEFLAGS="
+set "MFLAGS="
 %EVE_MSVC_ARGS%
 exit /b %ERRORLEVEL%

@@ -2,14 +2,38 @@
 
 This tree is the iOS packaging template inside `dist/eve-sdk/ios[-debug]`.
 
-On a **macOS dev machine** with Xcode:
+Use a macOS host SDK of the same version and Xcode command line tools (including
+Python 3). Script-only games reuse the prebuilt device `.app`; no engine compile
+or Vulkan SDK install is needed. MoltenVK is already linked/embedded by the engine
+build; consumers must not inject a second implementation.
 
-1. Use the prebuilt `bin/eve.app` (or rebuild packaging around the SDK host) as the app shell.
-2. Place game assets under the app's `game/` resources (see `game-shell/`).
-3. Ensure MoltenVK is embedded as in the engine build.
-4. Sign and archive for device / App Store.
+```sh
+/path/to/macosx-sdk/bin/eve build ios ./game --sdk /path/to/ios-sdk \
+  -o ../ios-output --name MyGame --bundle-id com.example.mygame \
+  --sign-identity '<certificate SHA-1 or exact name>' \
+  --profile /path/to/development.mobileprovision
+```
 
-Native plugins are typically embeddable `.dylib` / frameworks loaded via `eve.Plugins().load(...)`.
+The output contains a development-signed `.app` and `.ipa`. The certificate/private
+key must be in an unlocked keychain; the profile must be unexpired and authorize
+that identity and bundle ID. Add `--device <provisioned-device-UDID>` to install and
+launch on a trusted, unlocked device with Developer Mode enabled. Output must be a
+new directory outside the game and SDK. Failed signing does not publish an app.
+
+For assembly without a certificate, replace signing options with `--unsigned`.
+This output cannot run on a physical device and produces no signed IPA. For a
+simulator-built SDK use `--simulator`; the published device SDK cannot run on a
+simulator. Development signing is currently the supported device path; App Store
+and distribution exports require a separate workflow.
+
+Formal release CI requires the existing `IOS_CERTIFICATE_P12_BASE64`,
+`IOS_CERTIFICATE_PASSWORD`, `IOS_DEVELOPMENT_TEAM` and
+`IOS_PROVISIONING_PROFILE_BASE64` secrets, containing a development identity and
+profile. It signs a consumer game/IPA rather than trusting the shell's signature.
+Physical-device acceptance is available through the manual `Apple SDK device
+acceptance` workflow: configure a dedicated self-hosted `ios-device` Mac runner,
+connect the provisioned device and set `IOS_TEST_DEVICE_UDID`. The workflow checks
+startup output and continued process liveness. Simulator CI remains independent.
 
 ## iOS test app (zeroerr suite)
 

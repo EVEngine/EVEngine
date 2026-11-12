@@ -739,6 +739,10 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Install Android OpenSSL POSIX tools
+        timeout-minutes: 15
+        uses: ./.github/actions/setup-android-openssl
+
       - name: Setup Java 17
         timeout-minutes: 10
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0

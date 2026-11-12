@@ -291,10 +291,13 @@ function(check_third_party_project name repo)
             -DEVENGINE_BUILD_PLATFORM=macosx
             -DCMAKE_PROJECT_EVEngineDeps_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/native_macos_x86_64.cmake)
     endif()
-    if(BUILD_PLATFORM STREQUAL "macosx" AND CMAKE_OSX_ARCHITECTURES)
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        if(CMAKE_OSX_ARCHITECTURES)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES})
+        endif()
+        if(CMAKE_OSX_DEPLOYMENT_TARGET)
+            list(APPEND _eve_tp_cmake_args -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+        endif()
     endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.

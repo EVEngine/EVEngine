@@ -1,0 +1,4 @@
+# Dedicated physical-device acceptance runner; see platform/ios/README.md.
+self-hosted-runner:
+  labels:
+    - ios-device

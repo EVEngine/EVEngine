@@ -16,6 +16,31 @@ def jobs(text):
 
 
 class WorkflowLayoutTests(unittest.TestCase):
+    def test_all_android_source_jobs_prepare_complete_posix_tools(self):
+        setup = "uses: ./.github/actions/setup-android-openssl"
+        covered = set()
+        for filename in ("ci.yml", "release-ci.yml", "sdk-release.yml"):
+            workflow = (WORKFLOWS / filename).read_text(encoding="utf-8")
+            body = workflow.split("\njobs:\n", 1)[1]
+            for match in re.finditer(r"(?ms)^  ([\w-]+):\n(.*?)(?=^  [\w-]+:\n|\Z)", body):
+                name, job = match.groups()
+                build = re.search(r"\bmake\s+(?:build|sdk)/android(?:-debug)?\b", job)
+                if build is None:
+                    continue
+                with self.subTest(workflow=filename, job=name):
+                    self.assertIn("runs-on: windows-latest", job)
+                    self.assertIn(setup, job)
+                    self.assertLess(job.index(setup), build.start())
+                covered.add((filename, name))
+        self.assertEqual(covered, {("ci.yml", "android"), ("release-ci.yml", "android-release"),
+                                   ("sdk-release.yml", "android")})
+        action = (ROOT / ".github/actions/setup-android-openssl/action.yml").read_text(encoding="utf-8")
+        self.assertIn("install: perl make", action)
+        self.assertIn("-MIPC::Cmd -MLocale::Maketext::Simple", action)
+        self.assertIn('echo "EVE_OPENSSL_MSYS2_ROOT=$TOOL_ROOT" >> "$GITHUB_ENV"', action)
+        release = (WORKFLOWS / "release-ci.yml").read_text(encoding="utf-8")
+        self.assertIn("uses: ./.github/workflows/ci.yml", release)
+
     def test_daily_graph_has_no_release_only_jobs(self):
         daily = (WORKFLOWS / "ci.yml").read_text(encoding="utf-8")
         self.assertFalse(jobs(daily) & RELEASE_ONLY)

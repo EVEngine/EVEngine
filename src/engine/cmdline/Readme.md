@@ -48,7 +48,7 @@ Cmdline
 
 构建（build）：
 `eve build <platform> [game-path]` 把当前游戏（或指定目录）构建到对应平台。
-平台名：android（其它平台待支持，桌面目标可用 `eve package`）；默认 release，
+平台名：android、macos、ios；Android 默认 release，
 加 `-d` 为 debug。完全基于打包好的 SDK，不依赖源码、Makefile、cmake 或 NDK：
 SDK 自带 android 的 APK 工程模板（`platform/apk`）、预编译 native 库
 （`lib/*.so`）和演示游戏壳（`platform/game-shell`）。
@@ -102,3 +102,59 @@ frame count. Readers ignore unknown keys and reject unsupported versions; versio
 1 has no earlier format to migrate. These hashes identify contents, not signatures.
 Thirty frames are startup smoke acceptance; project-specific gameplay acceptance
 remains additional verification.
+
+### Apple SDK consumer apps
+
+Apple assembly requires macOS, Xcode command line tools (including `/usr/bin/python3`),
+and the SDK matching the target architecture. No CMake, Ninja or engine rebuild is
+needed for script-only games. The host CLI passes an argv vector to the canonical
+`share/eve/tools/apple_package.py` installed in the target SDK; it does not invoke a
+shell. Android's existing Gradle build path is unchanged.
+
+```sh
+eve build macos ./game --sdk /path/to/macosx-arm64 -o ../mac-output \
+  --name MyGame --bundle-id com.example.mygame --version 1.0.0
+
+eve build ios ./game --sdk /path/to/ios -o ../ios-output \
+  --name MyGame --bundle-id com.example.mygame \
+  --sign-identity '<certificate SHA-1 or exact name>' --profile /path/to/development.mobileprovision
+```
+
+macOS produces a local ad-hoc signed `.app`; this is not Developer ID distribution
+or notarization. Its dylibs live in `Contents/Frameworks`, its game and MoltenVK
+manifest in `Contents/Resources`. The runtime reads that manifest without modifying
+the signed bundle. Relative driver paths remain valid after relocation.
+
+iOS produces a development-signed `.app` and `.ipa`. A valid profile must authorize
+the bundle ID, signing certificate and optional `--device <UDID>`. The certificate
+must have its private key in an unlocked keychain. `--device` installs and launches
+the app through Xcode's `devicectl`; trust, Developer Mode and an unlocked device
+remain prerequisites. Distribution/App Store export is a separate future workflow.
+`--unsigned` explicitly assembles an unsigned app only and cannot install it.
+`--simulator` requires a simulator-built SDK and uses ad-hoc signing; a device SDK
+is rejected. The regular release iOS SDK remains device-only.
+
+Apple apps use the selected SDK configuration; Android-only `-d`/`-r` flags are rejected.
+The default output is `<game-name>-<platform>` beside the game directory.
+Output must be a new directory outside both inputs. The helper owns a private
+sibling staging directory; failed assembly/signing never publishes a partial app.
+The game requires `config.nut` and `main.nut`; resource symlinks are rejected.
+Bundle settings are applied before nested code and then the app are signed.
+
+Consumer gates use `scripts/test_apple_sdk.py`. Both macOS architectures build and
+run the installed SDK's `.app`, observe the game startup marker and verify the
+signature again after running. The simulator gate installs a simulator SDK, then
+uses the candidate macOS CLI to assemble, sign, install and run a new consumer game.
+Formal releases additionally require development signing secrets and validate a
+signed device app/IPA; missing credentials fail this gate. PR previews exercise
+unsigned device assembly and simulator runtime without requiring private keys.
+The manual `Apple SDK device acceptance` workflow uses an isolated self-hosted
+`ios-device` runner and `IOS_TEST_DEVICE_UDID` repository variable to observe the
+published SDK game on a physical device. This hardware gate must be run separately;
+a hosted simulator run does not prove physical-device acceptance.
+
+Boundary review (cmdline, Tier C): this change adds only a synchronous CLI/tool
+boundary. No ECS components, Links, events, script bindings, capabilities or runtime
+module dependency edges change. Process inputs are owning argv strings; child
+exit status is checked. Signing/profile data is local to the packaging process;
+no additional persistent engine schema or API catalogue is introduced.

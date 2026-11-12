@@ -26,10 +26,19 @@ to both SDK and packaged games; physical GPU defaults stay unchanged. An explici
 `MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS` setting takes precedence. The SDK's real
 30-frame package acceptance remains mandatory in either mode.
 
-For an `.app` bundle, copy the same three Vulkan files into
-`Contents/Frameworks/` (the bootstrap also checks `../Frameworks` next to the
-executable) and set `Contents/MacOS/eve`'s rpath to
-`@executable_path/../Frameworks`.
+Build a locally signed app with the macOS host SDK:
+
+```sh
+eve build macos ./game --sdk /path/to/macosx-arm64 -o ../mac-output \
+  --name MyGame --bundle-id com.example.mygame
+```
+
+The command needs Xcode command line tools and their Python 3 interpreter.
+It places dylibs in `Contents/Frameworks`, and game resources plus
+`MoltenVK_icd.json` in `Contents/Resources`, then signs nested code before the app.
+Startup never modifies the signed bundle. The output directory must be new and
+outside the game and SDK. The result uses ad-hoc signing for local testing;
+Developer ID signing, notarization and App Store submission are separate.
 
 Download the matching `eve-sdk-macosx-arm64-<version>.zip` or
 `eve-sdk-macosx-x86_64-<version>.zip`. `share/eve/TARGET_PLATFORM` is `macosx`;

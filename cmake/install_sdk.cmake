@@ -327,6 +327,13 @@ if(BUILD_PLATFORM STREQUAL "android")
     endif()
 endif()
 
+# Public graphics headers depend on VKBuilder. Ship the same canonical implementation
+# selected for compilation, including its companion headers; no generated overrides.
+if(EVENGINE_VKBUILDER_INCLUDE_DIR)
+    install(FILES "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" DESTINATION include)
+    install(DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder" DESTINATION include)
+endif()
+
 # ---- Selected third-party headers needed to compile plugins (SSQ bindings) ----
 set(_eve_tp_inc "${_eve_sdk_tp_prefix}")
 get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
@@ -401,3 +408,11 @@ if(BUILD_PLATFORM STREQUAL "android")
     install(SCRIPT "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake")
 endif()
 
+
+# Apple consumer assembly uses only Python's standard library and Xcode tools.
+# Install in target SDKs too: the macOS host CLI can use --sdk <ios-sdk>.
+if(BUILD_PLATFORM STREQUAL "macosx" OR BUILD_PLATFORM STREQUAL "ios")
+    install(FILES "${CMAKE_SOURCE_DIR}/scripts/apple_package.py"
+                  "${CMAKE_SOURCE_DIR}/scripts/utf8_stdio.py"
+        DESTINATION share/eve/tools)
+endif()

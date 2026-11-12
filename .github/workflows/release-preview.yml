@@ -9,12 +9,22 @@ on:
       - '.github/workflows/webgpu-sdk.yml'
       - '.github/workflows/arm64-sdk.yml'
       - '.github/actions/setup-webgpu-browser/**'
+      - '.github/actions/setup-android-openssl/**'
       - '.github/scripts/*sdk*'
       - '.github/scripts/consumer-test.sh'
       - 'scripts/*sdk*'
       - 'scripts/tests/test_sdk*'
       - 'scripts/tests/test_webgpu_sdk*'
       - 'cmake/install_sdk.cmake'
+      - 'scripts/apple_package.py'
+      - 'scripts/test_apple_sdk.py'
+      - 'scripts/tests/test_apple_package.py'
+      - 'scripts/test_msvc_make_environment.py'
+      - 'cmake/with-msvc.cmd'
+      - 'src/engine/cmdline/Build.cpp'
+      - 'src/engine/main.cpp'
+      - 'platform/macosx/macosx.mm'
+      - 'cmake/macosx_bundle_vulkan.cmake'
   workflow_dispatch:
 
 concurrency:

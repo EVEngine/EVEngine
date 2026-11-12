@@ -1,16 +1,17 @@
-#include "common/config.h"
-#include "common/CrashHandler.h"
-#include "common/CrashLog.h"
-#include "common/SnapshotHash.h"
-#include "cmdline/cmdline.h"
 #include <CLI11.hpp>
-#include <rang.hpp>
 #include <chrono>
 #include <cstdio>
 #include <ctime>
+#include <filesystem>
 #include <iostream>
+#include <rang.hpp>
 #include <string>
 #include <vector>
+#include "cmdline/cmdline.h"
+#include "common/CrashHandler.h"
+#include "common/CrashLog.h"
+#include "common/SnapshotHash.h"
+#include "common/config.h"
 
 #if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
 #include <SDL2/SDL.h>
@@ -19,6 +20,10 @@
 
 #if defined(EVENGINE_IOS)
 #include "ios/ios.h"
+#endif
+
+#if defined(EVENGINE_MACOSX)
+#include "macosx/macosx.h"
 #endif
 
 #if defined(EVENGINE_WEBGPU)
@@ -92,6 +97,23 @@ int main(int argc, char **argv)
         argv = injected.data();
     }
     eve::ios::initAudioSessionInterruptionHandler();
+#elif defined(EVENGINE_MACOSX)
+    // Finder and direct executable launches must resolve the same bundle game,
+    // independently of the caller's working directory. Bare SDK tools keep CLI behavior.
+    static std::string         gamePath;
+    static std::vector<char *> injected;
+    if (argc <= 1) {
+        gamePath = eve::macosx::getResources();
+        std::error_code             ec;
+        const std::filesystem::path resources(gamePath);
+        if ((!gamePath.empty() && resources.extension() == ".eve" && std::filesystem::is_regular_file(resources, ec)) ||
+            std::filesystem::is_regular_file(resources / "main.nut", ec)) {
+            static char runFlag[] = "run";
+            injected              = {argv[0], runFlag, gamePath.data()};
+            argc                  = static_cast<int>(injected.size());
+            argv                  = injected.data();
+        }
+    }
 #elif defined(EVENGINE_WEBGPU)
     // The browser launches with no CLI args; inject `run <game root>` where
     // the game is the preloaded VFS mount (/game) or the CWD.
