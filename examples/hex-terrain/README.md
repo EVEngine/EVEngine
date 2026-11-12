@@ -45,3 +45,10 @@ UV encoding is intentionally documented by the mesh metadata:
 This is a compatibility bridge for the current two-channel `MeshVertex`; a
 production terrain renderer should use integer biome ids plus 4-8 material
 weights and texture-array bindings.
+
+## Render consistency (2026-11-11)
+
+The material preserves authored vertex positions so the depth/shadow passes and
+color pass agree. Surface animation stays in fragment shading. Ocean caps share
+one sea level, and the camera frames the full island. The shader emits linear
+scene color without a second local tone-map/gamma conversion.

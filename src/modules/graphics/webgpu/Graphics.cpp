@@ -5237,7 +5237,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         static WGPUDepthStencilState ds{};
         ds.format            = WGPUTextureFormat_Depth32Float;
         ds.depthWriteEnabled = depthWrite ? WGPUOptionalBool_True : WGPUOptionalBool_False;
-        ds.depthCompare      = WGPUCompareFunction_Less;
+        ds.depthCompare      = hair ? WGPUCompareFunction_Less : WGPUCompareFunction_LessEqual;
         pd.depthStencil      = &ds;
     }
     pd.multisample.count = sampleCount ? sampleCount : 1;

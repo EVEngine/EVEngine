@@ -22,8 +22,14 @@ inline constexpr const char *kVolCloud=R"wgsl(
 fn hash(q:vec2f)->f32{return fract(sin(dot(q,vec2f(12.9898,78.233)))*43758.5453);}
 @fragment fn fs_main(i:FSIn)->@location(0)vec4f{let uv=i.uv+vec2f(p(25),p(26))*p(19)*.0002;let n=hash(floor(uv*max(p(24),1)));let cov=clamp(p(22),0,1);let density=max(p(23),0);let a=smoothstep(1-cov,1,n)*density*.7;let light=vec3f(p(29),p(30),p(31));return vec4f(light,a)*i.color;}
 )wgsl";
-inline constexpr const char *kVolFroxel=R"wgsl(
-@fragment fn fs_main(i:FSIn)->@location(0)vec4f{let cols=max(p(0),1);let rows=max(p(1),1);let slices=max(p(2),1);let tile=vec2f(1/cols,1/rows);var acc=vec4f(0);let count=i32(clamp(slices,1,64));for(var q=0;q<64;q++){if q>=count{break;}let f=f32(q);let cell=vec2f(f-floor(f/cols)*cols,floor(f/cols));let s=tex(cell*tile+i.uv*tile);acc.rgb+=s.rgb*(1-acc.a);acc.a+=s.a*(1-acc.a);}return acc*i.color;}
+/**
+ * @brief Embedded WGSL source for froxel atlas composition.
+ * @ownership Borrowed immutable shader source; callers must not free it.
+ * @lifetime Static storage, valid for the entire program lifetime.
+ * @thread Read-only access is safe on any thread.
+ */
+inline constexpr const char* kVolFroxel             = R"wgsl(
+@fragment fn fs_main(i:FSIn)->@location(0)vec4f{let cols=max(p(0),1);let rows=max(p(1),1);let slices=max(p(2),1);let tile=vec2f(1/cols,1/rows);var acc=vec4f(0);let count=i32(clamp(slices,1,64));for(var q=0;q<64;q++){if q>=count{break;}let cell=vec2f(f32(q%i32(cols)),f32(q/i32(cols)));let s=tex(cell*tile+i.uv*tile);acc.rgb+=s.rgb*(1-acc.a);acc.a+=s.a*(1-acc.a);}return acc*i.color;}
 )wgsl";
 inline constexpr char kVolDirectionalCookie[]=R"wgsl(
 fn world(m:mat4x4f,uv:vec2f,z:f32)->vec3f{let h=m*vec4f(uv*2-1,z,1);return h.xyz/max(h.w,.000001);}

@@ -13,7 +13,6 @@ namespace {
 
 constexpr const char* kDatabaseHostName = "eve_database";
 constexpr float kCellWidth = 160.f;
-constexpr float kRowHeight = 30.f;
 
 bool sameValue(const ReflectedValue& a, const ReflectedValue& b) {
     if (a.kind != b.kind) return false;
@@ -235,7 +234,7 @@ WidgetDesc DatabasePanel::cellWidget(const ObjectEntry& entry,
                 ModuleManager::runtime()->writeProperty(e->object, name, out);
             });
     }
-    cell.withSize(kCellWidth, 0.f);
+    cell.withSize(kCellWidth, 0.f).withMinSize(kCellWidth, 0.f).withFlexShrink(0.f);
     return cell;
 }
 
@@ -270,10 +269,12 @@ WidgetDesc DatabasePanel::build() {
         header.reserve(members_.size());
         for (const ReflectedMember& member : members_) {
             auto label = text(member.name, "db_hdr_" + member.name);
-            label.withSize(kCellWidth, 0.f);
+            label.withSize(kCellWidth, 0.f).withMinSize(kCellWidth, 0.f).withFlexShrink(0.f);
             header.push_back(std::move(label));
         }
-        children.push_back(row(std::move(header), "db_header"));
+        const float             gridWidth = kCellWidth * float(members_.size() + 1);
+        std::vector<WidgetDesc> grid;
+        grid.push_back(row(std::move(header), "db_header").withMinSize(gridWidth, 0.f));
 
         // Body: one row per instance, cells bound to the live objects.
         std::vector<WidgetDesc> rows;
@@ -295,8 +296,9 @@ WidgetDesc DatabasePanel::build() {
                                         ". Press + to create one.",
                                     "db_empty"));
         } else {
-            children.push_back(scrollList("db_rows", std::move(rows), 0.f, kRowHeight));
+            grid.push_back(scrollList("db_rows", std::move(rows), 0.f, 0.f).withMinSize(gridWidth, 0.f));
         }
+        children.push_back(column(std::move(grid), "db_grid").withOverflow(OverflowMode::Scroll));
     }
     return window("Database", std::move(children), "root");
 }

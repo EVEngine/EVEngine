@@ -75,3 +75,9 @@ dofile("soak-check.nut");    beginVolumeFluidSoak();
 
 本示例是可运行示例（`main.nut` + `config.nut`），参与 `scripts/smoke_examples.sh` 的
 帧循环契约：CI 在 Linux 上无头启动它，要求至少 2 秒仍然存活且日志中没有错误标记。
+
+## 2026-11-11 视觉改善
+
+默认自动运行并拉近相机；液体模式接入现有完整表面重建，调整平滑和透明度，增加视口参考网格。重建会增加显示开销，保留模拟/重建计时和丢弃时间。主图记录自然运行 360 帧后的水面，另保留 120 帧初始水花；未声称模拟性能提升。
+
+[当前实帧](../../docs/images/examples/review-2026-11-11/next10/fluid3d.png) · [前后对照与验证](../../docs/images/examples/QUALITY_REVIEW.md)

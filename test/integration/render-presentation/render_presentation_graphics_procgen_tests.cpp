@@ -1904,6 +1904,34 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
         return waterCaptureLuma(gfx, 16);
     };
 
+    SUB_CASE("graphics.waterfall.render.defaultRasterReplacesPrepassAndExplicitLessIsHonoured") {
+        auto strict         = wf->getShader()->meshRasterState();
+        strict.depthCompare = MeshDepthCompare::Less;
+        if (gfx->getBackendName() == "webgpu") {
+            auto absent = gfx->configureMeshShaderRaster(*wf->getShader(), strict);
+            REQUIRE(!absent.ok());
+            REQUIRE(absent.status().code() == eve::StatusCode::Unsupported);
+        } else {
+            // Forward+ does not seed scene depth from the G-buffer. Request the
+            // actual deferred prepass before testing equal-depth replacement.
+            auto* control = gfx->getRenderControl();
+            REQUIRE(control != nullptr);
+            REQUIRE(control->setLightingMode(LightingMode::Hybrid).ok());
+            const WaterLumaGrid defaultRaster = capture(0.2f, 0.8f);
+            REQUIRE(control->getEffectiveLightingMode() == LightingMode::Hybrid);
+            REQUIRE(control->hasPass("deferredLighting"));
+            REQUIRE(gfx->configureMeshShaderRaster(*wf->getShader(), strict).ok());
+            const WaterLumaGrid rejected = capture(0.2f, 0.8f);
+            REQUIRE(waterDiff(defaultRaster, rejected) > 0.5f);
+            strict.depthCompare = MeshDepthCompare::LessEqual;
+            REQUIRE(gfx->configureMeshShaderRaster(*wf->getShader(), strict).ok());
+            const WaterLumaGrid restored = capture(0.2f, 0.8f);
+            REQUIRE(waterDiff(restored, rejected) > 0.5f);
+            std::printf("waterfall prepass: defaultStrictDiff=%.2f restoredStrictDiff=%.2f\n",
+                        waterDiff(defaultRaster, rejected), waterDiff(restored, rejected));
+        }
+    };
+
     const WaterLumaGrid t0       = capture(0.f, 0.8f);
     const WaterLumaGrid t1       = capture(0.4f, 0.8f);
     float               rendered = 0.f;

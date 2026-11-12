@@ -3,8 +3,9 @@
 Minimal gold sample for `EditorHost` + `EditorPackage` autoMount and Mode A MCP attach.
 
 Loads Action and Voxel editor packages, mounts them on one host, and attaches the
-host as the MCP projection scope (`exportMcp` / `eve.mcp.attachEditor`). Project
-glue stays under 30 lines — domains own panels, commands, and schemas.
+host as the MCP projection scope (`exportMcp` / `eve.mcp.attachEditor`). A status
+window shows the real mount count and package state. Domain panels are UI-neutral
+descriptors; this example does not compose their full editing interfaces.
 
 ## Run
 

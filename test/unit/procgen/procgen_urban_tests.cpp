@@ -607,6 +607,47 @@ TEST_CASE("Urban mesh supports flat and extruded forms and rejects bad grid para
     MeshBuild extruded;
     REQUIRE(generateUrbanMesh(params, extruded, error));
     CHECK(extruded.getVertexCount() > flat.getVertexCount());
+    params.setFloat("parcelInset", 0.85f);
+    params.setFloat("heightVariation", 0.6f);
+    params.setBool("vertexColors", true);
+    MeshBuild separated, replay;
+    REQUIRE(generateUrbanMesh(params, separated, error));
+    REQUIRE(generateUrbanMesh(params, replay, error));
+    REQUIRE(separated.hasVertexColors());
+    REQUIRE(separated.positions() == replay.positions());
+    std::set<int> roofHeights;
+    for (int v = 0; v < separated.getVertexCount(); ++v)
+        if (separated.getNormalY(v) > 0.9f && separated.getPositionY(v) > 0.1f)
+            roofHeights.insert(int(separated.getPositionY(v) * 100.f));
+    REQUIRE_GT(roofHeights.size(), size_t(2));
+    // Presentation stays opt-in; enabled streams must replay, remain finite and be indexed safely.
+    params.setBool("presentationDetails", false);
+    REQUIRE(generateUrbanMesh(params, replay, error));
+    REQUIRE(replay.positions() == separated.positions());
+    params.setBool("presentationDetails", true);
+    params.setFloat("parcelInset", 2.f);
+    params.setFloat("streetWidth", 2.8f);
+    MeshBuild detailed, detailedReplay;
+    REQUIRE(generateUrbanMesh(params, detailed, error));
+    REQUIRE(generateUrbanMesh(params, detailedReplay, error));
+    REQUIRE(detailed.positions() == detailedReplay.positions());
+    REQUIRE(detailed.colors() == detailedReplay.colors());
+    REQUIRE_EQ(detailed.colors().size(), size_t(detailed.getVertexCount()) * 4u);
+    REQUIRE_GT(std::stoi(detailed.getMeta("detail.windows", "0")), 0);
+    REQUIRE_GT(std::stoi(detailed.getMeta("detail.trees", "0")), 0);
+    REQUIRE_GT(std::stoi(detailed.getMeta("detail.parks", "0")), 0);
+    REQUIRE_GT(std::stoi(detailed.getMeta("detail.markings", "0")), 0);
+    REQUIRE_GT(std::stoi(detailed.getMeta("detail.crossings", "0")), 0);
+    for (float coordinate : detailed.positions()) REQUIRE(std::isfinite(coordinate));
+    for (auto index : detailed.indices()) REQUIRE_LT(index, uint32_t(detailed.getVertexCount()));
+    params.setFloat("extrude", 0.f);
+    REQUIRE(generateUrbanMesh(params, detailedReplay, error));
+    REQUIRE_EQ(detailedReplay.getMeta("detail.windows", ""), "0");
+    REQUIRE_EQ(detailedReplay.getMeta("detail.trees", ""), "0");
+    params.setFloat("extrude", 5.f);
+    params.setFloat("parcelInset", -1.f);
+    REQUIRE(!generateUrbanMesh(params, replay, error));
+    params.setFloat("parcelInset", 0.85f);
     params.setFloat("minParcelArea", 0);
     Grid2D invalid;
     CHECK(!generateUrbanGrid(params, invalid, error));

@@ -1,0 +1,1122 @@
+{
+  "schema": "evengine.example-visual-review",
+  "version": 1,
+  "date": "2026-11-11",
+  "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "sourceState": "dirty",
+  "sourcePatchSha256": "895b77122c0c767d5188cff2531eaa9a20a487bfd3229fd7ea92d027f7b41a1d",
+  "configuration": "source-built Windows MSVC Debug SHARED strict; 203 modules; eve and unit_test_particles built",
+  "method": "gfx.saveFramePng via scripts/capture_example.ps1; native raw PNG, no image editing; main 120 frames except fluid3d 360; each variant records its frames",
+  "results": [
+    {
+      "example": "flame-jet",
+      "change": "修正颜色字段为加载器识别的 colorOverLife，并添加由 generate_texture.py 生成的柔边透明纹理；降低火芯叠加强度。新增原生回归验证橙红渐变、末端透明度和纹理资源存在。",
+      "before": {
+        "path": "baseline/flame-jet.png",
+        "sha256": "81c096d35a3ca9dd06e8903c5192f7222092938ae2d9ece4b1a7342dc2bb6ea6",
+        "width": 1100,
+        "height": 650
+      },
+      "after": {
+        "path": "flame-jet.png",
+        "sha256": "d891a4f2f424c5ed408b74e5da2092c7dd33b163a2fd1bb349b0a38d0d01272e",
+        "width": 1100,
+        "height": 650
+      },
+      "baselineRun": {
+        "example": "flame-jet",
+        "captured": true,
+        "frames": 120,
+        "seconds": 5.5,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "flame-jet",
+        "captured": true,
+        "frames": 120,
+        "seconds": 5.5,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "daynight",
+      "change": "修正相机命名与云层相机一致性、面板锚点、云层尺度/亮度和地面配色，增加篝火石圈。默认停在 17:00，Space 可按 0.35 小时/秒恢复周期；另记录正午与夜间同机位。",
+      "before": {
+        "path": "baseline/daynight.png",
+        "sha256": "f22992ce4dcc75f91748a9dcffaac2515e9bf4e6c4d4ceb315ee30394099e571",
+        "width": 1024,
+        "height": 640
+      },
+      "after": {
+        "path": "daynight.png",
+        "sha256": "97a9fda9539135f4898ddb18bd35b28ff4c4e421ef15a4dd7254cbce505fad20",
+        "width": 1024,
+        "height": 640
+      },
+      "baselineRun": {
+        "example": "daynight",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.5,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "daynight",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "dungeon-generator-3d",
+      "change": "缺少外部素材包时，内置程序化墙体具有实际墙长/高度，门框保留通行开口，柱、床、桌、桶与箱具有不同尺寸；房间配色、灯光及地面明暗重新调整。外部资产包流程仍保留。",
+      "before": {
+        "path": "baseline/dungeon-generator-3d.png",
+        "sha256": "2e3d973badb437276a273d2d573274c852e0fcf8e7e914fda013f926fa06ad46",
+        "width": 1280,
+        "height": 800
+      },
+      "after": {
+        "path": "dungeon-generator-3d.png",
+        "sha256": "d6bb40fd966d00fdc50742ccee0a81ed837161e054d5f124bbb4fa5e001f73e9",
+        "width": 1280,
+        "height": 800
+      },
+      "baselineRun": {
+        "example": "dungeon-generator-3d",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.0,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "dungeon-generator-3d",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "lighting-showcase",
+      "change": "按 EV 校准曝光，降低过强的日光、聚光和体积介质，保留各功能开关；记录体积光开/关同机位，球体粗糙度和暖冷光可区分。",
+      "before": {
+        "path": "baseline/lighting-showcase.png",
+        "sha256": "af8ee41fd0609edee8484e0ecf31136b72a7b739e71abfe09ba0bf714b2658ee",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "path": "lighting-showcase.png",
+        "sha256": "2161fca5f160f7e1b645e8e63d962be5a8bffbdcb56888dc4c25c9d3f4bc9314",
+        "width": 1280,
+        "height": 720
+      },
+      "baselineRun": {
+        "example": "lighting-showcase",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "lighting-showcase",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "procgen-nature-quality",
+      "change": "扩大取景使树冠完整入镜，降低暖光强度、土壤黄染和叶片发白；保留现有程序化纹理、法线、树木和花卉配方。",
+      "before": {
+        "path": "baseline/procgen-nature-quality.png",
+        "sha256": "18baf3e0d5240fa7ed970839726ac19a0edf86782317da0adb18373aa6a60e9d",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "path": "procgen-nature-quality.png",
+        "sha256": "ea015eafd05c5688969812d0336b6ec8ca664106de73799e7fb8a67ccb662aa7",
+        "width": 1280,
+        "height": 720
+      },
+      "baselineRun": {
+        "example": "procgen-nature-quality",
+        "captured": true,
+        "frames": 120,
+        "seconds": 7.1,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "procgen-nature-quality",
+        "captured": true,
+        "frames": 120,
+        "seconds": 7.1,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "waterfall-demo",
+      "change": "保留真实流动水幕 shader，新增低多边形岩壁、岸边植被、水潭与落水泡沫参照，并补全景和落水区域近景。场景参照为示例造景，不是新增水体物理求解。",
+      "before": {
+        "path": "baseline/waterfall-demo.png",
+        "sha256": "68f8e953d87ae3c45cff606d8555c445bb01cf016cc7124db8b881b1885f968c",
+        "width": 900,
+        "height": 720
+      },
+      "after": {
+        "path": "waterfall-demo.png",
+        "sha256": "743a561ba1b60a9f583ff310d4e907be164fda105e76132bfe9777659f9d6c79",
+        "width": 900,
+        "height": 720
+      },
+      "baselineRun": {
+        "example": "waterfall-demo",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.0,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "waterfall-demo",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.0,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "metroidvania",
+      "change": "修正图集路径必须相对 maps/world.json 解析的问题，避免默认色块替代真实贴图。新增自有程序化石砌/背景素材及兼容角色轮廓；地图碰撞数据保持不变。Spine IK 支持未在本轮扩展，兼容显示没有冒充完整 Spine 动画。通过既有 8 秒移动/跳跃/攻击输入回放的无帧错误检查。",
+      "before": {
+        "path": "baseline/metroidvania.png",
+        "sha256": "a52f78c74da5f15f06bd8ba37d4b7bed9a2b7416e3162bf26e867b3a6f6cc83b",
+        "width": 1280,
+        "height": 720
+      },
+      "after": {
+        "path": "metroidvania.png",
+        "sha256": "c1dbbd892cf5246f439325ff383f6d28276595ad1a9d893d3d3cb33b60d17e2c",
+        "width": 1280,
+        "height": 720
+      },
+      "baselineRun": {
+        "example": "metroidvania",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "metroidvania",
+        "captured": true,
+        "frames": 120,
+        "seconds": 7.1,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "weather",
+      "change": "默认显示雨天，按预设切换地面粗糙度、雪地颜色和水洼显示；增加石径及固定取景，扩展控件布局。晴、雨、雪、暴风使用同机位记录；水洼/雪地颜色为状态展示，不是积水或积雪物理。",
+      "before": {
+        "path": "baseline/weather.png",
+        "sha256": "6db4b378498f1a8fbfea6a680da1094612ede0ee27f7744442f1eb593ef73f65",
+        "width": 1024,
+        "height": 640
+      },
+      "after": {
+        "path": "weather.png",
+        "sha256": "2bad362682739e209f9fc03dbb1c09bc21617301ba3489d037237f5389e59e20",
+        "width": 1280,
+        "height": 800
+      },
+      "baselineRun": {
+        "example": "weather",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "weather",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.6,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "fluid3d",
+      "change": "默认自动运行并拉近相机；液体模式接入现有完整表面重建，调整平滑和透明度，增加视口参考网格。重建会增加显示开销，保留模拟/重建计时和丢弃时间。主图记录自然运行 360 帧后的水面，另保留 120 帧初始水花；未声称模拟性能提升。",
+      "before": {
+        "path": "baseline/fluid3d.png",
+        "sha256": "288c9e9b2c785cc2e8fa0cdbf9b58d7e7ea5a0399288fbd048c43f3b18f718f9",
+        "width": 960,
+        "height": 720
+      },
+      "after": {
+        "path": "fluid3d.png",
+        "sha256": "c9e35387de616177a823b95edf8f7e1dbf7a9e2d8e85ef732f2f635f26307808",
+        "width": 960,
+        "height": 720
+      },
+      "baselineRun": {
+        "example": "fluid3d",
+        "captured": true,
+        "frames": 120,
+        "seconds": 7.1,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "fluid3d",
+        "label": "fluid-settled",
+        "setup": "// normal running simulation",
+        "captured": true,
+        "frames": 360,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    },
+    {
+      "example": "scad-watermill",
+      "change": "默认从室内切换到建筑外部环绕取景，保留 V 室内游览；修正实例与材质重复着色，重新校准照明，并增加完整水轮一侧的视图。原有齿轮、闸门和水轮联动保留。",
+      "before": {
+        "path": "baseline/scad-watermill.png",
+        "sha256": "d2074c598c78cc9c98198201615e83fd09b0f44017d4a7665d0c29949c2c5eee",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "scad-watermill.png",
+        "sha256": "fd61c6167f9a0fd12f0f88b19eb6fbe976e292cb593f4ad7b89f6971d2590f71",
+        "width": 1440,
+        "height": 900
+      },
+      "baselineRun": {
+        "example": "scad-watermill",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.1,
+        "runtime": {
+          "exe": "36ab2c25b782b60c40bb3148240c4c9b75feffd79f52dfc1050d04bc3a24a7f6",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "4aea8caa1264527d2dcedbe95aadaab4029a6ba6c36e996274a0e681f139dfd0",
+            "EVDomains.dll": "a8c67cee9dc365b3b96dd4718cc34952bd006240cc88be97699be3e1fec6d15d",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "0a5391275fbed89579acef1649b72fc5ac2da3d3fb7cb9124225076a9ab4e5e3",
+            "EVFoundation.dll": "caf98ead855e98df4d437ecd90b96beb9a0146945a9a9838d12586c2713b3311",
+            "EVOrchestration.dll": "6529e3bc91d8ed0e956831045218dc0cf753ad2ffa9e37e9d5427125da3a67ca",
+            "EVPlatform.dll": "2988a848de0d003c104dd1cf29b22778b940409ea52eae4a4d64c6bd36f721cf",
+            "EVWorld.dll": "5516305e8db72e5456b57dda36b348d3b536e0476c8cba479d69d81c13afc1bc",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      },
+      "afterRun": {
+        "example": "scad-watermill",
+        "captured": true,
+        "frames": 120,
+        "seconds": 6.1,
+        "runtime": {
+          "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+          "dlls": {
+            "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+            "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+            "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+            "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+            "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+            "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+            "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+            "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+            "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+            "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+            "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+          }
+        }
+      }
+    }
+  ],
+  "variants": [
+    {
+      "example": "flame-jet",
+      "label": "flame-start",
+      "setup": "// initial pressure",
+      "captured": true,
+      "frames": 30,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "flame-start.png",
+        "sha256": "766faa227839d3c7bde038341a76827e59e7549a76f3c647ff3707540332800b",
+        "width": 1100,
+        "height": 650
+      }
+    },
+    {
+      "example": "flame-jet",
+      "label": "flame-late",
+      "setup": "// sustained pressure",
+      "captured": true,
+      "frames": 240,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "flame-late.png",
+        "sha256": "702e5f158df6c8c944773c4abeedeb9124cba534e27499cb68dd1867f3235597",
+        "width": 1100,
+        "height": 650
+      }
+    },
+    {
+      "example": "daynight",
+      "label": "day-noon",
+      "setup": "daynight.setTimeOfDay(12.0);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "day-noon.png",
+        "sha256": "454ca33c1205215ffd7eb7ac1da336db56d8c7d19825b2c1d54423fed1abd9fd",
+        "width": 1024,
+        "height": 640
+      }
+    },
+    {
+      "example": "daynight",
+      "label": "day-night",
+      "setup": "daynight.setTimeOfDay(22.0);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "day-night.png",
+        "sha256": "2861f5f81c38eb0dd8bbb2bc0136c1548e63de477b5807785e98032bd791bbc6",
+        "width": 1024,
+        "height": 640
+      }
+    },
+    {
+      "example": "lighting-showcase",
+      "label": "lighting-no-volume",
+      "setup": "litVolumetricOn=false;applyVolumetric();",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "lighting-no-volume.png",
+        "sha256": "46c7fc7be474fe000c710d3c556e21e0cbcee03db24d5cbd149948da17a70bf5",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "example": "weather",
+      "label": "weather-clear",
+      "setup": "preset=\"clear\";applyPreset();",
+      "captured": true,
+      "frames": 150,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "weather-clear.png",
+        "sha256": "31a4c50dc31f3b0a952d1329cc6975016fb854b8ec7391460843576fc12cd425",
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "example": "weather",
+      "label": "weather-snow",
+      "setup": "preset=\"snow\";applyPreset();",
+      "captured": true,
+      "frames": 150,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "weather-snow.png",
+        "sha256": "7ad1ab3ed1089683f45425deb60ed1fdfd96e62a04c18e02bac3c7dd007c8406",
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "example": "weather",
+      "label": "weather-storm",
+      "setup": "preset=\"storm\";applyPreset();",
+      "captured": true,
+      "frames": 150,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "weather-storm.png",
+        "sha256": "7bd24f0f5028eb2d5c92d489a03b6b2b0f87f780eb9732d66ca38e08d7375409",
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "example": "dungeon-generator-3d",
+      "label": "dungeon-room",
+      "setup": "dungeonCamera.setOrthographic(55.0);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "dungeon-room.png",
+        "sha256": "9aa928f1c6668827c466149e404e6fa224f2058fde3f99583606c87cba225147",
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "example": "waterfall-demo",
+      "label": "waterfall-close",
+      "setup": "fallCam.setEye(5.0,0.0,13.0);fallCam.setTarget(0.0,-1.0,0.0);",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "waterfall-close.png",
+        "sha256": "8e205e59ac536e18dc1ddb26cfedf5491991f60fceb060d6dfdaf423c6b1336d",
+        "width": 900,
+        "height": 720
+      }
+    },
+    {
+      "example": "scad-watermill",
+      "label": "mill-wheel",
+      "setup": "mill.auto=false;mill.orbit=1.35;mill.orbitRadius=15.0;mill.orbitElev=6.5;millApplyOrbitCamera();",
+      "captured": true,
+      "frames": 120,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "image": {
+        "path": "mill-wheel.png",
+        "sha256": "2cad0c83fe05d193ca37bd7fa2555dc60462861aac5f5b97f36c55032072c4ed",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "label": "fluid-initial",
+      "example": "fluid3d",
+      "frames": 120,
+      "captured": true,
+      "runtime": {
+        "exe": "05b58af80afc2498b790371bed28f552a6122599206a70f680f92bf06db6cb15",
+        "dlls": {
+          "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+          "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+          "EVBackends.dll": "a09e81578ec94bc8912714e7e68289aa3cf3220929d2f5c44cc70038f26f5d83",
+          "EVDomains.dll": "89aa5025dc1afe0e5fa104ef4798a02b0ddc2e7865e70b2f91bdf45f5779d3d3",
+          "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+          "EVEditors.dll": "5da299e7b71e53b451a16217bb0e624f11ae450187626b62db5fc4fd22517074",
+          "EVFoundation.dll": "6fcd8c158af71fb2869442257dfcf9e86eecc4a99b67a2fa140b9cbcb73f668e",
+          "EVOrchestration.dll": "92ebd42ff1053c91cdad4356d81a88db132d346ba9a59927dd3785e80bb90724",
+          "EVPlatform.dll": "fad6c485f67db5e0bb526f736ec4c78200d548a28486b7cd0eb7c8689d770655",
+          "EVWorld.dll": "8a4395ca544e9adc3144ad70f647c1631b6e5cb30c895239036f8ba09083e5c0",
+          "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+        }
+      },
+      "setup": "normal initial splash at 120 frames",
+      "image": {
+        "path": "fluid-initial.png",
+        "sha256": "ba22a6849f04a496bab9f3d28e9d25f383a47b46fa55b3c120f84b3281fa5e33",
+        "width": 960,
+        "height": 720
+      }
+    }
+  ],
+  "sourceAndAssetHashes": {
+    "examples/flame-jet/config.nut": "4036403d622d388dc1eb74bebcf2fdbf350402692c83220c554869b5339bc8cf",
+    "examples/flame-jet/generate_texture.py": "e1568de7c45899b0e1fa603076da1290e8c53a8716dfd13fd2d6d4ad0f894fd1",
+    "examples/flame-jet/jet.effect.json": "13f64ccc126a68a78c13e6a7718032b97b1dbc697c643042136fbfd1c813ca15",
+    "examples/flame-jet/main.nut": "f113e199add1c9a0ea72e7771ef412ceacb3e7984a45a50c25b3ac7fb4c0a34c",
+    "examples/flame-jet/textures/soft-plume.png": "845b3adfc5ac9ffa99a386fb788f8ce79f882e25f5d3969a5b0281e1a36ccedb",
+    "examples/daynight/config.nut": "e056e26454abeeecb39dae221d06a34869d46af2629fc33d8a8028b50e998f9b",
+    "examples/daynight/main.nut": "ff5df96adc73d4b315114dec920ab0d814128a4628bc164e0524ffc6739331ed",
+    "examples/dungeon-generator-3d/assetpack.nut": "f6520b98eae1eb8b2e7f3096b7dd4051d07a5fd59ed80825e6b5f61f975abbc2",
+    "examples/dungeon-generator-3d/config.nut": "197e62a75d9ded6f65eb3b7acb9172e7156639f25b67409d277fb43ab9e0053c",
+    "examples/dungeon-generator-3d/main.nut": "2e61d6b892ca5163113f624ce63f4c67fe43105657d2fbcb0970705d30953f21",
+    "examples/lighting-showcase/config.nut": "18a723c14dcade35b412ffb4183f86f98d72a935d7f79457914346c6dee88031",
+    "examples/lighting-showcase/main.nut": "ef09a85c674afca71645c7769a8d6244b4f3482c27bd80a4b9839843479dc497",
+    "examples/procgen-nature-quality/config.nut": "68c302f65f2ba2790a4b50faf7c9cc641ebe19f36f89bb511645828a6ce923d2",
+    "examples/procgen-nature-quality/main.nut": "a04a14f0e8a7c6045a0e9e0b82c70cfb52c672bc4f117f448ae2d3baed851cc1",
+    "examples/waterfall-demo/config.nut": "7aa983b6f07e6372deb3002793819661de9da11b8984e36c037f137df3da14a2",
+    "examples/waterfall-demo/main.nut": "42aa029113af1961c3638270ede75111988271791b3713d9a39b8a72bc3fd0c9",
+    "examples/metroidvania/config.nut": "1220bbc731366241582a7f7aeae947331f9aff07285b7e12a4c6e88345a9e98e",
+    "examples/metroidvania/ecs.nut": "4b17517a885d6565a22f052598ec7ae0cd86d2922994ae39a3f6526f3247a43e",
+    "examples/metroidvania/generate_map.py": "a652beedcdd8f7e98e4c27edb2d24d1cac4c090417402dd27b94dc0eecf0f23b",
+    "examples/metroidvania/generate_visuals.py": "2c26e6d774cc292d00c5d8fc363db2975f1c0c248e80862f465415c7d2ea2fc6",
+    "examples/metroidvania/main.nut": "8d36dfead597db4309a482ba902c52d2803118de3e4258f1f77e451ba7f734f7",
+    "examples/metroidvania/smoke_test.py": "d2afe3880d54e87f37f0ffef6a176334b0a3bd09be8161ecc10f90a47a2681aa",
+    "examples/metroidvania/tuning.nut": "19d2a4aadb11504aa634920f99d9bc2a1ab004b4a7e9cb7cfb1725b9ccb7eb6a",
+    "examples/metroidvania/assets/background-forest-detail.png": "0d3159c041fc1d3018550ee6b5bcb399928484efd3bc8a0ffb9ec69dfc53c212",
+    "examples/metroidvania/assets/background-mine-detail.png": "29be572912b7cfec5f10b90229d1eb73ace759e21abf92215c93a877cc91ba14",
+    "examples/metroidvania/assets/background-ruins-detail.png": "d0a40c5f647d119dab55bcee9905f7711a1c94c279d0c86bd35f140bd24b7fae",
+    "examples/metroidvania/assets/background_forest.png": "633f0952f65f4e487fca0b5488a8f0e82c6f404bd3eccc6939ec413bcf5bff97",
+    "examples/metroidvania/assets/background_mine.png": "f5d60f2db0d69e1c3a523ad88d5cb7d39a0a1937520f177c433fb9e9ff8423f3",
+    "examples/metroidvania/assets/background_ruins.png": "35b1824b34d8f90e0f3daa8010bcf35881c0282fe025b5bbf434f508b5b6adfd",
+    "examples/metroidvania/assets/crate.png": "51ac4d7feec154c65151d425fd7ce1eef2ae38b6b5cdd1228d66357dfd0c9944",
+    "examples/metroidvania/assets/rock.png": "3b3b06023fd6409d6dd337ad5f093efad8051020006dcd134b2ecb7136f336ea",
+    "examples/metroidvania/assets/tiles-detail.png": "fde936729f37c5c9f11b2da43baf933d5a348177ec9a65b943d8d652a50b6ebe",
+    "examples/metroidvania/assets/tiles.png": "0c6905f4b60167ef644f2ae0fc197f948f4755bac0bcb432c834142f5e0d4cfd",
+    "examples/metroidvania/maps/world.json": "c4c6bdde9558948716d9f8cb385e3ce9a8e2a97e1c4386554258a2b806dc58f7",
+    "examples/weather/config.nut": "7f75a83685f7f5113eb2bf081a2e608ae17a5372e6b41d850ec481f22a6262f7",
+    "examples/weather/main.nut": "9098c21d5675a251fba653907fc3890f9a93a702700f7f3b2b1909a115a66189",
+    "examples/fluid3d/actor-com-check.nut": "bc3605ffc6b946d87328edb214dc3a8f35c62316036a2fe5faebf0f5baf05a7d",
+    "examples/fluid3d/attachment-check.nut": "8a2bca6528b766c96d3f77589d0b1cad3eca355b86de341b4842803f5c9b9290",
+    "examples/fluid3d/bottle-support.nut": "dc1dc7653fa3445b47de28206069d9ab76d63522323c88c736a4d5b9edeb3e84",
+    "examples/fluid3d/bucket-check.nut": "a62a63da5a4d25c669714a43ec7650ace915c6f81c6872c49e07f267adbc658d",
+    "examples/fluid3d/bucket-support.nut": "b5038d3aa658d241c506917b1318dd79d1c22429933311a2c42d93118562034f",
+    "examples/fluid3d/burst-mode-check.nut": "9d1048002562d0183f720c8002b2d919efa7b449d92b729d7ae14093afa0bc76",
+    "examples/fluid3d/capsule-collider-check.nut": "a11a44d15260fe2022e880fb634be35b637538f7702416d781c6900935f755d0",
+    "examples/fluid3d/collider-trigger-check.nut": "5e7a0121c89cb73d112059ddcc83a8bcf819fa11df44001804c94e8edff535e3",
+    "examples/fluid3d/collision-material-check.nut": "0822852b0ea42a672416233807e666da249aebbd682bf01f007067c605378038",
+    "examples/fluid3d/colorizer-check.nut": "6210ed64a2d3878d2ed5a9c34ad77bdaf68890a81943d9ab9af1ca2571f262ac",
+    "examples/fluid3d/config.nut": "1fa4492c71cc4cf0ebd5ad0d8b5d53ab1bf3a2bd8171c1ec0ca012db5c32d368",
+    "examples/fluid3d/contact-grabber-check.nut": "7f95e9383b8f206e4483586b9c05c5336e165fff1e8ef3c7d9506b0071d9de71",
+    "examples/fluid3d/contact-identity-check.nut": "9a5324c28c6b89086f05fb5bcddf311a93da521a3dde405178f8477dbec2831d",
+    "examples/fluid3d/custom-material-fastpath-check.nut": "faf098258f07218b16509993eec0cbe5d9d8a6725c16884cfceb589400ee9858",
+    "examples/fluid3d/diffuse-check.nut": "6d6f51b7770bf15c15bea0162becb5394328e572a6e48e5adf8c6bb4f49c0f8b",
+    "examples/fluid3d/dynamic-attachment-check.nut": "ce402780dc205032faa987045801f4c8ffe7218151b64af790f5af651594a19f",
+    "examples/fluid3d/emit-on-key-check.nut": "e9facff697bc2bb9c41453d273f2f30f6d370528ea775154f4f0dd23495372c2",
+    "examples/fluid3d/emitter-checkpoint-check.nut": "2fb32bf0436088caa40cf152e5b566aa24896862f7ab4bcb869ecef76f41c45a",
+    "examples/fluid3d/emitter-count-check.nut": "fcf2c8ec7d30ef6df15c100966b1bfefa3651557ade134cccaf95da9527f7515",
+    "examples/fluid3d/emitter-events-check.nut": "c57dcaea0c2152ab5457b5ac77769e4eb27fb276fce059317a2e519d400d02ed",
+    "examples/fluid3d/emitter-filter-check.nut": "986f023641c321706e565edbadf2853c98da0bd1fc7ae4da2921cdb3bd9a6c3d",
+    "examples/fluid3d/emitter-kill-all-check.nut": "5978c6cd4a422c059cccbec1b3effb477f2cc728abe17d191bb0614a6eaee4e7",
+    "examples/fluid3d/emitter-material-check.nut": "6f58809d9a8c3e1bdd29cc80bcf784e2f539854bdffb88f213f26fb7dec133ac",
+    "examples/fluid3d/emitter-self-collision-check.nut": "4e30ad74ffc40a5cf025c15eb9a0658e286cfdfc120295291713f26117b8e0d3",
+    "examples/fluid3d/emitter-state-check.nut": "4b0102fe768a5c7366ebba899382dc05636076ce14c017fa4e41498d564c364e",
+    "examples/fluid3d/eve_snapshot.json": "8a120ee0dee77b93d6b4cd385634c201f9526b1fda4924564031c0de6776bfb1",
+    "examples/fluid3d/external-force-check.nut": "a4d46b66da0871570f1fc67fe912ed3a525cc1131968b4467d79ea11d1e2e864",
+    "examples/fluid3d/field-check.nut": "5cb9ceb7ebe1135fb0dae8f69d0d3861c58828376b532633c2ab2a47dd1df9cb",
+    "examples/fluid3d/filter-category-check.nut": "67c93fbffe65e1c312a67e51c35df1d1962e36fa9896b1cf5d2fe323c287fb70",
+    "examples/fluid3d/fluid-jet-check.nut": "ca8a4b1814c2f651be7b577e22752c94fea4f758b2d3e514cd4642e21c98a2c8",
+    "examples/fluid3d/foam-actor-check.nut": "d4996ade1f9687fa2f26d43e284c691547b3a7fdda4525b67af52a5e60846266",
+    "examples/fluid3d/foam-check.nut": "5444cd4191415d55bff6c8f9c00f1540de8d986bf3349db1092abd36ad03d7aa",
+    "examples/fluid3d/foam-render-settings-check.nut": "9f3c599589bf01d6dbf26699c65e5153c86be720f5119c2f135c2390b789ad7d",
+    "examples/fluid3d/granular-check.nut": "b93bc47bb8056c039a1600c20b1fb5c2a1b0feddeafe8ef35268e4e79da136f1",
+    "examples/fluid3d/grid-debugger-check.nut": "618b93624311c0f0ef8de352edbaa1dae47f9072857079af2920b5b9d84240b4",
+    "examples/fluid3d/heightfield-check.nut": "eddbeb5108a3f310188eea1b915e5addfb715ea9f69784fe969a02dc8e65d080",
+    "examples/fluid3d/karman-check.nut": "381bf1a0829137c766a6dfe3295494b26abe1ab9fb81202d7f62cc954326d1a7",
+    "examples/fluid3d/karman-support.nut": "52887c3b8887b568e2cacd99fe32c92b4f4c2a2dcb24d0f839766b2979c0d7a4",
+    "examples/fluid3d/lifecycle-check.nut": "77f6b4166fc0c7c9e124cd692188cf53a6203284bd8ca06f706cbe604367fa0f",
+    "examples/fluid3d/main.nut": "893299e27b5bd9ff77650cc6e35019d53fdf1afca18737b88502db9ea501e16f",
+    "examples/fluid3d/maze-check.nut": "daae5810758ebd904e445816058f85b59cb43215c21203a68d6732e6756f3914",
+    "examples/fluid3d/maze-support.nut": "b535d58198672cc7c0517ffacbfcf699e6b6a2eb1cea5df144739904556cfe02",
+    "examples/fluid3d/mixing-check.nut": "9fa93626d9b3d987fdf791bda345c233668361d610ab096ea5b0dca642605f0a",
+    "examples/fluid3d/multi-shape-emitter-check.nut": "d1c1ae0fc7646562392f5419f0253de5463c444028729b2e68f2c8c43f770733",
+    "examples/fluid3d/multicolor-fastpath-check.nut": "dc996a0850ad4dc341637e4088b6934bc66940e3ecb1f346f318e7ebeb2fa520",
+    "examples/fluid3d/multicolor-soak-check.nut": "61ff44379815cd2355c0b8539de91d7077517a63e7803444b9a60f175f491438",
+    "examples/fluid3d/multiphase-buoyancy-check.nut": "aca6beb43939e5bc0623f50b5815d7b936d6e8044884fea3b9d8b7169bc1576e",
+    "examples/fluid3d/orthographic-check.nut": "5ed35fdbea48663ce8a4241393142a200216b39340e2954cfcb4110e63eac8df",
+    "examples/fluid3d/overlap-query-check.nut": "86373842adf9e1dde06c6bd38011ba1348b9bf6e70a5d12b8805afdc05db1941",
+    "examples/fluid3d/particle-attachment-check.nut": "59113530ad9f57777d30c6ab9e0df6015ba54dfcf80d9046caac7734a57116d9",
+    "examples/fluid3d/particle-drag-check.nut": "c0d765e02b529fb516016b012d055f869877f1ca6ecb9c536d11dbbe721460c5",
+    "examples/fluid3d/particle-frame-check.nut": "ab18ab90fe76f001c09034e2c7eea2e46c2ee6a468c2e2c98a11a6a1d18e88d4",
+    "examples/fluid3d/particle-impostors-check.nut": "9161c692c42ea92de04872c4e0ef6ec451b1116103f123e87ecfa0c6b42f3639",
+    "examples/fluid3d/particle-instances-check.nut": "78660f71ffd5e1a44ea20634f50f7cbe7096c36874233b5b764ef2f6f847f504",
+    "examples/fluid3d/query-material-check.nut": "a6a290eaf3e873ef72296f28a2cdfccde133b3129653fbeb0b11ceb3cb76d9e9",
+    "examples/fluid3d/random-velocity-check.nut": "c3aee12a2eef85d2921c7caac5a38faadeda229b06f7770b24db196db9f302cf",
+    "examples/fluid3d/reflection-check.nut": "f6f891b894bb2206edc90b964d42eeb237470e85b7afce02525e6113aba0153e",
+    "examples/fluid3d/refraction-toggle-check.nut": "08ca224f006fad744192e76f3642f4ec09c91829f0b82b546248235ee31db57e",
+    "examples/fluid3d/sdf-slice-check.nut": "d33313772ccff7ea76e726ebede0e661dceadec00405242b53f8a876987f8672",
+    "examples/fluid3d/shape-color-toggle-check.nut": "f6808ec020049b34b08c1f3c1575f303db016dc2d9f25686f64f79e6a01fe980",
+    "examples/fluid3d/shape-distribution-check.nut": "27286761acfdd0957cb220de96c7ddcad4801ec983d6b79e8768e7847244eab1",
+    "examples/fluid3d/simple-fluid-check.nut": "76cccdfaa7ddf61080dd5c60cd36424ba9494967dbeaef7cf0a97c6ffed2b016",
+    "examples/fluid3d/soak-check.nut": "dfb280256d5eac8e0567d1ca205a28f25e10654326a6944ada81522747279f35",
+    "examples/fluid3d/stitch-check.nut": "e31f4c6b47ee7c29b1c8b5ca3cea3bdbecdc99acd963f33637558ce7163c3799",
+    "examples/fluid3d/surface-blend-check.nut": "c3a765bf98f7cd957c2730e767a6587056d45ace573c941bfe4ff7026add0b0f",
+    "examples/fluid3d/surface-blur-check.nut": "5542e99a68567ce2534e610988303125a0e9cdd1874ba259f220fc29b88951e8",
+    "examples/fluid3d/surface-disabled-check.nut": "504877ee45ec52ed147df300f4b432cfbb48a9076c8acedc766988f56b268e35",
+    "examples/fluid3d/surface-interpolation-check.nut": "0c359e7e5ef8c623150d5b5467afc01614be734b2f1ce720276eaa09eb90b719",
+    "examples/fluid3d/teleport-check.nut": "9580bf518848113492e5c6b7c40db62731537fe0d4d48e617885b1fbfc39c1d4",
+    "examples/fluid3d/thermal-check.nut": "ba91863e99892df955ad51f52109103e3a08193dd1b93ba383089241c1b64d28",
+    "examples/fluid3d/thickness-cutoff-check.nut": "f35b9725f1671c03ddafeca86ee42a06f9fa2ef9c7801c27ec6689e8314af0b9",
+    "examples/fluid3d/viscosity-check.nut": "67f17a377ba39109ce88e655fbf6025f8cec04e4d4fa82e9bd72c46668a268b8",
+    "examples/fluid3d/wave-generator-check.nut": "4c026e71139eb85c0614a852d4773eeef1883da371e6a013147e68f23c418976",
+    "examples/fluid3d/wave-support.nut": "715f6af288809942fcffe4e3cd63d6af1c14ca6351d07a77df606fa258934c4c",
+    "examples/fluid3d/wheel-check.nut": "ca6a6906016f70c986990e9c4ea49dc6b7bca159818024ac90089cc493cd547d",
+    "examples/fluid3d/whiskey-bottle-check.nut": "67bb2fc4531e332af1de7ae5b8f9044d62bf5164aedbed995818a49d6bb98b28",
+    "examples/fluid3d/world-gravity-check.nut": "bee3fe0b551af3fd6671a016c906eaa4a3de0d340a0dd2d75298f7a5586640e8",
+    "examples/fluid3d/assets/emission-ring.obj": "e70811a4de8e9953ca37aef240ef7d2f493b9baee0daa086bfb4ca44c213cd88",
+    "examples/fluid3d/assets/whiskey-bottle.obj": "cf99eadd8d5cbbefad54125f4a2086cc86dda177fae43315553f0b51160130aa",
+    "examples/scad-watermill/config.nut": "a559b9393fb2a562ed5831659264a589d7463c994e10df9e67bde9c628c5a618",
+    "examples/scad-watermill/main.nut": "e69f09cc2a7a55cb80cb7659b3cbbe61f3994f56c5154bdbe797a34f7b74fce4",
+    "examples/scad-watermill/pose.nut": "7957ef0c10b50f018453e7f5298f1911084b99fefdce94a683f3251bc7c34fae",
+    "examples/scad-watermill/ratios.nut": "bb583fc961ab580272859361ca327e6f85e79f9fb8154cc25ae1f843bcc8ffc7",
+    "examples/scad-watermill/assets/building.obj": "45993ee09b916a584005bcbd0620fa7757bc783a0f319512adf4d697f2620b5a",
+    "examples/scad-watermill/assets/drive.obj": "1611863f050760077db974ff7b0f4ffd565575fc35b5c34b0ecd5b3430bf5950",
+    "examples/scad-watermill/assets/hoist.obj": "f7dbe45ddf9987d94c35bbfbd5706b306281f5704ea167b2d5352afb6e7fb4e5",
+    "examples/scad-watermill/assets/main.obj": "0505e25b71de3fb0f6cc00b002a1fe3dc59f4753ce75928999c8a407dbe9e44f",
+    "examples/scad-watermill/assets/materials.nut": "b64cf85aab6c1d57c3777171dbd36ec09bd559789ef3e4104773a863243c978d",
+    "examples/scad-watermill/assets/mill.rig.json": "ca4dd2e453fb64bda24d3134e5fb401551c676270bd1c81db585ff8dbe94843b",
+    "examples/scad-watermill/assets/race.obj": "5eefb780c24e87f2c26a7b9f1c87f8101f7543df80f47f700f08bf893acaff33",
+    "examples/scad-watermill/assets/runner.obj": "fe56da3bb8703b998f53d7725197f98fb611a1fc1daab682f0a01af3d6891dc5",
+    "examples/scad-watermill/assets/sluice.obj": "b5e8af7fa36c2d543bdcb2af520d926423b64d924ddac78727b489da6b963709",
+    "examples/scad-watermill/tools/bake.py": "5d9926b68c833192c06c7c3de6f902433ea462e4323d7a4d9a0c4ae390a873cc",
+    "examples/scad-watermill/tools/design.py": "d9b6fe72aa4ac7ba6d35c0e9c0d8205aca189ad511388d05e2853d9d5096ecdc",
+    "test/integration/asset-pipeline/particle_effect_color_contract.cpp": "9ab8143e1070d1632f6c338bb4d40b788aa997b567fa24e253f4817d6fd1a5dd"
+  },
+  "galleryAliases": {
+    "daynight.png": "97a9fda9539135f4898ddb18bd35b28ff4c4e421ef15a4dd7254cbce505fad20",
+    "procgen-nature-quality.png": "ea015eafd05c5688969812d0336b6ec8ca664106de73799e7fb8a67ccb662aa7",
+    "waterfall-demo.png": "743a561ba1b60a9f583ff310d4e907be164fda105e76132bfe9777659f9d6c79",
+    "metroidvania.png": "c1dbbd892cf5246f439325ff383f6d28276595ad1a9d893d3d3cb33b60d17e2c",
+    "weather.png": "2bad362682739e209f9fc03dbb1c09bc21617301ba3489d037237f5389e59e20",
+    "fluid3d.png": "c9e35387de616177a823b95edf8f7e1dbf7a9e2d8e85ef732f2f635f26307808"
+  },
+  "previousAliases": {
+    "previous-aliases/daynight.png": "9a6087b0a8e6dd88a970b67579197ae5d07cb06728bdb2014ab3935af1f12a2b",
+    "previous-aliases/procgen-nature-quality.png": "810db775d6203d2aa46b370bba859e24d69a4b727308e3dbc938ca0cd9d5818a",
+    "previous-aliases/waterfall-demo.png": "4479fcf594684e7eb87a33b4c56f681b595b9622ff6c82f710b2ad5e2885cc21",
+    "previous-aliases/metroidvania.png": "c3b4355315ef6d8ad427726653312a9885e540c9dd29b5e9d776fd6ce13c9685",
+    "previous-aliases/weather.png": "1ab4e707e5cf76f3bb32d8c32765ac3d3e4def0fac7c181d681fd35cc473e2a4",
+    "previous-aliases/fluid3d.png": "668d7633822a44c747b55e608e29eb1d6dc29260b4524dbc5f1573857b08a85d"
+  },
+  "validation": {
+    "native": "particles.effectAsset.authoredGradientsSurviveLoading passed, including new real flame-jet gradient/alpha/texture regression",
+    "smoke": "10/10 standard 2-second examples passed; final dungeon HUD revision additionally 1/1 passed",
+    "gameplay": "existing metroidvania 8-second keyboard replay passed without frame/runtime errors; map generator route assertions and map-relative texture assertion passed",
+    "python": "new asset generators passed python -m ruff check and py_compile",
+    "sourceQuality": "make check CI_BASE=HEAD passed; default make check failed only the five pre-existing unchanged Database.h API lifetime documentation contracts",
+    "scope": "Windows Vulkan; 10 before/after pairs and 12 additional raw frames; no full native suite, hosted CI or browser test; static frames are not a full gameplay acceptance"
+  },
+  "architecture": "Result checks, resource ownership, source-owned reproducible assets and existing module boundaries preserved; no engine public API, ECS or persistent-format change; no architecture exception",
+  "unknownFieldPolicy": "ignore"
+}

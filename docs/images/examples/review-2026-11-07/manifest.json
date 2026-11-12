@@ -1,0 +1,3755 @@
+{
+  "schema": "eve.example-gallery.capture",
+  "version": 1,
+  "date": "2026-11-07",
+  "sourceRevision": "d9df15920770e3cc6dc16b38fc5483d8aa995058",
+  "runtime": {
+    "version": "v0.6.1-dev",
+    "git": "1b62421cf4de+dirty",
+    "built": "2026-11-03 09:38:26 +0800",
+    "configuration": "Debug",
+    "sha256": "9bbe7b3f167df714db19ebeefc692d4307846a86f2f11db2e7a0eef6f073a019",
+    "dlls": {
+      "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+      "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+      "EVBackends.dll": "5f55afecc87fb7b121b53548cddac04d3b51a3b3d2349a4ccd8114be0358b298",
+      "EVDomains.dll": "3c9fc392b79c830bfb5d6adbd74c5be43b7824888bdbe04946b010ceaa3b7ab1",
+      "eve_imgui.dll": "53267662c4b913fc5b6183dc1d7b78b9b880a19955506c43c281577e11e7ab92",
+      "EVEditors.dll": "be012dc007ad131f473c9331502af6e082ead334fb466f939c849e0f184591e0",
+      "EVFoundation.dll": "c0a79d726d4323bfb7688d1c321b66a156718e58a033445655badce4363f500e",
+      "EVOrchestration.dll": "a06dd07f670dbd4aefc40a2feae24d08ba2219291ed893f0ca752eedad912a23",
+      "EVPlatform.dll": "5046899a15130cb3152038740fe5a909783f509080b0a1f581df69af0f8da4ff",
+      "EVWorld.dll": "651c212d605d612d9bb6c1cf6baf400b8ef3dce353b8c6337695951d2660e10a",
+      "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+    }
+  },
+  "method": "scripts/capture_example.ps1 + capture_root.nut; gfx.saveFramePng; standard repository load.nut",
+  "captureScripts": {
+    "scripts/capture_example.ps1": "6730fccdf933d991dc4f5cb36ef77f703c20b94d8af5c39652a326abd11dfd45",
+    "scripts/capture_root.nut": "9e08556cabbfd6f2dae9b9d8382c04ef3d14dc24876218f55ef9c3ed90867567",
+    "src/scripts/load.nut": "010b81cb3a80004f282d88baa77aa5a05db268e5af1cf868bde9d12833c88a65"
+  },
+  "captureScope": "All examples/* directories containing main.nut; startup frame only, except named gallery presets. Live dt, not a deterministic replay. Runtime is a separate local build, not repository HEAD. Main/config, per-example shaders, capture scripts and runtime hashes do not cover every asset or imported script.",
+  "results": [
+    {
+      "example": "advanced-ballistics",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "3ae658fc86f46678f76157a2e1a2e4a98d2b4354e13dfe3b92c55f5004ed8e17",
+        "config.nut": "ee2c1dda46b3aee10fd6f25de2c079e406f00aeea3c42e829545f6e093133604"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/advanced-ballistics.png",
+      "sha256": "74d2c0642df6c41aed018648e5512f63d4bb03f9111656a179fb86262de5e771",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "ai-game",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "ba39b177e2c062d617e209f23bbc29b4ecb6efe99ac114b9f4dc6e37c11923e8",
+        "config.nut": "698e31347e2ff82bdda9a74775baac1b71693a20971daa3ebc3656aaf9d0919a"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ai-game.png",
+      "sha256": "59a989d3a23aa7b9c005bb405e463383375972f9556a6855c19d97ea1b2634b9",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "example": "ai-stage",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "f29179675102f0dd1c8422d1c2d2bf46606f84a91db0fc686d4d3b5ffd7f853f",
+        "config.nut": "3a672baab05aeeebdd04eafbcdf5fccf28655d18856383a286c72841fee4610d"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ai-stage.png",
+      "sha256": "3412fcd2a1156515d1a71790dd58c09067138aa5435c9967033e42c23e27f361",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "example": "animation-clip-editor",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "89584ff709d991581157ad95044727c41d9108271f89f7995e7227426b17b52a",
+        "config.nut": "2ec3f13871305c8c81bd87ff3ea234948b90be02892bc49aa25442356e96db47"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:22 (buildWorkspace): the index 'EditorWorkspacePresenter' does not exist Stack: game:/main.nut:22 in buildWorkspace game:/main.nut:175 load.nut:922 in main [startup] eve_init done: 1136 ms [startup] first frame begins: 1151 ms frame error: game:/main.nut:183 (<anonymous>): the index 'update' does not exist Stack: game:/main.nut:183 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1161 ms CAPTURED <local>/build/gallery-review/animation-clip-editor.png.capture-d91b2f4fac434b6f930271d691a2a57a.png"
+    },
+    {
+      "example": "anime-character-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "f3701516b19b5eb804aa4f1d80c0badbcf34bee24297fcad3c8bf851eca061fb",
+        "config.nut": "27328d4983735017ae812b6415f4694218d187c08b019ba3750f6799001d7c32"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/anime-character-lab.png",
+      "sha256": "caf99719790e993df06b82965cca5a28e0d8519c80ed1145df225ae87bcb04b9",
+      "width": 1200,
+      "height": 1000
+    },
+    {
+      "example": "archspace-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "f9a8831b04719be27a2caadf9db18da220767b333d23f53c27b2ce85e260f156",
+        "config.nut": "009f39a855493e6988fa243f6a3b2bd4d5cd2762817cb664e390862d40c1e48c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/archspace-editor.png",
+      "sha256": "6a1d4670981b28d9ffb0799f14df5a3c08ea434affbe981a531abd4319923550",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "archspace-floorplan",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "1d84fbf5f343fc6e46c63da8cdece142acbe420dda0c4704e783c3f97e52ba3b",
+        "config.nut": "102478b69afa9b91d61f86a9d40223dd18f585654ec6996c34fbc8c3a48bf74c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/archspace-floorplan.png",
+      "sha256": "81dfee74c794ecadc4778c906918570c5fbcbe32d5b588a28ce1e79d2b858c15",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "armored-command-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "e1f35edb990d09d720d560f55f4d0fc7a3fce2cd3e24a73916aba2941abf1a30",
+        "config.nut": "d83d078d35fec544e359a0f74248aece27dec828550163e585419336d66cb583"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/armored-command-3d.png",
+      "sha256": "4ac2d6280c5e93db22e2767f1c23807fd5a1de0edec9116f4c93550826d9aec4",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "arpg-loop",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "b4eb97807b093889efe009e32d2a3e26ea803bf46082d815fc17a0fbe52003d5",
+        "config.nut": "823509b0d7c5a6427dae43ee3c2d1f64f92bbd59a051cb31608792eed20834ea"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:126 (<anonymous>): save directory unavailable Stack: game:/main.nut:126 load.nut:922 in main [startup] eve_init done: 660 ms [startup] first frame begins: 683 ms frame error: game:/main.nut:117 (observe): the index 'getCurrent' does not exist Stack: game:/main.nut:117 in observe game:/main.nut:140 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 719 ms frame error: game:/main.nut:82 (simulate): the index 'getCurrent' does not exist Stack: game:/main.nut:82 in simulate game:/main.nut:140 load.nut:1106 load.nut:1163 in main CAPTURED <local>/build/gallery-review/arpg-loop.png.capture-93e92435f3af44fe801555294c5ed7d3.png"
+    },
+    {
+      "example": "atmospheric-fog",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "0ed06015ce665a5caf8aa9377c8e252da02facba3c7d1d2cf86b7d09341e3b20",
+        "config.nut": "f662c70546166610e733a15bd5c7a9b90f2eb6b5bc6c32036a99b5ed3d36eefa"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/atmospheric-fog.png",
+      "sha256": "ee4a16423ba819a4c85971297b61ce2550dde9f837d971035d445c45d5087558",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "attack-vfx",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "442a6317b6db45421c5d248ceec81397ecda29b9121b59ed7716f3cc92823fd5",
+        "config.nut": "ee5e73c227779e1ba4ff4884dedea1d140497453c7097b404a927cb616aa1a3c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/attack-vfx.png",
+      "sha256": "5df3cfd12cd5b70beb2bd852578dd405a80666f1e60daca83f7802e101ca3cbb",
+      "width": 1100,
+      "height": 700
+    },
+    {
+      "example": "audio-source-editor",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "816bfa0a5178f6cb868f61e1bfdb059c789aab7ce8dc6f0fb536c83bfca277bc",
+        "config.nut": "31fe251f886b91d235138adb3c139ba2df5d52ccf5b16e4b7fb0b022e763d9ab"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:22 (buildWorkspace): the index 'EditorWorkspacePresenter' does not exist Stack: game:/main.nut:22 in buildWorkspace game:/main.nut:120 load.nut:922 in main [startup] eve_init done: 1068 ms [startup] first frame begins: 1083 ms frame error: game:/main.nut:127 (<anonymous>): the index 'update' does not exist Stack: game:/main.nut:127 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1100 ms CAPTURED <local>/build/gallery-review/audio-source-editor.png.capture-463e3f62bacc4bd69fbf0b75183689f0.png"
+    },
+    {
+      "example": "automatic-bridge",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "4f66ae527eee84399b5a5d4a1cbdf578433d7dbf1df2f8f92edcf5f7bc1b410e",
+        "config.nut": "619d59a276fee8c3850a84b039a0a7b86324d88d150e10a2cc3bda17a2c61ee2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/automatic-bridge.png",
+      "sha256": "6d24bceb45d8d8aaa6b36c4802ef8ddf1bafad090081d4025895bb7b014ec2e8",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "example": "autotile-production",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "ee540236247a35454f4f021425f0d3c21a245f29d818e422c36ee8b19daefe18",
+        "config.nut": "8bd6a6701337b3ac7e4494ef6933bb08e25fbf787f7da5be7a000baad0c370a1"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/autotile-production.png",
+      "sha256": "c716f021e6f7e143e6a4458308d896dd6ddf7f84ab15dd0c6af52c071fef7e9e",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "example": "avatar-document-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "ca935912142497c0297baae943d2a399791e6cce2daea6348cfcbbaf7d30980f",
+        "config.nut": "eae5b31be9f0b58c95e3df87f48ec8a478bb95aa300d2f2a875a9edbe563709e"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/avatar-document-editor.png",
+      "sha256": "2ee4f794bd39ec3b2b7bb1bc004c88319c03327ed53008322225df104b6bc03d",
+      "width": 1280,
+      "height": 880
+    },
+    {
+      "example": "basic",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "3ba278666b05c5002a8bfa504c5117ccaac70e6d6fe0baa07ec37ebbfc499f9b",
+        "config.nut": "7c4b1ef4db615b22d939a8290a36c905e0098c9b5e4be2c83aa4e7e6f55a6ca8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/basic.png",
+      "sha256": "0274517811b314f0e7722dc4e28ba52f89b8fcddc60a3f0edce10e36ec067623",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "biome-rules-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "4194a98ccd12bd5039afd62c54dac0dca3715c9d9b34452c3a9b054b00bccecb",
+        "config.nut": "9362d54ea2a5e16f1e74b0f91652424dd457d40e3ae9502780555b50abdbe1ed"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/biome-rules-editor.png",
+      "sha256": "0c50b4a08a059112c2d8f30f8e6fc4a4136fb06d5e970bfbe91d0c3fbdc5c98f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "blade-whirlwind",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.1,
+      "source": {
+        "main.nut": "0a09e73aafb9c8cc4f4d302cf06784e532d0658ad2cc515e40cde63d03ed502a",
+        "config.nut": "522901fc0006d5d69076a8c15a346e930b5d38aeed07bc9fa4e4eb35e3efa2f3"
+      },
+      "shaders": {
+        "fx/shaders/blade.frag": "1b96618883be4853adda6e40a8f4a8cdd880fa56ecaf376a4ab53e2543fbdd33",
+        "fx/shaders/blade.frag.spv": "e18b5be3a7229e25b06e4555c70aaa9d5c22ef9834522e00d09371f6b9f3f999"
+      },
+      "image": "review-2026-11-07/blade-whirlwind.png",
+      "sha256": "c529a87925a6c59eb011d16a42fca843ec5d0b10e360105628775e77eecce1ce",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "blender_hot_reload",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "b4f0648da11e1a8d458584d4d334271ae6c248e0e2a7669ce8dcbaec3fa1adcb",
+        "config.nut": "2d1636b6136231ec5cd3d90902b9d9370c7af322ad1d62c82ddd54b76e1c14a9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/blender_hot_reload.png",
+      "sha256": "da001ff56aac590643ee9fa37f8a4cc57fe38d8b1feb18dc926840fb3d982012",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "building",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "2d7c73bcc845a31a4cacf2c54791f92a59d80804f927559e49ad158c7f6a6cb1",
+        "config.nut": "58e4b71be8afbe66dc56db4270a06de2617de8b839f389829685c582c9115e79"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/building.png",
+      "sha256": "2c940fe85a807dfcfd2357a70d7f2e8c039926cf73331c57c9ca7bae539c36c6",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "building-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "3562b952c64d0a45f5337bc94942861217454fd9c9434c44dce52ced63b4f843",
+        "config.nut": "d1419f19ade14dff72dfc8b1e0fd4d265483293aa8478ef4a004c89c882512a4"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/building-3d.png",
+      "sha256": "69a860516e21176d886a3f9aae08b8903e12e11200cdbc89a2a83151674cc8c1",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "building-tilemap",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "71284574463c5e5687f9a698907a8f524f8d24652c4989587f5b912d0c7e144a",
+        "config.nut": "2a12c9e8c51cc184edbe3a27be99a53a55f94bad1d7fa1fe5fe544968846bc52"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/building-tilemap.png",
+      "sha256": "44d4996cd663478a7eb421563de3e178b14e03afffa0a8ee2f5ae6271657015e",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "building_village",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "32d998da34dc9f2ba2493aa7364fb2d727b33c3571a1d7be1ec6d1070466ec19",
+        "config.nut": "50a6bc43c804c9999b5742139e4f87d55efa9179ee1f4bd3e681ddaf7d206877"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:253 (<anonymous>): Could not prepare save directory Stack: game:/main.nut:253 load.nut:922 in main [startup] eve_init done: 1900 ms [startup] first frame begins: 1923 ms frame error: game:/view3d.nut:135 (villageMouseCell): the index 'screenToRay' does not exist Stack: game:/view3d.nut:135 in villageMouseCell game:/main.nut:314 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1937 ms CAPTURED <local>/build/gallery-review/building_village.png.capture-f2b81669b6f441b982b5b8dc8db724fb.png"
+    },
+    {
+      "example": "bullet-time",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.6,
+      "source": {
+        "main.nut": "107ea21269c5156ef7aa3d061107cf2c86ad370988e8e44ac19e7bed5b45d28e",
+        "config.nut": "2b0d10f9282a9cef2b8f79110e28f14379077d06b5f3613c13c6bf83f1892107"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:193 (buildScene): the index 'setXRayShader' does not exist Stack: game:/main.nut:193 in buildScene game:/main.nut:431 load.nut:922 in main [startup] eve_init done: 2248 ms [startup] first frame begins: 2267 ms frame error: game:/main.nut:486 (<anonymous>): Type error bad cast expected: INSTANCE got: NULLPTR Stack: game:/main.nut:486 load.nut:1121 load.nut:1163 in main [startup] first present - window shows content: 3845 ms CAPTURED <local>/build/gallery-review/bullet-time.png.capture-5b84ceb51cb04872b91a2b59eb2b4892.png"
+    },
+    {
+      "example": "bush-fog-volumes",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "6e099177378465aca872abeef0615dc2c20b1518c5952b81008c3eea9439856a",
+        "config.nut": "bab8e4c3be819d3d9d4907d4ae7dabc5f9dcce3e3cb6c1baa884a0f01a1cde60"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/bush-fog-volumes.png",
+      "sha256": "4fb5b77dced91e320c9d0efcd2e1537b51d2849b67d8246856a0be5bb9c17979",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "bush-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "81441dd404123047ba13ac760f885dd840f8dedcaecc92e41249d44128fa1a13",
+        "config.nut": "df0038aa2405039bcc3835092dd79731f9baf3582a7a8b79d78a72c57c6dcda4"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/bush-generator.png",
+      "sha256": "a47944f12b364432bce24aeb5e48a9ff2131afad4358695a04696f6313f8c676",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "cable-chain-rope",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "6a493e7452132579b2ea4d1ee70ef8ed79f7bd7cdd1bbe00de01dae89584105d",
+        "config.nut": "4b53b4c58da8620984310389789a5ceabe9e8c32ad64977b031dfc379376c72b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/cable-chain-rope.png",
+      "sha256": "24424bfe0a94caa7788d04cd7e6bcd9a49273c9e5fdcded0e6b299b4219cc508",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "camera-controllers",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "bf86c8abf94bddeefe1da97868195033b0034d36e09ef76ae3ca80e83035e699",
+        "config.nut": "0d473deb31767ca8a5eb0bcd083ab45b61eb42722d4c743f6413625928a18fcf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/camera-controllers.png",
+      "sha256": "08b84fd21cc093bc82107ec752d837df77242bbd72e4e74ed12ce58dbc5dc02f",
+      "width": 1180,
+      "height": 720
+    },
+    {
+      "example": "cardgame",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "38d90248d12c22b9ce921640b25beb803fce72931565438190e77dd2d547e36f",
+        "config.nut": "60a9b905a91b684d8f426f810dd0815fd5df7f2a97ecb8b7ba42425703a8c811"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/cardgame.png",
+      "sha256": "e61dfd2af95bc063bf5aa7a2184217ff42969ced8cdcc047459713b7cec5d1fe",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "castle-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "d5cff18bac092e4a6a0d07935a8169c868a81f538d36fb62b1af864b3122d8aa",
+        "config.nut": "8ec953db85dd018d362618c1ba9080158ce7cb954d265bf32af913b236696b7b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/castle-generator.png",
+      "sha256": "1b41ca6573ae7ddf61b88b4598a5311bb51bc8a10bbf4967d6d79803ddc33bbf",
+      "width": 1100,
+      "height": 760
+    },
+    {
+      "example": "cave-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 21.8,
+      "source": {
+        "main.nut": "d8d9211ca0be197c6d760bdf3e9d1603c26aa602865afec2b348a841e6b555aa",
+        "config.nut": "576ec7a34bb774de685380d3077e00490b18d4a0dd8862f99f1477a068202dcf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/cave-generator.png",
+      "sha256": "ac7aaeaad3090978a968676a7e1e16967100e6fcb9f132744e3aa5db1b90b779",
+      "width": 1200,
+      "height": 760
+    },
+    {
+      "example": "character-atelier",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "998d207f86c95e45ab622bd6b7ad2fc711b234d3f721c88cdf2f05153c7cba04",
+        "config.nut": "d934bd4d419ccc9c4e4b2c1f93764c64864f60504f762b2f93ff3d0b3ca96ae5"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/character-atelier.png",
+      "sha256": "770443b690e7a43effe2c0726305f64a475ad386874353212b9f1562fd0d2684",
+      "width": 1560,
+      "height": 1000
+    },
+    {
+      "example": "character-cape-hair",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.1,
+      "source": {
+        "main.nut": "8abf41428ad0e03c838dd09854b567426d326ec040c255caf1ea798913a97007",
+        "config.nut": "7279aaab59a3d1937ecdc357acd3324ab64879c7fcfcf300f155d6cad814f96e"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:235 (syncCapeProxyColliders): the index 'setColliderCenter' does not exist Stack: game:/main.nut:235 in syncCapeProxyColliders game:/main.nut:608 in buildCape game:/main.nut:711 load.nut:922 in main [startup] eve_init done: 2615 ms [startup] first frame begins: 2630 ms [startup] first present - window shows content: 5777 ms CAPTURED <local>/build/gallery-review/character-cape-hair.png.capture-432dbcf603974c11bd44d7f5985803fe.png"
+    },
+    {
+      "example": "character-motion-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.1,
+      "source": {
+        "main.nut": "26761de831e9582bd98b76aa10f386c970e90b2daf0fd85acdfc7d614cab8ab5",
+        "config.nut": "fb43307efe767a8d42f159491c3ae2fb99653dfe1c69ac21ec8d0c0dc03ce69b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/character-motion-lab.png",
+      "sha256": "e059b7daf88cf4d9f4cf4e7803b8668aa5ab7c7170e190216586e37c750f96dd",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "cinematic-story-camera",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "57a93f0d797facd53a5b7707a444688641749a92f01af36f0a2bb72dafb974a7",
+        "config.nut": "f44879245d6e7e92f1875a19f0a3deae25861312ccad67870f5158dffce80895"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:103 (setupCamera): the index 'CinemaDirector' does not exist Stack: game:/main.nut:103 in setupCamera game:/main.nut:133 load.nut:922 in main [startup] eve_init done: 1182 ms [startup] first frame begins: 1197 ms [startup] first present - window shows content: 4457 ms CAPTURED <local>/build/gallery-review/cinematic-story-camera.png.capture-241627b1650945c99057af4dc481ab4c.png"
+    },
+    {
+      "example": "climbing-motion-matching",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "1bf681afab42abd2ba228056741f927fb119beaf8f437b5313aa6cd8f11317fd",
+        "config.nut": "45014f88eee931b468cb524a09c24b79f643164dd4e9453466350f59e04b3bdd"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/climbing-motion-matching.png",
+      "sha256": "e33434355d337673731d1519aefa862d1bfdbc1f0933d2400ae2bf202a94460e",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "climbing-playground",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "db442301e7f94fa58856847bb6526d2f19bc8966e0fde31dddd0cd8fe10c0b85",
+        "config.nut": "ddd28184aac9d6377cee755eab2620e1ea32cbebb2ab1a59dfb214b9ec30b6df"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/climbing-playground.png",
+      "sha256": "0f270605ac2d431de14906fc908d2c9a9ea2a9dd0280a7787b8487abb899929c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "combat-action-editor",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "751a9dc07844fcce87f712a79c98a8cf959587373d93dfc37fa51c161651bb9b",
+        "config.nut": "c5781fd19e8a910fe704e9720c21082554854b5c3b58cf6df9247842bae749f1"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "combat-arena",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "65eba37689b70ab84c4467d13c714c943ecc087f6724d00fabe9de7e8c1f5bd8",
+        "config.nut": "00eeff25ebe6f699864e01b2fb4f803a43ed7ed75ed5f9ff39f9b4a7d86bbf73"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/combat-arena.png",
+      "sha256": "861c3e79eda530af4cf25f0986b2ad8c5f1203f675a19eb81dbd17fd947db532",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "commandery-rts",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "f828ab5ce5b9be5e5f1d5b16b7215c3ba15d9bc150c37fe2d6385fc2e02790f1",
+        "config.nut": "a99d8d39e51b9e25c23a8ea490dc5fdd9230481d3ad64105b73f1c2f23e3dc92"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/commandery-rts.png",
+      "sha256": "3ad55c2bf72df5c3bddbbd64b7b2760314c30d60932872170e0724cde33f2adc",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "companion-tactics",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "0618a6854793d52be98908739aedf54f4fc285179cdb9e3564922cd757f2e71f",
+        "config.nut": "0463c65398546603fb3b989b997124a9d41622cf0406ae5a2ad653386af3c5c4"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/companion-tactics.png",
+      "sha256": "d65904968be4ba6afe959b9400a79eee5e38d3d5fc752839417e28d8dbd00500",
+      "width": 1360,
+      "height": 840
+    },
+    {
+      "example": "composable-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "879c1bfe828134f037afc78b6bd736b80bc121a26cd4c23b29228513a3418f62",
+        "config.nut": "a05dfcca4e7884baa4b50fa01da79ef0c4983f9476aa4e999ac759ac56eacfcf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/composable-editor.png",
+      "sha256": "7236bf880fc9994213006cfcf8847a76d086b9f8b82abb907f74854a9afccf93",
+      "width": 1280,
+      "height": 760
+    },
+    {
+      "example": "composable-rebellion",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "e4ac18d18dc84437b0caec3d6ae9dbada2e2bf1faecbd3dd0b5fb51b19c58e58",
+        "config.nut": "a179a05b522bcd36a6a440920a0e3832e0dbec32c31c97823c9f359b9c5324cb"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/composable-rebellion.png",
+      "sha256": "bcb850eef5215bc366b37ccd25a9abaacd5958a6f57f23ed05e14a4f771cd72e",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "example": "control-rig-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "6e53304d5f4a6b532d4f71acc88cb670befeeb3e93651176a19b05025b8cd4d5",
+        "config.nut": "1351656c7156d04d998adf9ded3a1f23478e470162d9bc5b070b28aa7cf4f5e2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/control-rig-editor.png",
+      "sha256": "4bc4d80070d8b4e86da26b02c96e13db48410a7be035d0b368092c1f5fcb8dd1",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "conveyor-belt",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "1235df1dc194d176e790052968076cf03ed80fca2494cc66a3e3b3128413bc8e",
+        "config.nut": "fa65ea3cd333d807b8cf28998893cef423c6bbdb9332b3ca86fdc7183a978ce9"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:104 (buildScene): the index 'setAlbedoUvScale' does not exist Stack: game:/main.nut:104 in buildScene game:/main.nut:170 load.nut:922 in main [startup] eve_init done: 1038 ms [startup] first frame begins: 1054 ms frame error: game:/main.nut:189 (<anonymous>): the index 'setAlbedoUvOffset' does not exist Stack: game:/main.nut:189 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1066 ms CAPTURED <local>/build/gallery-review/conveyor-belt.png.capture-5011147c293e4696b5ff97b9856b0249.png"
+    },
+    {
+      "example": "crowd",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.8,
+      "source": {
+        "main.nut": "a290b4a7a096909232e5afeb25166b15b681244a72e79d1e92b339d745f1809d",
+        "config.nut": "62498d58c2f823fc5c82682c9143dda311f29cb1ef6b34ddefdaed605f2cbbaf"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "crowd-battle",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 13.6,
+      "source": {
+        "main.nut": "258005b11d7e7e878991deb2625bc3dfbaf23285493dd9c366b6ce2a056f89d1",
+        "config.nut": "f951ffacbdfdf1fc6649b76b5af79a66ecb04c771027b80d06ceac831bd78452"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/crowd-battle.png",
+      "sha256": "f8bb5c12c5cf7d3d72f7de1ca0921d29765e394fe289045be0dc211d1c51594e",
+      "width": 832,
+      "height": 640
+    },
+    {
+      "example": "daynight",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 31.5,
+      "source": {
+        "main.nut": "0d22048ad799cc761cf3487523cb12842b68e6489f5fc5af1fe8bb278728d682",
+        "config.nut": "e056e26454abeeecb39dae221d06a34869d46af2629fc33d8a8028b50e998f9b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/daynight.png",
+      "sha256": "9a6087b0a8e6dd88a970b67579197ae5d07cb06728bdb2014ab3935af1f12a2b",
+      "width": 1024,
+      "height": 640
+    },
+    {
+      "example": "destruction-basic",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "451434465f7cf7a4c04377f71c0e0a803103f7d69fdb98946fb7ebcedc945843",
+        "config.nut": "949d0636852846676374a3011f4e6180126906410d90f90c1ca892454b134097"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/destruction-basic.png",
+      "sha256": "a18709b0663efd7531d0d8e4238496abcd3f351ed575bd3f67b81514c33dadcb",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "destruction-clusters",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "3c0247e4d44ffe01877e1234bf9ec5a71e30d52258e9a7537ab85fa22dd69b0e",
+        "config.nut": "4c16414f76a6c34895a91fe710eeabffcca3ca6bc41ba4b750cc2627f84a7278"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/destruction-clusters.png",
+      "sha256": "081c044238480488ac5d3a0af7191750919103c5c6a946bb42b280842eba6b11",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "devlab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "c785009ced9a728732335668ccc3840d60b1e1764c25814bf8d98c6b89ac9a4a",
+        "config.nut": "c939e9cadacb251e8c96ff5a494fcdddb3f465049e13e4403e55249f9369824b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/devlab.png",
+      "sha256": "e5cc6a4b3636a722592dc646bc24679f8746484d93dd6f509b322d82931057b4",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "example": "dialogue",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.0,
+      "source": {
+        "main.nut": "bde87f5a6c5413d13a78ce1b5363985fd7e42a342e0331c89ae11b911adbd910",
+        "config.nut": "b5d95a1521b0ee925356ab81eba0f0b913656f0882bbdd3fdaf239b8033a9792"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:170 (buildUI): the index 'make_default_dialogue_ui' does not exist Stack: game:/main.nut:170 in buildUI game:/main.nut:270 in eve_init load.nut:922 in main [startup] eve_init done: 1266 ms [startup] first frame begins: 1282 ms frame error: game:/main.nut:294 (eve_update): the index 'consumeChoice' does not exist Stack: game:/main.nut:294 in eve_update load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1317 ms CAPTURED <local>/build/gallery-review/dialogue.png.capture-60e20d9cf65848f5ac7787c312ff2a8d.png"
+    },
+    {
+      "example": "dual-grid-material-gallery",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "9cca7d4fc46f9d3bcbcee5cb7e6b4b2b4b981ab262563221c167c62af23ce3fb",
+        "config.nut": "4581f133b3a40b3cebc70ec43f5a760f89f803ac9ee6317f964920ce0044a7a3"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/dual-grid-material-gallery.png",
+      "sha256": "7fa991f74767ddc2361b9fb97d4075858fa4924ee575d42c26cb4ef39a2d249f",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "dungeon-generator-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "a94abb74e82c5e7db108c089de0e2a272df38e94aaa8aa13fdfedf9e81b7f017",
+        "config.nut": "197e62a75d9ded6f65eb3b7acb9172e7156639f25b67409d277fb43ab9e0053c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/dungeon-generator-3d.png",
+      "sha256": "2e3d973badb437276a273d2d573274c852e0fcf8e7e914fda013f926fa06ad46",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "dynamic-water-grid",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.0,
+      "source": {
+        "main.nut": "79e9a76695bc9bb477ceff2462dfb4af8b519e4cffcf7bdc4780274a6ed7d096",
+        "config.nut": "4536cee39f0eabbd24e25ffd6104c16da0780f878eed9b9f8fd46ddf80c6fab0"
+      },
+      "shaders": {
+        "shaders/water_field.frag": "840fa77b600ba982f90c78ad0a9f1f003be6b9624bc35e9340f568fe8092798e",
+        "shaders/water_field.frag.spv": "b4188fa7a13878a8d1a418f28033b69732579307223cb936258e4333f8acd9fb"
+      },
+      "image": "review-2026-11-07/dynamic-water-grid.png",
+      "sha256": "2f55d96430f610c6fb66b852c6a6ce4a30d63165b42f728adcda76385d9d1c17",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "ecs",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "6f028573413eef1105dcf5195ea1c4c5ef2c376604a424a5638132c3eaa524dc",
+        "config.nut": "d9d8eb48b05bc3f407d28eda484391bd3a0a51207042230b5baf96c1375bc13c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ecs.png",
+      "sha256": "c056e8d5e4c7c7b96c9c4b85dcb3a4aff1f7705af2b4d354d5cac50e570ab7fb",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "editor-api-v2",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "be74e57e9d1915f9378c625feb01b7b6696e02a7b8cc01e94b3af100a6433750",
+        "config.nut": "3395a838c92f46f3e07c8b90de09b2e083394d772d1845d0adb9a32cc6bafb23"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/editor-api-v2.png",
+      "sha256": "13d8a1185a7f75c0638584acb8f94da569c79a4c8d3e781c2ddcd05ddcb11dfa",
+      "width": 1080,
+      "height": 700
+    },
+    {
+      "example": "editor-host-world",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "ef80245604038e4a3894df56b7f5ab6913067b79d7e4a027c988dc021ea6473c",
+        "config.nut": "107333ca6b4d9b690416bfcad6b5bc20d03190b137be15b64f4a6cc1b2d3b596"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/editor-host-world.png",
+      "sha256": "5703907ac3cf567e6b2cc360b9a4230eb9118e36e4151aa99311192ed096c56d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "editor-ui-gallery",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "642fb770ea05e613be5a91a7c4e96386ff219c0f6530fc371a3f2badc3ec4f14",
+        "config.nut": "3ff5e1b2fd0c44976648abef623e4805f9839c04e742f421a164ca06e6feb7ca"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/editor-ui-gallery.png",
+      "sha256": "3482ee1fafa87bd852e0cf4dfd011735206b36866902494088d2a2c2729c3cd6",
+      "width": 1280,
+      "height": 760
+    },
+    {
+      "example": "editor-workspace-shell",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "2a893d3bfb07ecf8e97e55ca78d934b16334ab21cc62b163af77a4a29db112f6",
+        "config.nut": "7add1b6edf94adad64198449d313842d986bbba9a9e3e51ff01435c7bc651e1c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/editor-workspace-shell.png",
+      "sha256": "f7b9adf06ad98ee0f652d94089e2321ba5d8656d0a7c27b7d327e660073e2b6b",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "ember-guard",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "757d1315c2a3235c621b42b6f2a2e804a4caa0f4daba75af2a5b0de97bfd137a",
+        "config.nut": "426ababacf7c7f616857fab3c5f3cfbd10a69a2f209318d2df1c9b7cb2330d24"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ember-guard.png",
+      "sha256": "2849246bd9213bd7885db2fe96c7ee09c20c5d0424a159ba853ce29cad259680",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "emberforge",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "6ce51961169c7892bd9cf2f1c12f94aef6001394b9c077119c5ab5b6bb246dbf",
+        "config.nut": "f966a770ba67813ddc5dc6a2a806e79c37cef24877fb493642f59588c5c1dccf"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:87 (ensureSetup): the index 'RPGForge' does not exist Stack: game:/main.nut:87 in ensureSetup game:/main.nut:498 load.nut:922 in main [startup] eve_init done: 1127 ms [startup] first frame begins: 1151 ms frame error: game:/main.nut:87 (ensureSetup): the index 'RPGForge' does not exist Stack: game:/main.nut:87 in ensureSetup game:/main.nut:502 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1169 ms CAPTURED <local>/build/gallery-review/emberforge.png.capture-639ad8e5162e4d9c9b86dcd220d7f2e2.png"
+    },
+    {
+      "example": "enemy-vision",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "4999f40b75763d183758f2082a6e467800a6ce2cee199c0c3adef430c630fdd2",
+        "config.nut": "27ec2e73af0aded0adfaa53231c33e9150192bd112dc8f11e6dc031b43bcc716"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/enemy-vision.png",
+      "sha256": "3db8340eacc87f129e724d7455ae349f509fbead66ff9d748d9078bc96533d15",
+      "width": 1100,
+      "height": 700
+    },
+    {
+      "example": "environment-query",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "2e051a66e1cb7e8f14c523089cf5eb38c29ba9c902022089ab06cda25e60c107",
+        "config.nut": "e00ee0ba32598ac017c045ebaa910d555df08e9a19f6cac1db7215e4ffda6c19"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/environment-query.png",
+      "sha256": "5a27c1921fccca5799b133c27301499a927b3c0325c476d26e037932aee74a9b",
+      "width": 900,
+      "height": 600
+    },
+    {
+      "example": "explosion-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "ee15d623a2dcfd74c05817f5210f15d2e172e7d8cbd97ef5a7112f1a60f33e48",
+        "config.nut": "92455997cac352aa67595df0cfb07fc9fed3c4022970a34a3099edd352e88391"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/explosion-lab.png",
+      "sha256": "a87a2e3f2cd94b2ea18f80deb4c9e1ada202e9cd76545c7d5d19c9828d4c2d78",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "factory",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "419fe327953b97d0b2d32dded47dbd815eb579b35602b86d56df86ba216ea4a9",
+        "config.nut": "b9a54bc79f407671350b0eea5087a176dbf8b521353905f112b7ac284293d344"
+      },
+      "shaders": {
+        "item_pos.comp": "7d245a3dbcaef0a9969e48022a4d1214ecd1f4b2edfd7f6a2875a5af896b002f"
+      },
+      "failure": "eve_init failed: game:/main.nut:165 (<anonymous>): the index 'Logistics' does not exist Stack: game:/main.nut:165 load.nut:922 in main [startup] eve_init done: 1123 ms [startup] first frame begins: 1149 ms frame error: game:/main.nut:80 (drawGrid): the index 'getHeight' does not exist Stack: game:/main.nut:80 in drawGrid game:/main.nut:195 load.nut:1121 load.nut:1163 in main [startup] first present - window shows content: 1169 ms frame error: game:/main.nut:188 (<anonymous>): the index 'getCraftsTotal' does not exist Stack: game:/main.nut:188 load.nut:1106 load.nut:1163 in main frame error: game:/main.nut:188 (<anonymous>): the index 'getCraftsTotal' does not exist Stack: game:/main.nut:188 load.nut:1106 load.nut:1163 in main (x4 frames) frame error: game:/main.nut:184 (<anonymous>): the index 'advance' does not exist Stack: game:/main.nut:184 load.nut:1106 load.nut:1163 in main CAPTURED"
+    },
+    {
+      "example": "flame-jet",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "f113e199add1c9a0ea72e7771ef412ceacb3e7984a45a50c25b3ac7fb4c0a34c",
+        "config.nut": "4036403d622d388dc1eb74bebcf2fdbf350402692c83220c554869b5339bc8cf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/flame-jet.png",
+      "sha256": "3efb3231b617afda149e737fa3ec23fc03d5a70aacbf9293a1d785d5229959ad",
+      "width": 1100,
+      "height": 650
+    },
+    {
+      "example": "flight-vehicle-controllers",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "622ecd36374acc5d6e99e937794538ae2369548a6542013910245dd9ced18a41",
+        "config.nut": "41395a82e7efc6d017c8b15ca8f747f0cb61590b80903859f5dfbe31d20df3be"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/flight-vehicle-controllers.png",
+      "sha256": "b391cbe1654f98e5c7b19d2fe17fa9f56fa3f39e546a0581c712342525c755ff",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "fluid3d",
+      "captured": true,
+      "frames": 180,
+      "preset": "fluid3d",
+      "seconds": 8.0,
+      "presetSha256": "f9274fa3ec4030949670d66dd03adbbb4aa25745436691b14e502db0755724dc",
+      "source": {
+        "main.nut": "c17f03375c2ac1ed4e6ef9994c93835c1347cefbae0a2d52af4c24a4bdea5722",
+        "config.nut": "1fa4492c71cc4cf0ebd5ad0d8b5d53ab1bf3a2bd8171c1ec0ca012db5c32d368"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/fluid3d.png",
+      "sha256": "668d7633822a44c747b55e608e29eb1d6dc29260b4524dbc5f1573857b08a85d",
+      "width": 960,
+      "height": 720
+    },
+    {
+      "example": "fps-arena",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "61e9ef9698f6595f54c6cae157a95d7104ed78af41246bf583643a446a3308d9",
+        "config.nut": "f111f20bec259097907470ed5166c744e667d24b4098c40a9a885d57b5c8ae77"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/fps-arena.png",
+      "sha256": "f876f9c59b952b6d1e0779d5fcd7a3b3a8293674c6a6f88dec7d00aa8ea7be2d",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "galaxy",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "8b579b94960a1984a653cf06bf49d1b761ac385cb065774dab0a57f4cb48973d",
+        "config.nut": "fbbce79227c533c61ef529c28bf0e0b39fe1e857c57936abed9606e1d1882e40"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/galaxy.png",
+      "sha256": "542b7bd823b372af1104fae970659569f75cbbdcc7c27532fd0e29427b63e89f",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "galgame",
+      "captured": true,
+      "frames": 120,
+      "preset": "galgame-story",
+      "seconds": 7.6,
+      "presetSha256": "264e3b503e0f1743393b9519670ff9b486db684986aadbf14095213db4111d34",
+      "source": {
+        "main.nut": "73cdb9453cf1b2de7087790ec6a57f761c5938c5851ca4921cf52dd1c8dd3351",
+        "config.nut": "d8a161c47d09541b5da540023ce530081bffc5449081e5c7bdf8cced18624e89"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/galgame.png",
+      "sha256": "55f733cea2336596dcfefe6e089adc617b6afb58359efadda61a243e0fed4dda",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "example": "game-tutorial",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "9f1f0209963da573f8514e5a816de3e3f69b6efccaa9671e9fb94f26f607d983",
+        "config.nut": "8d25af128dd57e8a50ae6a7fa89a89f8976cd3447599aeec77ba6abf37d72997"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/game-tutorial.png",
+      "sha256": "1e4962973e54de46bed92a3217e675778d7245b7db2ca62e13bca40a09811412",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "example": "geometry-stroke-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "af2a4784c5737f3b67522fc3f88e75b39a3da8701655616110a80a4341cbfd6f",
+        "config.nut": "fb586182fed42a0aa77ab956e0b6f925ea2d6753bef1164666d417592a205eaa"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/geometry-stroke-lab.png",
+      "sha256": "b65f185fa4417cd438fb9411bb1c3673b4f439e64586673f95da3e2eed8b11b4",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "glass-crystal",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "c63a12f8a312adc4f5e755c817f0079b03f23548aac2ddfd95a7870055308350",
+        "config.nut": "9e663c2fb1ea830cfb9178b38b03b365ebaefb61fd4e437d2a0b537f10cbf0ef"
+      },
+      "shaders": {
+        "shaders/dielectric.frag": "cdef557ded3f6419d5967dee1b95f7447cae16c6da6566c9312428822faf11f1",
+        "shaders/dielectric.frag.spv": "17e34edf409815ca1d0ddb825faf03ff2febc21b772c23863ade8a4a7074c59a"
+      },
+      "image": "review-2026-11-07/glass-crystal.png",
+      "sha256": "5491300596f8832f1c2c9b866d660aaed4cba30a88f963791522fb20fd054457",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "gpu-agents",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "3682e8fb8ce2ed0751c360ee42e92e7c07577cd00ecb607adcffe7e415de2b35",
+        "config.nut": "23d748b492e86d0b3f480834c8dfde5b99dfc92ec3c623b084a623230e9f0872"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/gpu-agents.png",
+      "sha256": "1f4a3196ad4752004cc28395a24cf2993d9d64626bccb478a6b76e08e89da9a5",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "gpu-formation",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "26ad35fe80a6ccd989886f70b97eff0d0f2f79a769b4060f93bc2bc6d91acf77",
+        "config.nut": "212ec31d1f420de62e06d6be7e306d2d05d622684557316e08a32ccb14de7cd3"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/gpu-formation.png",
+      "sha256": "6f834408d1b23fa0f5718924424230b6ec8f6ad45ddd8eb82eaea0438f640909",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "ground-fissure",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "61476ac5d186cbbffb4cb7ff4458f5b17f69c0dccb347fb976378f518168e527",
+        "config.nut": "d7bb55c5ce239c57a2372be99fcf5842ea7b5ca1851dd4608f7f2d73b1fa0d12"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ground-fissure.png",
+      "sha256": "4aa2b8f1ecfc97a5449df1c79945e4791a72b147b3b20d40980bcdc2e9d6fc95",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "growth",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "fa5f547fab6740b94c0d6210a5da9406543a61426c1318381f397e7b14331bd4",
+        "config.nut": "8db7589063a93d975ec2adce9b3a258ee82d4511d63d493fdea9ebb328dcd6e0"
+      },
+      "shaders": {},
+      "failure": "frame error: game:/main.nut:74 (ensureSetup): the index 'Growth' does not exist Stack: game:/main.nut:74 in ensureSetup game:/main.nut:180 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1120 ms CAPTURED <local>/build/gallery-review/growth.png.capture-8a78a2d7958c4892911ce7fc0a94978d.png"
+    },
+    {
+      "example": "hd2d-riverside",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 13.6,
+      "source": {
+        "main.nut": "d4c386d28edc8456a7c6f395be9eb4a1f26ccc9b3b024b0c1d97f8396c35595a",
+        "config.nut": "b1616b28ad6db9b8d94d3e1c4daf823118118a27a09cb794f5d1f2be6f507ab3"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/hd2d-riverside.png",
+      "sha256": "f70fef23a1696d37bd3bd4ba8f72fab1281674a99566a15da36e4c57998257b8",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "hex-levels",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "34e77d0af5f0a151a50abba205eb64fb8ba16a8f53a1e173a15f8388434b83da",
+        "config.nut": "3d213b9602084a17475642f4bca8b0c4d5f8f32899db91916447f6765befa0e8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/hex-levels.png",
+      "sha256": "9f6f221b967ed5398e3060d8349aa0acc39e99298ba193b2f467937f08648abc",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "hex-planet",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 12.6,
+      "source": {
+        "main.nut": "33fef804cc25ed5bc378cc9a92e7ac67c9386e3bea65f03295dd4655d19215d4",
+        "config.nut": "e4bd2fbf49c379a0b7394e269f1f72eb1e048810e53ffd0ef730b59d7282baff"
+      },
+      "shaders": {
+        "shaders/hex_planet_terrain.frag": "97af4029ee41da6d041e28e69c690851d06133a0a2fa3a22c20afdd75cb19f0a",
+        "shaders/hex_planet_terrain.frag.spv": "870d5a8e27a11d0f40a1019645a39bc4be5d0d9a5efbf548e99afa49dd29ccce",
+        "shaders/hex_planet_water.frag": "efd5b19300abd9d87d5ef8670fae7405896772e65858dfffb8a13f5df133a547",
+        "shaders/hex_planet_water.frag.spv": "2158a36219e5b80faa8b540fe5de16b4f1fa5689325df9dca5d9afeae9572aad"
+      },
+      "image": "review-2026-11-07/hex-planet.png",
+      "sha256": "6f443d97eaf7685ffa70f38d4789093e75b6e81b4ddbb454a355bfa191ab60b6",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "hex-terrain",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "a37ac2d62f44a0ae4c314f11df30ac24f27ea3623a15fbfc545799fbd58aa0db",
+        "config.nut": "c69b7d61698a7fb3d5d403ce090b0cb0f4227967a6a44966e73b20157171bfee"
+      },
+      "shaders": {
+        "shaders/hex_terrain.frag": "5016128ff115680af6dd2010552d470c2f41637b7066695df9da524ae9273d6b",
+        "shaders/hex_terrain.frag.spv": "34ff01e4cc0eaaf8ce92b35a1ea6eec60505ea72383fc2c98cdabe203622593a",
+        "shaders/hex_terrain.vert": "89e538f66dab222fbe2ab17d08002829b09f797646e79f5910d27095e726c4eb",
+        "shaders/hex_terrain.vert.spv": "c12ca167e296bbc1180b9c9fae0c8c4d9eb75cc3810e1fdfad7b3c70fd382ace"
+      },
+      "image": "review-2026-11-07/hex-terrain.png",
+      "sha256": "60c3669c8b5dfa9a870aa14bd0bc3ec20a08f835485fb7293b6d22b77cbc1793",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "hex-terrain-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.1,
+      "source": {
+        "main.nut": "975752e91fa3bab23980303e9b2a8d835c24d918df4bf3c99937ff6076b74a70",
+        "config.nut": "3bc1e913bfc3b97fae7db942081bcbdcd24aaaff8d406ecde970746393a80044"
+      },
+      "shaders": {
+        "shaders/hex_map_feature.frag": "d6dd7ab2a8f4ee94d5957a728c52a9e9b305303f3fe5463b1cd17f6890e61649",
+        "shaders/hex_map_feature.frag.spv": "da141ca0776c61855c32f03250744dd6481406c2b8421fb42cf339e73f4aa18a",
+        "shaders/hex_map_fog.frag": "ac4778d86f4d6b2b6a4a25928be32d3941ad0cf171d7d1693648c4a23ec1f9bf",
+        "shaders/hex_map_fog.frag.spv": "81ebf73acc85cccd5b00242bec9a9475b84604411c944ef4d69063e79efe7612",
+        "shaders/hex_map_river.frag": "952903f0c5ade8da19c0f0baa0e58cf3f54423b48513f799159f34f4ec37887e",
+        "shaders/hex_map_river.frag.spv": "80e0d2722ea863b129fba52162e1c0d2f3ad97e889f8617a24ebb5b8ce4d8919",
+        "shaders/hex_map_road.frag": "a8dc7bffa1bc157f18c4c3fe6f5549f92a8e9e16b00abc67874d3ebf163bfa7f",
+        "shaders/hex_map_road.frag.spv": "215aa12f109dfa69efcdbecc12f807922abdf12485e5cd040708a48c849de769",
+        "shaders/hex_map_terrain.frag": "b321794195552aa313a941b2462d5101f7b832bee0351cb2797c337615179112",
+        "shaders/hex_map_terrain.frag.spv": "9bd612ac1fcc63deec5b8f51522561175cab64945e5bb4c2eafd299e9ce54702",
+        "shaders/hex_map_water.frag": "7ccd61ae2a308f8ad4fc32dd1d12e596c5459d9393b88b026aca43696dcf2811",
+        "shaders/hex_map_water.frag.spv": "bdad30b9eaf3ba6949360ef8fb47cca63c5664dfe58fec2cf4c21ebf884853cc"
+      },
+      "image": "review-2026-11-07/hex-terrain-3d.png",
+      "sha256": "60d0e4edcc8a253cb5bfa1398c4f32d1f84ded56c2d738ff08ec102c842157ff",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "house-collapse",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 27.4,
+      "source": {
+        "main.nut": "e0030256a170ebe45d8519dcc5237b9609b2a0606c4bfbe8a5d64f71aa5731c6",
+        "config.nut": "a81f3b7b66e1425d95a47fdd1e3654789dbc7a040b56b1455bec9499fc171061"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/house-collapse.png",
+      "sha256": "3fc31becdc9c67572c0d189f61dd48f070523a04f01d58f9e1aa6046edbc6d2f",
+      "width": 1280,
+      "height": 860
+    },
+    {
+      "example": "housegen",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "f674919c19f250cbb4d2842f523a4ad2340765a9d58ac5c5c1f5ba3f22afa251",
+        "config.nut": "9cb3e00963c15ebe39bc9feeb7b51afadb1a538ea744fbf72ee93b7c1962d566"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/housegen.png",
+      "sha256": "8eb6fa8a81146011a9694eaa7bf6df2baf1525f1ec48a6efb3dedc04fbca80fa",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "example": "hud-gallery",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "08cd7ca5f646f6065bc23b56288782773cc2901e8425a9d15df84c2b19fce6ad",
+        "config.nut": "f3202b73bee04258fcc0b336b4c3356c5621f0c02dadfe31bdff801d91fcffaa"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/hud-gallery.png",
+      "sha256": "8e81019e2241c04884b12f2f4bca60da1b96f6536e226dcb78922d756f2a6cc8",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "i18n",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "dccaa04bc1385e6e58c4fc38895a2f743d22cc633d741b2b9ada19be846b08a8",
+        "config.nut": "4685c3ca4f07cf7e5531f163a90644b546d6b01f3fa8d2456e8282340b5f602b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/i18n.png",
+      "sha256": "0ac19691e6bb82310ce5cc07599bdf12c8bd0cd9662d033702aa87d70793c37d",
+      "width": 800,
+      "height": 480
+    },
+    {
+      "example": "ik-spider",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "418aaf0b63c95aa1908b84bd149bbb513bff46366308bc86e996109c9f377d62",
+        "config.nut": "ea4c4974f9cc1b8da15e7907935976d74626cbd8fa54757379f1528752b5c0b2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ik-spider.png",
+      "sha256": "8d595326c16b7f58f8908795c6fd6450b4dad2bd2aaed63422b44009a3ccb934",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "ik-spider-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "a824a811fa5870500693e3259fa9f59148b576a1e1f7b9ce46fd86b1b796321f",
+        "config.nut": "60ad5810c6072f7bef55e1d6cbc0e9c4e6bb5fe317c3a0105482d97cb91095e6"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ik-spider-3d.png",
+      "sha256": "9c439d54a09726272b4b1dfab7135aa228c4208cfa6c9cccafc25396a0633388",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "impact-arena",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "6dc4c2cac145475ea9ce9c3d1b29905a5ee46c77191d020bb626958cd2e06103",
+        "config.nut": "d26aecc192ecc7030a8fd3a9a8fa070136a9821396dfcf0fbfefed3b179dd44f"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/impact-arena.png",
+      "sha256": "bab6273f20e77fa6d5900daef6e765bd281dc8c2c272f6cf99c3dcf0ebf78b06",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "impasto-paint",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "74f5ce96a7ea6b333005ac4076cea43706ebd9dee79437aca6364b61249b55b6",
+        "config.nut": "afbd08ea4b8e42bd65cd9cd1308fd9d8d7f472fc1df83ffa917998c0483a8f89"
+      },
+      "shaders": {
+        "assets/impasto.frag.spv": "16c62e524668025eb77284980f858964af579475583e15ff8b80b4cca20d4af6",
+        "assets/impasto.vert.spv": "af204a475f9bac5dd4660bf83e031a6222c648822e1f4dd6f332d8c968f03c2b"
+      },
+      "image": "review-2026-11-07/impasto-paint.png",
+      "sha256": "ce6c45064891d71a412b6a2863a6f1925e4c49a5bf3f9c9fa908fc00df3e4e84",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "ink-arena",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.1,
+      "source": {
+        "main.nut": "fa3ad47026fd686ee107bac8ba052f98957a58d36adb53d88c0644e49a9793ac",
+        "config.nut": "daf7e7d4d11053273d4b817ab7a92ed7fd55da6fbfd75631ee038411ae3c4c7e"
+      },
+      "shaders": {
+        "shaders/ink.frag": "50486bca0c703fd72cbd18fd919c988699489cf0acbaa159518ceb2f5292e44b",
+        "shaders/ink.frag.spv": "2667b4762a17fad2a5bd3f9a50dc921669f2700778b4e51021c76588e1fd7ee7",
+        "shaders/paint.frag": "7a46a344272d078431b709abbf41572179f2b6cc611d62e46e78a8875a98f14a",
+        "shaders/paint.frag.spv": "b9a4b4b9408f3e19fe5ba1185ed38314b04bbc52c4106a08aa49d82468c665d2"
+      },
+      "image": "review-2026-11-07/ink-arena.png",
+      "sha256": "7b26c447d16c3caea08d372fef446142680bc24b08243c2a2851bb7475fa5410",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "ink-combat",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "86632a46ece5dbdf090f59cd38d48974e37757d28a6800ff1f10f96c1d979d9d",
+        "config.nut": "ab90e1c4efbb85f97ca5093a9515bfdda31d5fa84359d84e5f4cc986e0f0bb55"
+      },
+      "shaders": {
+        "shaders/combat.frag": "b4658e8c4dc54bf2cc73228f9d14cdc155ee7d4dd26ed3e7e520986c907f4d5b",
+        "shaders/combat.frag.spv": "0637e890520407d78cbe9fcdd9893811b1250464d8989b03232fa8ba065661f0"
+      },
+      "image": "review-2026-11-07/ink-combat.png",
+      "sha256": "cb29fd3f6e2e9403ab878c9f3ad4179b247bc7ab3428ec0fae2dfb518d84c3c6",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "inspector-demo",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.0,
+      "source": {
+        "main.nut": "afb2fa868809e187ea8079ade5f64ac6f31732387aa77b351f51a0cb2916d5b8",
+        "config.nut": "d92aee98823b7d71d5ee8516993fbec5e307473fd2bac02114cffe1f4a6e4fea"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/inspector-demo.png",
+      "sha256": "a59f85bba4a7fffd72095c75035301524ac12e9ee30fac0a5db7644b740d7574",
+      "width": 900,
+      "height": 640
+    },
+    {
+      "example": "interactive-shallow-water",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 13.1,
+      "source": {
+        "main.nut": "1b351bfe265540b2d90b8982d48fc61ac0371a06ac90980c615a04f4cff9cfbc",
+        "config.nut": "6262229a60c21cc51781e8288d070afb05bbd04af25e1f4af56e7b09f80b7aab"
+      },
+      "shaders": {
+        "shaders/ridge.frag.spv": "13396d6023f5b060834e5bc15d90fece557109adabc6df69211862b3decbf578",
+        "shaders/sky.frag.spv": "c66c8c561bf130cfa6ec45a9ffe2a7fe3c3ceb1e64c823a29b04737811b6999a",
+        "shaders/stone.frag.spv": "a81b3f662fe6c9b783877c04a3db6be80fd047287ee195f18087572119f0aa08",
+        "shaders/terrain.frag.spv": "f8fcb9667fecc2f9c7fe2313135c90a5ded9c61d224ad6fc30a743f081bf8f2b",
+        "shaders/water.frag.spv": "bb6e6acb7e2c7036bfb61920271f807e28a04e0368a67935f964b30b9ab79a44",
+        "shaders/water.vert.spv": "d729936a907fadc4ef5f3226fb96275f434b5eb5f0a7309fefe61054547bd69b"
+      },
+      "image": "review-2026-11-07/interactive-shallow-water.png",
+      "sha256": "a13b38752dac95b27e96dee9c3e1d86e77d5fd1cc5068b5cfdf233eefe2fd28f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "interior-mapping",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "c19310b3b5a358c07e119cdae0f1a899724777376eeb09f658751f1a2e078707",
+        "config.nut": "12981732d849d37f0f8ea3627cab187c835c7f999f75902532e263e388d3f621"
+      },
+      "shaders": {
+        "shaders/interior_mapping.frag": "21db1dd1296f89d07049747a05d380acb8ef660d2a0d8ce28a9a8b69149d22da",
+        "shaders/interior_mapping.frag.spv": "bef5ba7bda35fdb36c8952a7c471aeb68a42171d4cbc4da2575b4f18cd02e091"
+      },
+      "image": "review-2026-11-07/interior-mapping.png",
+      "sha256": "009559c6829e9094e8f48b65dbca3e84c1c2ccb9e896e17461549d46531bb818",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "inventory",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "ddc071959bd48264aafed0574936259fa3fba72909acbb9dc4601ffc23e0c650",
+        "config.nut": "64936588dc1a06f239ab2968de2aecf32da6d1eb590112f3f17a8070478c99d4"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/inventory.png",
+      "sha256": "ae1ff467028dacd4b5675162b73a132d1396c95c7d271c399e9b2d62f641fe91",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "iron-chain-bridge",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "e6e1cb64ca5dd67ac43c5473122cbdd5d39df60f9edc12fe8b452a2eef39b6db",
+        "config.nut": "5a730f56e96ccd21282bcc9fa853b621a8570184b5e3827a89608d23824c02cf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/iron-chain-bridge.png",
+      "sha256": "89ca73e419391042d26275155acde04b042f183f3fb72712ac5100dc7600a193",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "ironwarden-retarget",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 14.1,
+      "source": {
+        "main.nut": "ee585cf533b586411c1a652d327d0fa56199d07b506c5fbbe5d47332ccf4d7bf",
+        "config.nut": "6b29ee02d9b3d323d654a207457836d9c5599f49f816e4bfd672b1b41dd5f5bf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ironwarden-retarget.png",
+      "sha256": "4642833673e70b00ff9f0d884e25237228bd7bde7b7c1ea9ad28f23a9c11c3f4",
+      "width": 1440,
+      "height": 960
+    },
+    {
+      "example": "iso-grid-walk",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "f3aab202c4e7b5e5bb49af0597a337c3e25225777a5f29d97888477b6de43f50",
+        "config.nut": "37541e65fb358e704f07855b589d6aa4ff192766b54f60be3ccbe825c50d7d6d"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/iso-grid-walk.png",
+      "sha256": "eb2ba0c4d34817fb3506b006686cf552bf9e5d4e720bd6b6fbbc5705a40848a9",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "laser-weapon",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "0ed9e43caef43822946e1fe528d64c1da203c5e1c84acb46428d0226c20170a7",
+        "config.nut": "a31cb2360fdae6ff8fe0d473f9bf773cd36f12a4c7963bee6a1bac44cec7a3eb"
+      },
+      "shaders": {
+        "shaders/laser.frag": "9b0a7887b84f538cdf8cc4a9886a800feed696a6de1940ca4c85876fbef5b854",
+        "shaders/laser.frag.spv": "be289da6f4578970bca833834afdd5f908b41fb606ee2b320c24b3c02cd6f635"
+      },
+      "image": "review-2026-11-07/laser-weapon.png",
+      "sha256": "8b443fd69e2421ed3b179f496e55892347f65630611bf9688c11fd04e05645d5",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "lattice-deform",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "8f3d8fb7007118d63fd78e7f357bdfab9a188e8b717e3ad00657690463d8ef71",
+        "config.nut": "b27b151f4fea46b5cb980744ccf027eec69d3c9ded9810627ffa60d7fd5b53ab"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/lattice-deform.png",
+      "sha256": "a3b759ec616ce1e42d50ccefa0abc21551a9f417c9519a6677f0406efd75f0c5",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "layered-animation",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.0,
+      "source": {
+        "main.nut": "0b6e1c6d2deed0c49583d93c2e6f27a82a55f79afe8b1e14386b3fe733545311",
+        "config.nut": "dbc17cf9a716f0d56b50c2f274786fe5f3b18d3aa7cf973a372262e292010e2b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/layered-animation.png",
+      "sha256": "ffbbb3e3fd6b574038c07b53927c909c66f2302808f60e4b2a2119e2910db40a",
+      "width": 1440,
+      "height": 800
+    },
+    {
+      "example": "layered-cloth",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "7e31f665e0c14b7f35b2e5fefe1000fab33150194893bbd523efcb55b6a8e39f",
+        "config.nut": "c65b22f3e320cfa636764523b611de09acc40a235a8e56f39052407364926fd2"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "layered-cloth-gpu",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "56302cddf0bcd511d95b2528fbcd5a2fa9cdcaf809a3638e8c534c15418d6a9e",
+        "config.nut": "8c274e9bfc9fb672b99fc83f0d50aa0f3b0a40b1c8392a132f094162f1eea159"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "level-designer",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.5,
+      "source": {
+        "main.nut": "35f1f6fb18630c29f853db96eb591d8bc12e437ba109a04ef2bf3f22f701532b",
+        "config.nut": "1a6f4c333c4db1e2a629d866f84f13f89bb79a79dd2d6f0d67c6019fbb8fbadc"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/level-designer.png",
+      "sha256": "871033837d1ed1cda34aeaecaebe0c10c15c137b9e2e300f7515bbdb8ef49090",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "example": "lighting-showcase",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "ffc1d42c61895a9551ca35b8835c22a2aa2531e7f3727d7651ee57799673b6e9",
+        "config.nut": "18a723c14dcade35b412ffb4183f86f98d72a935d7f79457914346c6dee88031"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/lighting-showcase.png",
+      "sha256": "3a69873b31019c54e0f2f5588ffc732ca36a473c530997ea0d62fbcb62e7e56c",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "linear-structures",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "765da60f6913b399fe38769df7fef512fac876da07b5790ad3982b3d5d24b227",
+        "config.nut": "3afc15ef53d94786fe7a4a7d0cb1a94d9da408c90709f83fe7e3e89d4075ae80"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/linear-structures.png",
+      "sha256": "ec594fb5b5ecc16f2a792c43d19be760ef7cf989e649083898e22c4e75071175",
+      "width": 1360,
+      "height": 720
+    },
+    {
+      "example": "map-fog",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "e9ddce7a339151d20ac8b905b0a3061fb8a305c034a07d1f4ca3b27e65c66d70",
+        "config.nut": "4d2016d9120c4d9355cc530aab1b16f80e3abbb973d720e8c8a107e9f8616c76"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/map-fog.png",
+      "sha256": "f677f373530785b7e826cbc6570f25af726694ea4042aa4e54a4ba746627a7a3",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "material-editor",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "34a33bdd784554baf44501b8d4e1468073b851217784ab8d2de2251da66f932b",
+        "config.nut": "8ebfba09f3af303ca5af056fc0d6ea3211b55fb37975794a01f879b294d8cd51"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:13 (<anonymous>): Cannot prepare the material editor save directory Stack: game:/main.nut:13 load.nut:922 in main [startup] eve_init done: 1014 ms [startup] first frame begins: 1038 ms frame error: game:/main.nut:24 (<anonymous>): the index 'update' does not exist Stack: game:/main.nut:24 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1048 ms CAPTURED <local>/build/gallery-review/material-editor.png.capture-89f25464beca4075a90747960d5894e6.png"
+    },
+    {
+      "example": "mesh-contact-fusion",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "8755a17487c6aba7f1ad717cc9a81dec8488faa926f7481686cfe16a3d42da8a",
+        "config.nut": "7fb2b079ed71871a0ca7abcbb7e0aafe0219d2ea15873856eb5e2f6d8a1e0a4c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/mesh-contact-fusion.png",
+      "sha256": "18884b40f61415e2fb1903ba373bb344ddb13d2652d207d4a80b9d7344a35f60",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "mesh-impact-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "185838d584edfce1ac13a6e5878564bdc38532f97392eb575830799716144dca",
+        "config.nut": "02d63444a08760ee5285497003c6c8ce1b3879bca383df41fa85a5f19230de1c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/mesh-impact-lab.png",
+      "sha256": "330113f7423323ee47e7710b5ccdcca0e02790e0fe50580907a55768802650a4",
+      "width": 1100,
+      "height": 700
+    },
+    {
+      "example": "mesh-modifier-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "50614911e14f77fe23c570290d248d775a6438f4fc9218b18c38e564d81fed9b",
+        "config.nut": "dabab51e85af52c9e76f012d4074a0b72cf31102646711f1678bfcdf3091ac92"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/mesh-modifier-lab.png",
+      "sha256": "c63aa9ba63b3a9d0033940b300603630c75c860000bbcc01fe1d9966f7eafaa1",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "meteor-impact",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "269969a415368bc2c5eaf5ca75f49bf6922a6bbb586fbf6f9636fb3a9599c6ee",
+        "config.nut": "1a58d89aaef913b0bb161674555899e82f97c242861ddc598d260e4a93c8a307"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/meteor-impact.png",
+      "sha256": "85ac8b6057d3ad0934fe61ffffa698c8d928158167ee8c84512fa2b2a81ae8ac",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "metroidvania",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "516666330818ed935c5b603378c98aaf8643445ba843dbe2c9b08e3b764f2e01",
+        "config.nut": "1220bbc731366241582a7f7aeae947331f9aff07285b7e12a4c6e88345a9e98e"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/metroidvania.png",
+      "sha256": "c3b4355315ef6d8ad427726653312a9885e540c9dd29b5e9d776fd6ce13c9685",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "model-converter",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "5e8139172b5ba3f084d3117146020946ea714d3ce0719f66b9eaf7d95c50169d",
+        "config.nut": "539bdc215296657f94b358fc930341c39c15642c2a40d65206331009b0bf5190"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/model-converter.png",
+      "sha256": "f9499b34b12a279310677725a25510673f8fac694ac259c645758648adcdc332",
+      "width": 1024,
+      "height": 640
+    },
+    {
+      "example": "modern-balcony",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "113c670fca51254516e8324aa81eb4abd7c88122936db504707bbda02b6c20d7",
+        "config.nut": "dd5e85d8e70fb7aa7f131a9e09132ef0e7666cf54b580d5f3bd6acc51936cf21"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "modern-battlefield",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 16.2,
+      "source": {
+        "main.nut": "7235be2101bf2d7ccd4763121f91d8cc55bb1b76bbebda9f9ae84030b060a31e",
+        "config.nut": "2bd46135e406878568687a579616a1709b67afa4fb22632d41b4df8c419ebf5f"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/modern-battlefield.png",
+      "sha256": "cea6c74965a12dbcfa5a4a9cae73d54a4b78bb6acb2aa76f00a55d9ac7fc1862",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "neon-racing",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "bdc254bb0233db0f9210ac5d3eeb9a20e02d63b89e9fab5fd73d8e256cc6047b",
+        "config.nut": "e04a8e5b54eccc9bcda1eb6faf4ef81291f5574384437399e7475fe544206acb"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/neon-racing.png",
+      "sha256": "b69e5a42eb375230a7d771ac81f70c2c165193ecc1231b3eed0d2887f5d01078",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "night-city",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 12.1,
+      "source": {
+        "main.nut": "13aa2a8b4d8436e9562fa46e532acb6f6f8f668a306b8e10cef00cd8277d88fa",
+        "config.nut": "0dc01f459abee792ac473de9ef29840d8c9e6b20fe4d24435e7fb8eab05d6389"
+      },
+      "shaders": {
+        "assets/emission.frag": "9c3e8ad736db2eade0792a06845344427b5f9dd25fca78fa27081ef92fa79884",
+        "assets/emission.frag.spv": "cc90414588646d9a7967adb54de06a3aa4d03f2ea584b99a70b524c9834186d9",
+        "assets/emission.vert": "0eb25d7bc384692b798c0e35d803480a46a2957f93c0ba90fc7a5e0595496c31",
+        "assets/emission.vert.spv": "086666f100b1a44023aeaaa9ecd1206e4f7f6b8848ce4f33e244b5b7d90a5e53"
+      },
+      "image": "review-2026-11-07/night-city.png",
+      "sha256": "b750b3482258195a9454876e91fcfffd8e4a333d776e5148081e3db6b5887418",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "example": "ocean-voyage",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "f0c79769c29315f106f94ad71a6eb3eee1edd44e5ee29e02937da4d70a23f171",
+        "config.nut": "7074c393fc988bdb464314105f22fcbd29a888bcfd410f78a693e524e8be5e32"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "outline",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "f47f64a4bbe3520ca808c95e839fbd1ce8163d1c6e376f384e24014e22afc5a9",
+        "config.nut": "98160e4b808b552cd09cb2fa2ae5a84c1cd328794ba33f1c92b73bcb184e0ddb"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/outline.png",
+      "sha256": "f329da4c19ef762e35696ff44f49209a73b22db854154140872f30bab290deb5",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "particle-playback-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "3400b3228c27a75794e6240d5f83883b1628d721087f53cb60ba184d215f19b6",
+        "config.nut": "a8a0d55707f3a87d1b69ac1ade2fd32deb735d8f7e1e94ea54be91d136ef7992"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/particle-playback-lab.png",
+      "sha256": "47cb15bb9c3d3bbf24b9e1999882f35e9e72ddbeb84c163a32eb04b3a88acfff",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-biome",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "6419b716fe3b1ec3367a5411b5a765acd06dcc85817750cbc6465b9ab22f3c74",
+        "config.nut": "daee265fb6b45fc4d6dd68fd57c56a71581202c906ab7e4f6bb36af317ad2e07"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-biome.png",
+      "sha256": "b427ae9478810a023286a8a7a6e3fdb7316ecb2550bc5898bf3f1ba52480d430",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-depth-of-field",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "1d9ac8165ec4fc311a4eb7f367d945c257f6ba16c133bb1b87c66302fda6fdb7",
+        "config.nut": "f400cd7ce96250c67f8e3a8cfb6e1b6dba18b3bcc3a02f6d021e311883f758f9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-depth-of-field.png",
+      "sha256": "dbfb85f0c4edca0b253b8a2f3ebe16ea570e3aecad87fef3d4c41926faf8018e",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-detail-overwrite",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.4,
+      "source": {
+        "main.nut": "23ee43cea16bb97463856e14667fd1a5f42b983531450cd0ee01bbb3305fc963",
+        "config.nut": "10be0d3b8be063e00b905cdc6338d52b2f4cc0799c06ecb7ead51ea5bce451af"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-detail-overwrite.png",
+      "sha256": "d884143cc91ccda85451feace9d7435f489c02ecf8bc90096bdaf46de2f317d0",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-layer-culling",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "53b58fd7155f6829fc176d1c30b39c762b5a3af2d2c9ded34888a6675ad08619",
+        "config.nut": "0034bccf494b68d33053eb4fe8a55efffaf969dd78870430c8beb0bd3e08a87b"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-layer-culling.png",
+      "sha256": "a81601bc02ecc80b1ece3bececf2644f42d8951e041558928903458b5589457c",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-location-system",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "31b7e3119b4696bc0d619c4196dd7124476f19dee9e74154691b531ec3025867",
+        "config.nut": "c7ef42370282d719c39bec4b61155ec9b764f4a97147d62705c5a5adead1c601"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-location-system.png",
+      "sha256": "185b2ca5bbc0f7bedf87e98b30c597357d4ec9892502d4fc9fa1976002801b10",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-runtime-orchestration",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "d654a9a4f791264476a462213eca2097d8bdf7c7efd8b2728e0116afb43eae43",
+        "config.nut": "ba13484cbfebf877b71b6ee4c8d23552c22b27c2658a3b6a3e03920813329398"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-runtime-orchestration.png",
+      "sha256": "3305b70ec3969168eacf30d745d0522139d833a5910860d3a40017ddfb6651ce",
+      "width": 640,
+      "height": 360
+    },
+    {
+      "example": "pcg-scene-player-culling",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "f5a4c0a8441f5486fb29711c37d79d225356acbda16555e9b3bbc611e26ab3a5",
+        "config.nut": "c10b8cbcac7eeb94fb9543b5a6674d91303c19bf8637eb3b816396a8da02374f"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-scene-player-culling.png",
+      "sha256": "5d7774f616eab33eb8de689e03ba0b1c76f47b1c0a2fa420e3fa6df826e4178d",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-snow-wind",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "bd0d7f4236134b602ed8dbeb3f1f441cb29dd262a733f698810064f006ee389d",
+        "config.nut": "bbacb5a32a64bed64b3906da115a4cbc6156fe867c408817eb4df3b803c9dc81"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-snow-wind.png",
+      "sha256": "85e1d02a512cc691bcf08ff323ea97869e87ed8ab79012eab0b721b5c56b74ad",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-solar-planet",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.0,
+      "source": {
+        "main.nut": "ec04139ec3884a53c299567086cec120852786f620fcc00195940783bfc6bac1",
+        "config.nut": "4a72ec84db83685762e6e0534f30297fa7b4930c84eb0837ada630ea48db3291"
+      },
+      "shaders": {
+        "shaders/solar_planet_ocean.frag": "75a797b8b43dee0eefb763ac98f52efa872d9cf698180abbbd34222fab5df763",
+        "shaders/solar_planet_ocean.frag.spv": "4d4b10c083d669d319a211065d5c65cbf9509697bb2276d08d7f236b4517582c",
+        "shaders/solar_planet_terrain.frag": "82491374fd5956fde90019fcc143652fedd684472e66adccfb4e4244d3ea8f71",
+        "shaders/solar_planet_terrain.frag.spv": "1f30523a3221064bc96aa0ef3ebba3e5bffe7d2862ebc160d598c2efd9900f98"
+      },
+      "image": "review-2026-11-07/pcg-solar-planet.png",
+      "sha256": "f3e059ec6b963fe0968f344b5f0d1fb7930a7ac0a445fcfa9936b92d6f0f04f3",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "pcg-thunder-strike",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "33508f7a40cbfeb97c6beef8550e523d4e35e17c832235e21cce587bc8b7c98e",
+        "config.nut": "443dba450ec49bfb538294e783ca6ec66a3d8272345e130af38300bf03d06d10"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-thunder-strike.png",
+      "sha256": "0d9dc5f7fb951ad071cf6e6de6765084f2ab08a38ff3eac11c4e217b060bed7e",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-ui-scaler",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "3a0be045b0b952621dac9f59e63f967d93f5f72caa4b4af174c46778ab2fafd0",
+        "config.nut": "ea344034dda098eabb813e9b28e283fd1c083134eb1e01d8f7bbc63c5be275fa"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcg-ui-scaler.png",
+      "sha256": "1c0508114446de7eabc798f7673a7a833ffe90ecc7edc849078526ce6ef935cc",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "pcg-underwater",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.1,
+      "source": {
+        "main.nut": "b02537bdce89ff5f66f70fa915d0f4486d8798cba6e243765b5ff90b1882f107",
+        "config.nut": "f17f682b30acabb209da455598054b9f8c3bc07376c9fdffd3c70284ca91522d"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:52 (setupUnderwaterAudio): wrong number of parameters Stack: game:/main.nut:52 in setupUnderwaterAudio game:/main.nut:196 load.nut:922 in main [startup] eve_init done: 3391 ms [startup] first frame begins: 3410 ms [startup] first present - window shows content: 5615 ms CAPTURED <local>/build/gallery-review/pcg-underwater.png.capture-3128dbe8ee234b4091bdc4f43c48438d.png"
+    },
+    {
+      "example": "pcm-2a03",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "c229f35a194dc5ab7ca352a229e2bb45bcb17a0a5b8e782c8521adad375cf84a",
+        "config.nut": "c18032e0d159b80b27b6bd2928b1bc4f0be9e81e41af7371c93923e39e049da8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pcm-2a03.png",
+      "sha256": "6835c48c86baedb0d8baf9e69e2b6290f6d17147c48fec213f17a0430d9ee8b7",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "example": "physics-bake-replay",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "30a827743a77e3b55861dd01c5b827edafb274296f242cdfbdf1aeceaf3947eb",
+        "config.nut": "e34c7154cd3852dd5ddc6c3a3377ef66e677ad0872f04ccd2f25160a5dfda22f"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:134 (<anonymous>): cannot initialize replay save identity Stack: game:/main.nut:134 load.nut:922 in main [startup] eve_init done: 1125 ms [startup] first frame begins: 1146 ms frame error: game:/main.nut:188 (<anonymous>): the index '0' does not exist Stack: game:/main.nut:188 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1162 ms CAPTURED <local>/build/gallery-review/physics-bake-replay.png.capture-5f3a152b130942ab8688db2fb43abb9a.png"
+    },
+    {
+      "example": "physics-force-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "9850ccd3b7b1152dd2798dc899418129f9045091e3778a9820df4e0d8d084f24",
+        "config.nut": "07bf750ed593a0e64b328f8c3862985105c9fc017fe838de7a3ea617ddef0895"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/physics-force-lab.png",
+      "sha256": "72b4a5c99e9169758c4227e3a4ffdc827c56c71f90fcf757e651c5f946afafe9",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "physics-workshop",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.8,
+      "source": {
+        "main.nut": "81fd6f65f51e676857250330c54a495ee8132f08f4d4cbaa40222f3e657e9caf",
+        "config.nut": "b06d4d0c8cebd60177756453258ac52f9b725b8aea120f1b8aec67de1624d39d"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "pipe-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "a3db26c9bcf77ade7678427053bda099ff696384bb70bab02a0fa10708fd2c54",
+        "config.nut": "189634c23c3c13d74968e6e139bdd2b69a59a88a75a4638cf6b3388ea5d2bacd"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pipe-generator.png",
+      "sha256": "af54211833f5b78f9bc19682170d50020a0b588636bbefe231e0f7f74dd7bfab",
+      "width": 1200,
+      "height": 780
+    },
+    {
+      "example": "pixel-perfect-camera",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 4.9,
+      "source": {
+        "main.nut": "5c5978b3aa3d444bb31c1056847ebb896a3b797bf8793c90bd067be1a9a5fee1",
+        "config.nut": "4d93f34a6d45f37f816343703941a6101a2c79ee521d1ec8746511661a3434e8"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:121 (<anonymous>): the index 'setPixelSnap' does not exist Stack: game:/main.nut:121 load.nut:922 in main [startup] eve_init done: 617 ms [startup] first frame begins: 641 ms frame error: game:/main.nut:162 (<anonymous>): the index 'snapToPixelGrid' does not exist Stack: game:/main.nut:162 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 651 ms CAPTURED <local>/build/gallery-review/pixel-perfect-camera.png.capture-af9e43ad1a9b4a70a38ccad4b180caf3.png"
+    },
+    {
+      "example": "pixelworld",
+      "captured": true,
+      "frames": 120,
+      "preset": "pixelworld",
+      "seconds": 6.5,
+      "presetSha256": "afe065869b8c5e3c786c1cc329ec46fef911fa4ecad9915c9b2c855226159ba4",
+      "source": {
+        "main.nut": "250ce6aa1067cfea4c1c1dce3bf9c24c2d552ebdda65fdfc3cc9ed39dfd92cb9",
+        "config.nut": "fb07e39e3adcbc68a522ac31b265782daf48b04a9d3ca5ac30d55eecdd218ed9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/pixelworld.png",
+      "sha256": "d4f4177f7e14947096d204b7fa0fd7f2a8c3d02caa4d76cf9790c77d131a462b",
+      "width": 960,
+      "height": 576
+    },
+    {
+      "example": "post-patrol-reinforce",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 1.4,
+      "source": {
+        "main.nut": "362670041008c2e932d2d48854f27912d93de63be442cedbb483893f571dfe3a",
+        "config.nut": "c52a2e68b1fbee31b92334199e0ebb5eabb125b490c0750cec8acc96a98c046a"
+      },
+      "shaders": {},
+      "failure": "Run failed: Script execute failed in 'load.nut' [id=2]: load.nut:299 (validate_project_modules): required module is missing: roster Stack: load.nut:299 in validate_project_modules load.nut:350 in main [startup] load.nut in scripts begins at process clock 732 ms [startup] all modules instantiated: 104 ms"
+    },
+    {
+      "example": "primitive-drawing",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "f0a58391316932aebf7b6c9913a377b331bd66be5d26769be0acb02a337de949",
+        "config.nut": "d8171466287c4516cb895f75fa9899370de21bffe68b85d85d0f44406a899c64"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/primitive-drawing.png",
+      "sha256": "0d60095d39a0d4f6c5492a8cbb8b5ad8c142f8cf1ea15681aa3b561169f1f146",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "procedural-render-gallery",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "376ed045d805ce4344d066cd914450d2ce2c35739c80d178609162d9d58f9c78",
+        "config.nut": "4f24784acdbbbf29eeee15cc3fe6a16657bdbf2d5c29c0658ddc747e4c6e817a"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procedural-render-gallery.png",
+      "sha256": "7f0447b16b57c3de3522c540de7b6b7232913d52178d138c64d7d7a5d1825036",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "procedural-road",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "419a987dccafc13bfd95671fd4bb30d7a7b56b420a7d0444dc3f07d02c243f78",
+        "config.nut": "aa011761c1844248c7c1f506d3e9528895845d4777ac3ad0445ea284c00b5553"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procedural-road.png",
+      "sha256": "81588b62b920fb45c875eb1c9044f350ac2a79225d366ba90e8cc153c24487c8",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "procedural-textures",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "9003732d0a3e200ff639f341dcdd21ef550df078adb0cbd234c60f0de0abe0c1",
+        "config.nut": "982ddd8bba30d11b0f8699f0529a610719043cef3387b776cf5f21fc0a2c99a6"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procedural-textures.png",
+      "sha256": "dfb5d5184390261871b4b9902a599d10800d94d220db097f08e73ff177d06c88",
+      "width": 1180,
+      "height": 720
+    },
+    {
+      "example": "procgen",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "4d67146a66305a6ab42ea8c95313c58682f581d7ecda0097fac98b050ad70da7",
+        "config.nut": "5b59455b15f590d8b3fb1d46fd108a8b481f9e91bfff6b5b650b1b598fa19e93"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procgen.png",
+      "sha256": "aed17bbd6a757199ac503c8aa554a07e3e76e4b2d0650da95d72436184a69e23",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "procgen-nature-quality",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "cfa82a383043798988aacebf333e8663a55be483d54b34724d583497ec6b3e94",
+        "config.nut": "68c302f65f2ba2790a4b50faf7c9cc641ebe19f36f89bb511645828a6ce923d2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procgen-nature-quality.png",
+      "sha256": "810db775d6203d2aa46b370bba859e24d69a4b727308e3dbc938ca0cd9d5818a",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "procgen-script-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.5,
+      "source": {
+        "main.nut": "e192451db7f8a5d6ec68fb30ec43e1c8f89725d0d4e619065fb37d67eb8831c4",
+        "config.nut": "e44d08c468f165c33055325aebd0671c774eb65d53a462829f33f725127f3c3e"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procgen-script-editor.png",
+      "sha256": "25452cffd0b0676c755ab8acab6f90732d59cfd7b46f1c022edfe4f36351eb08",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "procgen-script-pipeline",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "3df63b722c8a24c27736a93ac6e55c8165b47dba271bc6f575b27495115e3856",
+        "config.nut": "533b9ae21947aecd4952471b32528aeadb18c9be6480c5107eddb25f3716b735"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/procgen-script-pipeline.png",
+      "sha256": "ae3ee0e368cb485dd17e451d226d114f00e55c092399d3e387456372ca8dee0a",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "projectile-physics-composition",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "507d75fb66dd1565afe186fc570f2a381ae410df2c61d0c1b4a7540b8d613552",
+        "config.nut": "30934676fd76bbd9fd73641972756548e7609b69e86039ad0175119ec378b159"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/projectile-physics-composition.png",
+      "sha256": "045015cc9f813f87a9ef391204886f556093036a65cf0ff539fa1fd6b99bf58c",
+      "width": 900,
+      "height": 360
+    },
+    {
+      "example": "railgun-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "9974f5f14c2e47f8e79a9b1e1e38e501b0fb9163d2f93ac021c8cb317d2b97c8",
+        "config.nut": "5cf4c0b3e299a9c8b58a1bfe2438ca121cfbd950cd3c604842f58e7f2d5f97ec"
+      },
+      "shaders": {
+        "assets/beam.frag.spv": "a407e1ea5863b87c865297c10078d4adaba5d83834f91b8b3d85a6cefcd5ee01",
+        "assets/beam.vert.spv": "d55ae1f5b399c67ca23d58c29c00af80cf922fa4107827de70cb86d9ceef8a19",
+        "assets/rail-batch.frag": "648aeed820b355f9ea69b6a87411b1e36d073d17ae858425d5ec6907cafc12a7",
+        "assets/rail-batch.vert": "94166c7b256054d10f529d213cef20bdf36eccc40ff5e23638efd5a59a4136e8",
+        "assets/smoke.frag.spv": "b1a370b0bc7df48f0e09e081361a6998555ad5695065464e46e31971d24b9f99",
+        "assets/smoke.vert.spv": "88b81494c0d15c6566e1520276336db3132b86bb051261db70a5cb2a5cb7db2c",
+        "assets/spark.frag.spv": "a407e1ea5863b87c865297c10078d4adaba5d83834f91b8b3d85a6cefcd5ee01",
+        "assets/spark.vert.spv": "664e25185f0e015e3588766fc0719dd66e92afd4223638f509db36fa3a975077"
+      },
+      "image": "review-2026-11-07/railgun-3d.png",
+      "sha256": "c990ac733576c0c791b4fc697ddbde29445ab1bb4fd0ac97c35defe4f51c6cbd",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "realtime-fog",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.9,
+      "source": {
+        "main.nut": "203fdeaf23d0121194c65f84cfe7856b764aaa180183cbef01324cc8e9803b0b",
+        "config.nut": "f4666f517369594283749620c4482010318c84d275e0ff09254594e72de725eb"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "render-fidelity",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.6,
+      "source": {
+        "main.nut": "effee78833ae1128becb30bb15b4a3441a8052ccf8c5993ee0d290db8d22f30d",
+        "config.nut": "09f60ba5ee4c6db9b1d6c2a42f0f8f87c42b65b58c2c0681c878a63278666e70"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:290 (rfApplyCsmQuality): Unknown exception Stack: game:/main.nut:290 in rfApplyCsmQuality game:/main.nut:372 in rfApplyAll game:/main.nut:428 in rfPresetP2 game:/main.nut:432 in rfPresetAll game:/main.nut:624 load.nut:922 in main [startup] eve_init done: 1730 ms [startup] first frame begins: 1745 ms [startup] first present - window shows content: 5167 ms CAPTURED <local>/build/gallery-review/render-fidelity.png.capture-d01b1c7bb89247f688b8f91bdfe034bf.png"
+    },
+    {
+      "example": "rendering-chain-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "ece6f1ef87575d589935cfac3dbe8a76efeb6fa3e0bb705de8218528b698c73d",
+        "config.nut": "c2e50eff68f8b5ae69e941cc74fa127b183735e51dcef112aefc590463abfd39"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rendering-chain-lab.png",
+      "sha256": "9b7504b3208c2f18685094bddf770ad97c1c4f571a3eafff2c93f6809a4c3ab5",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "rock-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "d1c62f8996fe9f4d53728229e5e6d09ff34938dc793f52c43a9f424a604f19a0",
+        "config.nut": "06fdb38fcbe30db5b2b5481aeb199e9f7f719738b71d66e0b2d5d31c59f6c018"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rock-generator.png",
+      "sha256": "9fbddc786a430dc13dbe308d4a3ef0d7b22070f665c7d96b739e111d3edeebe9",
+      "width": 1180,
+      "height": 720
+    },
+    {
+      "example": "roguelike-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "8a1db6ec40c7b3fdd25700bd8b51258957e4728e40c71a049499bf59f784998c",
+        "config.nut": "91e50b39c94f2d9f15dbe129e14b1fb3e12674cc0182b954c64a6aefe7b29916"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/roguelike-generator.png",
+      "sha256": "107b52515e79827a58566dfdfaa9bf9467a0f5368606434d50d0402e80e86986",
+      "width": 1000,
+      "height": 720
+    },
+    {
+      "example": "rpg",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "884a43efb96538961f53b5f5df083911f7a93733208927fd788fe52292b436bc",
+        "config.nut": "1e5f4aba07841f6128eecc0843c10b26919a25f5d3fffc286ce707297aa62eb2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rpg.png",
+      "sha256": "ade4df6d061daaac9be42a3b06d061d52f26717ac026f430c6bc781aacc84d2c",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "rpg-balance",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 39.8,
+      "source": {
+        "main.nut": "37ab9f7d7673534cf172a98720f38533a9a8e6d851fe48159cc04e6820e5a16b",
+        "config.nut": "b533607b767e895b00dd346200ed543f17e45bbfc152e1c3881f7142c913a79f"
+      },
+      "shaders": {},
+      "failure": "未取得 CAPTURED 标记及有效新 PNG；日志未给出明确的初始化/帧错误，需单独复跑定位退出或超时原因。"
+    },
+    {
+      "example": "rpg-classic",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.0,
+      "source": {
+        "main.nut": "a7fb2ba942537d1106d5d9c7ad466ca8cd2b84171f5f9622abdec4de936f4d74",
+        "config.nut": "0244166ea64147c24d14183c3a25691b823fc06fd64564dafae76e649d6f3da8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rpg-classic.png",
+      "sha256": "ddd23593d64881fb6bf27eb7c4ffe7f6d3a4be0f9d8f4ec5698ac92f477f78e9",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "rts-cardfront",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.5,
+      "source": {
+        "main.nut": "d8b0316186686370f5eb1d7d8e3cf6b9d4dd8ffdb8729153d51fef1039d8c052",
+        "config.nut": "a46946d6b05a5da266a66d115aad782f4663b71729db0a545a80c9c5b6d320f1"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rts-cardfront.png",
+      "sha256": "0a805cf7953c5ae0b02e5c1cf33e330310797a0cc7ad26a67dd2ff1ff255b0b4",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "rts-sandbox",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 13.2,
+      "source": {
+        "main.nut": "83f8efc7828d9b0be87e63a49e98b18c9d87c538391f5e005a65203f9b6a3319",
+        "config.nut": "3b1bd3dd27decb4571f61d76499d22fa99583df0fea1eb18c2fd8f3dbf138fa2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/rts-sandbox.png",
+      "sha256": "3c5ee07ba1a85396a847daf6f10ae6bf34ae77f355c000e27b9dcf6cc804a197",
+      "width": 1180,
+      "height": 760
+    },
+    {
+      "example": "scad-living-room",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 28.5,
+      "source": {
+        "main.nut": "74f3f61b188f179ad7480072b039b023d385acf2b91791464e03cad86719caff",
+        "config.nut": "5b369494fae0d16f80fab073aa547b9e21d817bf477bdb8320327835c6fe15b8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scad-living-room.png",
+      "sha256": "8390ea0bf79e1bb3f173c7f01524a44bc7c45e49bfd0c8c0ad29f92aa0701139",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "example": "scad-mechanical",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "0c110dc5d2d1ed07fbb4c2bbcd76ddd74b6f55ad445eb99e28942a0a0a5269eb",
+        "config.nut": "d2cfcf5c7a545965093ff4f15543b4e95cd0c17c191b41c7ddace78d45189519"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scad-mechanical.png",
+      "sha256": "0c82d0f5500ef2ad108c188c6aedb41fd79b4d333a82156ac467edc84baf2ee0",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "scad-music-box",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "c97365590613963008e276d0d54266cd64918793489c5e2e62b5cd7418b5eb7c",
+        "config.nut": "9692ab8df30775e1288190232e24bab993e3c20255b17768f8eb343971207665"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scad-music-box.png",
+      "sha256": "8f1ba86999eb53bc6c563d44103abda63e11ff680a581233b93d94058efd339d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "scad-watermill",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "97d43ce0575abaf45ef52bb52882387c42376f94e8204753edee1ae0c0f8f935",
+        "config.nut": "a559b9393fb2a562ed5831659264a589d7463c994e10df9e67bde9c628c5a618"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scad-watermill.png",
+      "sha256": "f1442a2fcc0dbd397519b834ccea1095dfa5df9894b1712a66dd62e66cdbfecb",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "scene-builder-game",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "0f42ca7ca858d9496fa31520b7f31ed7cd8d4e33dc5129e008582fc54746074c",
+        "config.nut": "4cba5bad2cd228ff9fce5c647cfb530e506ff3552754a9b67035743696cc52a6"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scene-builder-game.png",
+      "sha256": "ace19b6533a48820f2bb9e2e45c48923fd3598227e8f50c3b65c15104b6f2bdf",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "scene-ecs",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "ab2f031d5ebcd4bc2af150f8829edabf962fd395c2f46db7ac261a1bf0a809da",
+        "config.nut": "fa13ef282324128036893404a3cf2280f874126ec6af66cb83ed4640c65da01e"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scene-ecs.png",
+      "sha256": "f8857f5b45eea68162529e3f88438a04de2e9b822c25390e2ca4e912868f7c7d",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "scene-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "76578e0a55037da32a8f7a308431956f359cac18d1f1de6f70f93b97f8a6e29a",
+        "config.nut": "4375b8f61b75811fc51d35a7f262cfc4da1e76be4cce6d74771e443a421b228c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/scene-editor.png",
+      "sha256": "e249c78dac91f76a10638d6991703c4c177170599122f4613023b1ed1e695724",
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "example": "script-rule-provider",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "316f565069b078121dc61597212fdc4dded984239c1620460bd9c4a8829569b6",
+        "config.nut": "be870e6ff43f3bad1a4b694001dac35bb2af5b9b0568c338a50210cc337c0f4d"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/script-rule-provider.png",
+      "sha256": "3daa7fadadba4266e3119212a0724e82a2a37563111e2d9464ee00d4a51269d3",
+      "width": 900,
+      "height": 600
+    },
+    {
+      "example": "shader-live-preview",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.4,
+      "source": {
+        "main.nut": "68914858fe6a3a8b78cf8d47bc7618747759c70a1c0b3efc708e39bbd2458182",
+        "config.nut": "df032c9f78b9ff363a5298efd7708c05cd1052364e6c785798144f0e86b6d86a"
+      },
+      "shaders": {
+        "shaders/preview.frag": "80d9d9d42a10fcd97901e8149530cc64e1b2d3566062443658aedba6a650705e",
+        "shaders/preview.frag.spv": "24e51f3bdda8eb6386c4f0295fef5ccc752bf70f8833af6f9ad002e0e1b4588b"
+      },
+      "image": "review-2026-11-07/shader-live-preview.png",
+      "sha256": "bb1051ead6ef8f9eaa250f829967885dc6935bf3df060367acf7f0ac2948f184",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "example": "silpom-ssdm-compare",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.0,
+      "source": {
+        "main.nut": "b832e6b834a0511aad3ddb756239baed41d760225a71cc693dca7ed559564a97",
+        "config.nut": "fd12b93f04fdcca14d7e036bda92c9dd6046fb46c38b59e2f7288db4d0d6c248"
+      },
+      "shaders": {
+        "shaders/compare.frag": "f3c82b77b9b23d04ca7f4b0745dde2c370b844032a344a23acfd5c28614d09e5",
+        "shaders/compare.frag.spv": "17a95eb772555cefdb012c23168ecbaba2e0a9abc5075ddbf2170097d7cfbe8d"
+      },
+      "image": "review-2026-11-07/silpom-ssdm-compare.png",
+      "sha256": "e0cbba25df246a7eaf027e890eecdf83f97d40f27a34d39d9c6680c319841457",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "ski-adventure",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "bd2d15cca15af78065f5fec5bee61821ed59dd5724954ac4a460c15f2b773422",
+        "config.nut": "48fde228c49e18c4aaa1fdff8ddd9d750c63b8897d19eb6947cff54ebaa0bff6"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ski-adventure.png",
+      "sha256": "96b9fa7dc10bec4a13f1ee236e07da710db01ae0dcf4f36dce658941f13565e3",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "skyforge-trials",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "73517a38131717b7562229bfe7d94dee48ffc782bd2d29777801f58fc7a17900",
+        "config.nut": "454baa249e11ccc9c0fd22e8b0707896250e205a21916b5f16647fedb79c1e97"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/skyforge-trials.png",
+      "sha256": "8276c91652003c3a139b8af04bdc04bea923ce43701c34d78b76162a422a448b",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "skyscraper-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 7.5,
+      "source": {
+        "main.nut": "02a5540058d86d63e6317b12a662c18838521c193add0ed83343283d28674507",
+        "config.nut": "5d5028658d592da4fb80f4d6304deaf3e31cb247401ac8291ab31532a3be37cf"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/skyscraper-generator.png",
+      "sha256": "e267b2523aa74be5a8d727aa334ff4c10573341126946f438ea05c029618c5b3",
+      "width": 1000,
+      "height": 720
+    },
+    {
+      "example": "smoke-flipbook",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 15.7,
+      "source": {
+        "main.nut": "b59ee4da8e84ec303f584318e9f314b69254cf0ac7b90e63210b4f5a8bec43b6",
+        "config.nut": "b4947a3cd804008ab41de2969289b59a3c6b9f83d5d7de5c09d535ed006c5248"
+      },
+      "shaders": {},
+      "failure": "frame error: game:/main.nut:47 (saveAtlas): Cannot write atlas Stack: game:/main.nut:47 in saveAtlas game:/main.nut:52 in finishBake game:/main.nut:99 in bakeFrame game:/main.nut:134 load.nut:1106 load.nut:1163 in main CAPTURED <local>/build/gallery-review/smoke-flipbook.png.capture-9dd1e4c1ad204d3cae243fd2074d3d71.png"
+    },
+    {
+      "example": "snow",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "0d9a4d4bcd40ce34a168960d62ae2b924f65e81ee7ae4ee0d81b26d86b0c5120",
+        "config.nut": "f5afc93d9cd0fb7d581562bc7c0f8e3fb2deaa4fb3d5fa3fad39f36f7cb26498"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/snow.png",
+      "sha256": "57b9f940def1f9bfbc192c18374a9b21628761dfd3472ba68c65b62323ebabd8",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "softbody",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "40a1aedb6bc2717cb00f7264709ed621e5118d5744bcfe6b6467031b5fa84ab3",
+        "config.nut": "84914272f4aa1d588f98349fad561b2ff34833ed6e70ae7414de7e31716153b0"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/softbody.png",
+      "sha256": "60b052a1f94a4524c832c386ca18416903b2e9648f8132fa24572f01502d1d38",
+      "width": 900,
+      "height": 560
+    },
+    {
+      "example": "softbody3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 23.3,
+      "source": {
+        "main.nut": "7ad4b0768d58b50430f127f7b2f152ee8f9924960e09273edc72cce1c2a49754",
+        "config.nut": "1f5bea56ce7b2e85e7ed7f319d32f286a00dea753a0435c921881ce05b36902c"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/softbody3d.png",
+      "sha256": "106318d10f3086026035f4f8909bc98e0a54de3195e1020da5e8bacd4bf9c1a1",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "spline-tube-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "092810e7f055594ea24d588e7e6d81287f3e150ce06036d84673b0410fbca01d",
+        "config.nut": "261582ab2bf05e9906cfe4cfb1e307ff0daa86f9748a4aae4bcb87d0975c4ef8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/spline-tube-lab.png",
+      "sha256": "9f50d206578944094f8edf5260d1c9dee0f044727301dbf16851dc2f07c70b56",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "sprite-animation-vfx",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "b649aa61d0953ff723a5272db4cc61a85c548842d16ea9d96f11d7f7453b7a8e",
+        "config.nut": "d1f180a63eeb7599eb1e08b5032fcf295537c1de615eb5ae91a6ce4199402fe9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/sprite-animation-vfx.png",
+      "sha256": "7d8ae8e1e4b17b08b40353ff9fe2a5a94fa85d7e6b1089689e4335db8652a62a",
+      "width": 1100,
+      "height": 680
+    },
+    {
+      "example": "sprite-stack",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "2464779fc4fa89555b452cfe1a8d66c5a30add2f3db6f801a7387a01fc6ea90f",
+        "config.nut": "1deee8194f385a52e27912328875d4dbe7a1875c0d34257f2757ca75ffc18ba7"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/sprite-stack.png",
+      "sha256": "657f7761e1749b54173f29d1b5188a81c9cfe48ed17a24dac52993834bf97166",
+      "width": 960,
+      "height": 600
+    },
+    {
+      "example": "squad-boss-3d",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "f9d539c8bde9a9c20450d2842afbc0443940233b0e2cf7a0bb64ca819496e4c2",
+        "config.nut": "f805e15b5221377749dc4210e5eefdda32e3570e325693898bb132f968d517e1"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/squad-boss-3d.png",
+      "sha256": "e7ea1a6cab1230a9a7a67c8a057c35e0cc75709b19fc6accc7ced60a6e95ba05",
+      "width": 1360,
+      "height": 800
+    },
+    {
+      "example": "stylized-meadow",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.6,
+      "source": {
+        "main.nut": "d8ad9a4b006eb743287d6f258dcc7fec99ce26d1f174b88fe9ca6ad88b389390",
+        "config.nut": "360358253d6edd4623582409a7e04ba883f6424393eb1fc746f9505c558c969d"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/stylized-meadow.png",
+      "sha256": "92cf3ad3c158aa68acfa3c26317ee86442093f81a7d76f4b957acfc796ff0731",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "stylized-water-shore",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.0,
+      "source": {
+        "main.nut": "61310a2fb05850009f7d0b8e657d7906f3a7ef5005405cd53bf7c31f402ae92e",
+        "config.nut": "4dcde29eb71b1bba479b129101dfcee0970d7398d9011540768b2af61c3d5636"
+      },
+      "shaders": {
+        "shaders/ridge.frag": "3bb36500d74bb9e701f9d8f6f573b6b8119e4ab855f242fd1cab205efa715ec8",
+        "shaders/ridge.frag.spv": "13396d6023f5b060834e5bc15d90fece557109adabc6df69211862b3decbf578",
+        "shaders/sky.frag": "fcdde8855b4882ab39f9e9e1ba811e73bfe67dbbf129dc0178c9453a137de301",
+        "shaders/sky.frag.spv": "c66c8c561bf130cfa6ec45a9ffe2a7fe3c3ceb1e64c823a29b04737811b6999a",
+        "shaders/stone.frag": "845fce25bb8cda6c3887710e34696c89df745689d290059810b37e7b60dd77c1",
+        "shaders/stone.frag.spv": "a81b3f662fe6c9b783877c04a3db6be80fd047287ee195f18087572119f0aa08",
+        "shaders/terrain.frag": "a45b7ef49f1cf01fffd6c70c71697549191bf69afcf20889dd80c5598536b8e6",
+        "shaders/terrain.frag.spv": "f8fcb9667fecc2f9c7fe2313135c90a5ded9c61d224ad6fc30a743f081bf8f2b",
+        "shaders/water.frag": "a666d1051d489c43c114dbbe8a2382d611bc5b0e9fe62e68cc4a8890f112d792",
+        "shaders/water.frag.spv": "9d77634422d79358774e5579896684ccd80bb59b804993292c932cf7bb6fb739",
+        "shaders/water.vert": "87209426f2a514bf75a2ce63bb4cd91165c51208ade828095f0206cac2d23330",
+        "shaders/water.vert.spv": "f4b8bb61ffb90cd2999b4296c2b948f002106f2301e94417157157e894d3e2ac"
+      },
+      "image": "review-2026-11-07/stylized-water-shore.png",
+      "sha256": "1d2e6001bbea31e422f463d7a4db5eff1c555fc6d1a9b20be0a514d165c31a66",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "surface-vine-growth",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "877805eca108a4e6441d2814a3808127ffd6f2d6b51f5a365a1932f9c5068806",
+        "config.nut": "39e67dc5449396ab7e358d33b685cf5bcdbff7da3b6dbc93bd338ddcb58a714a"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/surface-vine-growth.png",
+      "sha256": "4e4ce4d623cc25131ae6d3bebac05fd8bfc46211a6d42a746c957c9a3a408c58",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "swappable-tilesets",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.0,
+      "source": {
+        "main.nut": "b7355c129b2772ae22dd8335e2f879e34195145faef23c8de5f06b951db4d33f",
+        "config.nut": "fc4c64366dc24408a2cdf1a5c32e12a58f96cbf9b1ec0c10a10d96424f1657b9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/swappable-tilesets.png",
+      "sha256": "6a92f1e086f6a55f0d8ab2ec0b12f4562b9da6511d84918cc3831065e948e500",
+      "width": 1104,
+      "height": 720
+    },
+    {
+      "example": "sword-slash-trail",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.0,
+      "source": {
+        "main.nut": "5a51395075e84306a065672a446455deafd13c59f451908766b877f000aaa049",
+        "config.nut": "1436650c4ff8da102c4e036ecc1456637a435fc076757916ad985ca75dd7760a"
+      },
+      "shaders": {
+        "fx/shaders/slash.frag": "7688ac07c57ed80aea6c1caba21174c4b97240f1a382467566dd61ca36110f1f",
+        "fx/shaders/slash.frag.spv": "a26c23312a3f3562c3beea95069cc0d023ca6ce9faa24d6230b525dd9066af36"
+      },
+      "image": "review-2026-11-07/sword-slash-trail.png",
+      "sha256": "ebd6c0af935298b30dd0747d57c9c0f70bbabd2d7921b2a0da0af6171a6b904b",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "tactics",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 15.1,
+      "source": {
+        "main.nut": "92d92b282af3e11323f1221fec65619c09f157dfc3a9764a6f797b5d625029c0",
+        "config.nut": "0e28fea12a30cf931c0fb2080d89aa73a53880475f4219827739d91544f40dfd"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/tactics.png",
+      "sha256": "db2ea7c0b44cef5b715cc23ec9c00f9ba669a5fc8a456a669ccf1ed509df0b7b",
+      "width": 1280,
+      "height": 760
+    },
+    {
+      "example": "tensor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "af433d6a761dce05eb06272b31d6e5cc0e3b7fc1084067df9462a4da14ccf11c",
+        "config.nut": "3ad03f4891d9d6d7d7dca06610d7bd9ef2fdcd75bf733b119c3235e3e0c863c9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/tensor.png",
+      "sha256": "40b3a47235dce78f418f8065ab141b674d200236123c917a44394127640b8da5",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "terrain-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "62e628c1163792f4fe876503a7369b9b95fc3721b9b551d2ca98499d7602efba",
+        "config.nut": "c9e019df07b2d74e8c8f0035fa6d0cddd67fe6efe051647ac81bd60f6c37f3de"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-editor.png",
+      "sha256": "5f5d7a3fc88a5cdee40fe6fbf965ece6dc47907c9b9538e23c5a43881c458f3e",
+      "width": 1000,
+      "height": 700
+    },
+    {
+      "example": "terrain-gallery",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 35.7,
+      "source": {
+        "main.nut": "677803e78f9a19de0cddde6cbe4d3bf9e5957985c545d43b664e22480c9bdb52",
+        "config.nut": "9d4e4af0f8eb209a22a9180602f93bac53cd1220e05f3ea587cb90b405fa975f"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-gallery.png",
+      "sha256": "ef7b08a586aba0be5b1a4f05908ee69285a5efcce6852879b1ce92a1d47f7fcb",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "terrain-navigation-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "56acac2a81a675c2182399b20011e9ed1c828893dc5ac539ed7357cdc0914ad2",
+        "config.nut": "05471e1e2291916d52f93e71fcbe3f253c72e52a3130cc6812e1e377ec6c4866"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-navigation-lab.png",
+      "sha256": "ebfe6e305e77ec5a58d180ec9562c4f05986e429ee6a104dc75cdf6a768c9d69",
+      "width": 1280,
+      "height": 850
+    },
+    {
+      "example": "terrain-preview",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 25.4,
+      "source": {
+        "main.nut": "e90c9a74031434bcc23447b21bdd779edcdd2e7733bc1add166b5af45150fd8f",
+        "config.nut": "482b37116d648ec7eb0f19c385f2d8fef3919b36d71a3bd45715ccbe4dd5dce8"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-preview.png",
+      "sha256": "9388c83f7fa9692564d3170d53a1c5172f6a60d45aea8adb0ebf5aa5571be0f5",
+      "width": 1000,
+      "height": 700
+    },
+    {
+      "example": "terrain-smooth-mountain",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "2da38d10006a196fd5822f0d6b9bca1b77665edb5164eedf82cc038b91d9f0fb",
+        "config.nut": "3a6dcf781d475dfac0349ccc1acf8fd035cfa89a68b7d71d2425e9f098af33c3"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-smooth-mountain.png",
+      "sha256": "30d0499f937e36287a4f9eec92f9ee57c226d9993d5900546fc55de207b00bc5",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "example": "terrain-stamping",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 13.1,
+      "source": {
+        "main.nut": "8abbe6899a70ebbeb16c38e0776228cf663f6fffaf7c7a12623cbf0bf7f93784",
+        "config.nut": "3c9ef6c031363f6c5d12e3f70589425d1d4c32c0e72a303dc21581827fc63459"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/terrain-stamping.png",
+      "sha256": "ca01dab994b6e3d42113982381b46253dde6c6acbe2d8d7b1295074123bdd4dd",
+      "width": 1200,
+      "height": 760
+    },
+    {
+      "example": "tileworld-graph-dungeon",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "d65888325b5f17f4783daefeee45e2aba9b3a1135ff13dd9c0dcc2558d5639dd",
+        "config.nut": "9b04ef9a8b328e478cafbf05afd019411d1e58b21b29d34a64defd33fcdc6d28"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/tileworld-graph-dungeon.png",
+      "sha256": "fbb4ea040e6b9dd5fb2192b6b088a79146369cb4bdcdc146b9d0d82ba644e0d7",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "topdown-procmap",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 14.6,
+      "source": {
+        "main.nut": "b53abf283826697d15ac898572aa96c100bf0f210d55deb7d2f77c7fa92cf811",
+        "config.nut": "022b521f5e5c6fb55363c55da3e3490f89cb1450c5e1d48cc50484268652259a"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/topdown-procmap.png",
+      "sha256": "a9ce535edf054d9608806b847db8651afc389b9c8617069a60dda20d4c66fc49",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "tornado-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "2e32a9b6e9d14dde86b4558d942b1d61a9f9e5ebf5bba02f68ff22baf83184e0",
+        "config.nut": "2d476cfa60339820feff162e980866a4a7b0e98780f60023056b2aac2d37e197"
+      },
+      "shaders": {
+        "shaders/tornado.frag": "52ae9df5004e427a1113a7ee7734e9f2e76618db1c9c8799ad8d834afb28af95",
+        "shaders/tornado.frag.spv": "4ea8bebec16951de27327a2805007159776ee607ec438028b9b219c0c6abc56f"
+      },
+      "image": "review-2026-11-07/tornado-lab.png",
+      "sha256": "0199d44f114a7e3df5a59be216c02eb7cb3441055eee8b41cf24b5cecf7fc2d4",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "tower-defense",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 1.4,
+      "source": {
+        "main.nut": "c1eba599a68554a3c952028e4e7d3b28f1662ca46d0525a89e68c8ca1dd5084e",
+        "config.nut": "ae460c310145e950d25b17663d74ea60770e811ca28f563605b2c8935b59ae99"
+      },
+      "shaders": {},
+      "failure": "Run failed: Script execute failed in 'load.nut' [id=2]: load.nut:299 (validate_project_modules): required module is missing: towerdefense Stack: load.nut:299 in validate_project_modules load.nut:350 in main [startup] load.nut in scripts begins at process clock 753 ms [startup] all modules instantiated: 104 ms"
+    },
+    {
+      "example": "trap-workshop",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "06d7e8c1157ae5d4159e453bd10ac2eae680bde4e37173796bce3851bdb4104d",
+        "config.nut": "cee1eca2542c94a3a0a8857a5a23a5f34582622731911977c556941dda596a04"
+      },
+      "shaders": {},
+      "failure": "eve_init failed: game:/main.nut:356 (selfCheckComposition): the index 'getBeginTriggerCount' does not exist Stack: game:/main.nut:356 in selfCheckComposition game:/main.nut:388 load.nut:922 in main [startup] eve_init done: 1117 ms [startup] first frame begins: 1132 ms frame error: game:/main.nut:393 (<anonymous>): the index 'remainder' does not exist Stack: game:/main.nut:393 load.nut:1106 load.nut:1163 in main [startup] first present - window shows content: 1144 ms CAPTURED <local>/build/gallery-review/trap-workshop.png.capture-9d6050c6378046b5936f0ca02e23ce48.png"
+    },
+    {
+      "example": "tree-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "ec2100d77051b3bfea33104d9c781af8236130a2d07f461f2b77d107988022f4",
+        "config.nut": "f8f4c034b092eaba816e16eb39713824e63ba2be0e0841d195f26725ba53f272"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/tree-generator.png",
+      "sha256": "fb6682cc4982cd9f8ed852398f9d463fe7dbd80a39b4740f670220d302287029",
+      "width": 1100,
+      "height": 720
+    },
+    {
+      "example": "triplanar-decal",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "f89454b7035204a0668db18e0a232de10630bcd0373ced9dbaa35ab66a403cbb",
+        "config.nut": "53729e8dee1ab89809c4f3a5d6e6360a448d9e8080acb435db3fa4083b94b246"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/triplanar-decal.png",
+      "sha256": "2e52230152917d48fd8a7b8696200b0ee46a7e5e462113a21ec4aa65d194f519",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "uds-sky",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 12.6,
+      "source": {
+        "main.nut": "8b6381f1624e1f95535d140f994cb726033c574c88117bdfbc88b25ef12dbb9c",
+        "config.nut": "e4c30faaeaf086aec8c05d10869d3ef958b7e89be109d210b677b1545a2ed0b1"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/uds-sky.png",
+      "sha256": "ad84b2a675565cd107f508e6370d767c21e45fb0f6dc189aaf6137afd9a3ea94",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "ui-theme-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 6.4,
+      "source": {
+        "main.nut": "1b4d81979ed4415ff07e5a44e04669761d1f94b66f740b1e4c76a50ec8796021",
+        "config.nut": "37fd7077c7cbe03183455b9cc20bfb130ca66a30d1949548b965701ba4d6de0e"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/ui-theme-editor.png",
+      "sha256": "cd8df9fbda3e4b9effde50aa66bbafe3161425356a3072aef33c566cac0bd7b3",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "ultra-elements",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 11.5,
+      "source": {
+        "main.nut": "05faa59673124bfe2517a71ccb7d9cd74568e5708a972229d35c420b1ba7cc18",
+        "config.nut": "0fc21a8a72c88c2e4abd3ee7ec510be7f418427172a32608cd5ba8adef751aab"
+      },
+      "shaders": {
+        "shaders/fireball.frag": "7abb995cc094400912c2fe352e12ab628abbc6d18bd5f43a0e31a6be3c55c2ad",
+        "shaders/fireball.frag.spv": "df89de8395c6c1d5f3bf82e9221b012dff7f38ec33ec0a6a8b94f2a213c3266a"
+      },
+      "image": "review-2026-11-07/ultra-elements.png",
+      "sha256": "f75dad40b80f93ded32fccc298ef05715d0431c4d7051dc88c6ed9e7a7081dbf",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "example": "unit-surface-effects",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 23.4,
+      "source": {
+        "main.nut": "91d6f62d4f7b2b12616af6f4d947dae82ebf71bb860f575e0d2c5e9ed29b5834",
+        "config.nut": "4f8584e1f95986dd51f782c80e1f183edaf38dfb84fae9add6b1afa3a8e4bcbd"
+      },
+      "shaders": {
+        "styles/unit-surface/surface-mode--1.frag.spv": "ee692ab9ccad2c3e6e5df0a74e2e73f886796a0b2b740bbdb487ef406b0186a5",
+        "styles/unit-surface/surface-mode-0.frag.spv": "ee692ab9ccad2c3e6e5df0a74e2e73f886796a0b2b740bbdb487ef406b0186a5",
+        "styles/unit-surface/surface-mode-1.frag.spv": "e3decf68b62a0bd5bfa42022d08f361f84cdf89a90bc14d3fc509246456f156c",
+        "styles/unit-surface/surface-mode-10.frag.spv": "59237918290beb6cce4f19face763da83f8e6cae925884cb0770b1c21f7de836",
+        "styles/unit-surface/surface-mode-11.frag.spv": "e8bcd5956ab5021de40a8d04b91791a2ad000d33a7c2cc0778c76e993f2cd9a5",
+        "styles/unit-surface/surface-mode-12.frag.spv": "cf0e8097f09039e07e3fd0dff901a9f314e162fd6f35285e9ffc228567848f23",
+        "styles/unit-surface/surface-mode-13.frag.spv": "129764332560ddf0c183b2964bbd72e8b82ebbd20e1321167b9aa824529f2337",
+        "styles/unit-surface/surface-mode-14.frag.spv": "34b7c7c67c9885c9e345c3f23ad1b21251a626946ab8a4900dc52327aa32e4f1",
+        "styles/unit-surface/surface-mode-15.frag.spv": "b06f9461b4262641ed55b2222d95fd95a0b350d37b43a1b0b841f72cdedd49d5",
+        "styles/unit-surface/surface-mode-16.frag.spv": "8a46b1877ce80c537120fb502843adeb16c0885d453f37474aa7919583135eb4",
+        "styles/unit-surface/surface-mode-17.frag.spv": "d2ba245425154707a07f18cc4ae61c3be8509c4b79e1e79e46fbdd4dbec030bd",
+        "styles/unit-surface/surface-mode-18.frag.spv": "7481d1129e67d9f591d7fbdcb6d0544ff900739a49de88c8be2ba4beadbaa0e4",
+        "styles/unit-surface/surface-mode-19.frag.spv": "60f0e5f389af761baec8e55f2d34221f1fa237ea4d714f99d1e4c2b3a4dfc65c",
+        "styles/unit-surface/surface-mode-2.frag.spv": "b6bb92687fac3461a16e4746384cd6135b78d627279e4ab5ade719f47127bb37",
+        "styles/unit-surface/surface-mode-20.frag.spv": "c11631a3c6db3d46292cbe185b69514a813e44547eced09bf8c77eb8ebbeb799",
+        "styles/unit-surface/surface-mode-21.frag.spv": "6009c690123c39a99f5ce7445a0f4aee30a33e4825cdd6ae764e975b2e11149a",
+        "styles/unit-surface/surface-mode-22.frag.spv": "421d1fa485a2b8a0d9b5323302de02fde288c2174098a75e7e0acedc2702ad7e",
+        "styles/unit-surface/surface-mode-23.frag.spv": "2a1fdb83d85b4da75be65a543a26009606a405b5f8cd100c673fd00e7fdc7e33",
+        "styles/unit-surface/surface-mode-24.frag.spv": "a649e60b1902b175f3350cf2c3529d5a7b63037d5f9718aa153316e7696b742f",
+        "styles/unit-surface/surface-mode-25.frag.spv": "d1086aecf840a33c1ca6070c8e30d7539c4edf5141860d60fa017de7da67c7a5",
+        "styles/unit-surface/surface-mode-3.frag.spv": "57773a5c1f5c0ef3b82121b96eb37fcdc7ecbec9fee97a8e8ebdb0da505e5da8",
+        "styles/unit-surface/surface-mode-4.frag.spv": "bfed2267ee2cc5fa2d4621365d5bd1860c9e95618e050d53a45416ad6c7fa932",
+        "styles/unit-surface/surface-mode-5.frag.spv": "a9bf4cde4367e57bd13181b1063cc368e8c71a298cd6af9c61bbd9d668120b98",
+        "styles/unit-surface/surface-mode-6.frag.spv": "6c49d8f91012b2d62f247323a91805fbe539804e4bed4bc6b02bbba3476a06fc",
+        "styles/unit-surface/surface-mode-7.frag.spv": "fa6d7bd5a55183ae65a760b3233801febaf5db4b67a983951a2a0d39d7f40fcc",
+        "styles/unit-surface/surface-mode-8.frag.spv": "3f3ff2ca214e4630c56f1885854d9d55112dad9b0f3e594aa434e2a59fdcf1f5",
+        "styles/unit-surface/surface-mode-9.frag.spv": "a4d3d5d4206c5e558a521b4122739e4fa89d32926c2fc38f708543eb08070573",
+        "styles/unit-surface/surface.frag": "fc4b033f7220317b1004845c397714ef448c635f3784009fb5e3e92ad061caf0",
+        "styles/unit-surface/surface.frag.spv": "eeeea77da45ca524c9e970fd6b43aa4e7b3c9b1157bb5cede0c2de0c90e0a4da",
+        "styles/unit-surface/surface.vert": "4df32d2802dab970069b53aecbbfe07d5d96cd03ad06f6191f3a787b79882b35",
+        "styles/unit-surface/surface.vert.spv": "48f339fda7cd19895cea313bb4653b4b5214e4f2bc9e569031dfec6902d82d28"
+      },
+      "image": "review-2026-11-07/unit-surface-effects.png",
+      "sha256": "af10a7ed6ef520851a324cf60de312cf9cf56f31e9eb861b5d239ce8caa723eb",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "unity-vfx-port-lab",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "2fa5e2534e94342e054f3ef7b0a1a51ec9da83654f348a119963e84bf354d0fd",
+        "config.nut": "764d40429181585c9324a6eb607b046312cad9555480b2395112013902b13c05"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/unity-vfx-port-lab.png",
+      "sha256": "ea05597c4464f9b05d294ee31079d7ea53919836560bdb4721ec0357a30b17b2",
+      "width": 1100,
+      "height": 640
+    },
+    {
+      "example": "urban-generator",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 12.0,
+      "source": {
+        "main.nut": "a1314ff8e44136c9eb9a8fb41462c03411ced75060ccccca601abd94f667e113",
+        "config.nut": "760cb8b62064734ad7017b9aec3852176b32d01562b60aa87363171c4abe629a"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/urban-generator.png",
+      "sha256": "7cf8dcc4ea05b67a5d373d8fd04cd550cf7aeeb6fed8e9c918c5969d50239c7e",
+      "width": 1200,
+      "height": 760
+    },
+    {
+      "example": "uv-texture-paint",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "3d83eafe49931851f25b41d247b5cb4174f5cc893fc2414ef1b74d35eae14f00",
+        "config.nut": "8a7fe2ad49379686c81915c4f9b4201aed342bb78fafd99ed7dfc8580b9652ea"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/uv-texture-paint.png",
+      "sha256": "3a53042343e2ad3c49e4f35e28aaa8a76aa2a553bde6da4591b3a40a1d6bd30b",
+      "width": 960,
+      "height": 640
+    },
+    {
+      "example": "vehicle",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.9,
+      "source": {
+        "main.nut": "a69f449039b8b3689168d662c343fd2c169b932eb2c3f3fcc7f46cc53c0a3bfe",
+        "config.nut": "4d63204fbb29a57be788a385252c4565fba3e5f22d86822939435fff1709a4c3"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/vehicle.png",
+      "sha256": "0f3c9171980656e2835fb0859c5717c8d1bde9cfe77c236ae19be30b3fa4ba4d",
+      "width": 900,
+      "height": 640
+    },
+    {
+      "example": "venom-transform",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.0,
+      "source": {
+        "main.nut": "06da75631db233d8ddaae4d76c844467a1124df76010abb3b1349b8929e0edb1",
+        "config.nut": "4bcbf3f35b85f0afc3562d4fbbef49063a049c33a9890b76df6a5ddae36760a4"
+      },
+      "shaders": {
+        "shaders/venom.frag": "49ce8879406458fdfeaff10b093a047d98d3e60f6490c2b81a28525a92f68f00",
+        "shaders/venom.frag.spv": "e0553ff9074b7edd6dc1c89e6120390c9da7cdcfbb85d5565eeb73d75980d6e7"
+      },
+      "image": "review-2026-11-07/venom-transform.png",
+      "sha256": "bc3836157ef3cc7549df2ac0d40ddb8909c8c75b343a70e2304d0027e096a46f",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "virtual-texture-blending",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "e0eac3fc6cba82389d08aa8ce6f7789bdffcc74c44fd701193077fcb2dbf9ccf",
+        "config.nut": "0c8e1c678c8b6d616683cf95daa732b2844f9744c701a2e29a80efcf08f2cf73"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/virtual-texture-blending.png",
+      "sha256": "7f040c429b6f099623b4de7a88dff4b4e6f6de0e273c6f054594568559429138",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "virtualgeometry",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "875a6ef18806ceacd1d95d53b0233e4fae6296a237c7437018941d89bbc97b21",
+        "config.nut": "464dc813ea80ff5290f12639a55202d8090081cc17a12e96cbe22e8ef41917a2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/virtualgeometry.png",
+      "sha256": "40b3a47235dce78f418f8065ab141b674d200236123c917a44394127640b8da5",
+      "width": 800,
+      "height": 600
+    },
+    {
+      "example": "vortex-cloud",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 10.1,
+      "source": {
+        "main.nut": "e7952376064a7a1d774c660748d38718ff4b7de1c42d91fc6e14ea4ecfae9c62",
+        "config.nut": "2f8ddeafc0f22a044927952645451b1968ee1122528b30e0aa4148efa6bb47d2"
+      },
+      "shaders": {
+        "shaders/rock.frag": "830ca4370c7dc442e609753b9210f938346d5278301b35d76ec3b7203fd2ead7",
+        "shaders/rock.frag.spv": "e221bf68827f3bfccdcdc250e447a6b9063bc3b2597fd9dec87cc56a568753a7",
+        "shaders/vortex.frag": "d1374530e35705958cf857b498feccc31acf9aa8d4d4bf7395bad245bd046d71",
+        "shaders/vortex.frag.spv": "7e73072c1cbf848d5da974747694c2b0429bcd63a02ab718595fb793878290db"
+      },
+      "image": "review-2026-11-07/vortex-cloud.png",
+      "sha256": "020487a1e4202826fe9bedf1bf57674669a0d5d0d241b4b5fff6aedcfb6a393c",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "example": "voxel",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "1aed58ee72c4371a6130fd15635446e1353a516aff42d0c633ac51c3a043bb94",
+        "config.nut": "e264305da6a22e8eafbba39081f7becc8b0bd8b42648191ce70072712ca0af88"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/voxel.png",
+      "sha256": "b052c802fdb1422b920db59a655266989cb1feca54ba78d64ae1ee872631b3da",
+      "width": 900,
+      "height": 600
+    },
+    {
+      "example": "voxel-catalog-editor",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "35da67f3aad01e5532e73af2966ea11dfe1c1f03ab21d2989f737121815be874",
+        "config.nut": "3fab13c0e1c85990365727a566338fe7324bec9db08c728bbf0e2d5eb7568f19"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/voxel-catalog-editor.png",
+      "sha256": "dc45483192548426a70f98c29739b328da32800c6b27e1430890b4ea01abe9b0",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "voxel-terrain",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "f3a9df3cda0aaf8253d1e55435a99c0d059f48b6c4153ec9592d2198140f3afa",
+        "config.nut": "f6e82be698d0549539f0372003bfb8f41ee6f1aa65373b10ff0ea8121b52ca69"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/voxel-terrain.png",
+      "sha256": "17a8dc741b2892bf6481a73dec6963dd5e4cc8713f70d17698fee614b1c2cc7c",
+      "width": 1024,
+      "height": 640
+    },
+    {
+      "example": "vrm-avatar",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.5,
+      "source": {
+        "main.nut": "fe223a48e74483abede8b1d301957dfe82914a5e0973121f10d0ab452857b4af",
+        "config.nut": "6513469b2ce9c4feb934f3d329f14a612def0a918e98f5d38795c1fdf47b0693"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/vrm-avatar.png",
+      "sha256": "6ffa332d145d7e67434ee0c962fdb154d996aade3d6fd83ca0c5e6031563dd3a",
+      "width": 1000,
+      "height": 900
+    },
+    {
+      "example": "warship",
+      "captured": false,
+      "frames": 120,
+      "preset": null,
+      "seconds": 1.4,
+      "source": {
+        "main.nut": "30bc733785b4c07f8fb1bcb3380225fd0b03032bf6ff909554fe02f60317d97c",
+        "config.nut": "4383bd5445c4815cab82a6406e9a7816721076a6a4b20596ce02a166ab30b643"
+      },
+      "shaders": {},
+      "failure": "Run failed: Script execute failed in 'load.nut' [id=2]: load.nut:299 (validate_project_modules): required module is missing: warship Stack: load.nut:299 in validate_project_modules load.nut:350 in main [startup] load.nut in scripts begins at process clock 740 ms [startup] all modules instantiated: 102 ms"
+    },
+    {
+      "example": "water-splash-vfx",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.0,
+      "source": {
+        "main.nut": "af8e7a5d49b8f540c235d50192e9002f3fef3dac13bf982ab0e3bdb42a7bc949",
+        "config.nut": "9e0ebafd5bdce76d6263148c4829e6149914797be4b23f7af091ead4f03dba02"
+      },
+      "shaders": {
+        "shaders/splash.frag": "60f4f4a6211e2a6c321a3878ada1e0de796fd38e2ec4b77b1911fcc9572210dc",
+        "shaders/splash.frag.spv": "a6f2ba5bba3bff9ee65eeb0b2f0062d26ffe450eb51cdee4736920e6c94ff1c4"
+      },
+      "image": "review-2026-11-07/water-splash-vfx.png",
+      "sha256": "b23087476fdff6bbb2b86270e5c5393b20bcf1bb5540b378f5b6455bbe4ad8c2",
+      "width": 1100,
+      "height": 700
+    },
+    {
+      "example": "waterfall-demo",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 9.0,
+      "source": {
+        "main.nut": "98e4b7acb4c3db0916f1b4021420591cd61733036007dd082513aa7431a671da",
+        "config.nut": "7aa983b6f07e6372deb3002793819661de9da11b8984e36c037f137df3da14a2"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/waterfall-demo.png",
+      "sha256": "4479fcf594684e7eb87a33b4c56f681b595b9622ff6c82f710b2ad5e2885cc21",
+      "width": 900,
+      "height": 720
+    },
+    {
+      "example": "weapon-lightning",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 8.5,
+      "source": {
+        "main.nut": "943eabc43953b01a8f67ab9c3cb9be6f601ec9ea5fda9142643f22fa58041353",
+        "config.nut": "5c0c92c9691adfecd2cb4148bf34481cfd48dcc7e9df86faee55f28fe90707d9"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/weapon-lightning.png",
+      "sha256": "6b2750299596eb6c11290ac3372b7ac5e4845a393f555bff23e8b7d8bab1a3a3",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "weather",
+      "captured": true,
+      "frames": 150,
+      "preset": "weather-storm",
+      "seconds": 10.6,
+      "presetSha256": "c9dd5359de18c8189be84d9501449f7ef66c5f66fe5b0dbdada21622ae182e44",
+      "source": {
+        "main.nut": "c06f09b04760ad05a1b74b537daf169763f94e775c6a47e796ff1f5d266af2d4",
+        "config.nut": "51789465c8821da6ecfc578e80bf2b9547aebc8882b26de086829c6a6e0396ba"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/weather.png",
+      "sha256": "1ab4e707e5cf76f3bb32d8c32765ac3d3e4def0fac7c181d681fd35cc473e2a4",
+      "width": 1024,
+      "height": 640
+    },
+    {
+      "example": "weather-daynight",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 18.3,
+      "source": {
+        "main.nut": "f285f452596a40deaae5d9eb0559334e1c42471180005625cfaa1013164b1256",
+        "config.nut": "c5c288b4480ef3f55a5ffc5fe781185cb589af05782a7365c4fffd48b6458a48"
+      },
+      "shaders": {
+        "shaders/grass_blades.frag": "ed06039c6ad9b2eaa44f96513e72e7d31ef0d149f495a326ed3d258efd51df2a",
+        "shaders/grass_blades.vert": "919c781240b1ba378bddd95a05de5446c427bfc14d158a92e15fbee2c8a8d859",
+        "shaders/river.frag": "3053fe8ff4c624b4c4702781565a972140c545f84358c1a4c2cae990ab5d98f2"
+      },
+      "image": "review-2026-11-07/weather-daynight.png",
+      "sha256": "bee16c54a7e8dcbf243faedbcff259d017f4ac2ec33b457e80c9b1605af50096",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "example": "world-sweep-ballistics",
+      "captured": true,
+      "frames": 120,
+      "preset": null,
+      "seconds": 5.4,
+      "source": {
+        "main.nut": "4b227268b02ed0bcb5bfddbb4b1ad6d1e5787559aeac1cc2d72763a55b4d8823",
+        "config.nut": "a1e4b7ca01507d81c3b9d275cb53292f5239f6fdb0eebdf4af1ff7d7e02205b1"
+      },
+      "shaders": {},
+      "image": "review-2026-11-07/world-sweep-ballistics.png",
+      "sha256": "73a1358ba2bfd6554d510eb2da6b04639211ef83d503e939d91da80ae094f524",
+      "width": 1280,
+      "height": 820
+    }
+  ],
+  "variants": [
+    {
+      "example": "weather",
+      "preset": "scripts/gallery_presets/weather-snow.nut",
+      "frames": 150,
+      "image": "review-2026-11-07/weather-snow.png",
+      "sha256": "23b4acca1e9c26c94a150e90dd6c9845eb18b19daed44cae1be11fc213a101fb"
+    }
+  ]
+}

@@ -9,12 +9,14 @@ layout(binding = 1) uniform sampler2D VolumeTex;
 layout(push_constant) uniform Externals { float data[5]; } u;
 
 vec4 sampleSlice(float slice) {
-  float cols = max(u.data[0], 1.0);
-  float rows = max(u.data[1], 1.0);
-  float z = clamp(slice, 0.0, max(u.data[2] - 1.0, 0.0));
+  int cols = max(int(u.data[0]), 1);
+  int rows = max(int(u.data[1]), 1);
+  int z = clamp(int(slice), 0, max(int(u.data[2]) - 1, 0));
   ivec2 atlasSize = textureSize(VolumeTex, 0);
-  ivec2 gridSize = max(atlasSize / ivec2(int(cols), int(rows)), ivec2(1));
-  ivec2 tile = ivec2(int(mod(z, cols)), int(floor(z / cols)));
+  ivec2 gridSize = max(atlasSize / ivec2(cols, rows), ivec2(1));
+  // Tile addresses are integers. Float division/mod can round a column
+  // boundary outside the atlas even though the slice itself is valid.
+  ivec2 tile = ivec2(z % cols, z / cols);
   ivec2 tileOrigin = tile * gridSize;
   vec2 samplePosition = fragUV * vec2(gridSize) - vec2(0.5);
   ivec2 p0 = clamp(ivec2(floor(samplePosition)), ivec2(0), gridSize - 1);

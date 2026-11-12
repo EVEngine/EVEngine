@@ -1929,15 +1929,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                 // Queue AO only after selecting the final composition target;
                 // switching targets with a pending AO draw presents too early.
                 if (rtgiTexture || ssrTexture) {
-                    if (gfx.getBackendName() == "vulkan" && !doRTX) {
-                        applyAO();
-                        if (rtgiTexture)
-                            gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
-                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
-                        if (ssrTexture)
-                            gfx.drawTexturedRectShaderUV(ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
-                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
-                    } else if (Canvas* composite = gfx.pipelineReflectionComposite(int(dw), int(dh))) {
+                    if (Canvas* composite = gfx.pipelineReflectionComposite(int(dw), int(dh))) {
                         // Register before setCanvas(): switching away from the scene target
                         // closes its pass and queues the final resolve immediately.
                         gfx.setFinalSceneTexture(composite->getTexture());

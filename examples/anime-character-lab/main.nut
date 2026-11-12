@@ -87,6 +87,18 @@ eve_init = function() {
     if(!file_exists("assets/witch.obj")) {
         lab.assetMessage="Model assets are not prepared. Run prepare.py as described in README.md, then restart.";
         print("[anime-lab] assets missing: "+lab.assetMessage+"\n");
+        ui.beginBuild();
+        ui.beginWindow("Anime character lab", "root");
+        ui.text("Model assets are not prepared", "title");
+        ui.separator("sep");
+        ui.text("Run prepare.py as described in this example's README.md.", "prepare");
+        ui.text("Restart after assets/witch.obj has been generated.", "restart");
+        ui.end();
+        ui.mountBuildAs("missing-assets");
+        ui.select("missing-assets");
+        ui.setHostOverlay(true);
+        ui.setHostPos(24.0, 24.0, 0.0, 0.0);
+        ui.setHostSize(660.0, 180.0);
         return;
     }
     lab.data=model3d.newModelDataFromFile("assets/witch.obj");
@@ -107,4 +119,7 @@ eve_update = function(dt) {
     if(key_just_pressed("d")) {lab.yaw+=0.18;setView(lab.portrait);}
 };
 // render3D owns its color clear and submits depth/normal passes first.
-eve_render = function() { gfx.render3D(); };
+eve_render = function() {
+    gfx.render3D();
+    if(lab.data==null) ui.beginFrameAndRender();
+};

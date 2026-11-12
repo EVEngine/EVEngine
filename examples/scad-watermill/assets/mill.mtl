@@ -1,0 +1,39 @@
+newmtl timber
+Kd 0.25 0.13 0.065
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl wood
+Kd 0.49 0.29 0.13
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl plaster
+Kd 0.76 0.69 0.53
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl stone
+Kd 0.43 0.46 0.43
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl roof
+Kd 0.22 0.29 0.31
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl iron
+Kd 0.12 0.15 0.16
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl earth
+Kd 0.23 0.3 0.2
+Ks 0.04 0.04 0.04
+Ns 12
+
+newmtl glass
+Kd 0.18 0.33 0.36
+Ks 0.04 0.04 0.04
+Ns 12
