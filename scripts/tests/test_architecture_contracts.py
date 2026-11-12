@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import sys
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -13,6 +16,50 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 
 class ArchitectureContractTests(unittest.TestCase):
+    def test_diverged_base_excludes_upstream_but_includes_all_local_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            def git(*args):
+                return subprocess.check_output(
+                    ["git", "-C", directory, *args], encoding="utf-8"
+                ).strip()
+
+            git("init", "-q")
+            git("config", "user.email", "fixture@example.invalid")
+            git("config", "user.name", "Fixture")
+            (root / "src/fixture").mkdir(parents=True)
+            api = root / "src/fixture/api.h"
+            api.write_text("bool buildOld();\n", encoding="utf-8")
+            git("add", ".")
+            git("commit", "-qm", "base")
+            git("branch", "topic")
+            api.write_text("void buildOld();\n", encoding="utf-8")
+            git("commit", "-qam", "upstream correction")
+            upstream = git("rev-parse", "HEAD")
+            git("checkout", "-q", "topic")
+            for name in ("committed", "staged", "unstaged", "untracked"):
+                (root / f"src/fixture/{name}.h").write_text(
+                    f"bool build{name}();\n", encoding="utf-8"
+                )
+                if name in ("committed", "staged", "unstaged"):
+                    git("add", f"src/fixture/{name}.h")
+                if name == "committed":
+                    git("commit", "-qm", "topic change")
+                if name == "unstaged":
+                    (root / f"src/fixture/{name}.h").write_text(
+                        "bool buildUnstagedEdit();\n", encoding="utf-8"
+                    )
+            with patch.object(contracts, "ROOT", root):
+                lines = contracts._changed_lines(upstream)
+                self.assertEqual(
+                    {f"src/fixture/{name}.h" for name in ("committed", "staged", "unstaged", "untracked")},
+                    {line.path for line in lines},
+                )
+                self.assertEqual(4, len(contracts.lint_api_shapes(lines)))
+                with self.assertRaises(RuntimeError):
+                    contracts._changed_lines("missing-reference")
+
     def test_valid_api_fixture_has_no_shape_findings(self):
         path = ROOT / "scripts/tests/fixtures_architecture_contracts/valid_api.h"
         lines = [

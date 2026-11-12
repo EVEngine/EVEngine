@@ -153,3 +153,16 @@ GPU 仅持有弱身份，shader 共同拥有图像；释放一个 shader 不影�
 新图像在内部按约 64 MiB 暂存批次提交（单个大图像可超过阈值）。同步 Result 失败保留原 shader，
 脚本无需 begin/end 上传批次。
 
+### 显式更新独占资源图像（C++）
+
+`ShaderImageUpdate::prepare(image)` 验证并复制完整 `ShaderImageInput`，返回 owning Result；
+调用者随后在 graphics 线程、渲染提交之外调用 `token.apply(graphics, shader)` 并检查 Result。
+token 不保存 provider 或 shader 指针，输入数组可在 prepare 返回后释放；token 可重复应用。
+图像的 binding、维度、格式、层/mip 和完整 sampler 必须与目标完全一致。
+此接口不重建 shader 管线、描述符或矩阵缓冲；它有线性复制/上传成本，并同步等待之前的 GPU 使用。
+
+更新输入不能携带 `contentOwner`，目标图像仍有活身份或被多个 shader 共享时返回 Conflict。
+形状错误、moved token、无效 shader/提交阶段在写入前拒绝；不支持的 provider 返回 Unsupported。
+Vulkan 提交后的设备故障需要主机恢复，不承诺 GPU 写入回滚。原有不可变替换、共享和脚本上传接口
+保持原语义；只有显式选择此 C++ 更新操作或多尺度 `batch.update(frame)` 才会修改已有图像。
+

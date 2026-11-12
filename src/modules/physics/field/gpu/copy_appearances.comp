@@ -1,0 +1,12 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer Published { vec4 rows[]; } published;
+layout(set = 0, binding = 1, std430) writeonly buffer Candidate { vec4 rows[]; } candidate;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= uint(parameters.values[0])) return;
+    candidate.rows[id * 2] = published.rows[id * 2];
+    candidate.rows[id * 2 + 1] = published.rows[id * 2 + 1];
+}

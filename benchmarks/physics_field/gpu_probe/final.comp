@@ -1,0 +1,23 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 1, std430) readonly buffer Partials { vec4 values[]; } partials;
+layout(set = 0, binding = 2, std430) writeonly buffer Summaries { vec4 momentMass[]; } summaries;
+layout(push_constant) uniform Counts {
+    uint sourceCount; uint partialCount; float dt; uint targetCount; float maxError;
+    float sourceShift;
+} counts;
+shared vec4 localMoment[256];
+void main() {
+    uint lane = gl_LocalInvocationID.x;
+    uint cell = gl_WorkGroupID.x;
+    vec4 sum = vec4(0.0);
+    for (uint i = lane; i < counts.partialCount; i += 256)
+        sum += partials.values[i * 8 + cell];
+    localMoment[lane] = sum;
+    barrier();
+    for (uint stride = 128; stride != 0; stride >>= 1) {
+        if (lane < stride) localMoment[lane] += localMoment[lane + stride];
+        barrier();
+    }
+    if (lane == 0) summaries.momentMass[cell] = localMoment[0];
+}

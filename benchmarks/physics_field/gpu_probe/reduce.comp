@@ -1,0 +1,30 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer Sources { vec4 records[]; } sources;
+layout(set = 0, binding = 1, std430) writeonly buffer Partials { vec4 values[]; } partials;
+layout(set = 0, binding = 8, std430) writeonly buffer CandidateSources { vec4 records[]; } candidateSources;
+layout(push_constant) uniform Counts {
+    uint sourceCount; uint partialCount; float dt; uint targetCount; float maxError;
+    float sourceShift;
+} counts;
+shared vec4 localMoment[256];
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    uint lane = gl_LocalInvocationID.x;
+    vec4 source = id < counts.sourceCount ? sources.records[id] : vec4(0.0);
+    source.x += (id & 1u) == 0u ? counts.sourceShift : -counts.sourceShift;
+    if (id < counts.sourceCount) candidateSources.records[id] = source;
+    uint bucket = uint(source.x >= 0.0) | (uint(source.y >= 0.0) << 1) |
+                  (uint(source.z >= 0.0) << 2);
+    for (uint cell = 0; cell < 8; ++cell) {
+        localMoment[lane] = id < counts.sourceCount && bucket == cell
+                                ? vec4(source.xyz * source.w, source.w) : vec4(0.0);
+        barrier();
+        for (uint stride = 128; stride != 0; stride >>= 1) {
+            if (lane < stride) localMoment[lane] += localMoment[lane + stride];
+            barrier();
+        }
+        if (lane == 0) partials.values[gl_WorkGroupID.x * 8 + cell] = localMoment[0];
+        barrier();
+    }
+}

@@ -1,0 +1,41 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 2, std430) readonly buffer Summaries { vec4 momentMass[]; } summaries;
+layout(set = 0, binding = 3, std430) readonly buffer Targets { vec4 position[]; } targets;
+layout(set = 0, binding = 4, std430) readonly buffer Velocities { vec4 velocity[]; } velocities;
+layout(set = 0, binding = 5, std430) buffer Admission { uint rejected; } admission;
+layout(set = 0, binding = 6, std430) writeonly buffer CandidateTargets { vec4 position[]; } candidateTargets;
+layout(set = 0, binding = 7, std430) writeonly buffer CandidateVelocities { vec4 velocity[]; } candidateVelocities;
+layout(push_constant) uniform Counts {
+    uint sourceCount; uint partialCount; float dt; uint targetCount; float maxError;
+    float sourceShift;
+} counts;
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= counts.targetCount) return;
+    vec3 x = targets.position[id].xyz;
+    vec3 acceleration = vec3(0.0);
+    float bound = 0.0;
+    const float radius = 0.04; // Covers each generated octant's centroid and sources.
+    for (uint cell = 0; cell < 8; ++cell) {
+        vec4 summary = summaries.momentMass[cell];
+        if (summary.w <= 0.0) continue;
+        vec3 delta = summary.xyz / summary.w - x;
+        float distance = length(delta);
+        if (distance <= radius || isnan(distance) || isinf(distance)) {
+            atomicOr(admission.rejected, 1u);
+            return;
+        }
+        float invDistance = 1.0 / distance;
+        acceleration += summary.w * delta * (invDistance * invDistance * invDistance);
+        float closest = distance - radius;
+        bound += 2.0 * summary.w * radius / (closest * closest * closest);
+    }
+    if (isnan(bound) || isinf(bound) || bound > counts.maxError) {
+        atomicOr(admission.rejected, 1u);
+        return;
+    }
+    vec3 velocity = velocities.velocity[id].xyz + acceleration * counts.dt;
+    candidateTargets.position[id] = vec4(x + velocity * counts.dt, 0.0);
+    candidateVelocities.velocity[id] = vec4(velocity, 0.0);
+}

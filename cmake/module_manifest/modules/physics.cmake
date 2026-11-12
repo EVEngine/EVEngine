@@ -2,6 +2,11 @@
 # Host package: physics
 # ---------------------------------------------------------------------------
 
+# L0 -- physics
+# Pure numerical long-range field; no rigid backend, renderer or automatic boot.
+option(EVENGINE_MODULE_PHYSICS_FIELD "Build explicit long-range field solver" OFF)
+eve_declare_module(NAME physics_field DIR physics/field LAYER 0)
+
 # L4 -- physics
 
 eve_declare_module(NAME physics_softbody_graphics DIR physics/softbody/graphics LAYER 4
@@ -22,6 +27,15 @@ eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    GROUP 2d 3d web)
 
 # L5 -- physics
+# Device-resident bounded field adapter. The CPU field and old Physics path do not depend on it.
+option(EVENGINE_MODULE_PHYSICS_FIELD_GPU "Build explicit GPU long-range field session" OFF)
+eve_declare_module(NAME physics_field_gpu DIR physics/field/gpu LAYER 5
+                   DEPS physics_field gpgpu graphics_multiscale GROUP 3d)
+
+option(EVENGINE_MODULE_PHYSICS_FIELD_COUPLING "Build explicit point-field rigid-body coupling" OFF)
+eve_declare_module(NAME physics_field_coupling DIR physics/field_coupling LAYER 5
+                   DEPS physics physics_field GROUP 3d)
+
 # Cloth is a host-owned physics satellite: rigid-body physics stays usable in
 # trimmed builds without cloth topology, rendering, or compute backends. Its
 # accelerator provider registers independently and cannot replace the fluids provider.

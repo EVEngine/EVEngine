@@ -3,6 +3,10 @@
 # ---------------------------------------------------------------------------
 
 # L4 -- graphics
+option(EVENGINE_MODULE_GRAPHICS_MULTISCALE "Build explicit multiscale view queries" OFF)
+eve_declare_module(NAME graphics_multiscale DIR graphics/multiscale LAYER 4
+                   SCRIPT MultiscaleView SLOT multiscaleView
+                   DEPS graphics spatial_multiscale GROUP 3d)
 
 eve_declare_module(NAME material_graphics_editing LAYER 4
                    DEPS graphics material_editing

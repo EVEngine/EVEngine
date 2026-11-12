@@ -2,6 +2,10 @@
 # Host package: procgen
 # ---------------------------------------------------------------------------
 
+# L0 -- procgen
+option(EVENGINE_MODULE_PROCGEN_RECURSIVE "Build conservative recursive model definitions" OFF)
+eve_declare_module(NAME procgen_recursive DIR procgen/recursive LAYER 0)
+
 # L5 -- procgen
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS data gpgpu graphics image map model3d transaction
@@ -21,6 +25,10 @@ eve_declare_module(NAME procgen_editor LAYER 7 DEPS domain_gizmo_editing editor 
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 
 # L6 -- procgen
+option(EVENGINE_MODULE_PROCGEN_RECURSIVE_GRAPHICS "Build explicit recursive frontier mesh adapters" OFF)
+eve_declare_module(NAME procgen_recursive_graphics DIR procgen/recursive_graphics LAYER 6
+                   DEPS procgen procgen_recursive GROUP 3d)
+
 eve_declare_module(NAME biome_editing LAYER 6
                    DEPS editing
                    OPTIONAL_DEPS procgen
