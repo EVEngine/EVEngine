@@ -51,3 +51,9 @@ MIN_RUN_SECONDS=2 RUN_SECONDS=6 bash scripts/smoke_examples.sh ik-spider
 引擎读回预览（约 2.8s 爬行后自动写出）：
 
 ![自主爬行的 IK 蜘蛛](ik-spider.png)
+
+## 2026-11-13 画面复查
+
+保留八足 FABRIK 与交替四足步态；增大骨段、添加随朝向旋转的身体分节、关节与落足标记、铺地和控制说明。地面装饰不参与碰撞，仍是平面步态示例。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。

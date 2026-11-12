@@ -4,6 +4,12 @@ persist bridgeMaterials = {}
 function bridgeMaterial(name) {
     if (name in bridgeMaterials) return bridgeMaterials[name];
     local material = gfx.newMaterial();
+    if(name=="earth" || name=="foliage" || name=="bark") {
+        if(name=="earth") material.setTint(0.10,0.15,0.14,1.0);
+        if(name=="foliage") material.setTint(0.05,0.17,0.09,1.0);
+        if(name=="bark") material.setTint(0.19,0.12,0.07,1.0);
+        material.setRoughness(0.95);bridgeMaterials[name]<-material;return material;
+    }
     local recipe = "pbr.cement";
     if (name == "timber") recipe = "pbr.wood";
     if (name == "asphalt") recipe = "pbr.asphalt";
@@ -69,8 +75,8 @@ function bridgeMaterial(name) {
         if (name == "paintedSteel") { material.setTint(0.46, 0.55, 0.59, 1.0); material.setMetallic(0.62); material.setRoughness(0.43); }
         if (name == "galvanizedSteel") { material.setTint(0.72, 0.75, 0.76, 1.0); material.setMetallic(0.45); material.setRoughness(0.38); }
         if (name == "timber") { material.setTint(0.65, 0.60, 0.54, 1.0); material.setRoughness(0.92); }
-        if (name == "water") { material.setTint(1.0, 1.0, 1.0, 1.0); material.setMetallic(0.35); material.setRoughness(0.28); }
-        if (name == "gravel") { material.setTint(1.0, 1.0, 1.0, 1.0); material.setRoughness(0.98); }
+        if (name == "water") { material.setTint(0.18, 0.52, 0.60, 1.0); material.setMetallic(0.15); material.setRoughness(0.28); }
+        if (name == "gravel") { material.setTint(0.30, 0.40, 0.23, 1.0); material.setRoughness(0.98); }
         if (name == "limestone") material.setParallax(0.012, 6.0, 12.0);
         generated.destroy();
     }

@@ -87,7 +87,7 @@ vehicleDefs <- @"[
 
 function logLine(text) {
     eventLog.push(text);
-    while (eventLog.len() > 6) eventLog.remove(0);
+    while (eventLog.len() > 2) eventLog.remove(0);
 }
 
 function clampf(v, lo, hi) {
@@ -183,17 +183,18 @@ eve_init = function() {
         ui.setTheme("dark");
         ui.beginBuild();
         ui.beginWindow("载具框架演示", "hud");
-        ui.text("左键=坦克移动   右键=攻击敌车   W/A/S/D=开车   Space=机枪   E=上下车", "help");
-        ui.text("S=坦克停   H=待命   T=巡逻   白色角标=玩家车", "help2");
+        ui.text("左键 移动 / 右键 攻击 / T 巡逻 / H 待命", "help");
+        ui.text("WASD 驾驶 / Space 机枪 / E 上下车", "help2");
         ui.separator("sep1");
         ui.text("", "log");
         ui.end();
-        ui.mountBuildAs("vehdemo");
+        if (!ui.mountBuildAs("vehdemo")) throw "vehicle HUD mount failed";
+        ui.select("vehdemo"); ui.setHostOverlay(true);
+        ui.setHostPos(30.0, 30.0, 0.0, 0.0); ui.setHostSize(445.0, 160.0);
         hudBuilt = true;
     }
 
-    logLine("左键=坦克移动 右键=攻击  W/A/S/D=开车  Space=机枪  E=上下车");
-    logLine("S=坦克停  H=待命  T=巡逻  （蓝车带白色角标=玩家）");
+    logLine("训练场就绪 / 蓝车为玩家驾驶载具");
 };
 
 // 命中装甲区：按攻击方向与目标朝向的相对角判断 front/side/rear
@@ -378,6 +379,16 @@ eve_update = function(dt) {
 // ============ ECS 视图渲染：遍历 eve.view(eve.VehicleEntity) 统一绘制 ============
 eve_render = function() {
     gfx.setBackgroundColor(0.06, 0.08, 0.10, 1.0);
+    // Ground markings stay in the same pixel/world coordinates as authoritative collisions.
+    for (local y = 24.0; y < config.height - 24.0; y += 40.0)
+        for (local x = 24.0; x < config.width - 24.0; x += 40.0) {
+            local light = ((x + y) / 40.0).tointeger() % 2 == 0;
+            gfx.drawSolidRect(x, y, 39.0, 39.0, light ? 0.19 : 0.18, light ? 0.23 : 0.22, 0.21, 1.0);
+        }
+    gfx.drawSolidRect(55.0, 215.0, 790.0, 135.0, 0.11, 0.14, 0.15, 1.0);
+    for (local x = 65.0; x < 830.0; x += 54.0)
+        gfx.drawSolidRect(x, 280.0, 28.0, 3.0, 0.75, 0.65, 0.36, 1.0);
+
 
     // 墙体与障碍物
     gfx.drawSolidRect(0.0, 0.0, config.width.tofloat(), 24.0, 0.22, 0.24, 0.28, 1.0);

@@ -56,7 +56,7 @@ function bridgeBuild(index) {
         part.setCastShadow(asset.name.find("marking") != 0); part.setReceiveShadow(true); part.setVisible(true);
     }
     local span = built.span, height = built.height;
-    bridgeCamera.setEye(-span * 0.30, height + span * 0.16 + built.tower * 0.20, span * 1.08);
+    bridgeCamera.setEye(-span * 0.30, height + span * 0.27 + built.tower * 0.20, span * 0.93);
     bridgeCamera.setTarget(0.0, height * 0.57 + built.tower * 0.20, 0.0);
     bridgeCamera.setClipPlanes(0.2, span * 5.0);
     bridgeBuildEnvironment(span, height);
@@ -67,7 +67,7 @@ if (!bridgeReady) {
     if (bridgeCamera == null) bridgeCamera = eve.Camera3D();
     bridgeCamera.setUp(0.0, 1.0, 0.0);
     bridgeCamera.setFov(40.0);
-    bridgeCamera.setExposure(0.75);
+    bridgeCamera.setExposure(0.65);
     bridgeCamera.setAmbient(0.14, 0.16, 0.18);
     bridgeCamera.setActive(true);
     gfx.setDirectionalLight(-0.35, 1.0, 0.45, 0.55, 0.53, 0.50);
@@ -82,7 +82,7 @@ if (!bridgeReady) {
     bridgeRequire(gfx.setSceneToneMapping("aces"), "scene tone mapping");
     gfx.setMsaaSamples(4);
     gfx.setShadowSchemeDirectionalEnabled(true);
-    gfx.setBackgroundColor(0.76, 0.78, 0.80, 1.0);
+    gfx.setBackgroundColor(0.12, 0.20, 0.25, 1.0);
     local initial = 0;
     try {
         local input = file("capture.txt", "r");
@@ -122,6 +122,15 @@ function eve_update(dt) {
     }
 }
 function eve_reload() { bridgeCache = {}; bridgeReady = false; }
+persist bridgeFontOwner=null
+persist bridgeFont=null
+if(bridgeFont==null) {
+    bridgeFontOwner=eve.Font();local data=bridgeFontOwner.newFontDataFromFile("assets/DejaVuSans-Bold.ttf",22);
+    bridgeFont=gfx.newFont(data," ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/-");
+}
 function eve_render() {
     gfx.clear(); gfx.render3D();
+    gfx.drawSolidRect(24.0,24.0,570.0,76.0,0.025,0.05,0.065,0.94);
+    gfx.drawText(bridgeFont,"AUTO BRIDGE / "+bridgeTypes[bridgeIndex],40.0,35.0,0.9,0.94,0.90,1.0,1.0);
+    gfx.drawText(bridgeFont,"1-9 / 0 bridge type - G gallery",40.0,68.0,0.66,0.81,0.78,1.0,0.72);
 }

@@ -1,0 +1,1 @@
+showWalls=false;arch.object[1].setVisible(false);

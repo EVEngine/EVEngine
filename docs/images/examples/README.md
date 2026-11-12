@@ -1,5 +1,7 @@
 # 示例渲染画廊（Example Render Gallery）
 
+**11-13：** 新一批九个示例已优化，跳过用户单独处理的 cardgame；[前后对照与关键状态实帧](review-2026-11-13/nine-improved/README.md)。
+
 **11-12：** 除 tree-generator 外，新一批九个示例已改善；[前后与状态实帧](review-2026-11-12/nine-improved/README.md)。
 
 墙面复查已补齐墙板、窗框及山墙；[最新实帧](review-2026-11-11/watermill-walls/exterior.png)。
