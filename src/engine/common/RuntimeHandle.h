@@ -36,7 +36,7 @@ struct HandleCoordinates {
     using generation_type = std::uint32_t;
 
     /** @brief Reserved index value shared by all invalid handles. */
-    static constexpr index_type invalidIndex = std::numeric_limits<index_type>::max();
+    static constexpr index_type invalidIndex = (std::numeric_limits<index_type>::max)();
     /** @brief Reserved generation value shared by all invalid handles. */
     static constexpr generation_type invalidGeneration = 0;
 
@@ -57,7 +57,7 @@ struct HandleCoordinates {
      * @return The next generation, or empty when the slot must be retired.
      */
     [[nodiscard]] static constexpr std::optional<generation_type> nextGeneration(generation_type current) noexcept {
-        if (current == std::numeric_limits<generation_type>::max()) return std::nullopt;
+        if (current == (std::numeric_limits<generation_type>::max)()) return std::nullopt;
         return static_cast<generation_type>(current + 1u);
     }
 
