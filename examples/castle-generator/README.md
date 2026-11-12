@@ -34,3 +34,9 @@ generation/upload operations before reading `value`. `copyGroup()` itself return
 an owning mesh object. Named wall, tower, stair, keep and
 gatehouse groups receive separate material tints and can independently receive
 collision or LOD policies in a game.
+
+## 2026-11-12 画面改善
+
+补石基、连续水道、入口桥面、石材砌块/箭窗、屋顶和旗帜；区分墙体、塔楼、内堡与石板屋面色盘，改善取景及参数反馈。保留种子、圈数、楼层、细节调整。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/castle-generator.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

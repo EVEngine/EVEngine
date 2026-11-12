@@ -60,3 +60,9 @@ Shared mesh params: `segments`, `segLength`, `radius`, `thickness`, `strands`,
 `twists`, `lengthSegs`, `radialSegs`, `majorSegs`, `minorSegs`, `scale`,
 `uvRepeat`. Integer `twists` per segment keeps helical strands seamless at
 tile boundaries.
+
+## 2026-11-12 画面改善
+
+钢缆/铁链/麻绳并排展示，补端部支撑与底座，按长度适配镜头；选中项高亮，修正面板位置、文本裁切和键盘改参数后的滑杆同步，保留种子、参数、切换和旋转。
+
+[当前实帧](../../docs/images/examples/review-2026-11-12/nine-improved/cable-chain-rope.png) · [前后与状态对照](../../docs/images/examples/review-2026-11-12/nine-improved/README.md)

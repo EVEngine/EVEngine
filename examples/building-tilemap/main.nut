@@ -12,6 +12,7 @@ persist fx = null;
 persist cursorLayer = null;
 persist buildingLayer = null;
 persist buildingPreview = null;
+persist gardenLayer = null;
 persist uiBuilt = false;
 persist paintMode = true;
 persist brushIndex = 0;
@@ -68,6 +69,14 @@ function buildingGid(id,rotation) {
 }
 function syncBuildingArt() {
     // Render cache only: placement, removal and restore are owned by the world.
+    if(gardenLayer!=null)for(local y=0;y<MAP_H;y++)for(local x=0;x<MAP_W;x++) {
+        local gid=0;
+        if(world.getOccupant(x,y)==0 && world.getTerrain(x,y)!=2) {
+            if((x==0 || y==0 || x==MAP_W-1) && (x+y)%3==0)gid=1;
+            else if((x*7+y*11)%17==0 && x!=4 && y!=5)gid=2;
+        }
+        gardenLayer.setTile(x,y,gid);
+    }
     buildingLayer.fill(0);
     for(local i=0;i<world.getBuildingCount();++i) {
         local id=world.getBuildingInstanceAt(i);
@@ -133,7 +142,7 @@ function resetMap() {
         world.setTerrainGid(gid,(file==14 || file==108 || file==114 || file==116)?2:1);
     session=bld.newSession();
     session.startPlacement(world,palette[paletteIndex]);
-    foreach(entry in [["house",2,2],["tower",6,3]]) {
+    foreach(entry in [["house",2,2],["house",6,1],["house",9,2],["house",1,7],["house",5,7],["house",7,9],["tower",7,4],["tower",2,10],["dock",10,6]]) {
         session.startPlacement(world,entry[0]);
         session.updateFromWorld(world,ORIGIN_X+(entry[1]-entry[2])*TILE_W*0.5,
             ORIGIN_Y+(entry[1]+entry[2]+1)*TILE_H*0.5);
@@ -174,6 +183,12 @@ eve_init = function() {
     if (cursorLayer==null) cursorLayer=newIsoLayer();
     if (buildingLayer==null) buildingLayer=newIsoLayer();
     if (buildingPreview==null) buildingPreview=newIsoLayer();
+    if(gardenLayer==null) {
+        gardenLayer=newIsoLayer();gardenLayer.setLayer(1);
+        local garden=gfx.newTextureFromFile("art/garden.png");
+        gardenLayer.setTileset(garden,1,4,0,0);gardenLayer.setTilesetTileSize(96,128);
+        for(local gid=1;gid<=4;gid++)gardenLayer.setTileVisual(gid,(gid-1)*96,0,96,128,16.0,95.0,0.0);
+    }
     configureTerrainArt(); registerBuildings();
     if (world==null) resetMap();
     if (!uiBuilt) {

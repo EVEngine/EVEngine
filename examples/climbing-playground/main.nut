@@ -1,3 +1,4 @@
+dofile("visuals.nut");
 // Climbing playground: real World3D probes, candidate selection and capsule-constrained execution.
 // 1/2/3 = 0.6/1.0/1.4 m obstacle, 4 = airborne ledge grab,
 // 5 = blocked-clearance lane, 6 = moving platform, Space = start, R = reset.
@@ -31,6 +32,8 @@ function edgePressed(name) {
 }
 
 function makeVisual(x, y, z, sx, sy, sz, r, g, b) {
+    x=x.tofloat();y=y.tofloat();z=z.tofloat();sx=sx.tofloat();sy=sy.tofloat();sz=sz.tofloat();
+    r=r.tofloat();g=g.tofloat();b=b.tofloat();
     local visual = eve.Renderable3D();
     visual.setMesh(gfx.newMeshCube(1.0));
     visual.setPosition(x, y, z);
@@ -55,7 +58,7 @@ function addAction(id, kind, minHeight, maxHeight, landing, apex, notifies) {
     local result = runtime.upsertActionKind(
         id, kind, minHeight, maxHeight, 0.0, 0.65, landing, apex, 0,
         0.35, 1.55, 0.42, 0.0, 1.0);
-    if (!result.ok) throw result.error.message;
+    if (!result.ok) throw result.status.summary;
     local clip = animation.newClip("playground_" + id);
     clip.setDuration(0.65);
     local time = 0.16;
@@ -64,20 +67,20 @@ function addAction(id, kind, minHeight, maxHeight, landing, apex, notifies) {
         time += 0.12;
     }
     local validated = runtime.validateActionClip(id, clip);
-    if (!validated.ok) throw validated.error.message;
+    if (!validated.ok) throw validated.status.summary;
 }
 
 function configureRuntime() {
     local created = climbing.newRuntime();
-    if (!created.ok) throw created.error.message;
+    if (!created.ok) throw created.status.summary;
     runtime = created.value;
     local profile = runtime.setProfile(0.30, 1.80, 0.03, 1.35, 1.80, 0.65, 0.25, -1);
-    if (!profile.ok) throw profile.error.message;
+    if (!profile.ok) throw profile.status.summary;
     addAction("parkour:vault_low", "vault", 0.40, 0.78, 0.75, 0.35,
               ["contact.left_hand", "land"]);
     addAction("parkour:vault_high", "vault", 0.79, 1.18, 0.65, 0.55,
               ["contact.left_hand", "land"]);
-    addAction("climbing:mantle", "mantle", 1.19, 1.60, 0.55, 0.75,
+    addAction("climbing:mantle", "mantle", 1.18, 1.60, 0.55, 0.75,
               ["contact.left_hand", "contact.right_hand", "land"]);
     addAction("climbing:ledge_grab", "ledge_grab", 0.50, 1.60, 0.0, 0.10,
               ["contact.left_hand", "contact.right_hand"]);
@@ -87,7 +90,7 @@ function cancelActive() {
     if (runtime == null) return true;
     local inspected = runtime.inspect();
     if (!inspected.ok) {
-        lastCode = inspected.error.message;
+        lastCode = inspected.status.summary;
         return false;
     }
     local phase = inspected.value.phase;
@@ -96,7 +99,7 @@ function cancelActive() {
     tick += 1;
     local cancelled = runtime.cancel("player_request", tick);
     if (!cancelled.ok) {
-        lastCode = cancelled.error.message;
+        lastCode = cancelled.status.summary;
         return false;
     }
     return true;
@@ -105,7 +108,7 @@ function cancelActive() {
 function resetPlayer() {
     if (!cancelActive()) return false;
     local laneX = [-4.0, -2.0, 0.0, 2.0, 4.0, 6.0];
-    playerFeet = [laneX[lane - 1], lane == 4 ? 0.65 : 0.0, 0.0];
+    playerFeet = [laneX[lane - 1], lane == 4 ? 0.65 : 0.0, 0.55];
     active = false;
     lastPhase = "idle";
     lastCode = "lane " + lane;
@@ -131,7 +134,7 @@ function startAction() {
         active = true;
         lastCode = result.value.actionId;
     } else {
-        lastCode = result.error.message;
+        lastCode = result.status.summary;
         local debug = runtime.inspect();
         if (debug.ok) {
             print("climbing playground reject: " + lastCode +
@@ -144,7 +147,7 @@ function startAction() {
 
 function fixedUpdate() {
     movingTime += FIXED_DT;
-    local movingY = 0.65 + sin(movingTime * 1.4) * 0.28;
+    local movingY = 0.65 + sin(movingTime * 1.4) * 0.22;
     movingBody.setPosition(6.0, movingY, 2.0);
     movingVisual.setPosition(6.0, movingY, 2.0);
     world.update(FIXED_DT);
@@ -154,7 +157,7 @@ function fixedUpdate() {
     local step = runtime.advance(world, tick, FIXED_DT);
     if (!step.ok) {
         active = false;
-        lastCode = step.error.message;
+        lastCode = step.status.summary;
         return;
     }
     playerFeet = [step.value.feet.x, step.value.feet.y, step.value.feet.z];
@@ -167,13 +170,13 @@ function fixedUpdate() {
 eve_init = function() {
     gfx.setBackgroundColor(0.055, 0.075, 0.11, 1.0);
     camera = eve.Camera3D();
-    camera.setEye(10.5, 7.0, 11.5);
+    camera.setEye(10.0, 5.7, 10.3);
     camera.setTarget(1.0, 0.9, 2.2);
     camera.setUp(0.0, 1.0, 0.0);
     camera.setFov(48.0);
     camera.setAmbient(0.32, 0.34, 0.38);
     camera.setActive(true);
-    gfx.setDirectionalLight(-0.5, -1.0, -0.35, 1.2, 1.15, 1.05);
+    gfx.setDirectionalLight(-0.5, 1.0, 0.35, 0.95, 0.91, 0.80);
 
     if (physics == null) physics = eve.Physics();
     if (animation == null) animation = eve.Animation();
@@ -193,8 +196,8 @@ eve_init = function() {
         makeVisual(4.0, 2.05, 2.45, 1.6, 0.35, 1.5, 0.50, 0.12, 0.12);
 
         movingBody = world.newBody("kinematic", 6.0, 0.65, 2.0);
-        movingBody.newBoxShape(1.35, 1.0, 0.65, 1.0, 0.7, 0.0);
-        movingVisual = makeVisual(6.0, 0.65, 2.0, 1.35, 1.0, 0.65,
+        movingBody.newBoxShape(1.35, 1.4, 0.65, 1.0, 0.7, 0.0);
+        movingVisual = makeVisual(6.0, 0.65, 2.0, 1.35, 1.4, 0.65,
                                   0.12, 0.72, 0.72);
     }
     if (runtime == null) configureRuntime();
@@ -204,7 +207,9 @@ eve_init = function() {
         player.setScale(0.6, 1.8, 0.6);
         player.setTint(0.94, 0.94, 0.98, 1.0);
     }
+    climbBuildPresentation();
     resetPlayer();
+    climbSyncPresentation();
     print("climbing-playground: 1..6 lane | Space start | R reset\n");
 };
 
@@ -222,13 +227,11 @@ eve_update = function(dt) {
         fixedUpdate();
         accumulator -= FIXED_DT;
     }
+    climbSyncPresentation();
 };
 
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
-    local activeColor = active ? [0.18, 0.78, 0.38] : [0.25, 0.35, 0.48];
-    gfx.drawSolidRect(20.0, 20.0, 390.0, 74.0, 0.04, 0.055, 0.08, 0.90);
-    gfx.drawSolidRect(30.0, 30.0, 18.0, 18.0,
-                      activeColor[0], activeColor[1], activeColor[2], 1.0);
+    ui.beginFrameAndRender();
 };

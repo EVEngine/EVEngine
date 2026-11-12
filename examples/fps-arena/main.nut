@@ -1,3 +1,4 @@
+dofile("visuals.nut");
 // FPS Arena — Phase A–C vertical slice (docs/dev/2026-11-06-fps-vertical-slice-plan.md).
 // Composes: CameraController firstperson + relative mouse + World3D.moveCapsule +
 // combat::FpsGait contract (mirrored in script) + weapon Fire → rayCast →
@@ -81,6 +82,7 @@ function clampf(v, lo, hi) {
 }
 
 function makeBox(x, y, z, sx, sy, sz, r, g, b) {
+    x=x.tofloat();y=y.tofloat();z=z.tofloat();sx=sx.tofloat();sy=sy.tofloat();sz=sz.tofloat();r=r.tofloat();g=g.tofloat();b=b.tofloat();
     local part = eve.Renderable3D();
     part.setMesh(gfx.newMeshCube(1.0));
     part.setPosition(x, y, z);
@@ -210,10 +212,10 @@ function updateImpacts(dt) {
 
 function buildArena() {
     makeStaticBox(0.0, -0.25, 0.0, 24.0, 0.5, 24.0, 0.18, 0.22, 0.28);
-    makeStaticBox(-8.0, 1.5, 0.0, 0.4, 3.0, 12.0, 0.22, 0.26, 0.32);
-    makeStaticBox(8.0, 1.5, 0.0, 0.4, 3.0, 12.0, 0.22, 0.26, 0.32);
-    makeStaticBox(0.0, 1.5, -10.0, 16.0, 3.0, 0.4, 0.22, 0.26, 0.32);
-    makeStaticBox(0.0, 1.5, 10.0, 16.0, 3.0, 0.4, 0.22, 0.26, 0.32);
+    makeStaticBox(-8.0, 2.25, 0.0, 0.4, 4.5, 12.0, 0.22, 0.26, 0.32);
+    makeStaticBox(8.0, 2.25, 0.0, 0.4, 4.5, 12.0, 0.22, 0.26, 0.32);
+    makeStaticBox(0.0, 2.25, -10.0, 16.0, 4.5, 0.4, 0.22, 0.26, 0.32);
+    makeStaticBox(0.0, 2.25, 10.0, 16.0, 4.5, 0.4, 0.22, 0.26, 0.32);
     makeStaticBox(-3.0, 0.75, 4.0, 2.0, 1.5, 1.0, 0.30, 0.34, 0.40);
     makeStaticBox(3.5, 0.5, -2.0, 1.5, 1.0, 1.5, 0.30, 0.34, 0.40);
     // Low overhang near +X so crouch latch / canStand is observable.
@@ -222,6 +224,7 @@ function buildArena() {
     spawnTarget(2, 4.5, -7.5, 80.0);
     spawnTarget(3, -4.0, -5.5, 80.0);
     buildImpactPool();
+    arenaDress();
 }
 
 function setupWeapon() {
@@ -250,7 +253,7 @@ function setupCamera() {
     cam.setAmbient(0.28, 0.30, 0.34);
     cam.setFov(HIP_FOV);
     cam.setActive(true);
-    gfx.setDirectionalLight(-0.35, -1.0, -0.25, 1.25, 1.15, 1.05);
+    gfx.setDirectionalLight(-0.35, 1.0, 0.25, 1.05, 1.0, 0.9);
     ctrl = eve.CameraController();
     ctrl.setCamera(cam);
     ctrl.setMode("firstperson");
@@ -520,6 +523,7 @@ eve_update <- function(dt) {
     consumeWeaponEvents();
     world.update(dt);
     ctrl.update(dt);
+    arenaSyncViewmodel();
     refreshTargetViews();
     updateImpacts(dt);
     if (hitFlash > 0.0) hitFlash -= dt;

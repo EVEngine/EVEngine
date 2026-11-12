@@ -1,5 +1,7 @@
 # 示例渲染画廊（Example Render Gallery）
 
+**11-12：** 除 tree-generator 外，新一批九个示例已改善；[前后与状态实帧](review-2026-11-12/nine-improved/README.md)。
+
 墙面复查已补齐墙板、窗框及山墙；[最新实帧](review-2026-11-11/watermill-walls/exterior.png)。
 
 **水车模型重做：** 已从 `design.py` 重建厚木水轮、双坡瓦顶、木构墙面与水路，保留传动和关节联动；[外景、水轮近景、内部视角及验证](QUALITY_REVIEW.md#11-11-水车磨坊从-designpy-重做模型)。
