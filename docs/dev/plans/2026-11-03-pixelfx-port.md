@@ -305,7 +305,40 @@ the existing Ubuntu2018 keyring, and downloaded the real cmake-data package with
 APT's hash validation. With all mirrors unreachable, the same old-index state
 returned100 under --error-on=any. No packages were installed and no host sources
 were changed. Raw evidence remains under ignored build/pixelfx-validation.
-The18 proposed Intel pixel positions remain unapproved and unapplied.
+The18 additional Intel pixel positions were subsequently explicitly approved by the user; the exact scope is recorded below.
+
+## Approved additional Intel macOS RGB boundaries
+
+The user explicitly approved the18 additional positions (19 frame occurrences)
+after reviewing the native Debug/Release evidence. Both configurations produced
+28 byte-identical complete color/light planes. Only these default-configuration
+frame/channel/direction boundaries join the previously approved ones:
+
+- holy/feather-burst, tick4: (87,56), R244 ->243.
+- ice/blizzard-vortex, tick0: (57,93), B254 ->255.
+- ice/blizzard-vortex, tick4: (59,91), B247 ->248.
+- ice/blizzard-vortex, tick120: (46,93), B255 ->254.
+- ice/blizzard-vortex, tick120: (49,101), B254 ->255.
+- ice/blizzard-vortex, tick144: (67,82), G199 ->200.
+- ice/blizzard-vortex, tick240: (57,93), B254 ->255.
+- impacts/blunt-hit, tick12: (69,43), G181 ->180.
+- impacts/blunt-hit, tick18: (73,40), G177 ->176.
+- impacts/blunt-hit, tick18: (73,41), R209 ->208.
+- impacts/blunt-hit, tick24: (75,39), R195 ->194.
+- impacts/blunt-hit, tick30: (79,56), R187 ->186.
+- impacts/blunt-hit, tick42: (77,37), R185 ->186.
+- impacts/blunt-hit, tick60: (78,34), B165 ->166.
+- impacts/blunt-hit, tick60: (81,34), R182 ->183.
+- impacts/blunt-hit, tick60: (75,36), G167 ->168.
+- impacts/blunt-hit, tick60: (76,36), B167 ->168.
+- impacts/blunt-hit, tick60: (74,37), R182 ->183.
+- impacts/blunt-hit, tick60: (87,48), G167 ->168.
+
+BlizzardVortex tick0 repeats exactly at240. Keep original reference hashes, exact
+alpha/light and all unselected channels/pixels. No production kernel, RNG,
+geometry, seed, material or output changes are made. The existing directional
+comparator and its negative cases remain in force. Failure-only complete-scenario
+diagnostics remain available if any different position or phase fails.
 
 ## Validation and review gates
 

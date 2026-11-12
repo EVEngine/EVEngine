@@ -1070,9 +1070,14 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
         fx.render(frames[i] / 120.);
         bool colorMatches = false;
         if (frames[i] == 0 || frames[i] == 240) {
-            // Approved exact loop repeat: only R98 ->97 at (63,71).
-            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
-                                                                          {9151, 0xfff4c862u, 0, 0b001}));
+            // Approved exact loop repeat: R-1 at (63,71), B+1 at (57,93).
+            constexpr std::array<test_pixelfx_reference::RoundingPixel, 2> pixels{
+                {{9151, 0xfff4c862u, 0, 0b001}, {11961, 0x2dfeeca8u, 0b100, 0b000}}};
+            colorMatches = test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels);
+        } else if (frames[i] == 4) {
+            // Approved tick4: only B247 ->248 at (59,91).
+            colorMatches = test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                         {11707, 0x53f7d680u, 0b100, 0b000});
         } else if (frames[i] == 12) {
             // Approved tick12 boundaries: G-1, B+1, R+1 and G+1 at these four pixels only.
             constexpr std::array<test_pixelfx_reference::RoundingPixel, 4> pixels{{{4035, 0xffffeca6u, 0, 0b010},
@@ -1089,10 +1094,17 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
             colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
                                                                           {8263, 0xffffeba6u, 0b010}));
         } else if (frames[i] == 120) {
-            // Additional approved frame: B+1 at (56,89), B-1 at (55,90), G+1 at (55,96).
-            constexpr std::array<test_pixelfx_reference::RoundingPixel, 3> pixels{
-                {{11448, 0x12feedacu, 0b100}, {11575, 0x1cffefb8u, 0, 0b100}, {12343, 0x22ffeba6u, 0b010}}};
+            // Approved tick120: five independently measured directional channel boundaries.
+            constexpr std::array<test_pixelfx_reference::RoundingPixel, 5> pixels{{{11448, 0x12feedacu, 0b100},
+                                                                                   {11575, 0x1cffefb8u, 0, 0b100},
+                                                                                   {11950, 0x06fff1b9u, 0b000, 0b100},
+                                                                                   {12343, 0x22ffeba6u, 0b010},
+                                                                                   {12977, 0xfffefefeu, 0b100, 0b000}}};
             colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
+        } else if (frames[i] == 144) {
+            // Approved tick144: only G199 ->200 at (67,82).
+            colorMatches = test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                         {10563, 0xfff4c762u, 0b010, 0b000});
         } else {
             colorMatches = (checksum(fx.color()) == expected[2 * i]);
         }
