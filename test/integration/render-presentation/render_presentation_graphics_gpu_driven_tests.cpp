@@ -1740,7 +1740,9 @@ TEST_CASE("GpuDriven.automaticInstancingPreservesRegisteredTablesAcrossFrames") 
     cam->setAmbient(1.f, 1.f, 1.f);
     auto *mesh     = gfx->newMeshCube(1.f);
     auto *material = gfx->newMaterial();
-    material->setAlbedoTexture(gdSolid(gfx, 220, 30, 20));
+    // Use a primary color: presentation tone mapping can lift nonzero green
+    // enough to defeat the 2:1 dominance check on an UNORM surface.
+    material->setAlbedoTexture(gdSolid(gfx, 220, 0, 0));
     // Exercise the examples' automatic path with the explicit feature disabled.
     // All 128 visible objects share one registered mesh and textured material.
     for (int y = 0; y < 8; ++y) {
