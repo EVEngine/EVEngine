@@ -1872,7 +1872,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                 // Hardware RT reflections (optional module). Prefer RTX when
                 // available; fall through to SSR on NoOp / failure / absent provider.
                 if (doRTX) {
-                    if (auto* rt = eve::cap::query<IRayTracing>()) {
+                    if (auto rayTracing = gfx.rayTracingService()) {
+                        auto* rt = &rayTracing->get();
                         if (rt->isAvailable()) {
                             ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
                             Canvas*                reflCanvas = ssr->getReflectionCanvas();

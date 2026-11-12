@@ -8,6 +8,20 @@ if(_has_ui)
   configure_file(
     "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
     "${CMAKE_BINARY_DIR}/share/eve/fonts/FontAwesome.ttf" COPYONLY)
+  # Core ImGui and SDL have one owner for either linkage. Select the renderer
+  # independently: WebGPU's engine-owned implementation is compiled by EVUI.
+  set(_eve_imgui_sources
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
+    ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
+  )
+  set(_eve_imgui_renderer_libs "")
+  if(NOT BUILD_PLATFORM STREQUAL "webgpu")
+    list(APPEND _eve_imgui_sources ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
+    list(APPEND _eve_imgui_renderer_libs ${EVENGINE_VULKAN_LIB})
+  endif()
   if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
     # ImGui keeps its context in the process-wide GImGui. Linking the archive
     # into every link group and every test executable gives each of them its own
@@ -16,14 +30,6 @@ if(_has_ui)
     # the vendored sources into one shared library instead: the state then has a
     # single owner, exactly as it does in the archive-only OBJECT route where
     # everything lands in one executable.
-    set(_eve_imgui_sources
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-    )
     add_library(eve_imgui SHARED ${_eve_imgui_sources})
     # GImGui is a data symbol, and an import library only carries __imp_<data>,
     # so consumers must see the declaration as dllimport rather than redeclare it.
@@ -63,7 +69,7 @@ if(_has_ui)
     eve_thirdparty_libs(_eve_imgui_third_party sdl2)
     eve_append_system_libraries(_eve_imgui_system_libs)
     target_link_libraries(eve_imgui PRIVATE
-      ${_eve_imgui_third_party} ${_eve_imgui_system_libs} ${EVENGINE_VULKAN_LIB})
+      ${_eve_imgui_third_party} ${_eve_imgui_system_libs} ${_eve_imgui_renderer_libs})
     target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
     # The SDL import library this target links comes from the third-party install
     # tree, and nothing else in its dependency graph waits for that install: on a
@@ -93,19 +99,6 @@ if(_has_ui)
     target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
   else()
     # Compiled from third-party sources (also installed by the ExternalProject).
-    set(_eve_imgui_sources
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-    )
-    if(BUILD_PLATFORM STREQUAL "webgpu")
-      # Vulkan renderer is compiled out; the WebGPU backend is compiled by EVUI.
-      list(REMOVE_ITEM _eve_imgui_sources
-        ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
-    endif()
     add_library(eve_imgui STATIC ${_eve_imgui_sources})
     # Vendored third-party imgui mixes public/private enums (input-text/tree
     # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this

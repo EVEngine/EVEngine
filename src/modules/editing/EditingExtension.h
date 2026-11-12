@@ -74,7 +74,14 @@ private:
     std::shared_ptr<IEditingExtensionProvider> provider_;
 };
 
-/** @brief Thread-safe generation-qualified registry for editing extension providers. */
+/**
+ * @brief Thread-safe generation-qualified registry for editing extension providers.
+ * @ownership Registrations and leases share implementations; withdrawal preserves existing leases.
+ * @lifetime Registry destruction requires quiescent callers and deactivates remaining providers.
+ * @thread Registry operations are synchronized; callbacks obey descriptor affinity.
+ * @reentrancy Lifecycle callbacks run without registry locks. A transition on the same id
+ * is rejected with Conflict; callbacks may query or operate on other provider ids.
+ */
 class EVENGINE_API_PLATFORM ExtensionProviderRegistry {
 public:
     /** @brief Extension provider registry. */

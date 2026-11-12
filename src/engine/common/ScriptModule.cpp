@@ -1,6 +1,7 @@
 #include "common/ScriptModule.h"
 
 #include "common/Capability.h"
+#include "common/ProviderRegistry.h"
 #include "common/ServiceInterfaces.h"
 #include "common/SquirrelBinding.h"
 
@@ -92,7 +93,6 @@ struct ScriptModuleResolver::Impl {
     struct ProviderEntry {
         ProviderId                             id       = 0;
         int                                    priority = 0;
-        std::shared_ptr<IScriptModuleProvider> provider;
     };
     struct Module {
         enum class State { Compiling, Compiled, Instantiating, Ready };
@@ -148,7 +148,7 @@ struct ScriptModuleResolver::Impl {
 
     std::string resolve(const ScriptModuleRequest& request) {
         std::string attempts;
-        for (const ProviderEntry& entry : providers) {
+        for (const auto& entry : providerSnapshot()) {
             std::string canonical;
             std::string error;
             const auto  status = entry.provider->resolve(request, canonical, error);
@@ -156,14 +156,14 @@ struct ScriptModuleResolver::Impl {
             if (status == ScriptModuleStatus::Error)
                 throw std::runtime_error(error.empty() ? "module resolution failed" : error);
             if (!attempts.empty()) attempts += ", ";
-            attempts += std::to_string(entry.id);
+            attempts += std::to_string(entry.metadata.id);
         }
         throw std::runtime_error("no script module provider handled '" + request.specifier + "' imported by '" +
                                  request.importerUri + "' (providers: " + attempts + ")");
     }
 
     ScriptModuleSource load(const std::string& canonical) {
-        for (const ProviderEntry& entry : providers) {
+        for (const auto& entry : providerSnapshot()) {
             ScriptModuleSource source;
             std::string        error;
             const auto         status = entry.provider->load(canonical, source, error);
@@ -318,7 +318,16 @@ struct ScriptModuleResolver::Impl {
 
     SQVM*                                                     vm             = nullptr;
     ProviderId                                                nextProviderId = 1;
-    std::vector<ProviderEntry>                                providers;
+    eve::cap::ProviderRegistry<IScriptModuleProvider, ProviderEntry> providers;
+
+    std::vector<eve::cap::ProviderRegistry<IScriptModuleProvider, ProviderEntry>::Record> providerSnapshot() const {
+        auto records = providers.snapshot();
+        std::sort(records.begin(), records.end(), [](const auto& a, const auto& b) {
+            if (a.metadata.priority != b.metadata.priority) return a.metadata.priority > b.metadata.priority;
+            return a.metadata.id < b.metadata.id;
+        });
+        return records;
+    }
     std::unordered_map<std::string, Module>                   modules;
     std::unordered_map<std::string, std::vector<std::string>> dependencies;
     std::optional<std::string>                                pendingCompilationFailure;
@@ -331,18 +340,16 @@ ScriptModuleResolver::ProviderId ScriptModuleResolver::registerProvider(std::sha
                                                                         int priority) {
     if (!provider) return 0;
     const ProviderId id = impl_->nextProviderId++;
-    impl_->providers.push_back({id, priority, std::move(provider)});
-    std::stable_sort(impl_->providers.begin(), impl_->providers.end(),
-                     [](const auto& a, const auto& b) { return a.priority > b.priority; });
+    auto             registered =
+        impl_->providers.publish(std::to_string(id), std::move(provider), Impl::ProviderEntry{id, priority});
+    if (!registered.ok()) return 0;
     return id;
 }
 
 bool ScriptModuleResolver::unregisterProvider(ProviderId id) {
-    const auto oldSize = impl_->providers.size();
-    impl_->providers.erase(std::remove_if(impl_->providers.begin(), impl_->providers.end(),
-                                          [id](const auto& entry) { return entry.id == id; }),
-                           impl_->providers.end());
-    return oldSize != impl_->providers.size();
+    auto entry = impl_->providers.acquire(std::to_string(id));
+    if (!entry.ok()) return false;
+    return impl_->providers.withdraw(entry.value().handle).ok();
 }
 
 void ScriptModuleResolver::registerDefaultProviders() { registerProvider(std::make_shared<GameFileProvider>()); }

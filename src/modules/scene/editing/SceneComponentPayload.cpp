@@ -141,24 +141,24 @@ Result<DomainOperation> SceneComponentPropertyBindings::makeReset(const Selectio
     return translated.value().first->properties->makeReset(translated.value().second, path);
 }
 
-Result<void> SceneComponentPayloadRegistry::registerProvider(ISceneComponentPayloadProvider* provider) {
+Result<void> SceneComponentPayloadRegistry::registerProvider(std::shared_ptr<ISceneComponentPayloadProvider> provider) {
     if (!provider || provider->componentType().empty())
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene.component-provider-invalid"),
                                           "Component payload provider and type are required");
-    const auto [iterator, inserted] = providers_.emplace(provider->componentType(), provider);
-    if (!inserted)
-        return eve::editing::failed<void>(
-            EditorStatus::Conflict, RuleId("editor.scene.component-provider-duplicate"),
-            "A component payload provider is already registered for type: " + iterator->first);
+    const auto type      = provider->componentType();
+    auto       published = providers_.publish(type, std::move(provider));
+    if (!published.ok())
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.component-provider-duplicate"),
+                                          "A component payload provider is already registered for type: " + type);
     return eve::editing::applied<void>();
 }
 
 SceneComponentChange SceneComponentPayloadRegistry::unregisterProvider(ISceneComponentPayloadProvider* provider) {
     if (!provider) return SceneComponentChange::Unchanged;
-    const auto found = providers_.find(provider->componentType());
-    if (found == providers_.end() || found->second != provider) return SceneComponentChange::Unchanged;
-    providers_.erase(found);
-    return SceneComponentChange::Changed;
+    auto found = providers_.acquire(provider->componentType());
+    if (!found.ok() || found.value().provider.get() != provider) return SceneComponentChange::Unchanged;
+    return providers_.withdraw(found.value().handle).ok() ? SceneComponentChange::Changed
+                                                          : SceneComponentChange::Unchanged;
 }
 
 Result<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::componentPayloads(
@@ -168,7 +168,9 @@ Result<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::com
             EditorStatus::Rejected, RuleId("editor.scene.component-owner-invalid"),
             "Scene target and object ids are required for component discovery");
     std::vector<SceneComponentPayloadRef> result;
-    for (const auto& [type, provider] : providers_) {
+    for (const auto& entry : providers_.snapshot()) {
+        const auto& type       = entry.handle.id;
+        const auto& provider   = entry.provider;
         auto components = provider->components(scene, object);
         for (SceneComponentPayloadRef& component : components) {
             if (component.target != scene || component.object != object || component.type != type ||
@@ -186,35 +188,35 @@ Result<std::vector<SceneComponentPayloadRef>> SceneComponentPayloadRegistry::com
     return eve::editing::applied<std::vector<SceneComponentPayloadRef>>(std::move(result));
 }
 
-Result<ISceneComponentPayloadProvider*> SceneComponentPayloadRegistry::resolve(
+Result<std::shared_ptr<ISceneComponentPayloadProvider>> SceneComponentPayloadRegistry::resolve(
     const SelectionSnapshot& selection) const {
     if (selection.items.empty())
-        return eve::editing::failed<ISceneComponentPayloadProvider*>(EditorStatus::Rejected,
-                                                                     RuleId("editor.scene.component-selection-empty"),
-                                                                     "Component property selection cannot be empty");
+        return eve::editing::failed<std::shared_ptr<ISceneComponentPayloadProvider>>(
+            EditorStatus::Rejected, RuleId("editor.scene.component-selection-empty"),
+            "Component property selection cannot be empty");
     const std::string& type = selection.items.front().type;
     if (type.empty())
-        return eve::editing::failed<ISceneComponentPayloadProvider*>(
+        return eve::editing::failed<std::shared_ptr<ISceneComponentPayloadProvider>>(
             EditorStatus::Rejected, RuleId("editor.scene.component-selection-type"),
             "Component property selection requires a stable component type");
     for (const SelectionItem& item : selection.items) {
         if (item.domain != SelectionDomain::Scene || item.type != type || item.item.empty())
-            return eve::editing::failed<ISceneComponentPayloadProvider*>(
+            return eve::editing::failed<std::shared_ptr<ISceneComponentPayloadProvider>>(
                 EditorStatus::Rejected, RuleId("editor.scene.component-selection-mixed"),
                 "Component property selections must contain one non-empty component type");
     }
-    const auto found = providers_.find(type);
-    if (found == providers_.end())
-        return eve::editing::failed<ISceneComponentPayloadProvider*>(
+    auto found = providers_.acquire(type);
+    if (!found.ok())
+        return eve::editing::failed<std::shared_ptr<ISceneComponentPayloadProvider>>(
             EditorStatus::Unsupported, RuleId("editor.scene.component-provider-missing"),
             "No component payload provider is registered for type: " + type);
-    return eve::editing::applied<ISceneComponentPayloadProvider*>(found->second);
+    return eve::editing::applied<std::shared_ptr<ISceneComponentPayloadProvider>>(found.value().provider);
 }
 
 Result<IPropertyProvider*> SceneComponentPayloadRegistry::propertyProvider(const SelectionSnapshot& selection) const {
     auto provider = resolve(selection);
     if (!provider.ok()) return Result<IPropertyProvider*>::failure(provider.status());
-    return eve::editing::applied<IPropertyProvider*>(static_cast<IPropertyProvider*>(provider.value()));
+    return eve::editing::applied<IPropertyProvider*>(static_cast<IPropertyProvider*>(provider.value().get()));
 }
 
 Result<IDomainOperationTarget*> SceneComponentPayloadRegistry::operationTarget(
@@ -226,12 +228,12 @@ Result<IDomainOperationTarget*> SceneComponentPayloadRegistry::operationTarget(
 
 Result<std::vector<EditorDiagnostic>> SceneComponentPayloadRegistry::validatePayload(
     const SceneComponentPayloadRef& component) const {
-    const auto found = providers_.find(component.type);
-    if (found == providers_.end())
+    auto found = providers_.acquire(component.type);
+    if (!found.ok())
         return eve::editing::failed<std::vector<EditorDiagnostic>>(
             EditorStatus::Unsupported, RuleId("editor.scene.component-provider-missing"),
             "No component payload provider is registered for type: " + component.type);
-    const auto current  = found->second->components(component.target, component.object);
+    const auto current  = found.value().provider->components(component.target, component.object);
     const auto matching = std::find_if(current.begin(), current.end(), [&](const auto& candidate) {
         return candidate.component == component.component && candidate.type == component.type;
     });
@@ -243,7 +245,7 @@ Result<std::vector<EditorDiagnostic>> SceneComponentPayloadRegistry::validatePay
         return eve::editing::failed<std::vector<EditorDiagnostic>>(
             EditorStatus::Conflict, RuleId("editor.scene.component-reference-stale"),
             "The component changed since its inspector reference was captured: " + component.component.value());
-    return eve::editing::applied<std::vector<EditorDiagnostic>>(found->second->validateComponent(component));
+    return eve::editing::applied<std::vector<EditorDiagnostic>>(found.value().provider->validateComponent(component));
 }
 
 Result<SelectionSnapshot> makeSceneComponentSelection(std::string                                  channel,

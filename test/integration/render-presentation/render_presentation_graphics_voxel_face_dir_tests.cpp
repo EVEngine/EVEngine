@@ -320,7 +320,10 @@ TEST_CASE("graphics.shaderReload.replacementContract") {
 
 // Contract section: shader reload vulkan
 #include "PrivateTestScope.h"
+#include "common/config.h"
 
+// These assertions inspect VkPipeline handles; WebGPU owns separate shader lifetime contracts.
+#if !defined(EVENGINE_WEBGPU)
 #include "graphics/vulkan/Graphics.h"
 // shader_reload_vulkan.cpp
 namespace test_shader_reload_vulkan {
@@ -417,6 +420,7 @@ TEST_CASE("graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines") {
     REQUIRE(!after->swapchainOpaquePipeline);
 }
 }  // namespace test_shader_reload_vulkan
+#endif
 
 // Contract section: softbody
 #include "PrivateTestScope.h"
