@@ -18,6 +18,8 @@ on:
       - 'scripts/apple_package.py'
       - 'scripts/test_apple_sdk.py'
       - 'scripts/tests/test_apple_package.py'
+      - 'scripts/test_msvc_make_environment.py'
+      - 'cmake/with-msvc.cmd'
       - 'src/engine/cmdline/Build.cpp'
       - 'src/engine/main.cpp'
       - 'platform/macosx/macosx.mm'

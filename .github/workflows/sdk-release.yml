@@ -90,6 +90,10 @@ jobs:
           # Prefer VS 2022 on GitHub-hosted runners (local Makefile default is VS 2026).
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
 
+      - name: Verify GNU Make to NMake environment isolation
+        timeout-minutes: 5
+        run: python3 scripts/test_msvc_make_environment.py
+
       - name: Install Vulkan SDK
         timeout-minutes: 20
         uses: ./.github/actions/install-vulkan-sdk
