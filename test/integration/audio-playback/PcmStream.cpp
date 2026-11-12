@@ -20,7 +20,10 @@
 // clang-format on
 
 #include "audio/PcmStream.h"
+#include "action/ActionPreview.h"
 #include "audio/Audio.h"
+#include "common/AudioQuery.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "zeroerr/unittest.h"
 
@@ -33,6 +36,31 @@
 using eve::audio::Audio;
 using eve::audio::PcmStream;
 using eve::audio::PcmStreamPhase;
+
+TEST_CASE("audio.capabilities.bindOwnerAndRevokeBeforeDeviceShutdown") {
+    std::unique_ptr<eve::action::IActionPreviewSink> retained;
+    {
+        Audio audio;
+        auto* query = eve::cap::query<eve::IAudioQuery>();
+        REQUIRE(query);
+        query->setVolume(0.375f);
+        CHECK_EQ(audio.getVolume(), 0.375f);
+        auto* provider = eve::cap::listenerAt<eve::action::IActionPreviewSinkProvider>(0);
+        REQUIRE(provider);
+        auto created = provider->createActionPreviewSink();
+        REQUIRE(created.ok());
+        retained = std::move(created).takeValue();
+        eve::action::ActionPreviewFrame frame;
+        REQUIRE(retained->prepare(frame).ok());
+    }
+    CHECK(eve::cap::query<eve::IAudioQuery>() == nullptr);
+    CHECK_EQ(eve::cap::listenerCount<eve::action::IActionPreviewSinkProvider>(), size_t{0});
+    eve::action::ActionPreviewFrame frame;
+    auto                            unavailable = retained->prepare(frame);
+    REQUIRE(!unavailable.ok());
+    CHECK_EQ(unavailable.error()->code(), eve::DiagnosticCode::NotFound);
+    retained.reset();
+}
 
 TEST_CASE("audio.pcm.validationAndBackpressureAreAtomic") {
     Audio audio;

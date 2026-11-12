@@ -1,7 +1,8 @@
+#include "audio/AudioCapabilities.h"
 #include "action/ActionAudioBlock.h"
 #include "action/ActionAudioWaveform.h"
-#include "action/ActionParameterCurve.h"
 #include "action/ActionNotifyRegistry.h"
+#include "action/ActionParameterCurve.h"
 #include "action/ActionPreview.h"
 #include "action/ActionSpatialBlock.h"
 #include "audio/Audio.h"
@@ -62,19 +63,46 @@ Result<void> configureAudioSource(Source& source, const eve::action::ActionAudio
     return Result<void>::success();
 }
 
-class AudioQueryImpl final : public eve::IAudioQuery {
+// One module-owned binding invalidates retained clients before the OpenAL context closes.
+// Main-thread only: clients remove themselves before destruction; shutdown uses a snapshot.
+class AudioClient;
+struct AudioBinding {
+    Audio*                    audio;
+    std::vector<AudioClient*> clients;
+    void                      close() noexcept;
+};
+class AudioClient {
 public:
+    explicit AudioClient(std::shared_ptr<AudioBinding> binding) : binding_(std::move(binding)) {
+        binding_->clients.push_back(this);
+    }
+    virtual ~AudioClient() { std::erase(binding_->clients, this); }
+    virtual void closeAudio() noexcept {}
+
+protected:
+    std::shared_ptr<AudioBinding> binding_;
+};
+void AudioBinding::close() noexcept {
+    // These private final clients release sources only; they cannot add/remove clients.
+    // Keep shutdown allocation-free while the OpenAL context is still current.
+    for (auto* client : clients) client->closeAudio();
+    audio = nullptr;
+}
+
+class AudioQueryImpl final : public eve::IAudioQuery, private AudioClient {
+public:
+    explicit AudioQueryImpl(std::shared_ptr<AudioBinding> binding) : AudioClient(std::move(binding)) {}
     float volume() const override {
-        auto *a = eve::ModuleManager::getInstance<Audio>("Audio");
+        auto* a = binding_->audio;
         return a ? a->getVolume() : 1.f;
     }
 
     void setVolume(float v) override {
-        if (auto *a = eve::ModuleManager::getInstance<Audio>("Audio")) a->setVolume(v);
+        if (auto* a = binding_->audio) a->setVolume(v);
     }
 
     void stopAll() override {
-        if (auto *a = eve::ModuleManager::getInstance<Audio>("Audio")) a->stopAll();
+        if (auto* a = binding_->audio) a->stopAll();
     }
 };
 
@@ -194,14 +222,15 @@ private:
     }
 };
 
-class AudioActionParameterSink final : public eve::action::IActionParameterSink {
+class AudioActionParameterSink final : public eve::action::IActionParameterSink, private AudioClient {
 public:
+    explicit AudioActionParameterSink(std::shared_ptr<AudioBinding> binding) : AudioClient(std::move(binding)) {}
     bool supports(const eve::LogicalId& target) const noexcept override {
         return target.format() == "audio:master-volume";
     }
 
     eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
-        auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
+        auto* audio = binding_->audio;
         if (!audio)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio parameter target is unavailable", "audio"));
         const ActiveKey key{sample.executionId, sample.itemId.format()};
@@ -255,10 +284,14 @@ private:
 
 using ActiveKey = std::pair<eve::action::ActionExecutionId, std::string>;
 
-class AudioActionHandler final : public eve::action::IActionNotifyHandler {
+class AudioActionHandler final : public eve::action::IActionNotifyHandler, private AudioClient {
 public:
+    explicit AudioActionHandler(std::shared_ptr<AudioBinding> binding) : AudioClient(std::move(binding)) {}
     eve::Result<void> handle(const eve::action::ActionTimelineEvent& event,
                              const eve::action::ActionNotifyContext& context) override {
+        if (!binding_->audio)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
         const ActiveKey key{context.executionId, event.itemId.format()};
         if (event.kind == eve::action::ActionTimelineEventKind::StateExit) {
             const auto found = active_.find(key);
@@ -286,7 +319,7 @@ public:
         if (!binding) return eve::Result<void>::failure(binding.status());
         auto pose = resolvePose(binding.value().spatial, context);
         if (!pose) return eve::Result<void>::failure(pose.status());
-        auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
+        auto* audio = binding_->audio;
         if (!audio) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
         try {
             const auto seed = stableAudioSeed(context.executionId, event.itemId);
@@ -366,6 +399,12 @@ public:
                 : eve::StatusCode::Applied));
     }
 
+    void closeAudio() noexcept override {
+        active_.clear();
+        transients_.clear();
+        fading_.clear();
+    }
+
 private:
     struct ActiveSource {
         // Source borrows this data; the pin keeps it alive across cache unload.
@@ -441,8 +480,9 @@ private:
     std::vector<FadingSource> fading_;
 };
 
-class AudioActionPreviewSink final : public eve::action::IActionPreviewSink {
+class AudioActionPreviewSink final : public eve::action::IActionPreviewSink, private AudioClient {
 public:
+    explicit AudioActionPreviewSink(std::shared_ptr<AudioBinding> binding) : AudioClient(std::move(binding)) {}
     ~AudioActionPreviewSink() override {
         discardPrepared();
         stopAll(current_);
@@ -450,6 +490,9 @@ public:
     }
 
     eve::Result<void> prepare(const eve::action::ActionPreviewFrame& frame) override {
+        if (!binding_->audio)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
         discardPrepared();
         const bool retainContinuous = frame.reason == eve::action::ActionPreviewReason::Advance;
         for (const auto& block : frame.activeBlocks) {
@@ -511,6 +554,12 @@ public:
         preparedRetained_.clear();
     }
 
+    void closeAudio() noexcept override {
+        discardPrepared();
+        stopAll(current_);
+        stopAll(transients_);
+    }
+
 private:
     struct OwnedAudio {
         OwnedAudio(eve::ResourcePin data, std::unique_ptr<Source> source)
@@ -530,9 +579,9 @@ private:
         return eve::Result<void>::failure(status);
     }
 
-    static eve::Result<std::optional<OwnedAudio>> makeAudio(
-        const eve::action::ActionAudioBinding& binding, eve::Duration localTime, std::uint64_t seed) {
-        auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
+    eve::Result<std::optional<OwnedAudio>> makeAudio(const eve::action::ActionAudioBinding& binding,
+                                                     eve::Duration localTime, std::uint64_t seed) {
+        auto* audio = binding_->audio;
         if (!audio)
             return eve::Result<std::optional<OwnedAudio>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
@@ -590,36 +639,59 @@ private:
 };
 
 class AudioActionProvider final : public eve::action::IActionNotifyProvider,
-                                  public eve::action::IActionPreviewSinkProvider {
+                                  public eve::action::IActionPreviewSinkProvider,
+                                  private AudioClient {
 public:
+    explicit AudioActionProvider(std::shared_ptr<AudioBinding> binding) : AudioClient(std::move(binding)) {}
     eve::Result<void> install(eve::action::ActionNotifyRegistry& registry) override {
-        auto handler = std::make_shared<AudioActionHandler>();
+        if (!binding_->audio)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Audio module is unavailable", "audio"));
+        auto handler = std::make_shared<AudioActionHandler>(binding_);
         auto instant = registry.registerHandler("presentation:audio", handler);
         if (!instant) return instant;
         return registry.registerHandler("presentation:audio-state", std::move(handler));
     }
 
     eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>> createActionPreviewSink() override {
-        if (!eve::ModuleManager::getInstance<Audio>("Audio"))
+        if (!binding_->audio)
             return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
         return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::success(
-            std::make_unique<AudioActionPreviewSink>());
+            std::make_unique<AudioActionPreviewSink>(binding_));
     }
 };
 
 }  // namespace
 
-void registerAudioCapabilities() {
-    static AudioQueryImpl impl;
-    static AudioActionProvider actionProvider;
-    static ActionAudioWaveformProvider waveformProvider;
-    static AudioActionParameterSink parameterSink;
-    eve::cap::provide<eve::IAudioQuery>(&impl);
-    eve::cap::provide<eve::action::IActionAudioWaveformProvider>(&waveformProvider);
-    eve::cap::addListener<eve::action::IActionParameterSink>(&parameterSink);
-    eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
-    eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
+struct AudioCapabilities::Impl {
+    std::shared_ptr<AudioBinding> binding;
+    AudioQueryImpl                query;
+    AudioActionProvider           actions;
+    ActionAudioWaveformProvider   waveform;
+    AudioActionParameterSink      parameters;
+    explicit Impl(Audio& audio)
+        : binding(std::make_shared<AudioBinding>(AudioBinding{&audio, {}})),
+          query(binding),
+          actions(binding),
+          parameters(binding) {}
+};
+
+AudioCapabilities::AudioCapabilities(Audio& audio) : impl_(std::make_unique<Impl>(audio)) {
+    eve::cap::provide<eve::IAudioQuery>(&impl_->query);
+    eve::cap::provide<eve::action::IActionAudioWaveformProvider>(&impl_->waveform);
+    eve::cap::addListener<eve::action::IActionParameterSink>(&impl_->parameters);
+    eve::cap::addListener<eve::action::IActionNotifyProvider>(&impl_->actions);
+    eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&impl_->actions);
+}
+
+AudioCapabilities::~AudioCapabilities() {
+    eve::cap::revoke<eve::IAudioQuery>(&impl_->query);
+    eve::cap::revoke<eve::action::IActionAudioWaveformProvider>(&impl_->waveform);
+    eve::cap::removeListener<eve::action::IActionParameterSink>(&impl_->parameters);
+    eve::cap::removeListener<eve::action::IActionNotifyProvider>(&impl_->actions);
+    eve::cap::removeListener<eve::action::IActionPreviewSinkProvider>(&impl_->actions);
+    impl_->binding->close();
 }
 
 }  // namespace eve::audio

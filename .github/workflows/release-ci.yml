@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, physics-bake-only, asset-core-only, headless, server]
     env:
       PROFILE: ${{ matrix.profile }}
       PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
@@ -80,7 +80,7 @@ jobs:
         timeout-minutes: 60
         run: make profile/build
 
-      - name: Run independent capability smoke probes
+      - name: Run independent capability and profile playback smoke probes
         timeout-minutes: 10
         run: make profile/smoke
 
@@ -691,7 +691,8 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/win32
+          make test/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
           LABEL_FILTER=''
 
       - name: Sample settlement release benchmark
@@ -1124,7 +1125,7 @@ jobs:
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
           # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
@@ -1223,7 +1224,11 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
+        # Keep the build's configuration stamp and bounded compile parallelism
+        # when make checks that the test binary is up to date.
+        run: >-
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Sample settlement release benchmark
         id: settlement-benchmark
@@ -1266,7 +1271,7 @@ jobs:
         # Keep parity with the other full native Linux dependency installs.
         timeout-minutes: 15
         run: |
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
             /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
             sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null

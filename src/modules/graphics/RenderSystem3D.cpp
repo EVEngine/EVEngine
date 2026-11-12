@@ -1,4 +1,5 @@
 // eve-hot-path
+// eve-hot-path
 #include "graphics/RenderSystem3D.h"
 #include "common/Assert.h"
 #include "common/Capability.h"
@@ -1313,8 +1314,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     // Repeated opaque mesh/material pairs are cheaper as one instanced indirect
     // draw. Keep the explicit feature for smaller scenes and other backends.
     bool autoInstance = false;
-    if (!rc->isEnabled("gpuDriven") && !doDeferredLighting && !useClustered && defaultCam &&
-        gfx.getBackendName() == "vulkan" && gfx.supportsGpuDriven3D()) {
+    if (rc->autoInstancingPath() == RenderControl::AutoInstancingPath::Auto && !rc->isEnabled("gpuDriven") &&
+        !doDeferredLighting && !useClustered && defaultCam && gfx.getBackendName() == "vulkan" &&
+        gfx.supportsGpuDriven3D()) {
         std::unordered_map<Material*, std::unordered_map<Mesh*, uint32_t>> counts;
         for (const CulledItem& item : items) {
             if (!item.inView || item.shadowsOnly || item.camIdx != 0 || !item.material ||
@@ -1476,7 +1478,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     bool curClustered = false;
     int  curLightProbeUsage = 0;
 
-    auto drawMeshWithMaterial = [&](const CulledItem& item, CameraView& cv) {
+    auto drawMeshWithMaterial = [&](const CulledItem& item, CameraView& cv, std::span<const glm::mat4> models) {
         auto*     mr       = item.mr;
         Mesh*     drawMesh = item.mesh;
         Material* mat      = item.material;
@@ -1573,7 +1575,12 @@ void RenderSystem3D::render(Graphics& gfx) {
         if (shader) eve::debug::rtBind("shader", item.hair ? "hair" : "mesh");
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-        if (mr->instances) {
+        if (!models.empty()) {
+            eve::debug::rtDraw("drawMeshInstances", "ordinary material");
+            auto drawn = gfx.drawMeshInstances(
+                *drawMesh, models, albedo ? OptionalRef<Texture>{std::ref(*albedo)} : OptionalRef<Texture>{}, tint);
+            if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());
+        } else if (mr->instances) {
             const auto &range = *mr->instances;
             auto        drawn = gfx.drawMeshShaderInstances(*drawMesh, *shader, model, tint, range.first, range.count);
             if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());
@@ -1727,15 +1734,60 @@ void RenderSystem3D::render(Graphics& gfx) {
                 }
                 if (gpuDrivenUsed) {
                     if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
-                    for (const CulledItem* item : cpuOpaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+                    for (const CulledItem* item : cpuOpaque)
+                        drawMeshWithMaterial(*item, cams[size_t(item->camIdx)], {});
                 }
             }
         }
         if (!gpuDrivenUsed) {
             if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
-            for (const CulledItem* item : opaque) {
-                if (isDeferredCoreOpaque(*item)) continue;
-                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+            // Frame-local projection of the existing Renderable3D View, not a second ECS owner.
+            // Reads Transform3D/MeshRenderer only; no structural mutation or callbacks while grouping.
+            // Opaque shared-state groups preserve each model matrix and original culling decision.
+            const bool ordinaryInstances = !doDeferredLighting && !useClustered && gfx.supportsMeshInstancing();
+            auto       instanceEligible  = [&](const CulledItem& item) {
+                if (!ordinaryInstances || !item.material || item.shader || item.hair || item.xray ||
+                    item.speedTreeFade || item.lodWeight < .9999f || item.mr->instances || item.mr->camera ||
+                    item.mesh->hasGpuSkinning() || item.lightProbeUsage != 0 ||
+                    item.surfaceMode != SurfaceMode::Opaque || item.material->hasPbrSurface())
+                    return false;
+                const auto& probes = cams[size_t(item.camIdx)].data->reflectionProbes;
+                return std::none_of(probes.begin(), probes.end(),
+                                           [](const auto& probe) { return probe.enabled && probe.cubemap; });
+            };
+            constexpr size_t       minInstances      = 128;
+            constexpr size_t       maxBatchInstances = 16384;
+            std::vector<glm::mat4> models;
+            for (size_t first = 0; first < opaque.size();) {
+                const CulledItem& item = *opaque[first];
+                if (isDeferredCoreOpaque(item)) {
+                    ++first;
+                    continue;
+                }
+                size_t end = first + 1;
+                if (instanceEligible(item)) {
+                    while (end < opaque.size()) {
+                        const auto& next = *opaque[end];
+                        if (next.camIdx != item.camIdx || next.mesh != item.mesh || next.material != item.material ||
+                            next.receiveShadow != item.receiveShadow ||
+                            next.useReflectionProbes != item.useReflectionProbes || !instanceEligible(next))
+                            break;
+                        ++end;
+                    }
+                }
+                if (end - first >= minInstances) {
+                    models.reserve(std::min(end - first, maxBatchInstances));
+                    for (size_t batch = first; batch < end; batch += maxBatchInstances) {
+                        const size_t stop = std::min(end, batch + maxBatchInstances);
+                        models.clear();
+                        for (size_t i = batch; i < stop; ++i) models.push_back(opaque[i]->model);
+                        drawMeshWithMaterial(item, cams[size_t(item.camIdx)], models);
+                    }
+                } else {
+                    for (size_t i = first; i < end; ++i)
+                        drawMeshWithMaterial(*opaque[i], cams[size_t(opaque[i]->camIdx)], {});
+                }
+                first = end;
             }
         }
         if (defaultCam && !g_forwardDrawers.empty()) {
@@ -1767,7 +1819,7 @@ void RenderSystem3D::render(Graphics& gfx) {
         if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
         for (const CulledItem* item : transparentItems) {
             if ((item->hair && doHair) || (!item->hair && doForward))
-                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)], {});
         }
     }
 
@@ -1872,7 +1924,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                 // Hardware RT reflections (optional module). Prefer RTX when
                 // available; fall through to SSR on NoOp / failure / absent provider.
                 if (doRTX) {
-                    if (auto* rt = eve::cap::query<IRayTracing>()) {
+                    if (auto rayTracing = gfx.rayTracingService()) {
+                        auto* rt = &rayTracing->get();
                         if (rt->isAvailable()) {
                             ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
                             Canvas*                reflCanvas = ssr->getReflectionCanvas();

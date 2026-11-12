@@ -36,7 +36,7 @@ private:
     /** 自动化目标 id → 场景宿主名；只有创建过 `scene-host` 目标才知道。 */
     std::map<std::string, std::string>                            targetHosts_;
     std::unique_ptr<scene_editing::SceneComponentPayloadRegistry> payloads_;
-    std::unique_ptr<ScriptComponentPayloadProvider>               scriptComponents_;
+    std::shared_ptr<ScriptComponentPayloadProvider>               scriptComponents_;
     std::unique_ptr<TargetFactory>                                factory_;
 };
 

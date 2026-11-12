@@ -20,6 +20,62 @@ class BuildHelperTests(unittest.TestCase):
             command = [str(ROOT / "cmake" / "with-msvc.cmd"), *command]
         return subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace")
 
+    def test_imgui_renderer_matches_backend_for_both_linkages(self):
+        for backend in ("webgpu", "win32"):
+            for linkage in ("SHARED", "OBJECT"):
+                with self.subTest(backend=backend, linkage=linkage), tempfile.TemporaryDirectory() as directory:
+                    source = Path(directory) / "source"
+                    build = Path(directory) / "build"
+                    imgui = source / "third-party/imgui"
+                    imgui.mkdir(parents=True)
+                    for name in ("imgui", "imgui_draw", "imgui_tables", "imgui_widgets",
+                                 "imgui_impl_sdl", "imgui_impl_vulkan"):
+                        (imgui / f"{name}.cpp").write_text("", encoding="utf-8")
+                    font = source / "src/modules/ui/fonts/FontAwesome.ttf"
+                    font.parent.mkdir(parents=True)
+                    font.write_bytes(b"")
+                    (source / "dummy.cpp").write_text("", encoding="utf-8")
+                    (source / "CMakeLists.txt").write_text(f"""
+cmake_minimum_required(VERSION 3.21)
+project(ImGuiContract LANGUAGES CXX)
+add_library(EVUI OBJECT dummy.cpp)
+add_library(EVFileSystem OBJECT dummy.cpp)
+add_library(EVPlatformWebGPU STATIC dummy.cpp)
+add_library(eve_engine_includes INTERFACE)
+add_library(VulkanContractMarker INTERFACE)
+function(eve_module_enabled name out)
+  set(${{out}} ON PARENT_SCOPE)
+endfunction()
+function(eve_thirdparty_libs out)
+  set(${{out}} "" PARENT_SCOPE)
+endfunction()
+function(eve_append_system_libraries out)
+  set(${{out}} "" PARENT_SCOPE)
+endfunction()
+set(EVENGINE_PROFILE_HOSTLESS ON)
+set(BUILD_PLATFORM {backend})
+set(EVENGINE_MODULE_LINKAGE {linkage})
+set(EVENGINE_THIRD_PARTY_BINARY_ONLY {"ON" if backend == "webgpu" else "OFF"})
+set(EVENGINE_VULKAN_LIB VulkanContractMarker)
+include("{(ROOT / "src/modules/ui/BuildSettings.cmake").as_posix()}")
+include("{(ROOT / "src/modules/filesystem/BuildSettings.cmake").as_posix()}")
+file(GENERATE OUTPUT "${{CMAKE_BINARY_DIR}}/filesystem.txt"
+  CONTENT "$<TARGET_PROPERTY:EVFileSystem,LINK_LIBRARIES>")
+file(GENERATE OUTPUT "${{CMAKE_BINARY_DIR}}/properties.txt"
+  CONTENT "$<TARGET_PROPERTY:eve_imgui,SOURCES>\n$<TARGET_PROPERTY:eve_imgui,LINK_LIBRARIES>\n$<TARGET_PROPERTY:eve_imgui,TYPE>\n$<TARGET_PROPERTY:EVUI,LINK_LIBRARIES>")
+""", encoding="utf-8")
+                    result = self.run_cmake("-G", "Ninja", "-S", source, "-B", build)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    properties = (build / "properties.txt").read_text(encoding="utf-8")
+                    self.assertIn("imgui_impl_sdl.cpp", properties)
+                    self.assertEqual("imgui_impl_vulkan.cpp" in properties, backend != "webgpu")
+                    self.assertEqual("VulkanContractMarker" in properties,
+                                     backend != "webgpu" and linkage == "SHARED")
+                    self.assertIn("SHARED_LIBRARY" if linkage == "SHARED" else "STATIC_LIBRARY", properties)
+                    self.assertTrue(properties.endswith("eve_imgui"))
+                    filesystem = (build / "filesystem.txt").read_text(encoding="utf-8")
+                    self.assertEqual("EVPlatformWebGPU" in filesystem, backend == "webgpu")
+
     def test_arm64_monolithic_test_linker_is_scoped_to_linux_gcc(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "source"

@@ -23,6 +23,7 @@ class Decoder;
 namespace audio {
 
 class Source;
+class AudioCapabilities;
 class PcmStream;
 struct PcmStreamState;
 
@@ -99,6 +100,7 @@ public:
 
 private:
     void workerMain();
+    std::unique_ptr<AudioCapabilities> capabilities_;
 
     ALCdevice *device = nullptr;
     ALCcontext *context = nullptr;

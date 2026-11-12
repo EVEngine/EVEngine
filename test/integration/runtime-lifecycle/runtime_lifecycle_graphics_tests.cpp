@@ -6,6 +6,7 @@
   "default": "runtime-lifecycle",
   "module": "mouse",
   "modules": [
+    "common",
     "devtools",
     "keyboard",
     "mouse",
@@ -35,6 +36,7 @@
   ],
   "cases": {
     "concurrency": [
+      "common.providers.concurrentPublicationHasOneWinner",
       "event.workerPushWakesWait",
       "timer.step.deltaPositiveAfterSleep"
     ],
@@ -2052,3 +2054,21 @@ TEST_CASE("touch.getTouchInvalidThrows") {
     CHECK(threw);
 }
 }  // namespace test_touch
+
+#include <atomic>
+#include <thread>
+#include "common/ProviderRegistry.h"
+
+TEST_CASE("common.providers.concurrentPublicationHasOneWinner") {
+    eve::cap::ProviderRegistry<int> registry;
+    std::atomic<int>                published{0};
+    auto                            compete = [&] {
+        if (registry.publish("same-id", std::make_shared<int>(7)).ok()) ++published;
+    };
+    std::thread first(compete);
+    std::thread second(compete);
+    first.join();
+    second.join();
+    REQUIRE_EQ(published.load(), 1);
+    CHECK_EQ(registry.snapshot().size(), size_t{1});
+}
