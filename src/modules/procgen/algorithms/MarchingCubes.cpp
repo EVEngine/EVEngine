@@ -1,5 +1,6 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/BushMesh.h"
+#include "procgen/algorithms/Cabinet.h"
 #include "procgen/algorithms/CableChainRope.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/CaveMesh.h"
@@ -509,6 +510,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
     registerPrototypePieceRecipes(*this);
+    registerCabinetRecipe(*this);
     registerMeshDeformationGeometryRecipes(*this);
     auto mesh = [](std::string id, std::string name) {
         RecipeDescriptor schema{std::move(id), std::move(name), "Mesh", {}};
