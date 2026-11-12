@@ -28,6 +28,10 @@ if(TARGET EVCrowd)
     add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/crowd_check" "${CMAKE_BINARY_DIR}/profile/crowd")
 endif()
 
+if(TARGET EVNetwork)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/src/modules/network/check" "${CMAKE_BINARY_DIR}/profile/network")
+endif()
+
 if(TARGET eve AND TARGET EVGraphics)
     eve_ensure_graphics_window_fixtures()
     eve_add_test_executable(eve_skin_palette_check
@@ -138,7 +142,10 @@ set_target_properties(eve_public_header_checks PROPERTIES
 
 set(_eve_capability_sources
     "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp"
-    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp")
+    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Diagnostic.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Status.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Result.cpp")
 eve_add_test_executable(eve_capability_present_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_present.cpp"
     ${_eve_capability_sources})
@@ -148,7 +155,7 @@ eve_add_test_executable(eve_capability_absent_check
 foreach(_eve_capability_target IN ITEMS
         eve_capability_present_check eve_capability_absent_check)
     target_compile_features(${_eve_capability_target} PRIVATE cxx_std_20)
-    target_link_libraries(${_eve_capability_target} PRIVATE eve_engine_includes)
+    target_link_libraries(${_eve_capability_target} PRIVATE eve_engine_includes zeroerr)
     if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
         # These isolated executables own their registry sources rather than importing an engine group.
         target_compile_definitions(${_eve_capability_target} PRIVATE
@@ -162,6 +169,9 @@ set(_eve_profile_smoke_dependencies
     eve_public_header_checks
     eve_capability_present_check
     eve_capability_absent_check)
+if(TARGET eve_network_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_network_check)
+endif()
 if(TARGET eve_bake_playback_check)
     list(APPEND _eve_profile_smoke_dependencies eve_bake_playback_check eve_bake_measure eve_bake_collapse_inspect)
 endif()

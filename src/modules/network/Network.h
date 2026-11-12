@@ -19,6 +19,7 @@ namespace eve::network {
 class TcpSocket;
 class UdpSocket;
 class HttpRequest;
+class HttpRuntime;
 class Channel;
 class Session;
 class NetWorker;
@@ -31,13 +32,19 @@ class NetRpc;
 /**
  * @brief Network module: TCP/UDP/HTTP factories, background worker, and
  * completion event plumbing. Script: `net <- eve.Network();`
+ * @thread Construct, configure, pump and destroy on the composition/owner thread.
+ * @reentrancy Callbacks may retire HTTP requests, but must not destroy this module
+ * or recursively call pump() before the outer pump returns.
  */
 class EVENGINE_API_PLATFORM Network : public Module, public eve::service::INetwork {
 public:
     Module_REG(Network);
     /** @brief Network. */
     Network();
-    /** @brief Network. */
+    /** @brief Cancels HTTP completions and joins background I/O before destruction.
+     * @cost May wait for in-flight socket timeouts; OS DNS resolution can take longer.
+     * @thread Destroy on the module owner thread, without concurrent API calls.
+     */
     ~Network() override;
 
     /** @brief Creates an owning TCP socket handle for C++ callers. */
@@ -90,6 +97,12 @@ public:
     void setVerifySsl(bool verify);
     /** @brief Returns the verify ssl. */
     bool getVerifySsl() const;
+    /** @brief Sets an owning UTF-8 CA file or hashed CA directory for future HTTPS requests.
+     * Empty selects system/default trust. A custom source exclusively replaces it.
+     * @thread Network owner thread; requests snapshot this policy on submission.
+     * @cost Copies the path per policy change; jobs load certificates per HTTPS request.
+     */
+    void setCaLocation(std::string location);
 
     /** @brief Return a thread-safe copied telemetry snapshot for diagnostics tools. */
     NetTelemetrySnapshot telemetrySnapshot() const;
@@ -99,7 +112,10 @@ public:
     /** @brief Drains worker completions and emits them as events; call per frame. */
     void pump();
 
-    /** @brief Synchronous HTTP request (blocks up to timeoutMs on the worker). */
+    /** @brief Synchronous HTTP(S) compatibility service; other completions remain queued.
+     * @cost Blocks the owner thread for network I/O until completion or the requested deadline.
+     * @note Does not dispatch events or invoke callbacks. Certificate verification defaults to true.
+     */
     bool httpRequest(const std::string& method, const std::string& url,
                      const std::string& body, int timeoutMs, int& status,
                      std::string& responseBody) override;
@@ -116,6 +132,7 @@ private:
     void post(NetCompletion c);
     /** @brief Record bytes successfully handed to a transport. */
     void recordSent(size_t bytes);
+    void recordCompletion(const NetCompletion& c);
     /** @brief Drains pending worker completions into out. */
     void drainCompletions(std::vector<NetCompletion>& out);
     /** @brief Returns the module-owned worker to internal network collaborators. */
@@ -142,8 +159,7 @@ private:
 
     void emitCompletion(const NetCompletion& c);
 
-    int  timeoutMs_ = 10000;
-    bool verifySsl_ = true;
+    std::shared_ptr<HttpRuntime> http_;
     std::unique_ptr<NetWorker> worker_;
 
     mutable std::mutex watchMu_;

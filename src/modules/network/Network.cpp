@@ -1,3 +1,4 @@
+// eve-hot-path: completion pumping and transport telemetry.
 #include "network/Network.h"
 #include "common/ScriptBinding.h"
 #include "common/SquirrelBinding.h"
@@ -12,6 +13,7 @@
 #include "network/TcpSocket.h"
 #include "network/UdpLink.h"
 #include "network/UdpSocket.h"
+#include "network/detail/HttpRuntime.h"
 #include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
@@ -53,12 +55,15 @@ void callScript3(const ssq::Object& obj, int64_t a, int64_t b, const std::string
 Module_IMPL(Network, new Network());
 
 Network::Network() {
+    http_   = std::make_shared<HttpRuntime>();
     worker_ = std::make_unique<NetWorker>(this);
     worker_->start();
     eve::cap::provide<eve::service::INetwork>(this);
 }
 
 Network::~Network() {
+    eve::cap::revoke<eve::service::INetwork>(this);
+    http_->close();
     if (worker_) worker_->stop();
     worker_.reset();
 }
@@ -79,19 +84,22 @@ HttpRequest* Network::newHttp(std::string method, std::string url) {
 bool Network::httpRequest(const std::string& method, const std::string& url,
                           const std::string& body, int timeoutMs, int& status,
                           std::string& responseBody) {
+    status = 0;
+    responseBody.clear();
     auto ownedRequest = makeHttp(method, url);
     HttpRequest* req = ownedRequest.get();
     if (!body.empty()) req->setBodyString(body);
     req->setTimeout(timeoutMs > 0 ? timeoutMs : 10000);
     if (!req->submit()) return false;
 
-    const auto deadline = std::chrono::steady_clock::now() +
-                          std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 1);
+    const auto deadline =
+        std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 10000);
     while (std::chrono::steady_clock::now() < deadline) {
-        std::vector<NetCompletion> out;
-        drainCompletions(out);
-        for (const auto& c : out) {
-            if (c.handle != req) continue;
+        HttpResult result;
+        if (http_->take(req, result) == HttpRuntime::PollStatus::Ready) {
+            const auto& c = result.completion;
+            recordSent(result.sentBytes);
+            recordCompletion(c);
             if (c.type == NetEvType::HttpResp) {
                 status = c.status;
                 if (c.bytes) responseBody.assign(c.bytes->begin(), c.bytes->end());
@@ -157,29 +165,27 @@ void Network::unbindUdpHost(UdpSocket* sock) {
     if (sock) udpHosts_.erase(sock);
 }
 
-void Network::setTimeout(int ms) {
-    timeoutMs_ = ms;
-}
+void Network::setTimeout(int ms) { http_->setTimeout(ms); }
 
-int Network::getTimeout() const {
-    return timeoutMs_;
-}
+int Network::getTimeout() const { return http_->timeout(); }
 
-void Network::setVerifySsl(bool verify) {
-    verifySsl_ = verify;
-}
+void Network::setVerifySsl(bool verify) { http_->setVerifySsl(verify); }
 
-bool Network::getVerifySsl() const {
-    return verifySsl_;
-}
+bool Network::getVerifySsl() const { return http_->getVerifySsl(); }
 
-void Network::post(NetCompletion c) {
+void Network::setCaLocation(std::string location) { http_->setCaLocation(std::move(location)); }
+
+void Network::recordCompletion(const NetCompletion& c) {
     ++completions_;
     ++telemetryRevision_;
     if (c.bytes && (c.type == NetEvType::Data || c.type == NetEvType::HttpResp))
         receivedBytes_ += c.bytes->size();
     if (c.type == NetEvType::Err) ++errors_;
     if (c.type == NetEvType::Conn && c.reason == "ok") ++connections_;
+}
+
+void Network::post(NetCompletion c) {
+    recordCompletion(c);
     if (worker_) worker_->post(std::move(c));
 }
 
@@ -418,7 +424,7 @@ void Network::emitCompletion(const NetCompletion& c) {
 
 void Network::pump() {
     std::vector<NetCompletion> batch;
-    if (worker_) worker_->drain(batch);
+    drainCompletions(batch);
     const int64_t now = std::chrono::duration_cast<std::chrono::milliseconds>(
                             std::chrono::steady_clock::now().time_since_epoch())
                             .count();
@@ -440,6 +446,14 @@ void Network::pump() {
     }
     for (auto& kv : udpHosts_) kv.second->pump(now);
     for (auto& kv : udpLinks_) kv.second->pump(now);
+    std::vector<HttpResult> completed;
+    http_->drain(completed);
+    for (auto& result : completed) {
+        if (http_->prepareDelivery(result) != HttpRuntime::DeliveryStatus::Ready) continue;
+        recordSent(result.sentBytes);
+        recordCompletion(result.completion);
+        emitCompletion(result.completion);
+    }
 }
 
 void Network::expose(ssq::Table& table) {
@@ -477,6 +491,7 @@ void Network::expose(ssq::Table& table) {
     http.addFunc("setBodyString", &HttpRequest::setBodyString);
     http.addFunc("setTimeout", &HttpRequest::setTimeout);
     http.addFunc("setVerifySsl", &HttpRequest::setVerifySsl);
+    http.addFunc("setCaLocation", &HttpRequest::setCaLocation);
     http.addFunc("submit", &HttpRequest::submit);
 
     auto ch = table.addClass<Channel>(
@@ -633,6 +648,7 @@ void Network::expose(ssq::Class& cls) {
     cls.addFunc("pump", &Network::pump);
     cls.addFunc("setTimeout", &Network::setTimeout);
     cls.addFunc("setVerifySsl", &Network::setVerifySsl);
+    cls.addFunc("setCaLocation", &Network::setCaLocation);
 }
 
 }  // namespace eve::network
