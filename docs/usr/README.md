@@ -300,12 +300,13 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 下载对应平台的 SDK，用其自带模板在开发机上组装安装包：
 
 ```sh
-# Android：把游戏脚本放进 SDK 的 platform/apk/app/src/main/assets/game/，
-# 然后执行 SDK 内的 Gradle 工程生成 APK（需要 Android SDK/NDK）
+# Android：安装预编译目标 SDK，再组装 APK（不需要源码或 NDK）
+eve get android
+eve build -d android /你的/游戏目录
 # iOS：用 SDK 的 platform/ios 模板在 Xcode 中生成 .app（需要 macOS、Xcode 与签名）
 ```
 
-移动端的 SDK、NDK、签名和真机要求较严格，请在打包前阅读根目录 [Readme.md 的 Android 章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk)。
+Android 的 Debug 自动签名、Release 密钥生成、手动签名和安装步骤见 [Android APK 构建与签名](ANDROID_APK_SIGNING.md)。从源码编译 Android 引擎的工具要求见根目录 [Readme.md 的 Android 章节](https://github.com/EVEngine/EVEngine/blob/main/Readme.md#androidarm64-v8a-debug-apk)。
 
 ## 7. 需要注意的事项
 
