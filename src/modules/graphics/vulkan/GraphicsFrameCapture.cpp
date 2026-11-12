@@ -76,6 +76,10 @@ void Graphics::recordFrameCapture(vk::CommandBuffer cb) {
                 copy.metadata.encoding = "rgb-world-normal-times-half-plus-half-a-legacy-pbr";
             } else if (attachment == FrameAttachment::Albedo) {
                 copy.metadata.encoding = "rgb-albedo-times-tint-a-linear01-depth";
+            } else if (attachment == FrameAttachment::Emissive) {
+                copy.metadata.format     = FramePixelFormat::Rgba16Float;
+                copy.metadata.colorSpace = "linear";
+                copy.metadata.encoding   = "rgb-linear-hdr-emission";
             } else if (attachment == FrameAttachment::PbrParams) {
                 copy.metadata.encoding = "metallic-roughness-occlusion-specular";
             }
@@ -83,8 +87,10 @@ void Graphics::recordFrameCapture(vk::CommandBuffer cb) {
         if (source) {
             const auto& info  = source->info();
             const bool  depth = copy.metadata.format == FramePixelFormat::Depth32Float;
-            const bool  supportedFormat =
-                depth ? info.format == vk::Format::eD32Sfloat : info.format == vk::Format::eR8G8B8A8Unorm;
+            const bool  supportedFormat = depth ? info.format == vk::Format::eD32Sfloat
+                                          : copy.metadata.format == FramePixelFormat::Rgba16Float
+                                              ? info.format == vk::Format::eR16G16B16A16Sfloat
+                                              : info.format == vk::Format::eR8G8B8A8Unorm;
             if ((info.usage & vk::ImageUsageFlagBits::eTransferSrc) && supportedFormat &&
                 info.samples == vk::SampleCountFlagBits::e1 && copy.layer < info.arrayLayers) {
                 copy.source          = source->image();
@@ -114,7 +120,7 @@ void Graphics::recordFrameCapture(vk::CommandBuffer cb) {
             }
         }
         if (copy.source && copy.storageIndex == copies.size())
-            total += size_t(copy.metadata.width) * copy.metadata.height * 4;
+            total += size_t(copy.metadata.width) * copy.metadata.height * framePixelBytes(copy.metadata.format);
         copies.push_back(std::move(copy));
     }
     auto begin = frameCaptures().begin(token, captureFrameId_, total);
@@ -130,7 +136,7 @@ void Graphics::recordFrameCapture(vk::CommandBuffer cb) {
             if (copy.source && copy.storageIndex == i)
                 copy.staging = vkb::GenericBuffer(
                     device, vk::BufferUsageFlagBits::eTransferDst,
-                    vk::DeviceSize(copy.metadata.width) * copy.metadata.height * 4,
+                    vk::DeviceSize(copy.metadata.width) * copy.metadata.height * framePixelBytes(copy.metadata.format),
                     vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         }
     } catch (const std::exception& e) {
@@ -202,8 +208,8 @@ void Graphics::pollFrameCapture() {
                 for (size_t i = 0; i < captureCopies_.size(); ++i) {
                     auto& copy = captureCopies_[i];
                     if (copy.staging.buffer && copy.storageIndex == i) {
-                        auto        bytes  = std::make_shared<std::vector<uint8_t>>(size_t(copy.metadata.width) *
-                                                                                    copy.metadata.height * 4);
+                        auto bytes = std::make_shared<std::vector<uint8_t>>(
+                            size_t(copy.metadata.width) * copy.metadata.height * framePixelBytes(copy.metadata.format));
                         const void* mapped = copy.staging.map();
                         if (!mapped) throw std::runtime_error("ReadbackMapFailed");
                         std::memcpy(bytes->data(), mapped, bytes->size());

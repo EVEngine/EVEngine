@@ -101,6 +101,16 @@ def main() -> int:
             "pbr_surface_separated_frag_spv",
             SHADER_DIR / "pbr_surface_separated_frag_spv.inc",
         )
+    with tempfile.TemporaryDirectory() as temporary:
+        for separated in (False, True):
+            name = "pbr_gbuffer_separated" if separated else "pbr_gbuffer"
+            source = Path(temporary) / f"{name}.frag"
+            binary = Path(temporary) / f"{name}.spv"
+            canonical = (SHADER_DIR / "pbr_surface.frag").read_text(encoding="utf-8")
+            source.write_text(separated_sampler_source(canonical) if separated else canonical, encoding="utf-8")
+            subprocess.run(["glslc", "-DEVE_PBR_GBUFFER=1", str(source), "-o", str(binary)], check=True)
+            subprocess.run(["spirv-val", str(binary)], check=True)
+            spv_to_inc(binary, f"{name}_frag_spv", SHADER_DIR / f"{name}_frag_spv.inc")
     return 0
 
 

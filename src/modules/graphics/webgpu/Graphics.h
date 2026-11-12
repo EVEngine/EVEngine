@@ -695,15 +695,15 @@ public:
     /** @brief Begins g buffer pass. */
     void beginGBufferPass(int width, int height) override;
     /** @brief Draws mesh g buffer. */
-    void drawMeshGBuffer(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                         Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
-                         float metallic = 0.f) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                         Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                         float tintA = 1.f) override;
     /** @brief Draws mesh g buffer alpha. */
-    void drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm::mat4& model, float nearZ, float farZ,
-                              Texture* albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
-                              float metallic = 0.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                              Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                              float tintA = 1.f) override;
     /** @brief Ends g buffer pass. */
     void endGBufferPass() override;
     /** @brief Reads g buffer to image data. */
@@ -841,6 +841,8 @@ private:
         std::string alphaTechnique = "cutoff";
         glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
         std::optional<PbrSurface> pbrSurface;
+        std::optional<glm::vec4>  gbufferClip;
+        glm::mat4                 gbufferMvp{1.f};
         wgpu::Buffer skinBuffer;
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
@@ -857,6 +859,7 @@ private:
         int skinInfluenceLimit = 4;
     };
     struct GbufferDraw {
+        std::optional<Mesh3dDraw> pbrDraw;
         Mesh *mesh = nullptr;
         Texture *albedo = nullptr;
         glm::mat4 mvp{1.f};

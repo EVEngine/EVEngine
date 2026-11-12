@@ -53,7 +53,15 @@ layout(location=10) in vec3 worldBitangent;
 layout(location=11) in float motionHighlight;
 layout(location=12) in vec2 vegetationFactors;
 layout(location=13) in vec3 vegetationDetail;
+#ifdef EVE_PBR_GBUFFER
+layout(location=0) out vec4 outNormal;
+layout(location=1) out vec4 outDepth;
+layout(location=2) out vec4 outAlbedo;
+layout(location=3) out vec4 outPbrParams;
+layout(location=4) out vec4 outEmissive;
+#else
 layout(location=0) out vec4 outColor;
+#endif
 const float PI=3.14159265359;
 vec3 linearColor(vec3 c) { return mix(c/12.92,pow((c+.055)/1.055,vec3(2.4)),step(vec3(.04045),c)); }
 vec3 safeNormal(vec3 n, vec3 fallback) { return dot(n,n)>1e-12 ? normalize(n):fallback; }
@@ -226,7 +234,9 @@ void main() {
  base.rgb=mix(base.rgb,base.rgb*base.rgb,u.vegetationStageParams.w*globalWetness);
  vec3 wetnessStageAlbedo=base.rgb;
  base.rgb*=vec3(1)+u.motionHighlightColor.rgb*motionHighlight;
+ #ifndef EVE_PBR_GBUFFER
  if(u.misc.z>0) { outColor=vec4(u.material.z==3?base.rgb*base.a:base.rgb,u.material.z>=2?base.a:1); return; }
+ #endif
  float metallic=u.material.x,roughness=u.material.y;
  if(u.uvInfo[1].present>0) { vec4 s=texture(maps[1],texcoord01.zw); metallic*=s.b; roughness*=s.g; }
  if(u.detailValues.x>0) {
@@ -253,6 +263,21 @@ void main() {
  if(u.vegetationEmission.w<0) emission*=globalExtras.r;
  float specWeight=u.specular.w;
  if(u.uvInfo[5].present>0) specWeight*=texture(maps[5],texcoord45.zw).a;
+ #ifdef EVE_PBR_GBUFFER
+ // Lighting is not evaluated in this variant. The first light record carries
+ // near/far and signed screen motion, keeping the shared material ABI intact.
+ vec4 clip=u.lights[0].posRadius;
+ float nearZ=max(clip.x,1e-4),farZ=max(clip.y,nearZ+1e-4);
+ float z=clamp(gl_FragCoord.z,0,1);
+ float eyeZ=nearZ*farZ/max(farZ-z*(farZ-nearZ),1e-6);
+ float depth=clamp((eyeZ-nearZ)/(farZ-nearZ),0,1);
+ uint legacy=(uint(roughness*7+.5)&7u)|((uint(metallic*7+.5)&7u)<<3);
+ outNormal=vec4(n*.5+.5,float(legacy)/255);
+ outDepth=vec4(depth,clamp(clip.zw*.5+.5,0,1),1);
+ outAlbedo=vec4(base.rgb,depth);
+ outPbrParams=vec4(metallic,roughness,ao,specWeight);
+ outEmissive=vec4(emission,0);
+ #else
  vec3 specColor=u.specular.rgb;
  if(u.uvInfo[6].present>0) {vec3 c=texture(maps[6],texcoord67.xy).rgb;specColor*=u.uvInfo[6].srgb>0?linearColor(c):c;}
  float ior=u.coat.w;
@@ -311,4 +336,5 @@ void main() {
  }
  color+=emission;
  outColor=vec4(u.material.z==3?color*base.a:color,u.material.z>=2?base.a:1);
+ #endif
 }
