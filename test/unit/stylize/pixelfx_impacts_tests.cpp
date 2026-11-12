@@ -4,6 +4,7 @@
 #include <limits>
 #include <span>
 #include <vector>
+#include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/Impact.h"
 #include "zeroerr/assert.h"
@@ -49,6 +50,10 @@ TEST_CASE("stylize.pixelfx.impacts.bluntHitPhasesMaterialsAndTransactions") {
         uint32_t c = 2166136261u, l = c;
         for (auto b : std::as_bytes(fx.color())) c = (c ^ uint8_t(b)) * 16777619u;
         for (auto b : std::as_bytes(fx.light())) l = (l ^ uint8_t(b)) * 16777619u;
+        if (c != sums[i * 2] || l != sums[i * 2 + 1])
+            test_pixelfx_diagnostic::dumpSequence("impacts/blunt-hit", fx, times.size(), [&](size_t j) {
+                return test_pixelfx_diagnostic::ExpectedFrame{times[j], sums[2 * j], sums[2 * j + 1]};
+            });
         REQUIRE(c == sums[i * 2]);
         REQUIRE(l == sums[i * 2 + 1]);
     }

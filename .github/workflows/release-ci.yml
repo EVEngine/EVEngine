@@ -120,6 +120,40 @@ jobs:
           path: build/macosx-x86_64-metal-probe.log
           if-no-files-found: error
 
+  pixelfx-native-intel:
+    name: PixelFX CPU contracts (Intel macOS, ${{ matrix.configuration }})
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install build tools
+        timeout-minutes: 10
+        run: brew install ninja
+
+      - name: Validate CPU PixelFX contracts before the engine build
+        timeout-minutes: 20
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          build_type=Release
+          if [ "$CONFIGURATION" = debug ]; then build_type=Debug; fi
+          cmake -S scripts/pixelfx -B build/pixelfx-intel -G Ninja \
+            -DCMAKE_BUILD_TYPE="$build_type" -DCMAKE_CXX_FLAGS_DEBUG="-O2 -g0"
+          cmake --build build/pixelfx-intel --target pixelfx_contracts -j 4
+          build/pixelfx-intel/pixelfx_contracts \
+            --testcase='^stylize.pixelfx.(holy.featherBurstPhasesMaterialsAndTransactions|ice.blizzardVortexSourceLayersAndConfiguration|impacts.bluntHitPhasesMaterialsAndTransactions)$'
+
+
   macos-x86_64:
     name: macOS x86_64 (${{ matrix.configuration }}, build + test)
     needs: [debug-checks, macos-metal-probe]

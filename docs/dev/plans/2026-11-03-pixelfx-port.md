@@ -257,6 +257,29 @@ after those attempts still fails the job. No profile, example or assertion is sk
 Raw transcripts, the official runtime and isolated debugging probes remain local
 under ignored build/pixelfx-validation.
 
+## Intel macOS numerical diagnostics follow-up
+
+The ec8a68213c native Intel Debug lane completed6122 cases and reported three
+PixelFX failures: FeatherBurst, BlizzardVortex and BluntHit. FeatherBurst's
+lossless frame transcript identifies one additional R244 ->243 pixel at(87,56)
+on tick4; its light plane and all other pixels match the pinned source exactly.
+That location is outside the approved ten-position boundary and is not admitted.
+The other two fatal assertions did not retain complete subsequent-frame data.
+
+Extend failure-only complete-scenario diagnostics to BluntHit and every
+BlizzardVortex comparator branch, preserving all original hashes and approved
+channel/direction/position boundaries. Two independent native Intel Debug/Release jobs run these same three
+CPU-only contracts without waiting for the expensive native engine build, so
+follow-up evidence arrives sooner. The complete engine/rendering jobs and their
+original dependencies still run unchanged. No production pixels, oracle,
+tolerance, test exclusion or dependency implementation changes are made here.
+
+A separate x86_64 Rosetta reproduction on the existing Mac debug host confirms
+the first BluntHit hash and reveals later one-channel rounding differences, but
+has different FeatherBurst behavior and is not substituted for native Intel CI
+evidence. Raw full planes and transcripts remain in ignored build/. Collect
+native Intel complete-scenario evidence before proposing any additional boundary.
+
 ## Validation and review gates
 
 Run against the final PR base/head:

@@ -1068,38 +1068,39 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
     REQUIRE(!fx.isSimulated());
     for (size_t i = 0; i < frames.size(); ++i) {
         fx.render(frames[i] / 120.);
+        bool colorMatches = false;
         if (frames[i] == 0 || frames[i] == 240) {
             // Approved exact loop repeat: only R98 ->97 at (63,71).
-            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
-                                                                  {9151, 0xfff4c862u, 0, 0b001}));
+            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                          {9151, 0xfff4c862u, 0, 0b001}));
         } else if (frames[i] == 12) {
             // Approved tick12 boundaries: G-1, B+1, R+1 and G+1 at these four pixels only.
             constexpr std::array<test_pixelfx_reference::RoundingPixel, 4> pixels{{{4035, 0xffffeca6u, 0, 0b010},
                                                                                    {12730, 0x6cfef4c9u, 0b100},
                                                                                    {13113, 0xfffffadbu, 0b001},
                                                                                    {13114, 0xfffffadcu, 0b010}}};
-            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
+            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
         } else if (frames[i] == 72) {
             // Approved tick72 boundary: only B255 ->254 at (57,96).
-            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
-                                                                  {12345, 0x74fff1c0u, 0, 0b100}));
+            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                          {12345, 0x74fff1c0u, 0, 0b100}));
         } else if (frames[i] == 48) {
             // Pinned upstream pixel (71,64): only G=235/236 differs between V8/MSVC and GCC.
-            REQUIRE(
-                test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], {8263, 0xffffeba6u, 0b010}));
+            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i],
+                                                                          {8263, 0xffffeba6u, 0b010}));
         } else if (frames[i] == 120) {
             // Additional approved frame: B+1 at (56,89), B-1 at (55,90), G+1 at (55,96).
             constexpr std::array<test_pixelfx_reference::RoundingPixel, 3> pixels{
                 {{11448, 0x12feedacu, 0b100}, {11575, 0x1cffefb8u, 0, 0b100}, {12343, 0x22ffeba6u, 0b010}}};
-            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
+            colorMatches = (test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
         } else {
-            if (checksum(fx.color()) != expected[2 * i])
-                test_pixelfx_diagnostic::dumpSequence("ice/blizzard-vortex", fx, frames.size(), [&](size_t j) {
-                    return test_pixelfx_diagnostic::ExpectedFrame{frames[j] / 120., expected[2 * j],
-                                                                  expected[2 * j + 1]};
-                });
-            REQUIRE(checksum(fx.color()) == expected[2 * i]);
+            colorMatches = (checksum(fx.color()) == expected[2 * i]);
         }
+        if (!colorMatches || checksum(fx.light()) != expected[2 * i + 1])
+            test_pixelfx_diagnostic::dumpSequence("ice/blizzard-vortex", fx, frames.size(), [&](size_t j) {
+                return test_pixelfx_diagnostic::ExpectedFrame{frames[j] / 120., expected[2 * j], expected[2 * j + 1]};
+            });
+        REQUIRE(colorMatches);
         REQUIRE(checksum(fx.light()) == expected[2 * i + 1]);
     }
     constexpr std::array<int, 12>      lightFrames{{0, 4, 12, 24, 48, 72, 96, 120, 144, 180, 216, 240}};
