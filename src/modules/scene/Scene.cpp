@@ -5,12 +5,13 @@
 #include "scene/PcgGrowth.h"
 
 #include "scene/ArtifactProvider.h"
+#include "scene/FollowPlayer.h"
+#include "scene/LocationProfileBindings.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneCapabilities.h"
 #include "scene/SceneInternal.h"
+#include "scene/SceneSearch.h"
 #include "scene/TransformSystem.h"
-#include "scene/FollowPlayer.h"
-#include "scene/LocationProfileBindings.h"
 
 #include "spatial/Octree.h"
 
@@ -41,10 +42,12 @@ void injectSceneComponentClass(ssq::Table &eveTable);
 
 Scene::Scene() {
     registerSceneCapabilities();
+    registerSceneSearch();
     registerSceneArtifactProvider();
 }
 
 Scene::~Scene() {
+    invalidateSceneSearch();
     if (vm_) {
         for (auto &item : delayedDetaches_) sq_release(vm_, &item.instance);
     }

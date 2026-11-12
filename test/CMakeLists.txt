@@ -791,6 +791,7 @@ endif()
 # Focused composition proof for trimmed authoring hosts. The normal per-domain
 # suite still discovers these module-owned sources; this target avoids linking
 # unrelated optional-domain consumers into a minimal host.
+include(scene_search/Contract.cmake)
 if(TARGET EVScene_editor AND TARGET EVGraphics AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
   eve_add_test_executable(scene_authoring_contract_test EXCLUDE_FROM_ALL
     main.cpp scene_authoring.cpp scene_authoring_script.cpp graphics_authoring_projection.cpp
