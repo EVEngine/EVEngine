@@ -2,6 +2,27 @@
 
 [返回模块概览](../graphics.md)
 
+### 普通共享材质自动实例化
+
+Vulkan 前向渲染在未使用 bindless 路径时，也能合并共享同一 `Material` 和网格的
+不透明静态物体，不需要 1024 个纹理采样器。现有可见性裁剪之后，连续兼容组达到
+128 个物体便按每批最多 16384 个实例提交。让物体复用同一个材质对象即可；分别创建
+参数相同的材质不会合批。
+
+这一优化目前用于普通前向光照。自定义 shader、蒙皮、透明、淡入淡出、空间探针、
+显式物体相机、Clustered/Deferred 光照及 PBR surface 仍走原绘制路径；阴影与
+GBuffer 保留各自的绘制。不同阴影接收状态不会合并。支持 bindless 的设备保留原路径。
+
+C++ 可通过 `supportsMeshInstancing()` 查询后端支持，用 `drawMeshInstances()` 提交
+共享材质状态下的矩阵批次并检查 `Result`。矩阵在调用内复制，调用后可修改输入；
+调用必须位于渲染线程的开放 3D pass 中。既有 render tracer 的
+`drawMeshInstances` 事件可用于确认自动合批实际发生。
+
+C++ 的 `RenderControl::setAutoInstancingPath(AutoInstancingPath::Ordinary)` 可以明确选择
+普通自动实例化，即使设备支持 bindless。默认 `Auto` 保留原有后端选择；显式启用的
+`gpuDriven` 特性仍优先。此选择不改变光照、材质或可见性，不支持普通实例化时逐物体
+绘制，无需重新 `compile()`。这也让普通路径的回归测试在所有设备上验证同一管线。
+
 ### 可编译渲染控制与 GBuffer
 
 `RenderControl` 用字符串特性开关，再 `compile()` 成有序 Pass（默认：shadow → forward → hair）：
