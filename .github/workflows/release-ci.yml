@@ -691,7 +691,8 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/win32
+          make test/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
           LABEL_FILTER=''
 
       - name: Sample settlement release benchmark
@@ -1223,7 +1224,11 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
+        # Keep the build's configuration stamp and bounded compile parallelism
+        # when make checks that the test binary is up to date.
+        run: >-
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Sample settlement release benchmark
         id: settlement-benchmark
