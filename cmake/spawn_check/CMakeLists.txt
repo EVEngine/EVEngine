@@ -46,6 +46,9 @@ add_executable(eve_spawn_capability_shutdown_check "${CMAKE_SOURCE_DIR}/test/pro
 target_compile_features(eve_spawn_capability_shutdown_check PRIVATE cxx_std_20)
 target_link_libraries(eve_spawn_capability_shutdown_check PRIVATE ${_spawn_libraries} zeroerr eve_engine_includes
     ${_spawn_thirdparty} Threads::Threads ${CMAKE_DL_LIBS})
+if(WIN32)
+    target_link_libraries(eve_spawn_capability_shutdown_check PRIVATE EVBacktrace)
+endif()
 add_dependencies(eve_spawn_check eve_spawn_capability_shutdown_check)
 add_test(NAME profile.spawn.capabilityShutdown COMMAND eve_spawn_capability_shutdown_check)
 set_tests_properties(profile.spawn.capabilityShutdown PROPERTIES TIMEOUT 30 LABELS "common;lifetime-contract")
