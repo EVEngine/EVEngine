@@ -328,3 +328,5 @@ and image occupancy, decal material/projection behavior, planar-reflection pixel
 coverage, water animation differences, and grid semantic-color matching.
 
 - [laser-weapon](laser-weapon/README.md) — HELIOS 激光武器：蓄能、光束与命中火花。
+
+| [cabinet-generator](cabinet-generator/README.md) | 参数化柜子：四种 PBR 风格、柜门、抽屉、层板与柜脚 |
