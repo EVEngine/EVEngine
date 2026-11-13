@@ -371,9 +371,12 @@ jobs:
           PROFILE_BUILD_ROOT: ${{ runner.temp }}/spawn-windows-object
           PROFILE_JOBS: 4
         run: |
-          # Use the canonical dependency prefix from the host build, with forward
-          # slashes so profile_matrix's command parser preserves Windows paths.
-          prefix="$(cygpath -m '${{ steps.third-party-cache.outputs.prefix }}')"
+          # AUTO can use a published package on a cache miss. Reuse the actual
+          # host install, not the cache action's default source-install path.
+          prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/win32-debug/CMakeCache.txt | tr -d '\r')"
+          test -n "$prefix"
+          prefix="$(cygpath -am "$prefix")"
+          bash .github/scripts/verify-third-party-cache.sh "$prefix" win32 Debug
           export PROFILE_CMAKE_COMMAND="cmake.exe -DEVENGINE_MODULE_LINKAGE=OBJECT -DEVENGINE_ENABLE_STRICT_WARNINGS=ON -DEVENGINE_COMPILER_CACHE=SCCACHE \
             \"-DEVENGINE_THIRD_PARTY_BINARY_DIR=$prefix\" -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF"
           cmake/with-msvc.cmd make.exe profile/configure

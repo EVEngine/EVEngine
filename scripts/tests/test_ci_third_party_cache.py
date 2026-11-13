@@ -51,6 +51,40 @@ class ThirdPartyCacheTests(unittest.TestCase):
         subprocess.run(["python3", "-c", textwrap.dedent(script)], env=env, check=True)
         return dict(line.split("=", 1) for line in output.read_text(encoding="utf-8").splitlines())
 
+    def test_windows_object_profile_reuses_verified_host_prefix(self):
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        step = workflow.split("      - name: Build Windows OBJECT Debug Spawn profile\n", 1)[1]
+        script = textwrap.dedent(step.split("        run: |\n", 1)[1].split("      - name:", 1)[0])
+        selection = script.split("export PROFILE_CMAKE_COMMAND=", 1)[0]
+        selection = selection.replace("${{ steps.third-party-cache.outputs.prefix }}",
+                                      "build/third-party-binary/win32-debug")
+        scripts = self.root / ".github/scripts"
+        scripts.mkdir(parents=True)
+        shutil.copyfile(VERIFY, scripts / VERIFY.name)
+        (self.root / "cmake").mkdir()
+        shutil.copyfile(ROOT / "cmake/third_party_pin.cmake", self.root / "cmake/third_party_pin.cmake")
+        cache = self.root / "build/win32-debug/CMakeCache.txt"
+        cache.parent.mkdir(parents=True)
+        pin = (ROOT / "cmake/third_party_pin.cmake").read_text(encoding="utf-8").split('"')[1]
+        for route in ("source install with spaces", "published package with spaces"):
+            with self.subTest(route=route):
+                prefix = self.root / route
+                (prefix / "include").mkdir(parents=True)
+                (prefix / "lib").mkdir()
+                stamp = prefix / "third-party-version.txt"
+                stamp.write_text(f"platform=win32\nbuild_type=Debug\naggregate={pin}\ndirty=0\n", encoding="utf-8")
+                cache.write_text(f"EVENGINE_TP_INSTALL_PREFIX:INTERNAL={prefix.as_posix()}\r\n", encoding="utf-8")
+                # Only path spelling is mocked; the real verifier checks the selected install.
+                probe = 'cygpath() { printf "%s\\n" "$2"; }\n' + selection + '\nprintf "SELECTED=%s\\n" "$prefix"\n'
+                result = subprocess.run([self.bash, "-euc", probe], cwd=self.root,
+                                        capture_output=True, text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertIn(f"SELECTED={prefix.as_posix()}", result.stdout)
+                stamp.write_text(f"platform=win32\nbuild_type=Release\naggregate={pin}\ndirty=0\n", encoding="utf-8")
+                rejected = subprocess.run([self.bash, "-euc", probe], cwd=self.root,
+                                          capture_output=True, text=True, encoding="utf-8", check=False)
+                self.assertNotEqual(rejected.returncode, 0, "Release ABI must not satisfy Debug profile")
+
     def test_key_changes_for_each_abi_and_recipe_input(self):
         baseline = self.identity()
         self.assertEqual(baseline, self.identity())
