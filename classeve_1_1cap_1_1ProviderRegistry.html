@@ -1,0 +1,533 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::cap::ProviderRegistry&lt; I, Metadata &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cap.html">cap</a></li><li class="navelem"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1cap_1_1ProviderRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::cap::ProviderRegistry&lt; I, Metadata &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Instance-owned publication mechanism shared by capability and domain registries. @ownership The registry and acquired records share provider ownership. Metadata is an owning value. @lifetime Withdrawal prevents new acquisitions; existing records retain the old generation. Registry destruction releases its publications; previously acquired records remain alive. @thread Publication, acquisition, withdrawal and snapshots are synchronized. Provider callbacks are never invoked under the registry mutex; their affinity remains the domain owner's contract. @reentrancy Records may invoke callbacks which mutate this registry after acquisition returns. @cost Publication copies an id and allocates a slot; snapshot copies all live records. Bind or acquire outside per-frame inner loops and reuse the resulting owning record.  
+ <a href="classeve_1_1cap_1_1ProviderRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning lease and immutable-at-publication metadata for a generation.  <a href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acfdb826ef7b66a144fe36047842e3773" id="r_acfdb826ef7b66a144fe36047842e3773"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#acfdb826ef7b66a144fe36047842e3773">ProviderRegistry</a> ()=default</td></tr>
+<tr class="memdesc:acfdb826ef7b66a144fe36047842e3773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty registry with its own generation namespace.  <br /></td></tr>
+<tr class="separator:acfdb826ef7b66a144fe36047842e3773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b2eb4432d7ec90b3fc0eecfdd6edee2" id="r_a8b2eb4432d7ec90b3fc0eecfdd6edee2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#a8b2eb4432d7ec90b3fc0eecfdd6edee2">ProviderRegistry</a> (const <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:a8b2eb4432d7ec90b3fc0eecfdd6edee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd3e288ae1ff8749ab50f1dedfc933e" id="r_abcd3e288ae1ff8749ab50f1dedfc933e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#abcd3e288ae1ff8749ab50f1dedfc933e">operator=</a> (const <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:abcd3e288ae1ff8749ab50f1dedfc933e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9687dbd661727c27ea87f25a076f1c5b" id="r_a9687dbd661727c27ea87f25a076f1c5b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#a9687dbd661727c27ea87f25a076f1c5b">~ProviderRegistry</a> ()</td></tr>
+<tr class="memdesc:a9687dbd661727c27ea87f25a076f1c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpublish before releasing implementations; destructor reentry sees an empty, closing registry.  <br /></td></tr>
+<tr class="separator:a9687dbd661727c27ea87f25a076f1c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a839f8d108628b8299606dcd2f06365dd" id="r_a839f8d108628b8299606dcd2f06365dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#a839f8d108628b8299606dcd2f06365dd">publish</a> (std::string <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::shared_ptr&lt; I &gt; <a class="el" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>, Metadata metadata={})</td></tr>
+<tr class="memdesc:a839f8d108628b8299606dcd2f06365dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish a unique id.  <br /></td></tr>
+<tr class="separator:a839f8d108628b8299606dcd2f06365dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afccf66463bbb1254a9b632b0de2a0d21" id="r_afccf66463bbb1254a9b632b0de2a0d21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#afccf66463bbb1254a9b632b0de2a0d21">acquire</a> (const <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:afccf66463bbb1254a9b632b0de2a0d21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquire an exact generation.  <br /></td></tr>
+<tr class="separator:afccf66463bbb1254a9b632b0de2a0d21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294e7552aa059d36a3c26cd169bfbba2" id="r_a294e7552aa059d36a3c26cd169bfbba2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#a294e7552aa059d36a3c26cd169bfbba2">acquire</a> (std::string_view <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a294e7552aa059d36a3c26cd169bfbba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquire the current id.  <br /></td></tr>
+<tr class="separator:a294e7552aa059d36a3c26cd169bfbba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a952ea59ada7884a99c1e98dfc096607a" id="r_a952ea59ada7884a99c1e98dfc096607a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#a952ea59ada7884a99c1e98dfc096607a">withdraw</a> (const <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a952ea59ada7884a99c1e98dfc096607a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Withdraw an exact generation; retained leases stay valid.  <br /></td></tr>
+<tr class="separator:a952ea59ada7884a99c1e98dfc096607a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64a21421c00a16d2f2a75ee21480c81" id="r_af64a21421c00a16d2f2a75ee21480c81"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html#af64a21421c00a16d2f2a75ee21480c81">snapshot</a> () const</td></tr>
+<tr class="memdesc:af64a21421c00a16d2f2a75ee21480c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy owning dispatch records in id order; later mutations affect the next snapshot. @cost Copies all live providers and metadata and sorts by id (O(n log n), O(n) memory); amortize once over a complete dispatch, rather than once per provider callback.  <br /></td></tr>
+<tr class="separator:af64a21421c00a16d2f2a75ee21480c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;class I, class Metadata = std::monostate&gt;<br />
+class eve::cap::ProviderRegistry&lt; I, Metadata &gt;</div><p>Instance-owned publication mechanism shared by capability and domain registries. @ownership The registry and acquired records share provider ownership. Metadata is an owning value. @lifetime Withdrawal prevents new acquisitions; existing records retain the old generation. Registry destruction releases its publications; previously acquired records remain alive. @thread Publication, acquisition, withdrawal and snapshots are synchronized. Provider callbacks are never invoked under the registry mutex; their affinity remains the domain owner's contract. @reentrancy Records may invoke callbacks which mutate this registry after acquisition returns. @cost Publication copies an id and allocates a slot; snapshot copies all live records. Bind or acquire outside per-frame inner loops and reuse the resulting owning record. </p>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acfdb826ef7b66a144fe36047842e3773" name="acfdb826ef7b66a144fe36047842e3773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfdb826ef7b66a144fe36047842e3773">&#9670;&#160;</a></span>ProviderRegistry() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::ProviderRegistry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty registry with its own generation namespace. </p>
+
+</div>
+</div>
+<a id="a8b2eb4432d7ec90b3fc0eecfdd6edee2" name="a8b2eb4432d7ec90b3fc0eecfdd6edee2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b2eb4432d7ec90b3fc0eecfdd6edee2">&#9670;&#160;</a></span>ProviderRegistry() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::ProviderRegistry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a>&lt; I, Metadata &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9687dbd661727c27ea87f25a076f1c5b" name="a9687dbd661727c27ea87f25a076f1c5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9687dbd661727c27ea87f25a076f1c5b">&#9670;&#160;</a></span>~ProviderRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::~<a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unpublish before releasing implementations; destructor reentry sees an empty, closing registry. </p>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingServices_8cpp_source.html#l00188">retired</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="afccf66463bbb1254a9b632b0de2a0d21" name="afccf66463bbb1254a9b632b0de2a0d21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afccf66463bbb1254a9b632b0de2a0d21">&#9670;&#160;</a></span>acquire() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::acquire </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Acquire an exact generation. </p>
+<dl class="section return"><dt>返回</dt><dd>Unsupported when never seen, Conflict when stale. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a294e7552aa059d36a3c26cd169bfbba2" name="a294e7552aa059d36a3c26cd169bfbba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a294e7552aa059d36a3c26cd169bfbba2">&#9670;&#160;</a></span>acquire() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::acquire </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Acquire the current id. </p>
+<dl class="section return"><dt>返回</dt><dd>Unsupported when absent, without creating a slot. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="abcd3e288ae1ff8749ab50f1dedfc933e" name="abcd3e288ae1ff8749ab50f1dedfc933e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcd3e288ae1ff8749ab50f1dedfc933e">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a> &amp; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">ProviderRegistry</a>&lt; I, Metadata &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a839f8d108628b8299606dcd2f06365dd" name="a839f8d108628b8299606dcd2f06365dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a839f8d108628b8299606dcd2f06365dd">&#9670;&#160;</a></span>publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &gt; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::publish </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; I &gt;&#160;</td>
+          <td class="paramname"><em>provider</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Metadata&#160;</td>
+          <td class="paramname"><em>metadata</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Publish a unique id. </p>
+<dl class="section return"><dt>返回</dt><dd>InvalidArgument or Conflict without changing live state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af64a21421c00a16d2f2a75ee21480c81" name="af64a21421c00a16d2f2a75ee21480c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64a21421c00a16d2f2a75ee21480c81">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy owning dispatch records in id order; later mutations affect the next snapshot. @cost Copies all live providers and metadata and sorts by id (O(n log n), O(n) memory); amortize once over a complete dispatch, rather than once per provider callback. </p>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a952ea59ada7884a99c1e98dfc096607a" name="a952ea59ada7884a99c1e98dfc096607a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a952ea59ada7884a99c1e98dfc096607a">&#9670;&#160;</a></span>withdraw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class Metadata  = std::monostate&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1cap_1_1ProviderRegistry_1_1Record.html">Record</a> &gt; <a class="el" href="classeve_1_1cap_1_1ProviderRegistry.html">eve::cap::ProviderRegistry</a>&lt; I, Metadata &gt;::withdraw </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1cap_1_1OwnedProviderHandle.html">OwnedProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Withdraw an exact generation; retained leases stay valid. </p>
+<dl class="section return"><dt>返回</dt><dd>Removed owning record or Conflict. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a> 第 <a class="el" href="ProviderRegistry_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00671">removed</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ProviderRegistry_8h_source.html">ProviderRegistry.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::vulkan::Graphics::GuideCaptureService结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">vulkan</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html">GuideCaptureService</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::vulkan::Graphics::GuideCaptureService结构体 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+类 eve::graphics::vulkan::Graphics::GuideCaptureService 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.png" usemap="#eve::graphics::vulkan::Graphics::GuideCaptureService_map" alt=""/>
+  <map id="eve::graphics::vulkan::Graphics::GuideCaptureService_map" name="eve::graphics::vulkan::Graphics::GuideCaptureService_map">
+<area href="classeve_1_1IActionGuideCapture.html" title="Optional GPU guide-capture provider (silhouette/depth/bone AOV export). @thread Engine owner thread o..." alt="eve::IActionGuideCapture" shape="rect" coords="0,0,316,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af84cf7502c0fd26dddc4798404788661" id="r_af84cf7502c0fd26dddc4798404788661"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#af84cf7502c0fd26dddc4798404788661">GuideCaptureService</a> (<a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>)</td></tr>
+<tr class="separator:af84cf7502c0fd26dddc4798404788661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf01afbc01ab67a33745890d4395dddb" id="r_abf01afbc01ab67a33745890d4395dddb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#abf01afbc01ab67a33745890d4395dddb">~GuideCaptureService</a> () override</td></tr>
+<tr class="separator:abf01afbc01ab67a33745890d4395dddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95d9c40880d9f6b8282d298421ac5a14" id="r_a95d9c40880d9f6b8282d298421ac5a14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a95d9c40880d9f6b8282d298421ac5a14">clearGpu</a> ()</td></tr>
+<tr class="separator:a95d9c40880d9f6b8282d298421ac5a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75a6bde995f32ad031416f89aabdcb36" id="r_a75a6bde995f32ad031416f89aabdcb36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a75a6bde995f32ad031416f89aabdcb36">busy</a> () const</td></tr>
+<tr class="separator:a75a6bde995f32ad031416f89aabdcb36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80734992937898fa499b3e8cf5507a67" id="r_a80734992937898fa499b3e8cf5507a67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a80734992937898fa499b3e8cf5507a67">requestCapture</a> (std::string_view packJson, std::span&lt; const std::string &gt; shotIds) override</td></tr>
+<tr class="memdesc:a80734992937898fa499b3e8cf5507a67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue guide AOV capture for one pack revision / shot set; never block on GPU.  <br /></td></tr>
+<tr class="separator:a80734992937898fa499b3e8cf5507a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24382fbce007591bba8825dadf3e9b8" id="r_ab24382fbce007591bba8825dadf3e9b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ActionGuideCaptureSnapshot.html">ActionGuideCaptureSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#ab24382fbce007591bba8825dadf3e9b8">captureSnapshot</a> (std::string_view <a class="el" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) override</td></tr>
+<tr class="memdesc:ab24382fbce007591bba8825dadf3e9b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll without waiting; Ready includes lease-owned RGBA buffers for export. @cost O(1) metadata copy; buffer shared_ptrs share ownership with the job.  <br /></td></tr>
+<tr class="separator:ab24382fbce007591bba8825dadf3e9b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03003241a8fdfdd3dda7f674f3836e31" id="r_a03003241a8fdfdd3dda7f674f3836e31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a03003241a8fdfdd3dda7f674f3836e31">releaseCapture</a> (std::string_view <a class="el" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) override</td></tr>
+<tr class="memdesc:a03003241a8fdfdd3dda7f674f3836e31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel/release; GPU resources survive until their fence completes.  <br /></td></tr>
+<tr class="separator:a03003241a8fdfdd3dda7f674f3836e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb04c02d0499f0bdb9406023c9e6fc56" id="r_aeb04c02d0499f0bdb9406023c9e6fc56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#aeb04c02d0499f0bdb9406023c9e6fc56">freeze</a> ()</td></tr>
+<tr class="separator:aeb04c02d0499f0bdb9406023c9e6fc56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3803aa8a4698b4f5c2b1630bcf48d6d3" id="r_a3803aa8a4698b4f5c2b1630bcf48d6d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a3803aa8a4698b4f5c2b1630bcf48d6d3">recordCurrentShot</a> ()</td></tr>
+<tr class="separator:a3803aa8a4698b4f5c2b1630bcf48d6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0bca297e0b3922f675271ca10b4ba1" id="r_aac0bca297e0b3922f675271ca10b4ba1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#aac0bca297e0b3922f675271ca10b4ba1">publishCurrentShot</a> ()</td></tr>
+<tr class="separator:aac0bca297e0b3922f675271ca10b4ba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53e20e39b728bb5cbb0d808f51a697d3" id="r_a53e20e39b728bb5cbb0d808f51a697d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a53e20e39b728bb5cbb0d808f51a697d3">fail</a> (std::string reason)</td></tr>
+<tr class="separator:a53e20e39b728bb5cbb0d808f51a697d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1775ff35e805498eb56315933f6f21bb" id="r_a1775ff35e805498eb56315933f6f21bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a1775ff35e805498eb56315933f6f21bb">poll</a> ()</td></tr>
+<tr class="separator:a1775ff35e805498eb56315933f6f21bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IActionGuideCapture"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IActionGuideCapture')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IActionGuideCapture.html">eve::IActionGuideCapture</a></td></tr>
+<tr class="memitem:a2dcaf0343f3a88cf4ea014f8f813fcf4 inherit pub_methods_classeve_1_1IActionGuideCapture" id="r_a2dcaf0343f3a88cf4ea014f8f813fcf4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IActionGuideCapture.html#a2dcaf0343f3a88cf4ea014f8f813fcf4">~IActionGuideCapture</a> ()=default</td></tr>
+<tr class="separator:a2dcaf0343f3a88cf4ea014f8f813fcf4 inherit pub_methods_classeve_1_1IActionGuideCapture"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a2d3bf62c932a66a39186662d5292cf77" id="r_a2d3bf62c932a66a39186662d5292cf77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a2d3bf62c932a66a39186662d5292cf77">graphics</a></td></tr>
+<tr class="separator:a2d3bf62c932a66a39186662d5292cf77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77c9e825268cc1aea16f58e30da40e79" id="r_a77c9e825268cc1aea16f58e30da40e79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ActionGuideCaptureSnapshot.html">ActionGuideCaptureSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a77c9e825268cc1aea16f58e30da40e79">evidence</a></td></tr>
+<tr class="separator:a77c9e825268cc1aea16f58e30da40e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13db1dad9d76f0571df38064afa5c01b" id="r_a13db1dad9d76f0571df38064afa5c01b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a13db1dad9d76f0571df38064afa5c01b">selectedShotIds</a></td></tr>
+<tr class="separator:a13db1dad9d76f0571df38064afa5c01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65d3946313d58952616ad3fa66386bba" id="r_a65d3946313d58952616ad3fa66386bba"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ActionGuideShot.html">ActionGuideShot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a65d3946313d58952616ad3fa66386bba">pendingShots</a></td></tr>
+<tr class="separator:a65d3946313d58952616ad3fa66386bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be5867d03cf9404eab20985c53f5b6a" id="r_a8be5867d03cf9404eab20985c53f5b6a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a8be5867d03cf9404eab20985c53f5b6a">shotIndex</a> = 0</td></tr>
+<tr class="separator:a8be5867d03cf9404eab20985c53f5b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56cbbb13469adfb17dc3c075e596429b" id="r_a56cbbb13469adfb17dc3c075e596429b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a56cbbb13469adfb17dc3c075e596429b">frozenGeometry</a></td></tr>
+<tr class="separator:a56cbbb13469adfb17dc3c075e596429b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac90f239aa80b675dabfadf4a47450058" id="r_ac90f239aa80b675dabfadf4a47450058"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ActionGuideBoneWorld.html">ActionGuideBoneWorld</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#ac90f239aa80b675dabfadf4a47450058">frozenBones</a></td></tr>
+<tr class="separator:ac90f239aa80b675dabfadf4a47450058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dc602a62cf951252c7a39dafa9846cd" id="r_a8dc602a62cf951252c7a39dafa9846cd"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a8dc602a62cf951252c7a39dafa9846cd">frozenFrame</a> = 0</td></tr>
+<tr class="separator:a8dc602a62cf951252c7a39dafa9846cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a500ad3d4d51d03bfea91b0b1ca3bafac" id="r_a500ad3d4d51d03bfea91b0b1ca3bafac"><td class="memItemLeft" align="right" valign="top">vkb::ColorTarget&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a500ad3d4d51d03bfea91b0b1ca3bafac">color</a></td></tr>
+<tr class="separator:a500ad3d4d51d03bfea91b0b1ca3bafac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca3feabed9cc2a428140a51ccb76de4" id="r_adca3feabed9cc2a428140a51ccb76de4"><td class="memItemLeft" align="right" valign="top">vkb::DepthStencilImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#adca3feabed9cc2a428140a51ccb76de4">depth</a></td></tr>
+<tr class="separator:adca3feabed9cc2a428140a51ccb76de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9aa0a6270eef75d55c8f62586939221" id="r_ac9aa0a6270eef75d55c8f62586939221"><td class="memItemLeft" align="right" valign="top">vkb::HostVertexBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#ac9aa0a6270eef75d55c8f62586939221">vertices</a></td></tr>
+<tr class="separator:ac9aa0a6270eef75d55c8f62586939221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1607287ba31608f8333d23f769da71d7" id="r_a1607287ba31608f8333d23f769da71d7"><td class="memItemLeft" align="right" valign="top">vkb::GenericBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a1607287ba31608f8333d23f769da71d7">colorStaging</a></td></tr>
+<tr class="separator:a1607287ba31608f8333d23f769da71d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4a1ceb3ece24a6e70052e08b1837a46" id="r_af4a1ceb3ece24a6e70052e08b1837a46"><td class="memItemLeft" align="right" valign="top">vkb::GenericBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#af4a1ceb3ece24a6e70052e08b1837a46">depthStaging</a></td></tr>
+<tr class="separator:af4a1ceb3ece24a6e70052e08b1837a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20e37f5afa630006eec5001a68fe1ac0" id="r_a20e37f5afa630006eec5001a68fe1ac0"><td class="memItemLeft" align="right" valign="top">vkb::BuiltRenderPass&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a20e37f5afa630006eec5001a68fe1ac0">pass</a></td></tr>
+<tr class="separator:a20e37f5afa630006eec5001a68fe1ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac7dfd2eb272d1561db1cd834fe5aa3" id="r_a1ac7dfd2eb272d1561db1cd834fe5aa3"><td class="memItemLeft" align="right" valign="top">vk::Framebuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a1ac7dfd2eb272d1561db1cd834fe5aa3">framebuffer</a> {}</td></tr>
+<tr class="separator:a1ac7dfd2eb272d1561db1cd834fe5aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a732466ac04abe9fcb28a62cbd0756d2c" id="r_a732466ac04abe9fcb28a62cbd0756d2c"><td class="memItemLeft" align="right" valign="top">vk::PipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a732466ac04abe9fcb28a62cbd0756d2c">layout</a> {}</td></tr>
+<tr class="separator:a732466ac04abe9fcb28a62cbd0756d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd1dd373eb8007de49dc839fca31ae0" id="r_aabd1dd373eb8007de49dc839fca31ae0"><td class="memItemLeft" align="right" valign="top">vk::Pipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#aabd1dd373eb8007de49dc839fca31ae0">pipeline</a> {}</td></tr>
+<tr class="separator:aabd1dd373eb8007de49dc839fca31ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a051f8a4bb778b8c0283d59660b78f5d9" id="r_a051f8a4bb778b8c0283d59660b78f5d9"><td class="memItemLeft" align="right" valign="top">vk::CommandPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a051f8a4bb778b8c0283d59660b78f5d9">pool</a> {}</td></tr>
+<tr class="separator:a051f8a4bb778b8c0283d59660b78f5d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0239f61ba40ae8eca0bc916d9a76b1" id="r_aac0239f61ba40ae8eca0bc916d9a76b1"><td class="memItemLeft" align="right" valign="top">vk::Fence&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#aac0239f61ba40ae8eca0bc916d9a76b1">fence</a> {}</td></tr>
+<tr class="separator:aac0239f61ba40ae8eca0bc916d9a76b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0be3ca672b2582d9bce4124a7f0814f4" id="r_a0be3ca672b2582d9bce4124a7f0814f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a0be3ca672b2582d9bce4124a7f0814f4">submitted</a> = false</td></tr>
+<tr class="separator:a0be3ca672b2582d9bce4124a7f0814f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a166cdf0a87a22e4502e5164aaa430f3f" id="r_a166cdf0a87a22e4502e5164aaa430f3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a166cdf0a87a22e4502e5164aaa430f3f">needSilhouette</a> = false</td></tr>
+<tr class="separator:a166cdf0a87a22e4502e5164aaa430f3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a0f65903bda17debe6b82a9c57b7c67" id="r_a0a0f65903bda17debe6b82a9c57b7c67"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a0a0f65903bda17debe6b82a9c57b7c67">needDepth</a> = false</td></tr>
+<tr class="separator:a0a0f65903bda17debe6b82a9c57b7c67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a233af29bfbe01b7a16a908a24b0445b1" id="r_a233af29bfbe01b7a16a908a24b0445b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GuideCaptureService.html#a233af29bfbe01b7a16a908a24b0445b1">needBone</a> = false</td></tr>
+<tr class="separator:a233af29bfbe01b7a16a908a24b0445b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IActionGuideCapture"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IActionGuideCapture')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IActionGuideCapture.html">eve::IActionGuideCapture</a></td></tr>
+<tr class="memitem:a9a0e76ed759d109f88821f6e645e322e inherit pub_static_attribs_classeve_1_1IActionGuideCapture" id="r_a9a0e76ed759d109f88821f6e645e322e"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IActionGuideCapture.html#a9a0e76ed759d109f88821f6e645e322e">capabilityName</a> = &quot;IActionGuideCapture&quot;</td></tr>
+<tr class="separator:a9a0e76ed759d109f88821f6e645e322e inherit pub_static_attribs_classeve_1_1IActionGuideCapture"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00150">150</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af84cf7502c0fd26dddc4798404788661" name="af84cf7502c0fd26dddc4798404788661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84cf7502c0fd26dddc4798404788661">&#9670;&#160;</a></span>GuideCaptureService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::vulkan::Graphics::GuideCaptureService::GuideCaptureService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abf01afbc01ab67a33745890d4395dddb" name="abf01afbc01ab67a33745890d4395dddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf01afbc01ab67a33745890d4395dddb">&#9670;&#160;</a></span>~GuideCaptureService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::vulkan::Graphics::GuideCaptureService::~GuideCaptureService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a75a6bde995f32ad031416f89aabdcb36" name="a75a6bde995f32ad031416f89aabdcb36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75a6bde995f32ad031416f89aabdcb36">&#9670;&#160;</a></span>busy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::GuideCaptureService::busy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">evidence</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00200">eve::ActionGuideCaptureSnapshot::phase</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218a7b2f31b90fe1c2cc33a52233c1925df3">eve::Queued</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aa6e8f9aed2ac6481dc25a18a33342d03">eve::Rendering</a> , 以及 <a class="el" href="ActionGuidePack_8h_source.html#l00199">eve::ActionGuideCaptureSnapshot::token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="ab24382fbce007591bba8825dadf3e9b8" name="ab24382fbce007591bba8825dadf3e9b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24382fbce007591bba8825dadf3e9b8">&#9670;&#160;</a></span>captureSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ActionGuideCaptureSnapshot.html">ActionGuideCaptureSnapshot</a> &gt; eve::graphics::vulkan::Graphics::GuideCaptureService::captureSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Poll without waiting; Ready includes lease-owned RGBA buffers for export. @cost O(1) metadata copy; buffer shared_ptrs share ownership with the job. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IActionGuideCapture.html#a9b946375445decd1e1e9eb8bf55e7ddd">eve::IActionGuideCapture</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">evidence</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00199">eve::ActionGuideCaptureSnapshot::token</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+</div>
+</div>
+<a id="a95d9c40880d9f6b8282d298421ac5a14" name="a95d9c40880d9f6b8282d298421ac5a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95d9c40880d9f6b8282d298421ac5a14">&#9670;&#160;</a></span>clearGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::GuideCaptureService::clearGpu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00159">color</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00162">colorStaging</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00160">depth</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00163">depthStaging</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00316">device</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00169">fence</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00165">framebuffer</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00151">graphics</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00166">layout</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00164">pass</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00167">pipeline</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00168">pool</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00170">submitted</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00161">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00176">~GuideCaptureService()</a>.</p>
+
+</div>
+</div>
+<a id="a53e20e39b728bb5cbb0d808f51a697d3" name="a53e20e39b728bb5cbb0d808f51a697d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53e20e39b728bb5cbb0d808f51a697d3">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::GuideCaptureService::fail </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>reason</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00540">540</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a> , 以及 <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>.</p>
+
+</div>
+</div>
+<a id="aeb04c02d0499f0bdb9406023c9e6fc56" name="aeb04c02d0499f0bdb9406023c9e6fc56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb04c02d0499f0bdb9406023c9e6fc56">&#9670;&#160;</a></span>freeze()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &gt; eve::graphics::vulkan::Graphics::GuideCaptureService::freeze </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00108">eve::ActionGuidePack::camera</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="ClipSpace_8h_source.html#l00038">eve::graphics::cameraProjectionVulkanRH_ZO()</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00107">eve::ActionGuidePack::canvas</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00033">count</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00312">eve::graphics::vulkan::Graphics::describeMesh()</a>, <a class="el" href="SpellFragmentCompiler_8cpp_source.html#l00074">element</a>, <a class="el" href="QuestGeneration_8cpp_source.html#l00033">entity</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">evidence</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00157">frozenBones</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00040">eve::ActionGuideSubject::generation</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00038">gpu</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00151">graphics</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00039">eve::ActionGuideSubject::id</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00291">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a>, <a class="el" href="PathSceneCapture_8cpp_source.html#l00031">material</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00797">model</a>, <a class="el" href="RenderTransformProjection_8cpp_source.html#l00007">eve::graphics::detail::modelFromTransform()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00162">normal</a>, <a class="el" href="namespaceeve.html#aa74c0d5839152aa0db94f45a1d5b2168a03424250432f2aa71de95579d2c0eaeb">eve::Orthographic</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00204">eve::ActionGuideCaptureSnapshot::pack</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00239">palette</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00037">renderer</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00103">eve::ActionGuidePack::subject</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00030">view</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00749">viewProj</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a1775ff35e805498eb56315933f6f21bb" name="a1775ff35e805498eb56315933f6f21bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1775ff35e805498eb56315933f6f21bb">&#9670;&#160;</a></span>poll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::GuideCaptureService::poll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00547">547</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aa149e85a44aeec9140e92733d9ed694e">eve::Cancelled</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218a7b2f31b90fe1c2cc33a52233c1925df3">eve::Queued</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218ae7d31fc0602fb2ede144d18cdffd816b">eve::Ready</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aea1e34304a5d8ffa7c9b0ed8ede4ef1a">eve::Released</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aa6e8f9aed2ac6481dc25a18a33342d03">eve::Rendering</a> , 以及 <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a>.</p>
+
+</div>
+</div>
+<a id="aac0bca297e0b3922f675271ca10b4ba1" name="aac0bca297e0b3922f675271ca10b4ba1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0bca297e0b3922f675271ca10b4ba1">&#9670;&#160;</a></span>publishCurrentShot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::GuideCaptureService::publishCurrentShot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8h_source.html#l00178">eve::ActionGuideAovBuffer::aov</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00191">eve::ActionGuideShotArtifact::aovs</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00026">buffer</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00595">eve::projectActionGuideLandmarks()</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00188">eve::ActionGuideShotArtifact::sampleIndex</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00186">eve::ActionGuideShotArtifact::shotId</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00190">eve::ActionGuideShotArtifact::tags</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00187">eve::ActionGuideShotArtifact::timeSeconds</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00189">eve::ActionGuideShotArtifact::view</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="a3803aa8a4698b4f5c2b1630bcf48d6d3" name="a3803aa8a4698b4f5c2b1630bcf48d6d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3803aa8a4698b4f5c2b1630bcf48d6d3">&#9670;&#160;</a></span>recordCurrentShot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::GuideCaptureService::recordCurrentShot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00408">408</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00013">begin</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00051">color</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00316">device</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00206">layout</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="FrameReadback_8h_source.html#l00012">eve::graphics::vulkan::detail::recordFrameReadback()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">vertices</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="a03003241a8fdfdd3dda7f674f3836e31" name="a03003241a8fdfdd3dda7f674f3836e31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03003241a8fdfdd3dda7f674f3836e31">&#9670;&#160;</a></span>releaseCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::vulkan::Graphics::GuideCaptureService::releaseCapture </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel/release; GPU resources survive until their fence completes. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IActionGuideCapture.html#acb84442589c14e5d09c40969a14d5f16">eve::IActionGuideCapture</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aa149e85a44aeec9140e92733d9ed694e">eve::Cancelled</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">evidence</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00157">frozenBones</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00156">frozenGeometry</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00154">pendingShots</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00200">eve::ActionGuideCaptureSnapshot::phase</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218aea1e34304a5d8ffa7c9b0ed8ede4ef1a">eve::Released</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00205">eve::ActionGuideCaptureSnapshot::shots</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00170">submitted</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00199">eve::ActionGuideCaptureSnapshot::token</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+</div>
+</div>
+<a id="a80734992937898fa499b3e8cf5507a67" name="a80734992937898fa499b3e8cf5507a67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80734992937898fa499b3e8cf5507a67">&#9670;&#160;</a></span>requestCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::graphics::vulkan::Graphics::GuideCaptureService::requestCapture </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>packJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const std::string &gt;&#160;</td>
+          <td class="paramname"><em>shotIds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue guide AOV capture for one pack revision / shot set; never block on GPU. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">packJson</td><td>Canonical pack JSON borrowed for validation/copy on this call. </td></tr>
+    <tr><td class="paramname">shotIds</td><td>Empty means all shots in the pack. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Opaque job token, or Unsupported / budget diagnostic. @cost Extra offscreen raster + readback per shot × AOV; reuse the resulting artifacts. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IActionGuideCapture.html#ae822e54aae283443f1a2f3e1c9c9058a">eve::IActionGuideCapture</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8h_source.html#l00202">eve::ActionGuideCaptureSnapshot::backend</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00200">busy()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00524">eve::decodeActionGuidePack()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">evidence</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00269">freeze()</a>, <a class="el" href="Value_8cpp_source.html#l00177">eve::Value::fromJson()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00157">frozenBones</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00158">frozenFrame</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00156">frozenGeometry</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00151">graphics</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00204">eve::ActionGuideCaptureSnapshot::pack</a>, <a class="el" href="McpActionGuideTools_8cpp_source.html#l00034">pack</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00154">pendingShots</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00200">eve::ActionGuideCaptureSnapshot::phase</a>, <a class="el" href="namespaceeve.html#a9f856096ea0c45bef681bb9c8429c218a7b2f31b90fe1c2cc33a52233c1925df3">eve::Queued</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00203">eve::ActionGuideCaptureSnapshot::reason</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00201">eve::ActionGuideCaptureSnapshot::revision</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00153">selectedShotIds</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00155">shotIndex</a>, <a class="el" href="ActionGuidePack_8h_source.html#l00205">eve::ActionGuideCaptureSnapshot::shots</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionGuidePack_8h_source.html#l00199">eve::ActionGuideCaptureSnapshot::token</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a500ad3d4d51d03bfea91b0b1ca3bafac" name="a500ad3d4d51d03bfea91b0b1ca3bafac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a500ad3d4d51d03bfea91b0b1ca3bafac">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::ColorTarget eve::graphics::vulkan::Graphics::GuideCaptureService::color</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a1607287ba31608f8333d23f769da71d7" name="a1607287ba31608f8333d23f769da71d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1607287ba31608f8333d23f769da71d7">&#9670;&#160;</a></span>colorStaging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::GenericBuffer eve::graphics::vulkan::Graphics::GuideCaptureService::colorStaging</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="adca3feabed9cc2a428140a51ccb76de4" name="adca3feabed9cc2a428140a51ccb76de4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca3feabed9cc2a428140a51ccb76de4">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::DepthStencilImage eve::graphics::vulkan::Graphics::GuideCaptureService::depth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="af4a1ceb3ece24a6e70052e08b1837a46" name="af4a1ceb3ece24a6e70052e08b1837a46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4a1ceb3ece24a6e70052e08b1837a46">&#9670;&#160;</a></span>depthStaging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::GenericBuffer eve::graphics::vulkan::Graphics::GuideCaptureService::depthStaging</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a77c9e825268cc1aea16f58e30da40e79" name="a77c9e825268cc1aea16f58e30da40e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77c9e825268cc1aea16f58e30da40e79">&#9670;&#160;</a></span>evidence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ActionGuideCaptureSnapshot.html">ActionGuideCaptureSnapshot</a> eve::graphics::vulkan::Graphics::GuideCaptureService::evidence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00200">busy()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00247">captureSnapshot()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00269">freeze()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="aac0239f61ba40ae8eca0bc916d9a76b1" name="aac0239f61ba40ae8eca0bc916d9a76b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0239f61ba40ae8eca0bc916d9a76b1">&#9670;&#160;</a></span>fence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Fence eve::graphics::vulkan::Graphics::GuideCaptureService::fence {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a1ac7dfd2eb272d1561db1cd834fe5aa3" name="a1ac7dfd2eb272d1561db1cd834fe5aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac7dfd2eb272d1561db1cd834fe5aa3">&#9670;&#160;</a></span>framebuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Framebuffer eve::graphics::vulkan::Graphics::GuideCaptureService::framebuffer {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ac90f239aa80b675dabfadf4a47450058" name="ac90f239aa80b675dabfadf4a47450058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac90f239aa80b675dabfadf4a47450058">&#9670;&#160;</a></span>frozenBones</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1ActionGuideBoneWorld.html">ActionGuideBoneWorld</a>&gt; eve::graphics::vulkan::Graphics::GuideCaptureService::frozenBones</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00269">freeze()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a8dc602a62cf951252c7a39dafa9846cd" name="a8dc602a62cf951252c7a39dafa9846cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dc602a62cf951252c7a39dafa9846cd">&#9670;&#160;</a></span>frozenFrame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::graphics::vulkan::Graphics::GuideCaptureService::frozenFrame = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a56cbbb13469adfb17dc3c075e596429b" name="a56cbbb13469adfb17dc3c075e596429b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56cbbb13469adfb17dc3c075e596429b">&#9670;&#160;</a></span>frozenGeometry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a>&gt; eve::graphics::vulkan::Graphics::GuideCaptureService::frozenGeometry</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a2d3bf62c932a66a39186662d5292cf77" name="a2d3bf62c932a66a39186662d5292cf77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d3bf62c932a66a39186662d5292cf77">&#9670;&#160;</a></span>graphics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a>&amp; eve::graphics::vulkan::Graphics::GuideCaptureService::graphics</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>, <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00269">freeze()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a732466ac04abe9fcb28a62cbd0756d2c" name="a732466ac04abe9fcb28a62cbd0756d2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a732466ac04abe9fcb28a62cbd0756d2c">&#9670;&#160;</a></span>layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::PipelineLayout eve::graphics::vulkan::Graphics::GuideCaptureService::layout {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a233af29bfbe01b7a16a908a24b0445b1" name="a233af29bfbe01b7a16a908a24b0445b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233af29bfbe01b7a16a908a24b0445b1">&#9670;&#160;</a></span>needBone</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::GuideCaptureService::needBone = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a0f65903bda17debe6b82a9c57b7c67" name="a0a0f65903bda17debe6b82a9c57b7c67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a0f65903bda17debe6b82a9c57b7c67">&#9670;&#160;</a></span>needDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::GuideCaptureService::needDepth = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a166cdf0a87a22e4502e5164aaa430f3f" name="a166cdf0a87a22e4502e5164aaa430f3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a166cdf0a87a22e4502e5164aaa430f3f">&#9670;&#160;</a></span>needSilhouette</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::GuideCaptureService::needSilhouette = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20e37f5afa630006eec5001a68fe1ac0" name="a20e37f5afa630006eec5001a68fe1ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20e37f5afa630006eec5001a68fe1ac0">&#9670;&#160;</a></span>pass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::BuiltRenderPass eve::graphics::vulkan::Graphics::GuideCaptureService::pass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a65d3946313d58952616ad3fa66386bba" name="a65d3946313d58952616ad3fa66386bba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65d3946313d58952616ad3fa66386bba">&#9670;&#160;</a></span>pendingShots</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1ActionGuideShot.html">ActionGuideShot</a>&gt; eve::graphics::vulkan::Graphics::GuideCaptureService::pendingShots</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="aabd1dd373eb8007de49dc839fca31ae0" name="aabd1dd373eb8007de49dc839fca31ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd1dd373eb8007de49dc839fca31ae0">&#9670;&#160;</a></span>pipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Pipeline eve::graphics::vulkan::Graphics::GuideCaptureService::pipeline {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a051f8a4bb778b8c0283d59660b78f5d9" name="a051f8a4bb778b8c0283d59660b78f5d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a051f8a4bb778b8c0283d59660b78f5d9">&#9670;&#160;</a></span>pool</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::CommandPool eve::graphics::vulkan::Graphics::GuideCaptureService::pool {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a13db1dad9d76f0571df38064afa5c01b" name="a13db1dad9d76f0571df38064afa5c01b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13db1dad9d76f0571df38064afa5c01b">&#9670;&#160;</a></span>selectedShotIds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::graphics::vulkan::Graphics::GuideCaptureService::selectedShotIds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a8be5867d03cf9404eab20985c53f5b6a" name="a8be5867d03cf9404eab20985c53f5b6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8be5867d03cf9404eab20985c53f5b6a">&#9670;&#160;</a></span>shotIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::vulkan::Graphics::GuideCaptureService::shotIndex = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00206">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="a0be3ca672b2582d9bce4124a7f0814f4" name="a0be3ca672b2582d9bce4124a7f0814f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0be3ca672b2582d9bce4124a7f0814f4">&#9670;&#160;</a></span>submitted</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::GuideCaptureService::submitted = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a> , 以及 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00253">releaseCapture()</a>.</p>
+
+</div>
+</div>
+<a id="ac9aa0a6270eef75d55c8f62586939221" name="ac9aa0a6270eef75d55c8f62586939221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9aa0a6270eef75d55c8f62586939221">&#9670;&#160;</a></span>vertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::HostVertexBuffer eve::graphics::vulkan::Graphics::GuideCaptureService::vertices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a> 第 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsGuideCapture_8cpp_source.html#l00178">clearGpu()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/vulkan/<a class="el" href="GraphicsGuideCapture_8cpp_source.html">GraphicsGuideCapture.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

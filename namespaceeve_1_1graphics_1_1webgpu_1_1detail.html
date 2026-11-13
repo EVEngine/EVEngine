@@ -1,0 +1,521 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html">detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a778f8ace04668f2ac9b443f94b54949f" id="r_a778f8ace04668f2ac9b443f94b54949f"><td class="memItemLeft" align="right" valign="top">wgpu::Sampler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#a778f8ace04668f2ac9b443f94b54949f">createLinearSampler</a> (wgpu::Device &amp;dev)</td></tr>
+<tr class="memdesc:a778f8ace04668f2ac9b443f94b54949f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:a778f8ace04668f2ac9b443f94b54949f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac407815138fd61a9b95974047891b843" id="r_ac407815138fd61a9b95974047891b843"><td class="memItemLeft" align="right" valign="top">WGPUShaderModuleDescriptor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#ac407815138fd61a9b95974047891b843">mdDesc</a> (const std::string &amp;<a class="el" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>)</td></tr>
+<tr class="memdesc:ac407815138fd61a9b95974047891b843"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:ac407815138fd61a9b95974047891b843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab836b7cf4a5fc3ad36b6ac31afec7703" id="r_ab836b7cf4a5fc3ad36b6ac31afec7703"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#ab836b7cf4a5fc3ad36b6ac31afec7703">fillVertexLayout</a> (WGPUVertexBufferLayout &amp;<a class="el" href="FloorTextures_8cpp.html#accc3e5dba688a899c37c57e53edddb7f">layout</a>, uint64_t stride, const WGPUVertexAttribute *attrs, uint32_t attrCount)</td></tr>
+<tr class="memdesc:ab836b7cf4a5fc3ad36b6ac31afec7703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:ab836b7cf4a5fc3ad36b6ac31afec7703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec4c82abeea2615d86d857e3dc08b99" id="r_a8ec4c82abeea2615d86d857e3dc08b99"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#a8ec4c82abeea2615d86d857e3dc08b99">alphaBlend</a> ()</td></tr>
+<tr class="memdesc:a8ec4c82abeea2615d86d857e3dc08b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:a8ec4c82abeea2615d86d857e3dc08b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56044d35409ba5933d023463dc69df72" id="r_a56044d35409ba5933d023463dc69df72"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#a56044d35409ba5933d023463dc69df72">noBlend</a> ()</td></tr>
+<tr class="memdesc:a56044d35409ba5933d023463dc69df72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:a56044d35409ba5933d023463dc69df72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4ededc2d2cbdd30d12cf74eb84e835d" id="r_ad4ededc2d2cbdd30d12cf74eb84e835d"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#ad4ededc2d2cbdd30d12cf74eb84e835d">additiveBlend</a> ()</td></tr>
+<tr class="memdesc:ad4ededc2d2cbdd30d12cf74eb84e835d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:ad4ededc2d2cbdd30d12cf74eb84e835d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5077742cdf35247600dbdfdf124a0313" id="r_a5077742cdf35247600dbdfdf124a0313"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#a5077742cdf35247600dbdfdf124a0313">premultipliedBlend</a> ()</td></tr>
+<tr class="memdesc:a5077742cdf35247600dbdfdf124a0313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:a5077742cdf35247600dbdfdf124a0313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af145002a55756ae8b54e2793125cd1b7" id="r_af145002a55756ae8b54e2793125cd1b7"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#af145002a55756ae8b54e2793125cd1b7">multiplyBlend</a> ()</td></tr>
+<tr class="memdesc:af145002a55756ae8b54e2793125cd1b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:af145002a55756ae8b54e2793125cd1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af774e8bb4dd6e08141ef20e5b56d488a" id="r_af774e8bb4dd6e08141ef20e5b56d488a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#af774e8bb4dd6e08141ef20e5b56d488a">meshPipelineIndex</a> (<a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> <a class="el" href="HexTerrain_8cpp.html#a9ac2274b5c433a584adfb0f337eab980">blend</a>, bool depthWrite, bool <a class="el" href="ModelRenderer_8cpp.html#a792e1d28c18ee6a846936726a800c988">doubleSided</a>)</td></tr>
+<tr class="memdesc:af774e8bb4dd6e08141ef20e5b56d488a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:af774e8bb4dd6e08141ef20e5b56d488a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab43baddb6cc3c9380071d89bbe1f1389" id="r_ab43baddb6cc3c9380071d89bbe1f1389"><td class="memItemLeft" align="right" valign="top">WGPUBlendState&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#ab43baddb6cc3c9380071d89bbe1f1389">blendState</a> (<a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> mode)</td></tr>
+<tr class="memdesc:ab43baddb6cc3c9380071d89bbe1f1389"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:ab43baddb6cc3c9380071d89bbe1f1389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80ee6ab385f5144a5fc225c1b965bf99" id="r_a80ee6ab385f5144a5fc225c1b965bf99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu_1_1detail.html#a80ee6ab385f5144a5fc225c1b965bf99">fillMeshAttributes</a> (WGPUVertexAttribute(&amp;attrs)[6])</td></tr>
+<tr class="memdesc:a80ee6ab385f5144a5fc225c1b965bf99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal WebGPU pipeline/descriptor helper; render-thread only.  <br /></td></tr>
+<tr class="separator:a80ee6ab385f5144a5fc225c1b965bf99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="ad4ededc2d2cbdd30d12cf74eb84e835d" name="ad4ededc2d2cbdd30d12cf74eb84e835d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4ededc2d2cbdd30d12cf74eb84e835d">&#9670;&#160;</a></span>additiveBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::additiveBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">blendState()</a>.</p>
+
+</div>
+</div>
+<a id="a8ec4c82abeea2615d86d857e3dc08b99" name="a8ec4c82abeea2615d86d857e3dc08b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ec4c82abeea2615d86d857e3dc08b99">&#9670;&#160;</a></span>alphaBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::alphaBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">blendState()</a>, <a class="el" href="GraphicsShaders_8cpp_source.html#l00291">eve::graphics::webgpu::Graphics::configureMeshShaderSurface()</a>, <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00074">multiplyBlend()</a> , 以及 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00068">premultipliedBlend()</a>.</p>
+
+</div>
+</div>
+<a id="ab43baddb6cc3c9380071d89bbe1f1389" name="ab43baddb6cc3c9380071d89bbe1f1389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab43baddb6cc3c9380071d89bbe1f1389">&#9670;&#160;</a></span>blendState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::blendState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">eve::Additive</a>, <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00057">additiveBlend()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::Alpha</a>, <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00035">alphaBlend()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980ae257376d913f3b53cbb4a9b19d770648">eve::Multiply</a>, <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00074">multiplyBlend()</a>, <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00046">noBlend()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">eve::Opaque</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a39a960b9c0fdfe58f8963d9ee2399459">eve::Premultiplied</a> , 以及 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00068">premultipliedBlend()</a>.</p>
+
+</div>
+</div>
+<a id="a778f8ace04668f2ac9b443f94b54949f" name="a778f8ace04668f2ac9b443f94b54949f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a778f8ace04668f2ac9b443f94b54949f">&#9670;&#160;</a></span>createLinearSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::Sampler eve::graphics::webgpu::detail::createLinearSampler </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::Device &amp;&#160;</td>
+          <td class="paramname"><em>dev</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00004">4</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="wgpu__types_8h_source.html#l00020">eve::graphics::webgpu::sv()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l00461">eve::graphics::webgpu::Graphics::present()</a>.</p>
+
+</div>
+</div>
+<a id="a80ee6ab385f5144a5fc225c1b965bf99" name="a80ee6ab385f5144a5fc225c1b965bf99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80ee6ab385f5144a5fc225c1b965bf99">&#9670;&#160;</a></span>fillMeshAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::webgpu::detail::fillMeshAttributes </td>
+          <td>(</td>
+          <td class="paramtype">WGPUVertexAttribute(&amp;)&#160;</td>
+          <td class="paramname"><em>attrs</em>[6]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab836b7cf4a5fc3ad36b6ac31afec7703" name="ab836b7cf4a5fc3ad36b6ac31afec7703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab836b7cf4a5fc3ad36b6ac31afec7703">&#9670;&#160;</a></span>fillVertexLayout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::webgpu::detail::fillVertexLayout </td>
+          <td>(</td>
+          <td class="paramtype">WGPUVertexBufferLayout &amp;&#160;</td>
+          <td class="paramname"><em>layout</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const WGPUVertexAttribute *&#160;</td>
+          <td class="paramname"><em>attrs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>attrCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FloorTextures_8cpp_source.html#l00206">layout</a>.</p>
+
+</div>
+</div>
+<a id="ac407815138fd61a9b95974047891b843" name="ac407815138fd61a9b95974047891b843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac407815138fd61a9b95974047891b843">&#9670;&#160;</a></span>mdDesc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUShaderModuleDescriptor eve::graphics::webgpu::detail::mdDesc </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>code</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfAnimation_8cpp_source.html#l00016">code</a> , 以及 <a class="el" href="wgpu__types_8h_source.html#l00020">eve::graphics::webgpu::sv()</a>.</p>
+
+</div>
+</div>
+<a id="af774e8bb4dd6e08141ef20e5b56d488a" name="af774e8bb4dd6e08141ef20e5b56d488a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af774e8bb4dd6e08141ef20e5b56d488a">&#9670;&#160;</a></span>meshPipelineIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::webgpu::detail::meshPipelineIndex </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>&#160;</td>
+          <td class="paramname"><em>blend</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>depthWrite</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>doubleSided</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00169">doubleSided</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="af145002a55756ae8b54e2793125cd1b7" name="af145002a55756ae8b54e2793125cd1b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af145002a55756ae8b54e2793125cd1b7">&#9670;&#160;</a></span>multiplyBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::multiplyBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00035">alphaBlend()</a> , 以及 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">blendState()</a>.</p>
+
+</div>
+</div>
+<a id="a56044d35409ba5933d023463dc69df72" name="a56044d35409ba5933d023463dc69df72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56044d35409ba5933d023463dc69df72">&#9670;&#160;</a></span>noBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::noBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">blendState()</a>.</p>
+
+</div>
+</div>
+<a id="a5077742cdf35247600dbdfdf124a0313" name="a5077742cdf35247600dbdfdf124a0313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5077742cdf35247600dbdfdf124a0313">&#9670;&#160;</a></span>premultipliedBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">WGPUBlendState eve::graphics::webgpu::detail::premultipliedBlend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal WebGPU pipeline/descriptor helper; render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html">GraphicsPipelineSupport.cpp</a> 第 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00035">alphaBlend()</a> , 以及 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsPipelineSupport_8cpp_source.html#l00084">blendState()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

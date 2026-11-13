@@ -1,0 +1,720 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::HttpRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html">HttpRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1HttpRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::HttpRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a81735a38cec490bd0df7a1ab4e535510" id="r_a81735a38cec490bd0df7a1ab4e535510"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510">SubmitStatus</a> { <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a382ab522931673c11e398ead1b7b1678">Accepted</a>
+, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a03f4a47830f97377a35321051685071e">Closed</a>
+, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a453e6aa38d87b28ccae545967c53004f">Unavailable</a>
+ }</td></tr>
+<tr class="separator:a81735a38cec490bd0df7a1ab4e535510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9618c122a80e4c02582eb9238d369ca6" id="r_a9618c122a80e4c02582eb9238d369ca6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6">PollStatus</a> { <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6a2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>
+, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>
+, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6a03f4a47830f97377a35321051685071e">Closed</a>
+ }</td></tr>
+<tr class="separator:a9618c122a80e4c02582eb9238d369ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87030128d489754950901081dbf0acd8" id="r_a87030128d489754950901081dbf0acd8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8">DeliveryStatus</a> { <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>
+, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8ad109ac74df282488efd1dd7621a847d2">Retired</a>
+ }</td></tr>
+<tr class="separator:a87030128d489754950901081dbf0acd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af26f11d798394e266590f1775154f4cb" id="r_af26f11d798394e266590f1775154f4cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#af26f11d798394e266590f1775154f4cb">HttpRuntime</a> ()=default</td></tr>
+<tr class="memdesc:af26f11d798394e266590f1775154f4cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the module-owned executor and SSL lifetime.  <br /></td></tr>
+<tr class="separator:af26f11d798394e266590f1775154f4cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a460f4317e2c2a92d22cc16cecb149357" id="r_a460f4317e2c2a92d22cc16cecb149357"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a460f4317e2c2a92d22cc16cecb149357">~HttpRuntime</a> ()</td></tr>
+<tr class="memdesc:a460f4317e2c2a92d22cc16cecb149357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joins remaining jobs after canceling undelivered results.  <br /></td></tr>
+<tr class="separator:a460f4317e2c2a92d22cc16cecb149357"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a0dcae5887dcd4121243ef9e18b8b4" id="r_a39a0dcae5887dcd4121243ef9e18b8b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1network_1_1HttpPolicy.html">HttpPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a39a0dcae5887dcd4121243ef9e18b8b4">policy</a> () const</td></tr>
+<tr class="memdesc:a39a0dcae5887dcd4121243ef9e18b8b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies the authoritative policy for one submission.  <br /></td></tr>
+<tr class="separator:a39a0dcae5887dcd4121243ef9e18b8b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8614f5ddb65159b30f8432ec911e41f7" id="r_a8614f5ddb65159b30f8432ec911e41f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a8614f5ddb65159b30f8432ec911e41f7">setTimeout</a> (int ms)</td></tr>
+<tr class="memdesc:a8614f5ddb65159b30f8432ec911e41f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes the default I/O timeout.  <br /></td></tr>
+<tr class="separator:a8614f5ddb65159b30f8432ec911e41f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45be572bbf5571c6f65c9145887bfac7" id="r_a45be572bbf5571c6f65c9145887bfac7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a45be572bbf5571c6f65c9145887bfac7">timeout</a> () const</td></tr>
+<tr class="memdesc:a45be572bbf5571c6f65c9145887bfac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the default I/O timeout.  <br /></td></tr>
+<tr class="separator:a45be572bbf5571c6f65c9145887bfac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373e033a7335a90bf0c65376a3fc91e3" id="r_a373e033a7335a90bf0c65376a3fc91e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a373e033a7335a90bf0c65376a3fc91e3">setVerifySsl</a> (bool verify)</td></tr>
+<tr class="memdesc:a373e033a7335a90bf0c65376a3fc91e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes default certificate verification for subsequent jobs.  <br /></td></tr>
+<tr class="separator:a373e033a7335a90bf0c65376a3fc91e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d66ed88dc4a360d9ba8ba71753e5922" id="r_a1d66ed88dc4a360d9ba8ba71753e5922"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a1d66ed88dc4a360d9ba8ba71753e5922">getVerifySsl</a> () const</td></tr>
+<tr class="memdesc:a1d66ed88dc4a360d9ba8ba71753e5922"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns default certificate verification.  <br /></td></tr>
+<tr class="separator:a1d66ed88dc4a360d9ba8ba71753e5922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcc7cd19c51458b11632a621f7f71ad" id="r_a8fcc7cd19c51458b11632a621f7f71ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a8fcc7cd19c51458b11632a621f7f71ad">setCaLocation</a> (std::string location)</td></tr>
+<tr class="memdesc:a8fcc7cd19c51458b11632a621f7f71ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owns a custom CA path for subsequent jobs.  <br /></td></tr>
+<tr class="separator:a8fcc7cd19c51458b11632a621f7f71ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af479f2f2bee704787d7c6eabc23bc70a" id="r_af479f2f2bee704787d7c6eabc23bc70a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#af479f2f2bee704787d7c6eabc23bc70a">isClosed</a> () const</td></tr>
+<tr class="memdesc:af479f2f2bee704787d7c6eabc23bc70a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether the owning module has shut down.  <br /></td></tr>
+<tr class="separator:af479f2f2bee704787d7c6eabc23bc70a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a809c63208040c9ff765b73493f9ac388" id="r_a809c63208040c9ff765b73493f9ac388"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510">SubmitStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a809c63208040c9ff765b73493f9ac388">submit</a> (void *<a class="el" href="OceanRenderBindings_8cpp.html#a9a38cda9e53b77869ca08a02d13fa6ab">origin</a>, <a class="el" href="structeve_1_1network_1_1HttpOptions.html">HttpOptions</a> <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="memdesc:a809c63208040c9ff765b73493f9ac388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts an owning snapshot without retaining the handle. @ownership Origin is borrowed identity, canceled by its owner's destructor. @lifetime The runtime joins all jobs before releasing its SSL initializer. @cost Creates a thread and performs network I/O per submission.  <br /></td></tr>
+<tr class="separator:a809c63208040c9ff765b73493f9ac388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3b5a0c483dd0851d16e3d31ea589015" id="r_ab3b5a0c483dd0851d16e3d31ea589015"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6">PollStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#ab3b5a0c483dd0851d16e3d31ea589015">take</a> (void *<a class="el" href="OceanRenderBindings_8cpp.html#a9a38cda9e53b77869ca08a02d13fa6ab">origin</a>, <a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &amp;<a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="memdesc:ab3b5a0c483dd0851d16e3d31ea589015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes only this origin's next ready result. @ownership Origin is a borrowed identity; result transfers its owned payload.  <br /></td></tr>
+<tr class="separator:ab3b5a0c483dd0851d16e3d31ea589015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f33da28b7f941aec57bddda518961ca" id="r_a4f33da28b7f941aec57bddda518961ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a4f33da28b7f941aec57bddda518961ca">drain</a> (std::vector&lt; <a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &gt; &amp;<a class="el" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>)</td></tr>
+<tr class="memdesc:a4f33da28b7f941aec57bddda518961ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfers ready, still-live results without invoking callbacks. @cost Scans pending requests once per pump; completed payloads are moved.  <br /></td></tr>
+<tr class="separator:a4f33da28b7f941aec57bddda518961ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee59670d4d67a4d53cc006868bd0b64e" id="r_aee59670d4d67a4d53cc006868bd0b64e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8">DeliveryStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#aee59670d4d67a4d53cc006868bd0b64e">prepareDelivery</a> (<a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &amp;<a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="memdesc:aee59670d4d67a4d53cc006868bd0b64e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rechecks lifetime immediately before queuing an event, after any reentrant callbacks.  <br /></td></tr>
+<tr class="separator:aee59670d4d67a4d53cc006868bd0b64e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9603ddd3e80f52ec4e30fcc4615015" id="r_a4a9603ddd3e80f52ec4e30fcc4615015"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a4a9603ddd3e80f52ec4e30fcc4615015">cancel</a> (void *<a class="el" href="OceanRenderBindings_8cpp.html#a9a38cda9e53b77869ca08a02d13fa6ab">origin</a>)</td></tr>
+<tr class="memdesc:a4a9603ddd3e80f52ec4e30fcc4615015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retires all jobs for the borrowed origin without blocking its destructor. @ownership Origin is identity only and is never dereferenced.  <br /></td></tr>
+<tr class="separator:a4a9603ddd3e80f52ec4e30fcc4615015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c7051671645f1b1ed0760908bfbeb9a" id="r_a2c7051671645f1b1ed0760908bfbeb9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a2c7051671645f1b1ed0760908bfbeb9a">close</a> ()</td></tr>
+<tr class="memdesc:a2c7051671645f1b1ed0760908bfbeb9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels all origins, then joins jobs without holding the registry lock. @cost Waits for in-flight I/O during module shutdown; never called per frame.  <br /></td></tr>
+<tr class="separator:a2c7051671645f1b1ed0760908bfbeb9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a> 第 <a class="el" href="HttpRuntime_8h_source.html#l00039">39</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a87030128d489754950901081dbf0acd8" name="a87030128d489754950901081dbf0acd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87030128d489754950901081dbf0acd8">&#9670;&#160;</a></span>DeliveryStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8">eve::network::HttpRuntime::DeliveryStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a87030128d489754950901081dbf0acd8ae7d31fc0602fb2ede144d18cdffd816b" name="a87030128d489754950901081dbf0acd8ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a87030128d489754950901081dbf0acd8ad109ac74df282488efd1dd7621a847d2" name="a87030128d489754950901081dbf0acd8ad109ac74df282488efd1dd7621a847d2"></a>Retired&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a> 第 <a class="el" href="HttpRuntime_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9618c122a80e4c02582eb9238d369ca6" name="a9618c122a80e4c02582eb9238d369ca6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9618c122a80e4c02582eb9238d369ca6">&#9670;&#160;</a></span>PollStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6">eve::network::HttpRuntime::PollStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9618c122a80e4c02582eb9238d369ca6a2d13df6f8b5e4c5af9f87e0dc39df69d" name="a9618c122a80e4c02582eb9238d369ca6a2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9618c122a80e4c02582eb9238d369ca6ae7d31fc0602fb2ede144d18cdffd816b" name="a9618c122a80e4c02582eb9238d369ca6ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9618c122a80e4c02582eb9238d369ca6a03f4a47830f97377a35321051685071e" name="a9618c122a80e4c02582eb9238d369ca6a03f4a47830f97377a35321051685071e"></a>Closed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a> 第 <a class="el" href="HttpRuntime_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81735a38cec490bd0df7a1ab4e535510" name="a81735a38cec490bd0df7a1ab4e535510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81735a38cec490bd0df7a1ab4e535510">&#9670;&#160;</a></span>SubmitStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510">eve::network::HttpRuntime::SubmitStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a81735a38cec490bd0df7a1ab4e535510a382ab522931673c11e398ead1b7b1678" name="a81735a38cec490bd0df7a1ab4e535510a382ab522931673c11e398ead1b7b1678"></a>Accepted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a81735a38cec490bd0df7a1ab4e535510a03f4a47830f97377a35321051685071e" name="a81735a38cec490bd0df7a1ab4e535510a03f4a47830f97377a35321051685071e"></a>Closed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a81735a38cec490bd0df7a1ab4e535510a453e6aa38d87b28ccae545967c53004f" name="a81735a38cec490bd0df7a1ab4e535510a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a> 第 <a class="el" href="HttpRuntime_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af26f11d798394e266590f1775154f4cb" name="af26f11d798394e266590f1775154f4cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af26f11d798394e266590f1775154f4cb">&#9670;&#160;</a></span>HttpRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::HttpRuntime::HttpRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the module-owned executor and SSL lifetime. </p>
+
+<p class="reference">引用了 <a class="el" href="McpFrameCapture_8cpp_source.html#l00088">future</a> , 以及 <a class="el" href="Joint2DBindings_8cpp_source.html#l00065">lifetime</a>.</p>
+
+</div>
+</div>
+<a id="a460f4317e2c2a92d22cc16cecb149357" name="a460f4317e2c2a92d22cc16cecb149357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a460f4317e2c2a92d22cc16cecb149357">&#9670;&#160;</a></span>~HttpRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::HttpRuntime::~HttpRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Joins remaining jobs after canceling undelivered results. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRequest_8cpp_source.html#l00239">close()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4a9603ddd3e80f52ec4e30fcc4615015" name="a4a9603ddd3e80f52ec4e30fcc4615015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a9603ddd3e80f52ec4e30fcc4615015">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::cancel </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>origin</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retires all jobs for the borrowed origin without blocking its destructor. @ownership Origin is identity only and is never dereferenced. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00034">origin</a>.</p>
+
+</div>
+</div>
+<a id="a2c7051671645f1b1ed0760908bfbeb9a" name="a2c7051671645f1b1ed0760908bfbeb9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7051671645f1b1ed0760908bfbeb9a">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels all origins, then joins jobs without holding the registry lock. @cost Waits for in-flight I/O during module shutdown; never called per frame. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2DBindings_8cpp_source.html#l00065">lifetime</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00034">origin</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00709">pending</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HttpRequest_8cpp_source.html#l00145">~HttpRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a4f33da28b7f941aec57bddda518961ca" name="a4f33da28b7f941aec57bddda518961ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f33da28b7f941aec57bddda518961ca">&#9670;&#160;</a></span>drain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::drain </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transfers ready, still-live results without invoking callbacks. @cost Scans pending requests once per pump; completed payloads are moved. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a1d66ed88dc4a360d9ba8ba71753e5922" name="a1d66ed88dc4a360d9ba8ba71753e5922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d66ed88dc4a360d9ba8ba71753e5922">&#9670;&#160;</a></span>getVerifySsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::HttpRuntime::getVerifySsl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns default certificate verification. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRuntime_8h_source.html#l00016">eve::network::HttpPolicy::verifySsl</a>.</p>
+
+</div>
+</div>
+<a id="af479f2f2bee704787d7c6eabc23bc70a" name="af479f2f2bee704787d7c6eabc23bc70a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af479f2f2bee704787d7c6eabc23bc70a">&#9670;&#160;</a></span>isClosed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::HttpRuntime::isClosed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reports whether the owning module has shut down. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39a0dcae5887dcd4121243ef9e18b8b4" name="a39a0dcae5887dcd4121243ef9e18b8b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a0dcae5887dcd4121243ef9e18b8b4">&#9670;&#160;</a></span>policy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1network_1_1HttpPolicy.html">HttpPolicy</a> eve::network::HttpRuntime::policy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies the authoritative policy for one submission. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee59670d4d67a4d53cc006868bd0b64e" name="aee59670d4d67a4d53cc006868bd0b64e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee59670d4d67a4d53cc006868bd0b64e">&#9670;&#160;</a></span>prepareDelivery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8">HttpRuntime::DeliveryStatus</a> eve::network::HttpRuntime::prepareDelivery </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rechecks lifetime immediately before queuing an event, after any reentrant callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a87030128d489754950901081dbf0acd8ad109ac74df282488efd1dd7621a847d2">Retired</a>.</p>
+
+</div>
+</div>
+<a id="a8fcc7cd19c51458b11632a621f7f71ad" name="a8fcc7cd19c51458b11632a621f7f71ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fcc7cd19c51458b11632a621f7f71ad">&#9670;&#160;</a></span>setCaLocation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::setCaLocation </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>location</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Owns a custom CA path for subsequent jobs. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRuntime_8h_source.html#l00017">eve::network::HttpPolicy::caLocation</a>.</p>
+
+</div>
+</div>
+<a id="a8614f5ddb65159b30f8432ec911e41f7" name="a8614f5ddb65159b30f8432ec911e41f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8614f5ddb65159b30f8432ec911e41f7">&#9670;&#160;</a></span>setTimeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::setTimeout </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes the default I/O timeout. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRuntime_8h_source.html#l00015">eve::network::HttpPolicy::timeoutMs</a>.</p>
+
+</div>
+</div>
+<a id="a373e033a7335a90bf0c65376a3fc91e3" name="a373e033a7335a90bf0c65376a3fc91e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373e033a7335a90bf0c65376a3fc91e3">&#9670;&#160;</a></span>setVerifySsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::network::HttpRuntime::setVerifySsl </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verify</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes default certificate verification for subsequent jobs. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRuntime_8h_source.html#l00016">eve::network::HttpPolicy::verifySsl</a>.</p>
+
+</div>
+</div>
+<a id="a809c63208040c9ff765b73493f9ac388" name="a809c63208040c9ff765b73493f9ac388"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a809c63208040c9ff765b73493f9ac388">&#9670;&#160;</a></span>submit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510">HttpRuntime::SubmitStatus</a> eve::network::HttpRuntime::submit </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1network_1_1HttpOptions.html">HttpOptions</a>&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts an owning snapshot without retaining the handle. @ownership Origin is borrowed identity, canceled by its owner's destructor. @lifetime The runtime joins all jobs before releasing its SSL initializer. @cost Creates a thread and performs network I/O per submission. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a382ab522931673c11e398ead1b7b1678">Accepted</a>, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a03f4a47830f97377a35321051685071e">Closed</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00065">lifetime</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00091">options</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00034">origin</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00018">snapshot</a> , 以及 <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a81735a38cec490bd0df7a1ab4e535510a453e6aa38d87b28ccae545967c53004f">Unavailable</a>.</p>
+
+</div>
+</div>
+<a id="ab3b5a0c483dd0851d16e3d31ea589015" name="ab3b5a0c483dd0851d16e3d31ea589015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b5a0c483dd0851d16e3d31ea589015">&#9670;&#160;</a></span>take()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6">HttpRuntime::PollStatus</a> eve::network::HttpRuntime::take </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1network_1_1HttpResult.html">HttpResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Takes only this origin's next ready result. @ownership Origin is a borrowed identity; result transfers its owned payload. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6a03f4a47830f97377a35321051685071e">Closed</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00034">origin</a>, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6a2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>, <a class="el" href="classeve_1_1network_1_1HttpRuntime.html#a9618c122a80e4c02582eb9238d369ca6ae7d31fc0602fb2ede144d18cdffd816b">Ready</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a45be572bbf5571c6f65c9145887bfac7" name="a45be572bbf5571c6f65c9145887bfac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45be572bbf5571c6f65c9145887bfac7">&#9670;&#160;</a></span>timeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::network::HttpRuntime::timeout </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the default I/O timeout. </p>
+
+<p class="definition">在文件 <a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a> 第 <a class="el" href="HttpRequest_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HttpRuntime_8h_source.html#l00015">eve::network::HttpPolicy::timeoutMs</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/detail/<a class="el" href="HttpRuntime_8h_source.html">HttpRuntime.h</a></li>
+<li>src/modules/network/<a class="el" href="HttpRequest_8cpp_source.html">HttpRequest.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::rpg::ForgeBench 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a72c62570d68c1ebf0411ac9cc0718788">advance</a>(eve::SimulationTick tick, eve::Duration dt)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a7095473e1aa93d248d10401df4412ee3">bind</a>(inventory::Bag *bag, inventory::EquipmentSet *equipment=nullptr, RPGActor *actor=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#abef17a95854eec46b6eb6523c6effdac">craft</a>(CraftingRecipe recipe, std::uint32_t batchSize=1, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#aee40f9551327b7d3a9cf943e0a1585a4">craftFromJson</a>(const std::string &amp;json, std::uint32_t batchSize=1, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a0a2e134945ea80726ead3908c2a5e2e0">ForgeBench</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a7e87bf16e0bb9984d1e00c8c6d33fa6a">ForgeBench</a>(const ForgeBench &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a6892011315d65518a993ae01abb0a50d">ForgeBench</a>(ForgeBench &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a329440429bca00bf7d6905ea82171804">isBound</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a6799c6c1726eaa151ef2bea9c9e80902">operator=</a>(const ForgeBench &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a19ed6a49e5f9d6318cd461725bea73e9">operator=</a>(ForgeBench &amp;&amp;) noexcept</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a579cda42fee693c50d1c00447326b8cc">queueHandle</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a8688aded14883432c3cc5570ee328f45">settle</a>(std::string_view taskId)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a5b53105b44211f326e854ea53a5f09a1">settleReady</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a957eef03370f68c7f1de9a60ef1509db">syncEquipment</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a564fbe92a4a7864b3ac96dfa29d8d3fd">taskCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a16ff1d68774ad7de058651925d56116f">taskDurationAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a627f7d97fd4b82ed5c20b78a82b24b8d">taskIdAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#af85646be93e906c8d2f69737f2a5d13f">taskKindAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a89ec918c26af55cbd495ce775359f3dd">taskProgressAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a1de879700b6b6d657b462a852301fa8e">taskStateAt</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a3bd4f5255f944dc13003a1306c25d30a">tick</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a5acf7ddb956bd3977a2c4da7d6a48bb6">unbind</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#ad861bf96efe511b36e9cce79d9c518a2">upgrade</a>(EquipmentUpgradeRecipe recipe, int bagSlot, int expectedInstanceId, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a06b40cba3d5597fe4e0efb2635db7c47">upgradeFromJson</a>(const std::string &amp;json, int bagSlot, int expectedInstanceId, int priority=0)</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a64f427af081bd12c79fc18e0093d3a45">~ForgeBench</a>()</td><td class="entry"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

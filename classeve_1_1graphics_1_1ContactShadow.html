@@ -1,0 +1,903 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::ContactShadow类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1ContactShadow-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::ContactShadow类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Screen-space contact shadows for the primary directional light.  
+ <a href="classeve_1_1graphics_1_1ContactShadow.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab79beff482f02985835c409427c86481" id="r_ab79beff482f02985835c409427c86481"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#ab79beff482f02985835c409427c86481">ContactShadow</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:ab79beff482f02985835c409427c86481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owns post shaders created from the borrowed <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> factory.  <br /></td></tr>
+<tr class="separator:ab79beff482f02985835c409427c86481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a88e76738e118928face9506b5ed97" id="r_ac0a88e76738e118928face9506b5ed97"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#ac0a88e76738e118928face9506b5ed97">~ContactShadow</a> ()</td></tr>
+<tr class="memdesc:ac0a88e76738e118928face9506b5ed97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases owned shaders.  <br /></td></tr>
+<tr class="separator:ac0a88e76738e118928face9506b5ed97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a7501089d0fd3a8e87965b201eb1f2" id="r_a76a7501089d0fd3a8e87965b201eb1f2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a76a7501089d0fd3a8e87965b201eb1f2">ContactShadow</a> (const <a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp;)=delete</td></tr>
+<tr class="separator:a76a7501089d0fd3a8e87965b201eb1f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766fee9b9686b8e83b7b1c70fb24ea9e" id="r_a766fee9b9686b8e83b7b1c70fb24ea9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a766fee9b9686b8e83b7b1c70fb24ea9e">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp;)=delete</td></tr>
+<tr class="separator:a766fee9b9686b8e83b7b1c70fb24ea9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a97b32c688b89f4df8b7d30f1ac6d53" id="r_a2a97b32c688b89f4df8b7d30f1ac6d53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a2a97b32c688b89f4df8b7d30f1ac6d53">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:a2a97b32c688b89f4df8b7d30f1ac6d53"><td class="mdescLeft">&#160;</td><td class="mdescRight">"low" | "medium" | "high" (unknown → medium).  <br /></td></tr>
+<tr class="separator:a2a97b32c688b89f4df8b7d30f1ac6d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee0bde09c1a631bc3ed1f4b45ab504d9" id="r_aee0bde09c1a631bc3ed1f4b45ab504d9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#aee0bde09c1a631bc3ed1f4b45ab504d9">getQuality</a> () const</td></tr>
+<tr class="memdesc:aee0bde09c1a631bc3ed1f4b45ab504d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the quality.  <br /></td></tr>
+<tr class="separator:aee0bde09c1a631bc3ed1f4b45ab504d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ba640743850770be6c097eb6e02bc1" id="r_ad5ba640743850770be6c097eb6e02bc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#ad5ba640743850770be6c097eb6e02bc1">setCamera</a> (float eyeX, float eyeY, float eyeZ, float <a class="el" href="StylizeAttackVfx_8cpp.html#a5516cb7e2fddc92ffa1e3668e4250079">targetX</a>, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:ad5ba640743850770be6c097eb6e02bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by apply*.  <br /></td></tr>
+<tr class="separator:ad5ba640743850770be6c097eb6e02bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2c8fcd65ee3c3e0f002c7a3b7ae765" id="r_a0f2c8fcd65ee3c3e0f002c7a3b7ae765"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a0f2c8fcd65ee3c3e0f002c7a3b7ae765">setInvViewProj</a> (const glm::mat4 &amp;<a class="el" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a65c12adbe52a130da7fb7f9e3afd126f">invViewProj</a>)</td></tr>
+<tr class="memdesc:a0f2c8fcd65ee3c3e0f002c7a3b7ae765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the inv view proj.  <br /></td></tr>
+<tr class="separator:a0f2c8fcd65ee3c3e0f002c7a3b7ae765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac682921d73af508e7ece0fa922cc051" id="r_aac682921d73af508e7ece0fa922cc051"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#aac682921d73af508e7ece0fa922cc051">setLightDirection</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab3e6ed577a7c669c19de1f9c1b46c872">z</a>)</td></tr>
+<tr class="memdesc:aac682921d73af508e7ece0fa922cc051"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space direction toward the light (normalized on write). Matches <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; | &quot;spot&quot; (...">Light3D</a> directional convention (points to the light).  <br /></td></tr>
+<tr class="separator:aac682921d73af508e7ece0fa922cc051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7475b4fde9f91ecc14da4b78096ac88d" id="r_a7475b4fde9f91ecc14da4b78096ac88d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a7475b4fde9f91ecc14da4b78096ac88d">setLength</a> (float <a class="el" href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>)</td></tr>
+<tr class="memdesc:a7475b4fde9f91ecc14da4b78096ac88d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the ray length in world units.  <br /></td></tr>
+<tr class="separator:a7475b4fde9f91ecc14da4b78096ac88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fcba91aee51a51affc846480c7f6b9e" id="r_a8fcba91aee51a51affc846480c7f6b9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a8fcba91aee51a51affc846480c7f6b9e">setThickness</a> (float <a class="el" href="LinearStructure_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>)</td></tr>
+<tr class="memdesc:a8fcba91aee51a51affc846480c7f6b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the contact thickness in view-space meters.  <br /></td></tr>
+<tr class="separator:a8fcba91aee51a51affc846480c7f6b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dfb7eedca4982c651d5ae62df351b7d" id="r_a8dfb7eedca4982c651d5ae62df351b7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a8dfb7eedca4982c651d5ae62df351b7d">setIntensity</a> (float intensity)</td></tr>
+<tr class="memdesc:a8dfb7eedca4982c651d5ae62df351b7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the darkening intensity in [0, +inf).  <br /></td></tr>
+<tr class="separator:a8dfb7eedca4982c651d5ae62df351b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6727bfb4c2cac22c7a66e9d4a9bffbc" id="r_af6727bfb4c2cac22c7a66e9d4a9bffbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#af6727bfb4c2cac22c7a66e9d4a9bffbc">setStartBias</a> (float <a class="el" href="Shadow_8cpp.html#ab881305da614121cd59b58172248c151">bias</a>)</td></tr>
+<tr class="memdesc:af6727bfb4c2cac22c7a66e9d4a9bffbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the start bias along normal/light in world units.  <br /></td></tr>
+<tr class="separator:af6727bfb4c2cac22c7a66e9d4a9bffbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e7469dab1e1ec08bbc0840dd5742992" id="r_a4e7469dab1e1ec08bbc0840dd5742992"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a4e7469dab1e1ec08bbc0840dd5742992">getLength</a> () const</td></tr>
+<tr class="memdesc:a4e7469dab1e1ec08bbc0840dd5742992"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the ray length.  <br /></td></tr>
+<tr class="separator:a4e7469dab1e1ec08bbc0840dd5742992"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8769c76cb087077ab2736a0de7bada" id="r_aec8769c76cb087077ab2736a0de7bada"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#aec8769c76cb087077ab2736a0de7bada">getThickness</a> () const</td></tr>
+<tr class="memdesc:aec8769c76cb087077ab2736a0de7bada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the thickness.  <br /></td></tr>
+<tr class="separator:aec8769c76cb087077ab2736a0de7bada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac043801ef3c760833ce9cc2d83154fed" id="r_ac043801ef3c760833ce9cc2d83154fed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#ac043801ef3c760833ce9cc2d83154fed">getIntensity</a> () const</td></tr>
+<tr class="memdesc:ac043801ef3c760833ce9cc2d83154fed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the intensity.  <br /></td></tr>
+<tr class="separator:ac043801ef3c760833ce9cc2d83154fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56266d29a79d3ceb7bc26fdc6035191" id="r_ab56266d29a79d3ceb7bc26fdc6035191"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#ab56266d29a79d3ceb7bc26fdc6035191">getStartBias</a> () const</td></tr>
+<tr class="memdesc:ab56266d29a79d3ceb7bc26fdc6035191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the start bias.  <br /></td></tr>
+<tr class="separator:ab56266d29a79d3ceb7bc26fdc6035191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadb7c30fd78d895766a1eddc68092b5c" id="r_aadb7c30fd78d895766a1eddc68092b5c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#aadb7c30fd78d895766a1eddc68092b5c">getStepCount</a> () const</td></tr>
+<tr class="memdesc:aadb7c30fd78d895766a1eddc68092b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the step count for the active quality.  <br /></td></tr>
+<tr class="separator:aadb7c30fd78d895766a1eddc68092b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78beae580d3a2441f76a71e1f6cde909" id="r_a78beae580d3a2441f76a71e1f6cde909"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a78beae580d3a2441f76a71e1f6cde909">applyFromGBuffer</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal)</td></tr>
+<tr class="memdesc:a78beae580d3a2441f76a71e1f6cde909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Darken the current target using contact shadows from <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects and Hybrid deferred lighting.">GBuffer</a> depth.  <br /></td></tr>
+<tr class="separator:a78beae580d3a2441f76a71e1f6cde909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c396fb667b35f1b2385f7a7ee730142" id="r_a7c396fb667b35f1b2385f7a7ee730142"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html#a7c396fb667b35f1b2385f7a7ee730142">getShader</a> () const</td></tr>
+<tr class="memdesc:a7c396fb667b35f1b2385f7a7ee730142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the owned contact-shadow shader. @lifetime Returned shader is borrowed and owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  <br /></td></tr>
+<tr class="separator:a7c396fb667b35f1b2385f7a7ee730142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Screen-space contact shadows for the primary directional light. </p>
+<p>Ray-marches a short distance along the light direction through the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects and Hybrid deferred lighting.">GBuffer</a> hardware depth attachment and darkens the already-lit scene with a black alpha overlay (same blending contract as <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html" title="Screen-space ambient occlusion.">AmbientOcclusion</a> overlays).</p>
+<p>@thread Render thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab79beff482f02985835c409427c86481" name="ab79beff482f02985835c409427c86481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab79beff482f02985835c409427c86481">&#9670;&#160;</a></span>ContactShadow() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ContactShadow::ContactShadow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owns post shaders created from the borrowed <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> factory. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac0a88e76738e118928face9506b5ed97" name="ac0a88e76738e118928face9506b5ed97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a88e76738e118928face9506b5ed97">&#9670;&#160;</a></span>~ContactShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ContactShadow::~ContactShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases owned shaders. </p>
+
+</div>
+</div>
+<a id="a76a7501089d0fd3a8e87965b201eb1f2" name="a76a7501089d0fd3a8e87965b201eb1f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a7501089d0fd3a8e87965b201eb1f2">&#9670;&#160;</a></span>ContactShadow() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ContactShadow::ContactShadow </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a78beae580d3a2441f76a71e1f6cde909" name="a78beae580d3a2441f76a71e1f6cde909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78beae580d3a2441f76a71e1f6cde909">&#9670;&#160;</a></span>applyFromGBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::applyFromGBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Darken the current target using contact shadows from <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects and Hybrid deferred lighting.">GBuffer</a> depth. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hwDepth</td><td>Hardware D32 depth (.r = Vulkan NDC z) or WebGPU depth color. </td></tr>
+    <tr><td class="paramname">worldNormal</td><td>Optional <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects and Hybrid deferred lighting.">GBuffer</a> normal (RGB = n*0.5+0.5); may be null. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::Alpha</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afdea8a5360160828274df8778f69fca1">eve::graphics::Graphics::drawTexturedRectShaderDepth()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">eve::graphics::Graphics::drawTexturedRectShaderUV()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00491">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00034">eve::graphics::Texture::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00489">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="Texture_8cpp_source.html#l00029">eve::graphics::Texture::getWidth()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00107">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00830">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ac043801ef3c760833ce9cc2d83154fed" name="ac043801ef3c760833ce9cc2d83154fed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac043801ef3c760833ce9cc2d83154fed">&#9670;&#160;</a></span>getIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ContactShadow::getIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e7469dab1e1ec08bbc0840dd5742992" name="a4e7469dab1e1ec08bbc0840dd5742992"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e7469dab1e1ec08bbc0840dd5742992">&#9670;&#160;</a></span>getLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ContactShadow::getLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the ray length. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee0bde09c1a631bc3ed1f4b45ab504d9" name="aee0bde09c1a631bc3ed1f4b45ab504d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee0bde09c1a631bc3ed1f4b45ab504d9">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::ContactShadow::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the quality. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c396fb667b35f1b2385f7a7ee730142" name="a7c396fb667b35f1b2385f7a7ee730142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c396fb667b35f1b2385f7a7ee730142">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::ContactShadow::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the owned contact-shadow shader. @lifetime Returned shader is borrowed and owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab56266d29a79d3ceb7bc26fdc6035191" name="ab56266d29a79d3ceb7bc26fdc6035191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab56266d29a79d3ceb7bc26fdc6035191">&#9670;&#160;</a></span>getStartBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ContactShadow::getStartBias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the start bias. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aadb7c30fd78d895766a1eddc68092b5c" name="aadb7c30fd78d895766a1eddc68092b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadb7c30fd78d895766a1eddc68092b5c">&#9670;&#160;</a></span>getStepCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ContactShadow::getStepCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the step count for the active quality. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec8769c76cb087077ab2736a0de7bada" name="aec8769c76cb087077ab2736a0de7bada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8769c76cb087077ab2736a0de7bada">&#9670;&#160;</a></span>getThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ContactShadow::getThickness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the thickness. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a> 第 <a class="el" href="ContactShadow_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a766fee9b9686b8e83b7b1c70fb24ea9e" name="a766fee9b9686b8e83b7b1c70fb24ea9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a766fee9b9686b8e83b7b1c70fb24ea9e">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp; eve::graphics::ContactShadow::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad5ba640743850770be6c097eb6e02bc1" name="ad5ba640743850770be6c097eb6e02bc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ba640743850770be6c097eb6e02bc1">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by apply*. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">fovRad</a>, <a class="el" href="ClipSpace_8h_source.html#l00022">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00748">proj</a>, <a class="el" href="Shader_8cpp_source.html#l00107">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="ContactShadow_8cpp_source.html#l00105">setInvViewProj()</a>, <a class="el" href="StylizeAttackVfx_8cpp_source.html#l00246">targetX</a> , 以及 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00030">view</a>.</p>
+
+</div>
+</div>
+<a id="a8dfb7eedca4982c651d5ae62df351b7d" name="a8dfb7eedca4982c651d5ae62df351b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dfb7eedca4982c651d5ae62df351b7d">&#9670;&#160;</a></span>setIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the darkening intensity in [0, +inf). </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f2c8fcd65ee3c3e0f002c7a3b7ae765" name="a0f2c8fcd65ee3c3e0f002c7a3b7ae765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2c8fcd65ee3c3e0f002c7a3b7ae765">&#9670;&#160;</a></span>setInvViewProj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setInvViewProj </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the inv view proj. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsDeferredLighting_8cpp_source.html#l00017">invViewProj</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00124">eve::graphics::Shader::sendMatrix()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00830">eve::graphics::RenderSystem3D::render()</a> , 以及 <a class="el" href="ContactShadow_8cpp_source.html#l00110">setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a7475b4fde9f91ecc14da4b78096ac88d" name="a7475b4fde9f91ecc14da4b78096ac88d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7475b4fde9f91ecc14da4b78096ac88d">&#9670;&#160;</a></span>setLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the ray length in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>.</p>
+
+</div>
+</div>
+<a id="aac682921d73af508e7ece0fa922cc051" name="aac682921d73af508e7ece0fa922cc051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac682921d73af508e7ece0fa922cc051">&#9670;&#160;</a></span>setLightDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setLightDirection </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space direction toward the light (normalized on write). Matches <a class="el" href="classeve_1_1graphics_1_1Light3D.html" title="Declarative 3D light. Collected by RenderSystem3D (max 8 per frame). type: &quot;point&quot; | &quot;dir&quot; | &quot;spot&quot; (...">Light3D</a> directional convention (points to the light). </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00830">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a2a97b32c688b89f4df8b7d30f1ac6d53" name="a2a97b32c688b89f4df8b7d30f1ac6d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a97b32c688b89f4df8b7d30f1ac6d53">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"low" | "medium" | "high" (unknown → medium). </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00830">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="af6727bfb4c2cac22c7a66e9d4a9bffbc" name="af6727bfb4c2cac22c7a66e9d4a9bffbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6727bfb4c2cac22c7a66e9d4a9bffbc">&#9670;&#160;</a></span>setStartBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setStartBias </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the start bias along normal/light in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shadow_8cpp_source.html#l00149">bias</a>.</p>
+
+</div>
+</div>
+<a id="a8fcba91aee51a51affc846480c7f6b9e" name="a8fcba91aee51a51affc846480c7f6b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fcba91aee51a51affc846480c7f6b9e">&#9670;&#160;</a></span>setThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ContactShadow::setThickness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thickness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the contact thickness in view-space meters. </p>
+
+<p class="definition">在文件 <a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a> 第 <a class="el" href="ContactShadow_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00032">thickness</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="ContactShadow_8h_source.html">ContactShadow.h</a></li>
+<li>src/modules/graphics/<a class="el" href="ContactShadow_8cpp_source.html">ContactShadow.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

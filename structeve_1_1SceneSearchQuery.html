@@ -1,0 +1,467 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::SceneSearchQuery结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="structeve_1_1SceneSearchQuery.html">SceneSearchQuery</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1SceneSearchQuery-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::SceneSearchQuery结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Exact structured filters, optional HNSW cosine retrieval and bounded pagination.  
+ <a href="structeve_1_1SceneSearchQuery.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a57dbdf1b89af7952a37c9d8d6ca78523" id="r_a57dbdf1b89af7952a37c9d8d6ca78523"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a57dbdf1b89af7952a37c9d8d6ca78523">snapshot</a></td></tr>
+<tr class="separator:a57dbdf1b89af7952a37c9d8d6ca78523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacff2a33139347af1349d9f0c8000ec4" id="r_aacff2a33139347af1349d9f0c8000ec4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#aacff2a33139347af1349d9f0c8000ec4">model</a></td></tr>
+<tr class="separator:aacff2a33139347af1349d9f0c8000ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefaa1ed353be5365026715afcc1a1f70" id="r_aefaa1ed353be5365026715afcc1a1f70"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#aefaa1ed353be5365026715afcc1a1f70">kind</a></td></tr>
+<tr class="separator:aefaa1ed353be5365026715afcc1a1f70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf53aa960ee8bad6f2ea30ba141e7490" id="r_acf53aa960ee8bad6f2ea30ba141e7490"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#acf53aa960ee8bad6f2ea30ba141e7490">space</a></td></tr>
+<tr class="separator:acf53aa960ee8bad6f2ea30ba141e7490"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1b096f29ba4a2edfd6db0e8a8ab0cb9" id="r_ac1b096f29ba4a2edfd6db0e8a8ab0cb9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#ac1b096f29ba4a2edfd6db0e8a8ab0cb9">pageToken</a></td></tr>
+<tr class="separator:ac1b096f29ba4a2edfd6db0e8a8ab0cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a83b8ddcd628a699f3662a6bba13a41" id="r_a2a83b8ddcd628a699f3662a6bba13a41"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a2a83b8ddcd628a699f3662a6bba13a41">tags</a></td></tr>
+<tr class="separator:a2a83b8ddcd628a699f3662a6bba13a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc029c1a698e74d2ff3c09cc9f8502fd" id="r_abc029c1a698e74d2ff3c09cc9f8502fd"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#abc029c1a698e74d2ff3c09cc9f8502fd">visible</a></td></tr>
+<tr class="separator:abc029c1a698e74d2ff3c09cc9f8502fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a8e3fff128a075773499daf0a6f8f7" id="r_a37a8e3fff128a075773499daf0a6f8f7"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a37a8e3fff128a075773499daf0a6f8f7">layer</a></td></tr>
+<tr class="separator:a37a8e3fff128a075773499daf0a6f8f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae53d15b7567760fc24d8886e4b7b8a95" id="r_ae53d15b7567760fc24d8886e4b7b8a95"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::array&lt; double, 3 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#ae53d15b7567760fc24d8886e4b7b8a95">center</a></td></tr>
+<tr class="separator:ae53d15b7567760fc24d8886e4b7b8a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e2d3cd41a1e0785ab20c80514a6e9d8" id="r_a5e2d3cd41a1e0785ab20c80514a6e9d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a5e2d3cd41a1e0785ab20c80514a6e9d8">radius</a> = 0</td></tr>
+<tr class="separator:a5e2d3cd41a1e0785ab20c80514a6e9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add041090fee7e34e9f6ce13d81a66f62" id="r_add041090fee7e34e9f6ce13d81a66f62"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#add041090fee7e34e9f6ce13d81a66f62">embedding</a></td></tr>
+<tr class="separator:add041090fee7e34e9f6ce13d81a66f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51c764ec3ec911dc04d631cd1db9a604" id="r_a51c764ec3ec911dc04d631cd1db9a604"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1SceneSpatialConstraint.html">SceneSpatialConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a51c764ec3ec911dc04d631cd1db9a604">spatial</a></td></tr>
+<tr class="separator:a51c764ec3ec911dc04d631cd1db9a604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa740ad97ba55e76392e74cbdbdf5e304" id="r_aa740ad97ba55e76392e74cbdbdf5e304"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#aa740ad97ba55e76392e74cbdbdf5e304">candidates</a> = 128</td></tr>
+<tr class="memdesc:aa740ad97ba55e76392e74cbdbdf5e304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum HNSW candidate window; pagination stays within this explicitly bounded window.  <br /></td></tr>
+<tr class="separator:aa740ad97ba55e76392e74cbdbdf5e304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1504caf1d2f4065cefab37a67ca2995d" id="r_a1504caf1d2f4065cefab37a67ca2995d"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a1504caf1d2f4065cefab37a67ca2995d">limit</a> = 20</td></tr>
+<tr class="separator:a1504caf1d2f4065cefab37a67ca2995d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5381ecfdee1fe3ff89449d6464373060" id="r_a5381ecfdee1fe3ff89449d6464373060"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SceneSearchQuery.html#a5381ecfdee1fe3ff89449d6464373060">scanBudget</a> = 4096</td></tr>
+<tr class="separator:a5381ecfdee1fe3ff89449d6464373060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Exact structured filters, optional HNSW cosine retrieval and bounded pagination. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00065">65</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aa740ad97ba55e76392e74cbdbdf5e304" name="aa740ad97ba55e76392e74cbdbdf5e304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa740ad97ba55e76392e74cbdbdf5e304">&#9670;&#160;</a></span>candidates</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::SceneSearchQuery::candidates = 128</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum HNSW candidate window; pagination stays within this explicitly bounded window. </p>
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae53d15b7567760fc24d8886e4b7b8a95" name="ae53d15b7567760fc24d8886e4b7b8a95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae53d15b7567760fc24d8886e4b7b8a95">&#9670;&#160;</a></span>center</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::array&lt;double, 3&gt; &gt; eve::SceneSearchQuery::center</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add041090fee7e34e9f6ce13d81a66f62" name="add041090fee7e34e9f6ce13d81a66f62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add041090fee7e34e9f6ce13d81a66f62">&#9670;&#160;</a></span>embedding</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eve::SceneSearchQuery::embedding</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefaa1ed353be5365026715afcc1a1f70" name="aefaa1ed353be5365026715afcc1a1f70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefaa1ed353be5365026715afcc1a1f70">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::SceneSearchQuery::kind</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37a8e3fff128a075773499daf0a6f8f7" name="a37a8e3fff128a075773499daf0a6f8f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a8e3fff128a075773499daf0a6f8f7">&#9670;&#160;</a></span>layer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;int&gt; eve::SceneSearchQuery::layer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1504caf1d2f4065cefab37a67ca2995d" name="a1504caf1d2f4065cefab37a67ca2995d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1504caf1d2f4065cefab37a67ca2995d">&#9670;&#160;</a></span>limit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::SceneSearchQuery::limit = 20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacff2a33139347af1349d9f0c8000ec4" name="aacff2a33139347af1349d9f0c8000ec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacff2a33139347af1349d9f0c8000ec4">&#9670;&#160;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::SceneSearchQuery::model</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1b096f29ba4a2edfd6db0e8a8ab0cb9" name="ac1b096f29ba4a2edfd6db0e8a8ab0cb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1b096f29ba4a2edfd6db0e8a8ab0cb9">&#9670;&#160;</a></span>pageToken</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::SceneSearchQuery::pageToken</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e2d3cd41a1e0785ab20c80514a6e9d8" name="a5e2d3cd41a1e0785ab20c80514a6e9d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e2d3cd41a1e0785ab20c80514a6e9d8">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::SceneSearchQuery::radius = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5381ecfdee1fe3ff89449d6464373060" name="a5381ecfdee1fe3ff89449d6464373060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5381ecfdee1fe3ff89449d6464373060">&#9670;&#160;</a></span>scanBudget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::SceneSearchQuery::scanBudget = 4096</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57dbdf1b89af7952a37c9d8d6ca78523" name="a57dbdf1b89af7952a37c9d8d6ca78523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57dbdf1b89af7952a37c9d8d6ca78523">&#9670;&#160;</a></span>snapshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::SceneSearchQuery::snapshot</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf53aa960ee8bad6f2ea30ba141e7490" name="acf53aa960ee8bad6f2ea30ba141e7490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf53aa960ee8bad6f2ea30ba141e7490">&#9670;&#160;</a></span>space</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::SceneSearchQuery::space</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51c764ec3ec911dc04d631cd1db9a604" name="a51c764ec3ec911dc04d631cd1db9a604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51c764ec3ec911dc04d631cd1db9a604">&#9670;&#160;</a></span>spatial</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1SceneSpatialConstraint.html">SceneSpatialConstraint</a>&gt; eve::SceneSearchQuery::spatial</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a83b8ddcd628a699f3662a6bba13a41" name="a2a83b8ddcd628a699f3662a6bba13a41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a83b8ddcd628a699f3662a6bba13a41">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::SceneSearchQuery::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc029c1a698e74d2ff3c09cc9f8502fd" name="abc029c1a698e74d2ff3c09cc9f8502fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc029c1a698e74d2ff3c09cc9f8502fd">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;bool&gt; eve::SceneSearchQuery::visible</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a> 第 <a class="el" href="engine_2common_2SceneSearch_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="engine_2common_2SceneSearch_8h_source.html">SceneSearch.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

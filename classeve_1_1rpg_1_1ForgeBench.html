@@ -1,0 +1,1012 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::ForgeBench类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1ForgeBench-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::ForgeBench类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns a production WorkQueue and borrows bag / optional equipment+actor.  
+ <a href="classeve_1_1rpg_1_1ForgeBench.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ForgeBench_8h_source.html">ForgeBench.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0a2e134945ea80726ead3908c2a5e2e0" id="r_a0a2e134945ea80726ead3908c2a5e2e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a0a2e134945ea80726ead3908c2a5e2e0">ForgeBench</a> ()</td></tr>
+<tr class="separator:a0a2e134945ea80726ead3908c2a5e2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f427af081bd12c79fc18e0093d3a45" id="r_a64f427af081bd12c79fc18e0093d3a45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a64f427af081bd12c79fc18e0093d3a45">~ForgeBench</a> ()</td></tr>
+<tr class="separator:a64f427af081bd12c79fc18e0093d3a45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e87bf16e0bb9984d1e00c8c6d33fa6a" id="r_a7e87bf16e0bb9984d1e00c8c6d33fa6a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a7e87bf16e0bb9984d1e00c8c6d33fa6a">ForgeBench</a> (const <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;)=delete</td></tr>
+<tr class="separator:a7e87bf16e0bb9984d1e00c8c6d33fa6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6799c6c1726eaa151ef2bea9c9e80902" id="r_a6799c6c1726eaa151ef2bea9c9e80902"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a6799c6c1726eaa151ef2bea9c9e80902">operator=</a> (const <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;)=delete</td></tr>
+<tr class="separator:a6799c6c1726eaa151ef2bea9c9e80902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6892011315d65518a993ae01abb0a50d" id="r_a6892011315d65518a993ae01abb0a50d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a6892011315d65518a993ae01abb0a50d">ForgeBench</a> (<a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a6892011315d65518a993ae01abb0a50d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ed6a49e5f9d6318cd461725bea73e9" id="r_a19ed6a49e5f9d6318cd461725bea73e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a19ed6a49e5f9d6318cd461725bea73e9">operator=</a> (<a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a19ed6a49e5f9d6318cd461725bea73e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7095473e1aa93d248d10401df4412ee3" id="r_a7095473e1aa93d248d10401df4412ee3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a7095473e1aa93d248d10401df4412ee3">bind</a> (<a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> *bag, <a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> *equipment=nullptr, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor=nullptr)</td></tr>
+<tr class="memdesc:a7095473e1aa93d248d10401df4412ee3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative bag and optional gear/actor mirrors. @ownership Callers own bag/equipment/actor; destroy this bench first.  <br /></td></tr>
+<tr class="separator:a7095473e1aa93d248d10401df4412ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acf7ddb956bd3977a2c4da7d6a48bb6" id="r_a5acf7ddb956bd3977a2c4da7d6a48bb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a5acf7ddb956bd3977a2c4da7d6a48bb6">unbind</a> ()</td></tr>
+<tr class="memdesc:a5acf7ddb956bd3977a2c4da7d6a48bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear borrowed collaborators without releasing the production queue.  <br /></td></tr>
+<tr class="separator:a5acf7ddb956bd3977a2c4da7d6a48bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329440429bca00bf7d6905ea82171804" id="r_a329440429bca00bf7d6905ea82171804"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a329440429bca00bf7d6905ea82171804">isBound</a> () const</td></tr>
+<tr class="memdesc:a329440429bca00bf7d6905ea82171804"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a bag is currently bound.  <br /></td></tr>
+<tr class="separator:a329440429bca00bf7d6905ea82171804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abef17a95854eec46b6eb6523c6effdac" id="r_abef17a95854eec46b6eb6523c6effdac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1CraftingReceipt.html">CraftingReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#abef17a95854eec46b6eb6523c6effdac">craft</a> (<a class="el" href="structeve_1_1rpg_1_1CraftingRecipe.html">CraftingRecipe</a> <a class="el" href="ParticleBakeRecording_8cpp.html#ab641a5e13bdc1be37aacbc14c3d4235a">recipe</a>, std::uint32_t batchSize=1, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:abef17a95854eec46b6eb6523c6effdac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically pay materials and enqueue a craft recipe.  <br /></td></tr>
+<tr class="separator:abef17a95854eec46b6eb6523c6effdac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee40f9551327b7d3a9cf943e0a1585a4" id="r_aee40f9551327b7d3a9cf943e0a1585a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1CraftingReceipt.html">CraftingReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#aee40f9551327b7d3a9cf943e0a1585a4">craftFromJson</a> (const std::string &amp;json, std::uint32_t batchSize=1, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:aee40f9551327b7d3a9cf943e0a1585a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a craft recipe JSON object and enqueue it.  <br /></td></tr>
+<tr class="separator:aee40f9551327b7d3a9cf943e0a1585a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad861bf96efe511b36e9cce79d9c518a2" id="r_ad861bf96efe511b36e9cce79d9c518a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeReceipt.html">EquipmentUpgradeReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#ad861bf96efe511b36e9cce79d9c518a2">upgrade</a> (<a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeRecipe.html">EquipmentUpgradeRecipe</a> <a class="el" href="ParticleBakeRecording_8cpp.html#ab641a5e13bdc1be37aacbc14c3d4235a">recipe</a>, int <a class="el" href="EquipmentUpgrade_8cpp.html#aaa7e1796ba568b8538a4fd9f0e5050f9">bagSlot</a>, int expectedInstanceId, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:ad861bf96efe511b36e9cce79d9c518a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically pay materials and enqueue an equipment upgrade.  <br /></td></tr>
+<tr class="separator:ad861bf96efe511b36e9cce79d9c518a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06b40cba3d5597fe4e0efb2635db7c47" id="r_a06b40cba3d5597fe4e0efb2635db7c47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeReceipt.html">EquipmentUpgradeReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a06b40cba3d5597fe4e0efb2635db7c47">upgradeFromJson</a> (const std::string &amp;json, int <a class="el" href="EquipmentUpgrade_8cpp.html#aaa7e1796ba568b8538a4fd9f0e5050f9">bagSlot</a>, int expectedInstanceId, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:a06b40cba3d5597fe4e0efb2635db7c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse an upgrade recipe JSON object and enqueue it for one bag instance.  <br /></td></tr>
+<tr class="separator:a06b40cba3d5597fe4e0efb2635db7c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c62570d68c1ebf0411ac9cc0718788" id="r_a72c62570d68c1ebf0411ac9cc0718788"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a72c62570d68c1ebf0411ac9cc0718788">advance</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a3bd4f5255f944dc13003a1306c25d30a">tick</a>, <a class="el" href="classeve_1_1Duration.html">eve::Duration</a> <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a72c62570d68c1ebf0411ac9cc0718788"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the owned forge queue by one deterministic simulation step.  <br /></td></tr>
+<tr class="separator:a72c62570d68c1ebf0411ac9cc0718788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8688aded14883432c3cc5570ee328f45" id="r_a8688aded14883432c3cc5570ee328f45"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a8688aded14883432c3cc5570ee328f45">settle</a> (std::string_view <a class="el" href="ProductionBindings_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>)</td></tr>
+<tr class="memdesc:a8688aded14883432c3cc5570ee328f45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settle one ready craft or upgrade task into the bound bag.  <br /></td></tr>
+<tr class="separator:a8688aded14883432c3cc5570ee328f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b53105b44211f326e854ea53a5f09a1" id="r_a5b53105b44211f326e854ea53a5f09a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a5b53105b44211f326e854ea53a5f09a1">settleReady</a> ()</td></tr>
+<tr class="memdesc:a5b53105b44211f326e854ea53a5f09a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settle every ReadyToSettle / SettlementFailed task once.  <br /></td></tr>
+<tr class="separator:a5b53105b44211f326e854ea53a5f09a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a579cda42fee693c50d1c00447326b8cc" id="r_a579cda42fee693c50d1c00447326b8cc"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a579cda42fee693c50d1c00447326b8cc">queueHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:a579cda42fee693c50d1c00447326b8cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packed production handle for diagnostics (0 when unbound/released).  <br /></td></tr>
+<tr class="separator:a579cda42fee693c50d1c00447326b8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bd4f5255f944dc13003a1306c25d30a" id="r_a3bd4f5255f944dc13003a1306c25d30a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a3bd4f5255f944dc13003a1306c25d30a">tick</a> () const noexcept</td></tr>
+<tr class="memdesc:a3bd4f5255f944dc13003a1306c25d30a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last accepted simulation tick, or zero before the first advance.  <br /></td></tr>
+<tr class="separator:a3bd4f5255f944dc13003a1306c25d30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a564fbe92a4a7864b3ac96dfa29d8d3fd" id="r_a564fbe92a4a7864b3ac96dfa29d8d3fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a564fbe92a4a7864b3ac96dfa29d8d3fd">taskCount</a> () const</td></tr>
+<tr class="memdesc:a564fbe92a4a7864b3ac96dfa29d8d3fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task count currently retained by the forge queue.  <br /></td></tr>
+<tr class="separator:a564fbe92a4a7864b3ac96dfa29d8d3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a627f7d97fd4b82ed5c20b78a82b24b8d" id="r_a627f7d97fd4b82ed5c20b78a82b24b8d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a627f7d97fd4b82ed5c20b78a82b24b8d">taskIdAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a627f7d97fd4b82ed5c20b78a82b24b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task id at stable enumeration index, or empty.  <br /></td></tr>
+<tr class="separator:a627f7d97fd4b82ed5c20b78a82b24b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1de879700b6b6d657b462a852301fa8e" id="r_a1de879700b6b6d657b462a852301fa8e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a1de879700b6b6d657b462a852301fa8e">taskStateAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a1de879700b6b6d657b462a852301fa8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task state name at stable enumeration index, or empty.  <br /></td></tr>
+<tr class="separator:a1de879700b6b6d657b462a852301fa8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85646be93e906c8d2f69737f2a5d13f" id="r_af85646be93e906c8d2f69737f2a5d13f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#af85646be93e906c8d2f69737f2a5d13f">taskKindAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:af85646be93e906c8d2f69737f2a5d13f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task kind at stable enumeration index, or empty.  <br /></td></tr>
+<tr class="separator:af85646be93e906c8d2f69737f2a5d13f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ec918c26af55cbd495ce775359f3dd" id="r_a89ec918c26af55cbd495ce775359f3dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a89ec918c26af55cbd495ce775359f3dd">taskProgressAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a89ec918c26af55cbd495ce775359f3dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task progress seconds at stable enumeration index.  <br /></td></tr>
+<tr class="separator:a89ec918c26af55cbd495ce775359f3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ff1d68774ad7de058651925d56116f" id="r_a16ff1d68774ad7de058651925d56116f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a16ff1d68774ad7de058651925d56116f">taskDurationAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a16ff1d68774ad7de058651925d56116f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task duration seconds at stable enumeration index.  <br /></td></tr>
+<tr class="separator:a16ff1d68774ad7de058651925d56116f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a957eef03370f68c7f1de9a60ef1509db" id="r_a957eef03370f68c7f1de9a60ef1509db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html#a957eef03370f68c7f1de9a60ef1509db">syncEquipment</a> () const</td></tr>
+<tr class="memdesc:a957eef03370f68c7f1de9a60ef1509db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refresh actor equipment modifiers when actor+equipment are bound.  <br /></td></tr>
+<tr class="separator:a957eef03370f68c7f1de9a60ef1509db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns a production WorkQueue and borrows bag / optional equipment+actor. </p>
+<p>Craft pays bag materials and grants outputs. Upgrade mutates one bag instance's <code>enhance</code> prop. When equipment + actor are bound, successful upgrade/equip paths can refresh modifiers through <a class="el" href="classeve_1_1rpg_1_1EquipmentSystem.html" title="装备加成系统。 @thread 调用线程应与 RPGActor 的 ECS 线程一致。">EquipmentSystem</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8h_source.html">ForgeBench.h</a> 第 <a class="el" href="ForgeBench_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0a2e134945ea80726ead3908c2a5e2e0" name="a0a2e134945ea80726ead3908c2a5e2e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2e134945ea80726ead3908c2a5e2e0">&#9670;&#160;</a></span>ForgeBench() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::ForgeBench::ForgeBench </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProductionBindings_8cpp_source.html#l00077">eve::production::Production::newQueueHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a64f427af081bd12c79fc18e0093d3a45" name="a64f427af081bd12c79fc18e0093d3a45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64f427af081bd12c79fc18e0093d3a45">&#9670;&#160;</a></span>~ForgeBench()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::ForgeBench::~ForgeBench </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00571">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="RuntimeBorrow_8h_source.html#l00077">eve::script::RuntimeHandleRef&lt; Tag &gt;::isValid()</a>, <a class="el" href="ProductionBindings_8cpp_source.html#l00094">eve::production::Production::release()</a> , 以及 <a class="el" href="ForgeBench_8cpp_source.html#l00162">unbind()</a>.</p>
+
+</div>
+</div>
+<a id="a7e87bf16e0bb9984d1e00c8c6d33fa6a" name="a7e87bf16e0bb9984d1e00c8c6d33fa6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e87bf16e0bb9984d1e00c8c6d33fa6a">&#9670;&#160;</a></span>ForgeBench() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::ForgeBench::ForgeBench </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6892011315d65518a993ae01abb0a50d" name="a6892011315d65518a993ae01abb0a50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6892011315d65518a993ae01abb0a50d">&#9670;&#160;</a></span>ForgeBench() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::ForgeBench::ForgeBench </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a72c62570d68c1ebf0411ac9cc0718788" name="a72c62570d68c1ebf0411ac9cc0718788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c62570d68c1ebf0411ac9cc0718788">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::ForgeBench::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">eve::Duration</a>&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the owned forge queue by one deterministic simulation step. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="ForgeBench_8h_source.html#l00098">tick()</a>.</p>
+
+</div>
+</div>
+<a id="a7095473e1aa93d248d10401df4412ee3" name="a7095473e1aa93d248d10401df4412ee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7095473e1aa93d248d10401df4412ee3">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::ForgeBench::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> *&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> *&#160;</td>
+          <td class="paramname"><em>equipment</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative bag and optional gear/actor mirrors. @ownership Callers own bag/equipment/actor; destroy this bench first. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeBorrow_8h_source.html#l00077">eve::script::RuntimeHandleRef&lt; Tag &gt;::isValid()</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abef17a95854eec46b6eb6523c6effdac" name="abef17a95854eec46b6eb6523c6effdac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abef17a95854eec46b6eb6523c6effdac">&#9670;&#160;</a></span>craft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1CraftingReceipt.html">CraftingReceipt</a> &gt; eve::rpg::ForgeBench::craft </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rpg_1_1CraftingRecipe.html">CraftingRecipe</a>&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>batchSize</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically pay materials and enqueue a craft recipe. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00027">account</a>, <a class="el" href="Crafting_8cpp_source.html#l00282">eve::rpg::Crafting::begin()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Bag_8h_source.html#l00036">eve::inventory::Bag::getId()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Crafting_8h_source.html#l00039">eve::rpg::CraftingRequest::production</a>, <a class="el" href="ParticleBakeRecording_8cpp_source.html#l00029">recipe</a> , 以及 <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00191">craftFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="aee40f9551327b7d3a9cf943e0a1585a4" name="aee40f9551327b7d3a9cf943e0a1585a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee40f9551327b7d3a9cf943e0a1585a4">&#9670;&#160;</a></span>craftFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1CraftingReceipt.html">CraftingReceipt</a> &gt; eve::rpg::ForgeBench::craftFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>batchSize</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a craft recipe JSON object and enqueue it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Object with id, process, ingredients, outputs[{item,quantity}], duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForgeBench_8cpp_source.html#l00175">craft()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00177">eve::Value::fromJson()</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="ParticleBakeRecording_8cpp_source.html#l00029">recipe</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a329440429bca00bf7d6905ea82171804" name="a329440429bca00bf7d6905ea82171804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a329440429bca00bf7d6905ea82171804">&#9670;&#160;</a></span>isBound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::ForgeBench::isBound </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when a bag is currently bound. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8h_source.html">ForgeBench.h</a> 第 <a class="el" href="ForgeBench_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6799c6c1726eaa151ef2bea9c9e80902" name="a6799c6c1726eaa151ef2bea9c9e80902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6799c6c1726eaa151ef2bea9c9e80902">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp; eve::rpg::ForgeBench::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19ed6a49e5f9d6318cd461725bea73e9" name="a19ed6a49e5f9d6318cd461725bea73e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ed6a49e5f9d6318cd461725bea73e9">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp; eve::rpg::ForgeBench::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00571">eve::Result&lt; void &gt;::ignore()</a> , 以及 <a class="el" href="ProductionBindings_8cpp_source.html#l00094">eve::production::Production::release()</a>.</p>
+
+</div>
+</div>
+<a id="a579cda42fee693c50d1c00447326b8cc" name="a579cda42fee693c50d1c00447326b8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a579cda42fee693c50d1c00447326b8cc">&#9670;&#160;</a></span>queueHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::rpg::ForgeBench::queueHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Packed production handle for diagnostics (0 when unbound/released). </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeBorrow_8h_source.html#l00077">eve::script::RuntimeHandleRef&lt; Tag &gt;::isValid()</a> , 以及 <a class="el" href="RuntimeBorrow_8h_source.html#l00079">eve::script::RuntimeHandleRef&lt; Tag &gt;::packed()</a>.</p>
+
+</div>
+</div>
+<a id="a8688aded14883432c3cc5570ee328f45" name="a8688aded14883432c3cc5570ee328f45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8688aded14883432c3cc5570ee328f45">&#9670;&#160;</a></span>settle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::ForgeBench::settle </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Settle one ready craft or upgrade task into the bound bag. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EquipmentUpgrade_8cpp_source.html#l00380">eve::rpg::EquipmentUpgrade::settle()</a>, <a class="el" href="Crafting_8cpp_source.html#l00337">eve::rpg::Crafting::settle()</a>, <a class="el" href="ForgeBench_8cpp_source.html#l00312">syncEquipment()</a> , 以及 <a class="el" href="ProductionBindings_8cpp_source.html#l00024">taskId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00249">settleReady()</a>.</p>
+
+</div>
+</div>
+<a id="a5b53105b44211f326e854ea53a5f09a1" name="a5b53105b44211f326e854ea53a5f09a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b53105b44211f326e854ea53a5f09a1">&#9670;&#160;</a></span>settleReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::ForgeBench::settleReady </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Settle every ReadyToSettle / SettlementFailed task once. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of tasks that committed an Applied settlement. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00032">applied</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da3d22decfe1d53cf060d36265ca4ea879">eve::production::ReadyToSettle</a>, <a class="el" href="ForgeBench_8cpp_source.html#l00237">settle()</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52dae1804eb7b88f414a4117a1011b94a4c1">eve::production::SettlementFailed</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ForgeBench_8cpp_source.html#l00272">taskCount()</a> , 以及 <a class="el" href="ProductionBindings_8cpp_source.html#l00024">taskId</a>.</p>
+
+</div>
+</div>
+<a id="a957eef03370f68c7f1de9a60ef1509db" name="a957eef03370f68c7f1de9a60ef1509db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a957eef03370f68c7f1de9a60ef1509db">&#9670;&#160;</a></span>syncEquipment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::ForgeBench::syncEquipment </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refresh actor equipment modifiers when actor+equipment are bound. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EquipmentSystem_8cpp_source.html#l00087">eve::rpg::EquipmentSystem::syncEquipModifiers()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00237">settle()</a>.</p>
+
+</div>
+</div>
+<a id="a564fbe92a4a7864b3ac96dfa29d8d3fd" name="a564fbe92a4a7864b3ac96dfa29d8d3fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a564fbe92a4a7864b3ac96dfa29d8d3fd">&#9670;&#160;</a></span>taskCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::ForgeBench::taskCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task count currently retained by the forge queue. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00249">settleReady()</a>.</p>
+
+</div>
+</div>
+<a id="a16ff1d68774ad7de058651925d56116f" name="a16ff1d68774ad7de058651925d56116f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16ff1d68774ad7de058651925d56116f">&#9670;&#160;</a></span>taskDurationAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::ForgeBench::taskDurationAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task duration seconds at stable enumeration index. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a627f7d97fd4b82ed5c20b78a82b24b8d" name="a627f7d97fd4b82ed5c20b78a82b24b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a627f7d97fd4b82ed5c20b78a82b24b8d">&#9670;&#160;</a></span>taskIdAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::ForgeBench::taskIdAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task id at stable enumeration index, or empty. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="af85646be93e906c8d2f69737f2a5d13f" name="af85646be93e906c8d2f69737f2a5d13f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85646be93e906c8d2f69737f2a5d13f">&#9670;&#160;</a></span>taskKindAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::ForgeBench::taskKindAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task kind at stable enumeration index, or empty. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a89ec918c26af55cbd495ce775359f3dd" name="a89ec918c26af55cbd495ce775359f3dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ec918c26af55cbd495ce775359f3dd">&#9670;&#160;</a></span>taskProgressAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::ForgeBench::taskProgressAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task progress seconds at stable enumeration index. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00298">298</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a1de879700b6b6d657b462a852301fa8e" name="a1de879700b6b6d657b462a852301fa8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1de879700b6b6d657b462a852301fa8e">&#9670;&#160;</a></span>taskStateAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::ForgeBench::taskStateAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Task state name at stable enumeration index, or empty. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a3bd4f5255f944dc13003a1306c25d30a" name="a3bd4f5255f944dc13003a1306c25d30a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bd4f5255f944dc13003a1306c25d30a">&#9670;&#160;</a></span>tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::rpg::ForgeBench::tick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last accepted simulation tick, or zero before the first advance. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8h_source.html">ForgeBench.h</a> 第 <a class="el" href="ForgeBench_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00228">advance()</a>.</p>
+
+</div>
+</div>
+<a id="a5acf7ddb956bd3977a2c4da7d6a48bb6" name="a5acf7ddb956bd3977a2c4da7d6a48bb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5acf7ddb956bd3977a2c4da7d6a48bb6">&#9670;&#160;</a></span>unbind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::ForgeBench::unbind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear borrowed collaborators without releasing the production queue. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00127">~ForgeBench()</a>.</p>
+
+</div>
+</div>
+<a id="ad861bf96efe511b36e9cce79d9c518a2" name="ad861bf96efe511b36e9cce79d9c518a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad861bf96efe511b36e9cce79d9c518a2">&#9670;&#160;</a></span>upgrade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeReceipt.html">EquipmentUpgradeReceipt</a> &gt; eve::rpg::ForgeBench::upgrade </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeRecipe.html">EquipmentUpgradeRecipe</a>&#160;</td>
+          <td class="paramname"><em>recipe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bagSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expectedInstanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically pay materials and enqueue an equipment upgrade. </p>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00027">account</a>, <a class="el" href="EquipmentUpgrade_8cpp_source.html#l00040">bagSlot</a>, <a class="el" href="EquipmentUpgrade_8cpp_source.html#l00335">eve::rpg::EquipmentUpgrade::begin()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Bag_8h_source.html#l00036">eve::inventory::Bag::getId()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="EquipmentUpgrade_8h_source.html#l00048">eve::rpg::EquipmentUpgradeRequest::production</a>, <a class="el" href="ParticleBakeRecording_8cpp_source.html#l00029">recipe</a> , 以及 <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ForgeBench_8cpp_source.html#l00219">upgradeFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a06b40cba3d5597fe4e0efb2635db7c47" name="a06b40cba3d5597fe4e0efb2635db7c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06b40cba3d5597fe4e0efb2635db7c47">&#9670;&#160;</a></span>upgradeFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rpg_1_1EquipmentUpgradeReceipt.html">EquipmentUpgradeReceipt</a> &gt; eve::rpg::ForgeBench::upgradeFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bagSlot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expectedInstanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse an upgrade recipe JSON object and enqueue it for one bag instance. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Object with id, process, itemId, fromLevel, toLevel, ingredients, duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a> 第 <a class="el" href="ForgeBench_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EquipmentUpgrade_8cpp_source.html#l00040">bagSlot</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00177">eve::Value::fromJson()</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="ParticleBakeRecording_8cpp_source.html#l00029">recipe</a>, <a class="el" href="ForgeBench_8cpp_source.html#l00199">upgrade()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="ForgeBench_8h_source.html">ForgeBench.h</a></li>
+<li>src/modules/rpg/<a class="el" href="ForgeBench_8cpp_source.html">ForgeBench.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
