@@ -30,18 +30,15 @@ struct Component : Interface {
         if (eve::cap::query<Interface>() || eve::cap::listenerCount<Interface>() || eve::cap::listenerAt<Interface>(0))
             std::abort();
         ++destroyed;
+        if (destroyed != 1) std::abort();
         stage("component destruction complete");
+        std::fprintf(stderr, "eve.spawn-capability-shutdown/v1 destroyed=%d\n", destroyed);
+        std::fflush(stderr);
     }
 };
 struct Root : ecs::Entity {
     ENTITY(Root, ecs::Entity)
     void release() override { ecs::DestroyEntity(this); }
-};
-struct CheckAfterTable {
-    ~CheckAfterTable() {
-        stage("after-table destruction check");
-        if (destroyed != 1) std::abort();
-    }
 };
 }  // namespace
 int main() {
@@ -49,8 +46,9 @@ int main() {
     eve::installCrashHandler();
 #endif
     stage("main entered");
-    static CheckAfterTable last;
-    auto*                  root = Root::create();
+    // The default Table belongs to Foundation in SHARED builds. An EXE static
+    // cannot observe its destruction; the parent verifies after process exit.
+    auto* root = Root::create();
     stage("default-table root created");
     ecs::ComponentRef<Component>(root).emplace();
     stage("component publication complete; returning from main");

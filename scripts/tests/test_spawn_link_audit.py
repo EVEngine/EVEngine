@@ -1,6 +1,7 @@
 """A trim claim must reject contaminated, incomplete or stale actual build evidence."""
 
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -164,3 +165,29 @@ EVE_MODULE_map_LIB:INTERNAL=EVMap
             )
             with self.assertRaisesRegex(RuntimeError, "SHARED remains unverified"):
                 spawn_link_audit.audit(directory, "spawn-core-only", ["common", "spawn"])
+
+
+class CapabilityShutdownEvidenceTests(unittest.TestCase):
+    def test_parent_requires_normal_exit_and_exactly_one_completed_destruction(self):
+        marker = "eve.spawn-capability-shutdown/v1 destroyed=1"
+        cases = {
+            "success": (f'message("main returned")\nmessage("{marker}")\n', True),
+            "missing": ('message("main returned")\n', False),
+            "duplicate": (f'message("{marker}")\nmessage("{marker}")\n', False),
+            "wrong_count": ('message("eve.spawn-capability-shutdown/v1 destroyed=2")\n', False),
+            "unknown_version": ('message("eve.spawn-capability-shutdown/v2 destroyed=1")\n', False),
+            "failed_exit": (f'message("{marker}")\nmessage(FATAL_ERROR "teardown failed")\n', False),
+        }
+        verifier = Path(__file__).resolve().parents[2] / "cmake/spawn_check/VerifyCapabilityShutdown.cmake"
+        with tempfile.TemporaryDirectory() as directory:
+            child = Path(directory) / "child.cmake"
+            for name, (source, accepted) in cases.items():
+                with self.subTest(case=name):
+                    child.write_text(source, encoding="utf-8")
+                    result = subprocess.run(
+                        ["cmake", f"-DPROBE_COMMAND=cmake;-P;{child.as_posix()}", "-P", str(verifier)],
+                        capture_output=True, text=True, encoding="utf-8", check=False)
+                    self.assertEqual(result.returncode == 0, accepted, result.stdout + result.stderr)
+                    if accepted:
+                        self.assertLess(result.stderr.index("main returned"),
+                                        result.stderr.index("verified after process exit"))

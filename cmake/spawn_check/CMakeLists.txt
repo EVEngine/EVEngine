@@ -50,7 +50,10 @@ if(WIN32)
     target_link_libraries(eve_spawn_capability_shutdown_check PRIVATE EVBacktrace)
 endif()
 add_dependencies(eve_spawn_check eve_spawn_capability_shutdown_check)
-add_test(NAME profile.spawn.capabilityShutdown COMMAND eve_spawn_capability_shutdown_check)
+add_test(NAME profile.spawn.capabilityShutdown
+    COMMAND "${CMAKE_COMMAND}"
+        "-DPROBE_COMMAND=$<TARGET_FILE:eve_spawn_capability_shutdown_check>"
+        -P "${CMAKE_CURRENT_LIST_DIR}/VerifyCapabilityShutdown.cmake")
 set_tests_properties(profile.spawn.capabilityShutdown PROPERTIES TIMEOUT 30 LABELS "common;lifetime-contract")
 if(TARGET EVRPGSpawn)
     # Reuse the owning module's existing baseline tests for the canonical initializer migration.
