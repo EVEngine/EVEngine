@@ -83,40 +83,27 @@ std::vector<V2> samplePlaneCentres(std::uint32_t seed, float radius, float minDi
     }
     return centres;
 }
-/**
- * @brief Append one leaf as a rounded six-point petal.
- *
- * Petals are fan-triangulated from the base vertex, which lies on the convex
- * hull, so no centre vertex is needed. `normalAt` maps a world position to its
- * shading normal, which is how the cluster's spherical normal is transferred
- * onto an otherwise flat card.
- */
+// Rectangle cards carry an alpha-cutout leaf. Sphere normals remain independent
+// of the card orientation, so random tilt does not fragment the crown lighting.
 template <typename NormalAt>
-void addPetal(MeshBuild &out, V3 center, V3 right, V3 forward, float size, float roll, float u0, float u1,
-              float v0, float v1, bool doubleSided, const NormalAt &normalAt) {
+void addLeafCard(MeshBuild &out, V3 center, V3 right, V3 forward, float size, float aspect, float roll, float u0,
+                 float u1, float v0, float v1, bool doubleSided, const NormalAt &normalAt) {
     const float c = std::cos(roll), s = std::sin(roll);
-    const V3    axisX = add(mul(right, c), mul(forward, s));
-    const V3    axisY = add(mul(right, -s), mul(forward, c));
-
-    // Ovate outline: rounded body, soft tip — matches bush/tree leaf cards.
-    constexpr float kOutlineX[6] = {0.f, -0.40f, -0.46f, 0.f, 0.46f, 0.40f};
-    constexpr float kOutlineY[6] = {-0.48f, -0.18f, 0.16f, 0.50f, 0.16f, -0.18f};
-
+    const V3        axisX = mul(add(mul(right, c), mul(forward, s)), size * aspect);
+    const V3        axisY = mul(add(mul(right, -s), mul(forward, c)), size);
+    constexpr float xs[4] = {-0.5f, 0.5f, 0.5f, -0.5f};
+    constexpr float ys[4] = {-0.5f, -0.5f, 0.5f, 0.5f};
     const uint32_t base = uint32_t(out.getVertexCount());
-    for (int i = 0; i < 6; ++i) {
-        const V3    p = add(center, add(mul(axisX, kOutlineX[i] * size), mul(axisY, kOutlineY[i] * size)));
-        const V3    n = normalAt(p);
-        const float u = u0 + (0.5f + kOutlineX[i]) * (u1 - u0);
-        const float v = v0 + (0.5f + kOutlineY[i]) * (v1 - v0);
-        out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, u, v);
+    for (int i = 0; i < 4; ++i) {
+        const V3 p = add(center, add(mul(axisX, xs[i]), mul(axisY, ys[i])));
+        const V3 n = normalAt(p);
+        out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, u0 + (xs[i] + 0.5f) * (u1 - u0), v0 + (ys[i] + 0.5f) * (v1 - v0));
     }
-    for (int i = 1; i < 5; ++i) {
-        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
-    }
+    out.addTriangle(base, base + 1, base + 2);
+    out.addTriangle(base, base + 2, base + 3);
     if (doubleSided) {
-        for (int i = 1; i < 5; ++i) {
-            out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
-        }
+        out.addTriangle(base, base + 2, base + 1);
+        out.addTriangle(base, base + 3, base + 2);
     }
 }
 
@@ -218,7 +205,11 @@ int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc) {
             const float   v0    = (float(row) + inset) * spanV;
             const float   v1    = (float(row) + 1.f - inset) * spanV;
             const auto    shadedNormal = [&](V3 p) { return normalAt(p, planeNormal); };
-            addPetal(out, position, right, forward, size, roll, u0, u1, v0, v1, desc.doubleSided, shadedNormal);
+            const float   aspect       = randomRange(rng, 0.65f, 1.05f);
+            const V3      leafRight    = norm(add(right, mul(planeNormal, randomRange(rng, -0.25f, 0.25f))));
+            const V3      leafForward  = norm(sub(forward, mul(leafRight, dot(forward, leafRight))));
+            addLeafCard(out, position, leafRight, leafForward, size, aspect, roll, u0, u1, v0, v1, desc.doubleSided,
+                        shadedNormal);
             ++leaves;
         }
     }
