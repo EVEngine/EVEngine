@@ -13,6 +13,7 @@
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/WaterSplashMesh.h"
+#include "procgen/mesh/VesselGenerator.h"
 #include "procgen/road/BridgeGenerator.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/urban/UrbanOutput.h"
@@ -508,6 +509,7 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
+    registerVesselRecipes(*this);
     registerPrototypePieceRecipes(*this);
     registerMeshDeformationGeometryRecipes(*this);
     auto mesh = [](std::string id, std::string name) {
