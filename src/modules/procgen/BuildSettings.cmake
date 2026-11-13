@@ -22,6 +22,8 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   # scene adapters, while the normal EVProcgen target keeps the public facade
   # and all compatibility implementations unchanged.
   set(_eve_procgen_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/VesselGenerator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/VesselRecipes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/ArrowGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PcgSpawnProgress.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp

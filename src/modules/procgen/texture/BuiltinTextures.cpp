@@ -1,13 +1,14 @@
-#include "procgen/texture/TextureRecipe.h"
-#include "procgen/texture/NoiseField.h"
-#include "procgen/texture/PrototypeTextures.h"
-#include "procgen/texture/CableTextures.h"
-#include "procgen/texture/FloorTextures.h"
-#include "procgen/texture/ColorRamp.h"
-#include "procgen/texture/CloudField.h"
-#include "procgen/texture/CloudShadow.h"
 #include "procgen/PointSet.h"
 #include "procgen/road/RoadRecipes.h"
+#include "procgen/texture/CableTextures.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
+#include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/FloorTextures.h"
+#include "procgen/texture/NoiseField.h"
+#include "procgen/texture/PotteryTextures.h"
+#include "procgen/texture/PrototypeTextures.h"
+#include "procgen/texture/TextureRecipe.h"
 
 #include "image/ImageData.h"
 
@@ -921,7 +922,11 @@ std::unique_ptr<image::ImageData> genFlower(const Params &params, std::string &e
 }  // namespace
 
 const std::vector<TextureRecipeDef> &builtinTextureDefs() {
-    static const std::vector<TextureRecipeDef> defs = buildDefs();
+    static const std::vector<TextureRecipeDef> defs = [] {
+        auto result = buildDefs();
+        for (auto &pottery : potteryTextureDefinitions()) result.push_back(std::move(pottery));
+        return result;
+    }();
     return defs;
 }
 
