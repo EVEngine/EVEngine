@@ -8,10 +8,10 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <list>
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 namespace eve::map {
 namespace {
@@ -78,8 +78,8 @@ private:
 
 /** @brief 进程级持有脚本适配器（理由同伤害规则接缝：能力表是进程级的）。 */
 struct ScriptTileCollisionSinks {
-    std::vector<std::unique_ptr<ScriptTileCollisionSink>> live;
-    std::vector<std::unique_ptr<ScriptTileCollisionSink>> retired;
+    std::list<std::unique_ptr<ScriptTileCollisionSink>> live;
+    std::list<std::unique_ptr<ScriptTileCollisionSink>> retired;
 };
 
 ScriptTileCollisionSinks& scriptTileCollisionSinks() {
@@ -98,10 +98,15 @@ EVENGINE_API_WORLD void declareScriptTileCollisionSinkSeam() {
     ScriptProviderRegistry::instance().declareCapability(
         ITileCollisionSink::capabilityName,
         [&owned](const ScriptProviderHandle& handle) -> Result<void> {
-            auto adapter = std::make_unique<ScriptTileCollisionSink>(handle);
-            // 先注册再交所有权：从这一刻起 listener 表持有裸指针，`owned.live` 是让它有效的唯一原因。
-            cap::addListener<ITileCollisionSink>(adapter.get());
-            owned.live.push_back(std::move(adapter));
+            auto       adapter      = std::make_unique<ScriptTileCollisionSink>(handle);
+            const auto ownedAdapter = owned.live.insert(owned.live.end(), std::move(adapter));
+            try {
+                cap::addListener<ITileCollisionSink>(ownedAdapter->get());
+            } catch (...) {
+                cap::removeListener<ITileCollisionSink>(ownedAdapter->get());
+                owned.live.erase(ownedAdapter);
+                throw;
+            }
             return Result<void>::success();
         },
         [&owned](const ScriptProviderHandle& handle) -> Result<void> {
@@ -114,24 +119,20 @@ EVENGINE_API_WORLD void declareScriptTileCollisionSinkSeam() {
                 return Result<void>::success();
             }
             cap::removeListener<ITileCollisionSink>(match->get());
-            owned.retired.push_back(std::move(*match));
-            owned.live.erase(match);
+            owned.retired.splice(owned.retired.end(), owned.live, match);
             return Result<void>::success();
         });
 }
 
 EVENGINE_API_WORLD void withdrawScriptTileCollisionSinkSeam() {
     ScriptTileCollisionSinks& owned = scriptTileCollisionSinks();
-    for (auto& adapter : owned.live) {
-        cap::removeListener<ITileCollisionSink>(adapter.get());
-        owned.retired.push_back(std::move(adapter));
-    }
-    owned.live.clear();
+    for (auto& adapter : owned.live) cap::removeListener<ITileCollisionSink>(adapter.get());
+    owned.retired.splice(owned.retired.end(), owned.live);
 
-    // 连声明一起撤：模块不在了还留着接缝，只会让脚本发布出一个永远不会被派发的适配器。
-    ScriptProviderRegistry::instance()
-        .removeCapability(ITileCollisionSink::capabilityName)
-        .ignore("a module may be destroyed without ever having declared the seam");
+    auto& registry = ScriptProviderRegistry::instance();
+    if (registry.hasCapabilitySeam(ITileCollisionSink::capabilityName))
+        registry.removeCapability(ITileCollisionSink::capabilityName)
+            .ignore("withdraw the existing seam after its final native owner leaves");
 }
 
 }  // namespace eve::map

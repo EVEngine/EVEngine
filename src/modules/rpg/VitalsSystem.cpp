@@ -5,6 +5,7 @@
 #include "rpg/RPGActor.h"
 
 #include <algorithm>
+#include <type_traits>
 
 namespace eve::rpg {
 
@@ -14,7 +15,7 @@ std::vector<VitalsEvent>& vitalsEvents() { return detail::simulationEvents().vit
 void emit(RPGActor *actor, std::string resource, std::string action, double amount,
           std::string source, double current, double max) {
     VitalsEvent ev;
-    ev.actor = actor;
+    ev.actor    = ActorEventRef(*actor);
     ev.resource = std::move(resource);
     ev.action = std::move(action);
     ev.amount = amount;
@@ -49,11 +50,19 @@ double VitalsSystem::takeDamage(RPGActor *actor, const std::string &resource, do
     const double cur = getCurrent(actor, resource);
     if (cur <= 0.0) return 0.0;  // 已死，不再受伤
     const double applied = std::min(amount, cur);
-    current[resource] = cur - applied;
-    emit(actor, resource, "damage", applied, source, cur - applied, max);
-    if (cur - applied <= 0.0) {
-        emit(actor, resource, "death", applied, source, 0.0, max);
-    }
+    // Prepare every allocating fact before HP changes: a publication failure must not lose a real death.
+    const auto  reference = ActorEventRef(*actor);
+    VitalsEvent damage{reference, resource, "damage", applied, source, cur - applied, max};
+    const bool  lethal = cur - applied <= 0.0;
+    VitalsEvent death;
+    if (lethal) death = VitalsEvent{reference, resource, "death", applied, source, 0.0, max};
+    auto &events = vitalsEvents();
+    static_assert(std::is_nothrow_move_constructible_v<VitalsEvent>);
+    events.reserve(events.size() + (lethal ? 2 : 1));
+    // cur > 0 proves this resource already exists. Assignment and reserved event moves cannot allocate.
+    current.find(resource)->second = cur - applied;
+    events.push_back(std::move(damage));
+    if (lethal) events.push_back(std::move(death));
     return applied;
 }
 
@@ -95,6 +104,7 @@ bool VitalsSystem::isDead(RPGActor *actor, const std::string &resource) {
 }
 
 void VitalsSystem::pollEvents(std::vector<VitalsEvent> &out) {
+    if (&out == &vitalsEvents()) return;
     out.clear();
     out = std::move(vitalsEvents());
     vitalsEvents().clear();

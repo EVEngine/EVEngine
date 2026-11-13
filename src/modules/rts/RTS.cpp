@@ -1,11 +1,15 @@
 #include "rts/RTS.h"
+#include "combat/DamageCapture.h"
 #include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "crowd/Crowd.h"
+#include "definitions/DefinitionRegistryCapture.h"
+#include "definitions/Definitions.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "map/Fov.h"
 #include "map/Pathfinder.h"
 #include "rts/RTSAttributes.h"
+#include "rts/RTSComponentAccessInternal.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"
 #include "rts/RTSCrowdSurfaceInternal.h"
 #include "rts/RTSMission.h"
@@ -35,6 +39,29 @@ using script_internal::parseScriptSubjects;
 using script_internal::resolveEffectDefinition;
 
 bool validSubject(SubjectRef subject) { return subject.isValid(); }
+
+Result<weapon::WeaponEntity*> publishArchetypeWeapon(weapon::WeaponDefinitionRuntime& runtime,
+                                                     std::vector<ecs::EntityHandle>&  ownedWeapons) {
+    auto* entity = weapon::WeaponEntity::createWeapon();
+    if (entity == nullptr)
+        return Result<weapon::WeaponEntity*>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "ECS failed to create an RTS weapon instance", "weapon"));
+    auto unpublished = std::unique_ptr<weapon::WeaponEntity, void (*)(weapon::WeaponEntity*)>(
+        entity, [](weapon::WeaponEntity* value) { value->release(); });
+    auto applied = runtime.applyTo(entity);
+    if (!applied) return Result<weapon::WeaponEntity*>::failure(applied.status());
+    ownedWeapons.push_back(ecs::handle_of(entity));
+    unpublished.release();
+    return Result<weapon::WeaponEntity*>::success(entity, Status::success(StatusCode::Applied));
+}
+
+Result<weapon::WeaponEntity*> createArchetypeWeapon(definitions::DefinitionRegistry& registry,
+                                                    std::vector<ecs::EntityHandle>&  ownedWeapons,
+                                                    std::string_view definitionId, PersistentId instanceId) {
+    auto runtime = weapon::WeaponDefinitionRuntime::create(registry, definitionId, instanceId);
+    if (!runtime) return Result<weapon::WeaponEntity*>::failure(runtime.status());
+    return publishArchetypeWeapon(runtime.value(), ownedWeapons);
+}
 
 bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) noexcept {
     return left.table == right.table && left.type == right.type && left.id == right.id &&
@@ -146,8 +173,9 @@ bool owns(const std::vector<ecs::EntityHandle>& handles, const T& entity) {
 template <typename T>
 T* findSubject(const std::vector<ecs::EntityHandle>& handles, SubjectRef subject) {
     for (const auto& handle : handles) {
-        auto* entity = tryGetCurrent<T>(handle);
-        if (entity != nullptr && entity->identity()->subject == subject) return entity;
+        auto*       entity   = tryGetCurrent<T>(handle);
+        const auto* identity = entity ? detail::existingComponent<typename T::Identity>(*entity) : nullptr;
+        if (identity && identity->subject == subject) return entity;
     }
     return nullptr;
 }
@@ -173,11 +201,76 @@ struct RTS::GameplayRuntime {
 };
 
 RTS::RTS() : gameplayRuntime_(std::make_unique<GameplayRuntime>()) {
-    cap::addListener<IGameplayControlProvider>(this);
-    cap::addListener<IGameplayInstanceCatalog>(this);
+    try {
+        cap::addListener<IGameplayControlProvider>(this);
+        cap::addListener<IGameplayInstanceCatalog>(this);
+    } catch (...) {
+        cap::removeListener<IGameplayInstanceCatalog>(this);
+        cap::removeListener<IGameplayControlProvider>(this);
+        throw;
+    }
 }
 
+RTS::RTS(std::shared_ptr<ecs::Table> world) : RTS() { ownedWorld_ = std::move(world); }
+
+Result<void> RTS::validateCheckpointContext(const crowd::Crowd& backend, const map::Pathfinder& navigation,
+                                            const sensing::SensingWorld& sensing, const combat::DamageRuntime& damage,
+                                            const definitions::DefinitionRegistry& definitions,
+                                            RTSCheckpointAttachment                attachment) const {
+    if (attachment != RTSCheckpointAttachment::Attached && attachment != RTSCheckpointAttachment::Detached)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unknown native checkpoint attachment mode"));
+    if (!ownedWorld_ || ownedWorld_->is_deferred())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "Native context requires an idle actual owning RTS Table"));
+    const bool attached = attachment == RTSCheckpointAttachment::Attached;
+    if (definitions_ != &definitions ||
+        (attached && (crowd_ != &backend || !crowdLifetime_.isAlive() || pathfinder_ != &navigation ||
+                      sensing_ != &sensing || !sensingLifetime_.isAlive() || damage_ != &damage)) ||
+        (!attached && (crowd_ || pathfinder_ || sensing_ || damage_)))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict,
+                              "Native context has foreign, retired or unexpectedly attached simulation services"));
+    if (resourceCredit_ || repairDebit_ || navigationEvent_ || fogProvider_ || fireLineQuery_ || combatHeightQuery_ ||
+        projectileCollisionQuery_ || aiProductionRequest_ || matchResourceQuery_ || passiveIncomeCredit_ ||
+        ammoProductionPurchase_ || productionSpawn_ || productionSpawnPosition_ || reinforcementCancel_ ||
+        !fogState_.bindings.empty() || scriptRuntime_ || !gameplayRuntime_ || gameplayRuntime_->action.executionCount())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "Native context requires explicit admission for external "
+                                                       "callbacks, fog/script or alternate action executor state"));
+    return Result<void>::success();
+}
+
+Result<combat::DamageCapture> RTS::captureDamage(const combat::DamageRuntime& owner) const {
+    using R = Result<combat::DamageCapture>;
+    if (!ownedWorld_ || ownedWorld_->is_deferred())
+        return R::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                            "Damage capture requires an idle actual owning RTS Table"));
+    if (damage_ != &owner)
+        return R::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Game damage owner is not the actual bound RTS provider"));
+    return owner.capture();
+}
+Result<definitions::DefinitionRegistryCapture> RTS::captureDefinitions(
+    const definitions::DefinitionRegistry& owner) const {
+    using R = Result<definitions::DefinitionRegistryCapture>;
+    if (!ownedWorld_ || ownedWorld_->is_deferred())
+        return R::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                            "Definition capture requires an idle actual owning RTS Table"));
+    if (definitions_ != &owner)
+        return R::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                            "Game content owner is not the actual bound RTS definition registry"));
+    return owner.capture();
+}
+
+std::shared_ptr<ecs::Table> RTS::ownedWorld() const noexcept { return ownedWorld_; }
+
+LifetimeWitness RTS::lifetimeWitness() const noexcept { return lifetime_.witness(); }
+
 RTS::~RTS() {
+    lifetime_.reset();
+    std::optional<ecs::ScopedTable> scope;
+    if (ownedWorld_) scope.emplace(*ownedWorld_);
     cap::removeListener<IGameplayInstanceCatalog>(this);
     cap::removeListener<IGameplayControlProvider>(this);
     FogOfWarSystem::clear(fogState_);
@@ -205,13 +298,15 @@ void RTS::setFogProvider(FogProvider provider) noexcept {
 }
 
 void RTS::setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRuntime* damage) noexcept {
-    if (sensing_ != nullptr && (sensing_ != sensing || damage == nullptr)) {
-        for (const auto& id : combatState_.mirroredSubjects)
-            sensing_->remove(id).ignore("best-effort RTS sensing mirror cleanup");
+    if (sensing_ != nullptr && (sensing_ != sensing || !sensingLifetime_.isAlive() || damage == nullptr)) {
+        if (sensingLifetime_.isAlive())
+            for (const auto& id : combatState_.mirroredSubjects)
+                sensing_->remove(id).ignore("best-effort RTS sensing mirror cleanup");
         combatState_.mirroredSubjects.clear();
         combatState_.blockedSubjects.clear();
     }
     sensing_ = sensing;
+    sensingLifetime_ = sensing ? sensing->lifetimeWitness() : LifetimeWitness{};
     damage_  = damage;
 }
 
@@ -394,6 +489,9 @@ Result<GameplayObservation> RTS::advanceGameplay(const GameplaySession& session,
     if (simulationStep.tick <= player->selection()->tick)
         return Result<GameplayObservation>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "RTS simulation tick must increase", "step.tick"));
+    if (player->selection()->revision == std::numeric_limits<std::uint64_t>::max())
+        return Result<GameplayObservation>::failure(Diagnostic::error(
+            DiagnosticCode::InvariantViolation, "RTS player selection revision exhausted", "selection.revision"));
     auto advanced = step(simulationStep, gameplayRuntime_->adapter);
     if (!advanced) return Result<GameplayObservation>::failure(advanced.status());
     std::move(advanced).takeValue();
@@ -431,22 +529,23 @@ Result<Unit*> RTS::newUnit(SubjectRef subject, LogicalId definition) {
     if (unit == nullptr)
         return Result<Unit*>::failure(
             Diagnostic::error(DiagnosticCode::Failed, "ECS failed to create an RTS Unit", "unit"));
+    // Tentative ECS ownership ends only after the domain index accepts this root.
+    auto unpublished           = std::unique_ptr<Unit, void (*)(Unit*)>(unit, [](Unit* value) { value->release(); });
     unit->attributes()->values = AttributeComponent{};
     if (!scriptRuntime_ || !scriptRuntime_->spawningProduction) {
         auto attributes = RTSUnitAttributeAdapter::ensure(*unit);
         if (!attributes) {
             const auto status = attributes.status();
-            unit->release();
             return Result<Unit*>::failure(status);
         }
     }
     auto effects = unit->effects()->values.bindSubject(subject);
     if (!effects) {
         const auto status = effects.status();
-        unit->release();
         return Result<Unit*>::failure(status);
     }
     units_.push_back(ecs::handle_of(unit));
+    unpublished.release();
     return Result<Unit*>::success(unit, Status::success(StatusCode::Applied));
 }
 
@@ -551,28 +650,23 @@ Result<Faction*> RTS::newFaction(SubjectRef subject) {
     return Result<Faction*>::success(faction, Status::success(StatusCode::Applied));
 }
 
+Result<weapon::WeaponEntity*> RTS::publishPreparedWeapon(weapon::WeaponDefinitionRuntime& runtime) {
+    return publishArchetypeWeapon(runtime, weapons_);
+}
+
 Result<void> RTS::materialize(Unit& unit) {
     if (definitions_ == nullptr || !unit.definition()->id.isValid())
         return Result<void>::success(Status::success(StatusCode::NoOp));
     const std::size_t      weaponCount = weapons_.size();
-    ArchetypeWeaponFactory factory     = [this](std::string_view definitionId,
-                                            PersistentId     instanceId) -> Result<weapon::WeaponEntity*> {
-        auto runtime = weapon::WeaponDefinitionRuntime::create(*definitions_, definitionId, instanceId);
+    auto                   recipe      = PreparedUnitArchetype::prepare(*definitions_, unit.definition()->id);
+    if (!recipe) return Result<void>::failure(recipe.status());
+    CapturedArchetypeWeaponFactory factory = [this](const definitions::Definition& source,
+                                                    PersistentId instanceId) -> Result<weapon::WeaponEntity*> {
+        auto runtime = weapon::WeaponDefinitionRuntime::prepareCaptured(source, instanceId);
         if (!runtime) return Result<weapon::WeaponEntity*>::failure(runtime.status());
-        auto* entity = weapon::WeaponEntity::createWeapon();
-        if (entity == nullptr)
-            return Result<weapon::WeaponEntity*>::failure(
-                Diagnostic::error(DiagnosticCode::Failed, "ECS failed to create an RTS weapon instance", "weapon"));
-        auto applied = runtime.value().applyTo(entity);
-        if (!applied) {
-            const Status status = applied.status();
-            entity->release();
-            return Result<weapon::WeaponEntity*>::failure(status);
-        }
-        weapons_.push_back(ecs::handle_of(entity));
-        return Result<weapon::WeaponEntity*>::success(entity, Status::success(StatusCode::Applied));
+        return publishPreparedWeapon(runtime.value());
     };
-    auto applied = RTSArchetypeMaterializer::apply(*definitions_, unit, factory);
+    auto applied = recipe.value().apply(unit, factory);
     if (!applied) {
         while (weapons_.size() > weaponCount) {
             if (auto* entity = dynamic_cast<weapon::WeaponEntity*>(ecs::try_get(weapons_.back()))) entity->release();
@@ -588,20 +682,7 @@ Result<void> RTS::materialize(Building& building) {
     const std::size_t      weaponCount = weapons_.size();
     ArchetypeWeaponFactory factory     = [this](std::string_view definitionId,
                                             PersistentId     instanceId) -> Result<weapon::WeaponEntity*> {
-        auto runtime = weapon::WeaponDefinitionRuntime::create(*definitions_, definitionId, instanceId);
-        if (!runtime) return Result<weapon::WeaponEntity*>::failure(runtime.status());
-        auto* entity = weapon::WeaponEntity::createWeapon();
-        if (entity == nullptr)
-            return Result<weapon::WeaponEntity*>::failure(
-                Diagnostic::error(DiagnosticCode::Failed, "ECS failed to create an RTS weapon instance", "weapon"));
-        auto applied = runtime.value().applyTo(entity);
-        if (!applied) {
-            const Status status = applied.status();
-            entity->release();
-            return Result<weapon::WeaponEntity*>::failure(status);
-        }
-        weapons_.push_back(ecs::handle_of(entity));
-        return Result<weapon::WeaponEntity*>::success(entity, Status::success(StatusCode::Applied));
+        return createArchetypeWeapon(*definitions_, weapons_, definitionId, instanceId);
     };
     auto applied = RTSArchetypeMaterializer::apply(*definitions_, building, factory);
     if (!applied) {
@@ -627,39 +708,42 @@ Result<Unit*> RTS::newFactionUnit(Faction& faction, SubjectRef subject, LogicalI
             weapons_.pop_back();
         }
     };
+    // Borrow the member ledger only after root rollback is armed; lazy component access may allocate.
+    std::vector<ecs::EntityHandle>* memberLedger = nullptr;
+    std::size_t                     memberCount  = 0;
+    const auto                      rollback     = [&](Unit* unpublished) noexcept {
+        if (memberLedger) memberLedger->resize(memberCount);
+        rollbackWeapons();
+        units_.pop_back();
+        unpublished->release();
+    };
+    auto unpublished = std::unique_ptr<Unit, decltype(rollback)>(unit, rollback);
+    memberLedger     = &faction.members()->units;
+    memberCount      = memberLedger->size();
     auto archetype = materialize(*unit);
     if (!archetype) {
         const Status status = archetype.status();
-        unit->release();
-        units_.pop_back();
-        rollbackWeapons();
         return Result<Unit*>::failure(status);
     }
     auto link = FactionLink::bind(ecs::handle_of(&faction));
     if (!link) {
         const Status status = link.status();
-        unit->release();
-        units_.pop_back();
-        rollbackWeapons();
         return Result<Unit*>::failure(status);
     }
     unit->faction()->link = std::move(link).takeValue();
-    faction.members()->units.push_back(ecs::handle_of(unit));
+    memberLedger->push_back(ecs::handle_of(unit));
     if (scriptRuntime_ && scriptRuntime_->configured) {
         const std::string key         = unit->identity()->subject.format();
         auto              crowdLink   = CrowdLink::bind(key);
         auto              sensingLink = SensingLink::bind(key);
         if (!crowdLink || !sensingLink) {
             const Status status = !crowdLink ? crowdLink.status() : sensingLink.status();
-            faction.members()->units.pop_back();
-            unit->release();
-            units_.pop_back();
-            rollbackWeapons();
             return Result<Unit*>::failure(status);
         }
         unit->crowd()->link   = std::move(crowdLink).takeValue();
         unit->sensing()->link = std::move(sensingLink).takeValue();
     }
+    unpublished.release();
     return Result<Unit*>::success(unit, Status::success(StatusCode::Applied));
 }
 
@@ -1169,7 +1253,11 @@ Result<int> RTS::addUnitReserveAmmo(Unit& unit, int rounds) const {
     if (resource.kind != weapon::ResourceKind::Ammo || resource.infinite)
         return Result<int>::failure(Diagnostic::error(
             DiagnosticCode::Conflict, "RTS unit weapon has no finite reserve ammunition", "unit.weapon.resource"));
-    if (auto* pool = weaponEntity->state()->ammoPool) {
+    if (weaponEntity->state()->ammoPool.isBound()) {
+        auto* pool = weaponEntity->state()->ammoPool.resolve();
+        if (!pool)
+            return Result<int>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "RTS ammunition pool retired", "unit.weapon.ammoPool"));
         if (pool->state()->max < 0)
             return Result<int>::failure(Diagnostic::error(
                 DiagnosticCode::Conflict, "RTS unit weapon ammunition pool is infinite", "unit.weapon.ammoPool"));
@@ -1375,9 +1463,11 @@ Value RTS::inspectState() const {
         if (auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(unit->weapon()->link.resolve())) {
             const auto& resource = weaponEntity->state()->resource;
             if (resource.kind == weapon::ResourceKind::Ammo && !resource.infinite) {
-                if (auto* pool = weaponEntity->state()->ammoPool) {
-                    reserveAmmo         = pool->state()->count;
-                    reserveAmmoCapacity = pool->state()->max;
+                if (weaponEntity->state()->ammoPool.isBound()) {
+                    if (auto* pool = weaponEntity->state()->ammoPool.resolve()) {
+                        reserveAmmo         = pool->state()->count;
+                        reserveAmmoCapacity = pool->state()->max;
+                    }
                 } else {
                     reserveAmmo         = resource.reserve;
                     reserveAmmoCapacity = weaponEntity->definition()->def == nullptr
@@ -1742,6 +1832,9 @@ Result<RTSCancelProductionReceipt> RTS::cancelProduction(Building& building, res
 }
 
 Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionExecutor& executor) {
+    if (sensing_ && !sensingLifetime_.isAlive())
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "RTS sensing provider retired", "sensing"));
     auto provider = checkCrowdLifetime();
     if (!provider) return Result<std::size_t>::failure(provider.status());
     if (crowdFlowNavigation_ && crowdFlowNavigation_->enabled() && !crowd_)
@@ -1910,6 +2003,9 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
         processed += std::move(projectileImpacts).takeValue();
     }
     if (sensing_ != nullptr && damage_ != nullptr) {
+        if (!sensingLifetime_.isAlive())
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::PreconditionViolation, "RTS sensing provider retired during step", "sensing"));
         auto combat =
             CombatFireSystem::step(simulationStep, combatState_, *sensing_, *damage_, &projectiles_, fireLineQuery_,
                                    pathfinder_, navigationGrid_, combatHeightQuery_, damageEvents, fireEvents);
@@ -3377,12 +3473,13 @@ void RTS::removeUnitRoot(Unit& unit, UnitRemovalReason reason) {
         crowd_->removeNamedAgent(unit.crowd()->link.key());
     const std::string subjectKey = subject.format();
     if (reason != UnitRemovalReason::SpawnRollback) {
-        if (sensing_ != nullptr) sensing_->remove(subjectKey).ignore("best-effort RTS sensing cleanup");
+        if (sensing_ != nullptr && sensingLifetime_.isAlive())
+            sensing_->remove(subjectKey).ignore("best-effort RTS sensing cleanup");
         combatState_.mirroredSubjects.erase(subjectKey);
         combatState_.blockedSubjects.erase(subjectKey);
     }
 
-    if (reason != UnitRemovalReason::GameplayReferencesPrepared) {
+    {
         for (const auto& nodeHandle : resourceNodes_) {
             if (auto* node = dynamic_cast<ResourceNode*>(ecs::try_get(nodeHandle)))
                 std::erase_if(node->harvest()->workers, [&](const auto& value) { return sameHandle(value, handle); });
@@ -3425,12 +3522,21 @@ void RTS::removeUnitRoot(Unit& unit, UnitRemovalReason reason) {
         }
     }
     const auto weaponHandle = unit.weapon()->link.handle();
-    if (auto* weapon = dynamic_cast<weapon::WeaponEntity*>(unit.weapon()->link.resolve())) weapon->release();
-    if (reason != UnitRemovalReason::GameplayReferencesPrepared) {
-        std::erase_if(weapons_, [&](const auto& value) { return sameHandle(value, weaponHandle); });
-        std::erase_if(units_, [&](const auto& value) { return sameHandle(value, handle); });
+    std::erase_if(weapons_, [&](const auto& value) { return sameHandle(value, weaponHandle); });
+    std::erase_if(units_, [&](const auto& value) { return sameHandle(value, handle); });
+    if (reason == UnitRemovalReason::SpawnRollback) {
+        if (auto* weapon = dynamic_cast<weapon::WeaponEntity*>(unit.weapon()->link.resolve())) weapon->release();
+        unit.release();
+    } else {
+        releaseUnreferencedUnit(unit);
     }
-    if (scriptRuntime_ && reason != UnitRemovalReason::SpawnRollback)
+}
+
+void RTS::releaseUnreferencedUnit(Unit& unit) {
+    const auto subject = unit.identity()->subject;
+    if (auto* component = detail::existingComponent<Unit::Weapon>(unit))
+        if (auto* weapon = dynamic_cast<weapon::WeaponEntity*>(component->link.resolve())) weapon->release();
+    if (scriptRuntime_)
         std::erase_if(scriptRuntime_->paidProduction,
                       [&](const auto& value) { return value.resultSubject == subject; });
     unit.release();
@@ -3440,7 +3546,8 @@ void RTS::removeBuildingRoot(Building& building, bool destroyOccupants) {
     const auto        handle     = ecs::handle_of(&building);
     const SubjectRef  subject    = building.identity()->subject;
     const std::string subjectKey = subject.format();
-    if (sensing_ != nullptr) sensing_->remove(subjectKey).ignore("best-effort RTS sensing cleanup");
+    if (sensing_ != nullptr && sensingLifetime_.isAlive())
+        sensing_->remove(subjectKey).ignore("best-effort RTS sensing cleanup");
     combatState_.mirroredSubjects.erase(subjectKey);
     combatState_.blockedSubjects.erase(subjectKey);
     const auto occupants = building.garrison()->occupants;
@@ -3531,25 +3638,30 @@ Result<void> RTS::remove(SubjectRef subject) {
 
 Result<std::size_t> RTS::cleanupDestroyed() {
     EV_PROFILE_MODULE("rts", "RTS::cleanupDestroyed");
+    if (ecs::current()->is_deferred())
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "RTS cleanup requires a domain outside Views", "cleanup"));
     std::vector<ecs::EntityHandle> deadUnits;
     std::vector<ecs::EntityHandle> deadBuildings;
     for (const auto& handle : units_) {
         auto* unit = tryGetCurrent<Unit>(handle);
-        if (unit != nullptr && (!unit->durability()->alive || unit->durability()->state.health <= 0.0))
-            deadUnits.push_back(handle);
+        const auto* durability = unit ? detail::existingComponent<Unit::Durability>(*unit) : nullptr;
+        if (durability && (!durability->alive || durability->state.health <= 0.0)) deadUnits.push_back(handle);
     }
     for (const auto& handle : buildings_) {
         auto* building = tryGetCurrent<Building>(handle);
-        if (building != nullptr && (!building->integrity()->alive || building->integrity()->state.health <= 0.0))
-            deadBuildings.push_back(handle);
+        const auto* integrity = building ? detail::existingComponent<Building::Integrity>(*building) : nullptr;
+        if (integrity && (!integrity->alive || integrity->state.health <= 0.0)) deadBuildings.push_back(handle);
     }
     if (deadUnits.empty() && deadBuildings.empty())
         return Result<std::size_t>::success(0, Status::success(StatusCode::NoOp));
     const bool batchReady = deadBuildings.empty() && std::all_of(deadUnits.begin(), deadUnits.end(), [&](auto handle) {
                                 auto* unit = tryGetCurrent<Unit>(handle);
-                                if (!unit || !unit->containment()->occupants.empty()) return false;
-                                if (crowd_ && crowdLifetime_.isAlive() && unit->crowd()->link.isBound()) {
-                                    const auto settings = unit->crowd();
+                                if (!unit) return false;
+                                const auto* containment = detail::existingComponent<Unit::Containment>(*unit);
+                                if (containment && !containment->occupants.empty()) return false;
+                                const auto* settings = detail::existingComponent<Unit::Crowd>(*unit);
+                                if (crowd_ && crowdLifetime_.isAlive() && settings && settings->link.isBound()) {
                                     if (settings->runtimeBindingKey != settings->link.key() ||
                                         !crowd_->isAgentAlive({settings->runtimeAgent, settings->runtimeOwner}))
                                         return false;
@@ -3557,12 +3669,8 @@ Result<std::size_t> RTS::cleanupDestroyed() {
                                 return true;
                             });
     if (batchReady) {
-        auto prepared = prepareUnitRemovalBatch(deadUnits);
-        if (!prepared) return Result<std::size_t>::failure(prepared.status());
-        for (auto handle : deadUnits) {
-            if (auto* unit = tryGetCurrent<Unit>(handle))
-                removeUnitRoot(*unit, UnitRemovalReason::GameplayReferencesPrepared);
-        }
+        auto removed = removeUnitBatch(deadUnits);
+        if (!removed) return Result<std::size_t>::failure(removed.status());
         return Result<std::size_t>::success(deadUnits.size(), Status::success(StatusCode::Applied));
     }
     const auto before = unitCount() + buildingCount();

@@ -35,7 +35,6 @@ Value projectFlowProgress(Crowd::FlowBuildProgress progress) {
                                {"directionCells", Value(progress.directionCells)}});
 }
 }  // namespace
-void Crowd::clearNavigationRequests() noexcept { navigationRequests_.reset(); }
 
 Result<std::reference_wrapper<Crowd::NavigationRequests::Entry>> Crowd::NavigationRequests::resolve(
     std::uint64_t currentOwner, const ssq::Table& token) {

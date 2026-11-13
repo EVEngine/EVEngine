@@ -1,12 +1,13 @@
 #include "map/TileConfig.h"
+#include "map/TileConfigInternal.inl"
 #include "map/TileOrientation.h"
 
 #include "common/Json.h"
 #include "common/Module.h"
 #include "common/Xml.h"
-#include "data/DataModule.h"
-#include "filesystem/Filesystem.h"
+#include "data/DataCodec.h"
 #include "filesystem/FileData.h"
+#include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 #include "graphics/Graphics.h"
 
@@ -271,17 +272,18 @@ std::string resolveAssetPath(const std::string &ownerPath, const std::string &re
     return (std::filesystem::path(ownerPath).parent_path() / reference).lexically_normal().generic_string();
 }
 
-bool readImportText(eve::filesystem::Filesystem *fs, const std::string &path, std::string &text) {
+enum class MapReadPolicy { ProjectOnly, NativeImport };
+bool readImportText(eve::service::IFileSystem *fs, const std::string &path, std::string &text,
+                    MapReadPolicy policy = MapReadPolicy::NativeImport) {
     if (fs) {
-        try {
-            std::unique_ptr<eve::filesystem::FileData> bytes(fs->read(path));
-            if (bytes && bytes->getSize() > 0) {
-                text.assign(static_cast<const char *>(bytes->getData()), bytes->getSize());
-                return true;
-            }
-        } catch (...) {
+        std::vector<std::uint8_t> bytes;
+        if (fs->readFile(path, bytes) && !bytes.empty()) {
+            text.assign(bytes.begin(), bytes.end());
+            return true;
         }
     }
+
+    if (policy == MapReadPolicy::ProjectOnly) return false;
     std::ifstream input(std::filesystem::path(path), std::ios::binary);
     if (!input) return false;
     std::ostringstream stream;
@@ -290,13 +292,14 @@ bool readImportText(eve::filesystem::Filesystem *fs, const std::string &path, st
     return !text.empty();
 }
 
-eve::json::Document readJsonDocument(eve::filesystem::Filesystem *fs, const std::string &path, std::string *error) {
+eve::json::Document readJsonDocument(eve::service::IFileSystem *fs, const std::string &path, std::string *error,
+                                     MapReadPolicy policy = MapReadPolicy::NativeImport) {
     if (!fs) {
         if (error) *error = "map.import.filesystem-unavailable: " + path;
         return {};
     }
     std::string text;
-    if (!readImportText(fs, path, text)) {
+    if (!readImportText(fs, path, text, policy)) {
         if (error) *error = "map.import.external-tileset-empty: " + path;
         return {};
     }
@@ -311,12 +314,12 @@ eve::json::Document readJsonDocument(eve::filesystem::Filesystem *fs, const std:
     return document;
 }
 
-TilesetInfo readTsxTileset(eve::filesystem::Filesystem *fs, const std::string &path, int firstGid,
-                           std::string *error) {
+TilesetInfo readTsxTileset(eve::service::IFileSystem *fs, const std::string &path, int firstGid, std::string *error,
+                           MapReadPolicy policy = MapReadPolicy::NativeImport) {
     TilesetInfo info;
     info.firstGid = firstGid;
     std::string text;
-    if (!readImportText(fs, path, text)) {
+    if (!readImportText(fs, path, text, policy)) {
         if (error) *error = "map.import.external-tileset-empty: " + path;
         return info;
     }
@@ -774,8 +777,7 @@ void parseObjectGroup(const Json &group, std::vector<MapObject> &out) {
 void abandonLayers(std::vector<TileLayer *> &layers) {
     for (TileLayer *layer : layers) {
         if (!layer) continue;
-        layer->clear();
-        layer->setVisible(false);
+        ecs::DestroyEntity(layer);
     }
     layers.clear();
 }
@@ -809,8 +811,8 @@ void flattenLayers(const Json &source, std::vector<LayerEntry> &out, float paren
     }
 }
 
-std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPath,
-                                      eve::filesystem::Filesystem *fs, std::string *error) {
+std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPath, eve::service::IFileSystem *fs,
+                                      std::string *error, MapReadPolicy policy = MapReadPolicy::NativeImport) {
     std::vector<TilesetInfo> result;
     // Keep external JSON documents alive: TilesetInfo reads image paths as
     // strings (copied), but we still need the Document while reading fields.
@@ -831,13 +833,13 @@ std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPa
             if (o.has("source")) {
                 const std::string source = resolveAssetPath(mapPath, o.getString("source"));
                 if (std::filesystem::path(source).extension() == ".tsx") {
-                    TilesetInfo info = readTsxTileset(fs, source, firstGid, error);
+                    TilesetInfo info = readTsxTileset(fs, source, firstGid, error, policy);
                     if (error && !error->empty()) return {};
                     info.sourcePath = source;
                     result.push_back(std::move(info));
                     continue;
                 }
-                ownedDocs.push_back(readJsonDocument(fs, source, error));
+                ownedDocs.push_back(readJsonDocument(fs, source, error, policy));
                 if (!ownedDocs.back().valid()) return {};
                 TilesetInfo info = readTilesetObject(ownedDocs.back().root(), firstGid);
                 info.sourcePath  = source;
@@ -866,8 +868,16 @@ std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPa
     return result;
 }
 
+void bindMapAssetKinds(eve::filesystem::HotReload &hot, const std::string &path,
+                       const std::vector<TilesetInfo> &tilesets) {
+    hot.bind(path, "tilemap");
+    for (const auto &tileset : tilesets)
+        if (!tileset.sourcePath.empty()) hot.bind(tileset.sourcePath, "tilemap");
+}
+
 std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path, eve::filesystem::Filesystem *fs,
-                                       std::vector<MapObject> *objects, std::string *error) {
+                                       std::vector<MapObject> *objects, std::string *error,
+                                       eve::service::IFileSystem *input = nullptr) {
     std::vector<TileLayer *> out;
     if (!root || !root.isObject()) {
         if (error) *error = "config root must be object";
@@ -890,7 +900,8 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
     TileLayer::Config orientCheck;
     if (!parseOrientation(root, &orientCheck, error)) return out;
 
-    std::vector<TilesetInfo> tilesets = readTilesets(root, path, fs, error);
+    std::vector<TilesetInfo> tilesets = readTilesets(root, path, input ? input : fs, error,
+                                                     input ? MapReadPolicy::ProjectOnly : MapReadPolicy::NativeImport);
     if (root.has("tilesets") && tilesets.empty() && error && !error->empty()) return out;
     if (objects) objects->clear();
 
@@ -905,7 +916,7 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
                 fs->watch(path);
                 if (auto *hot =
                         eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
-                    hot->bind(path, "tilemap");
+                    bindMapAssetKinds(*hot, path, tilesets);
             }
         }
         for (const TilesetInfo &tileset : tilesets) {
@@ -913,8 +924,6 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
             res->dependencyPaths.push_back(tileset.sourcePath);
             res->dependencyModtimes.push_back(fileModtime(tileset.sourcePath));
             if (fs) fs->watch(tileset.sourcePath);
-            if (auto *hot = eve::ModuleManager::getInstance<eve::filesystem::HotReload>("HotReload"))
-                hot->bind(tileset.sourcePath, "tilemap");
         }
         if (root.has("autoReload")) res->autoReload = root.getBool("autoReload", true);
     };
@@ -935,15 +944,13 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
                 TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
                 if (!applyMapGlobals(layer, root, error)) {
                     abandonLayers(out);
-                    layer->clear();
-                    layer->setVisible(false);
+                    ecs::DestroyEntity(layer);
                     return {};
                 }
                 applyTilesets(layer, tilesets);
                 if (!applyOneLayerObject(layer, lo, mapW, mapH, error)) {
                     abandonLayers(out);
-                    layer->clear();
-                    layer->setVisible(false);
+                    ecs::DestroyEntity(layer);
                     return {};
                 }
                 if (!lo.has("layer") && !lo.has("id")) layer->setLayer(sort);
@@ -960,15 +967,13 @@ std::vector<TileLayer *> loadMapObject(const Json &root, const std::string &path
 
     TileLayer *layer = TileLayer::createLayer(mapW, mapH, tileW, tileH);
     if (!applyMapGlobals(layer, root, error)) {
-        layer->clear();
-        layer->setVisible(false);
+        ecs::DestroyEntity(layer);
         return {};
     }
     applyTilesets(layer, tilesets);
     if (root.has("data")) {
         if (!applyFlatLayerData(layer, root, error)) {
-            layer->clear();
-            layer->setVisible(false);
+            ecs::DestroyEntity(layer);
             return {};
         }
     }
@@ -1178,6 +1183,20 @@ std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObj
         return {};
     }
     return loadMapObject(doc.root(), {}, nullptr, objects, error);
+}
+
+std::vector<TileLayer *> detail::prepareMapAssetText(const std::string &json, const std::string &path,
+                                                     service::IFileSystem &files, std::vector<MapObject> *objects,
+                                                     std::string *error) {
+    if (error) error->clear();
+    std::string parseError;
+    auto        doc = eve::json::Document::parse(json, &parseError);
+    if (!doc.valid() || !doc.root().isObject()) {
+        if (error) *error = parseError.empty() ? "invalid json" : parseError;
+        return {};
+    }
+    // No filesystem/HotReload subscriptions while parsing isolated candidates.
+    return loadMapObject(doc.root(), path, nullptr, objects, error, &files);
 }
 
 std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,

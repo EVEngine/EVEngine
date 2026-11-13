@@ -1,4 +1,11 @@
 #pragma once
+/** @file RPGActor.h
+ * @brief rpg module-interface: canonical actor state and versioned checkpoint admission.
+ * @remarks Data boundary includes cast clocks and coordinator-supplied typed target bindings. No new capability,
+ * event, script or tool endpoint; existing script checkpoint facades use the same codec without a target context.
+ * Subject registration is an external primary key: coordinators save it in actor records; body checkpoints
+ * never clone or rename ActorIdentity.
+ */
 #include "common/Export.h"
 
 
@@ -16,17 +23,23 @@
  */
 
 #include "common/ECS.h"
+#include "rpg/ActorExecutionOrder.h"
+#include "rpg/ActorIdentity.h"
 #include "rpg/AttributeTypes.h"
-#include "rpg/StatusTypes.h"
 #include "rpg/SkillTypes.h"
+#include "rpg/StatusTypes.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::rpg {
+class SkillConditionBindings;
 
+class PreparedMemberActor;
+class SkillContent;
 class RPGSaveSession;
 class Party;
 
@@ -67,6 +80,10 @@ public:
     struct Skills {
         std::unordered_map<std::string, SkillRuntime> known;
         CastingState casting;
+        /** @brief Actual immutable condition executor owner, shared by casting and spawn archive capture.
+         * @remarks Process-local provider; never serialized as code. Restore must explicitly rebind matching revisions.
+         */
+        std::shared_ptr<const SkillConditionBindings> conditionBindings{};
     };
 
     /** @brief 成长进度：等级 / 经验 / 升级所需经验。 */
@@ -110,6 +127,10 @@ public:
     COMPONENT(Vitals, vitals)
     COMPONENT(Traits, traits)
     COMPONENT(ClassInfo, classInfo)
+    /** @brief Canonical phase ordering fact; not an actor identity registry. */
+    COMPONENT(ActorExecutionOrder, executionOrder)
+    /** @brief Optional stable registration, independent of reusable checkpoint body state. */
+    COMPONENT(ActorIdentity, identity)
 
     /**
      * @brief 创建一个空白 actor（三张表均为空，按需惰性写入）。
@@ -262,26 +283,45 @@ public:
 
     /**
      * @brief Capture this actor at a persistent safe checkpoint.
-     * @return Deterministic schema `eve.rpg.actor-checkpoint` version 1 JSON, or a structured failure.
-     * @remarks The checkpoint stores base attributes, progression, vitals, learned skill ids,
-     * class identity and trait identity. Active effects, casts, cooldowns, runtime events and
-     * raw targets are transient and excluded. Capture is rejected while an effect or cast is active.
+     * @return Deterministic schema `eve.rpg.actor-checkpoint` version 5 JSON, or a structured failure.
+     * @remarks The checkpoint stores complete canonical attributes, active lifecycle effects and RPG executor metadata,
+     * progression, vitals, learned skill cooldowns, class and preconfigured trait identities. Version 4 adds active
+     * cast clocks and explicit default-self, explicit-self, linked or retired intent. Version 5 adds executionOrder;
+     * null preserves legacy iteration, otherwise it is a canonical non-nil ordering key. Table events remain separate.
+     * @param target Optional coordinator-admitted stable identity for a live other-actor target; its handle must
+     * equal the actual native link and its registered ActorIdentity. Register referenced actors before providing
+     * this context; RPG never invents a target ID.
      * @thread Call on the actor's owning ECS simulation thread.
      * @reentrancy No callbacks or registry mutations are performed.
+     * @ownership Returned text owns all facts; no actor, content pointer or callback is retained.
+     * @remarks Custom vital-bound policies remain unsupported until explicit candidate validation is available.
+     * @cost Copies and encodes every attribute, lifecycle effect and adapter row once per explicit checkpoint.
+     * @throws std::bad_alloc Live state remains unchanged.
      */
-    [[nodiscard]] eve::Result<std::string> checkpointJson() const;
+    [[nodiscard]] eve::Result<std::string> checkpointJson(std::optional<CastTargetBinding> target = std::nullopt) const;
 
     /**
      * @brief Validate and atomically restore a safe checkpoint into this preconfigured actor.
      * @param json UTF-8 JSON produced by checkpointJson().
      * @return Applied state, or a structured failure without mutation.
      * @remarks The destination must have no active effect/cast and must use the same class,
-     * trait identities and attribute layout. Skill ids must exist in the current registry.
-     * Cooldowns and casting restore to defaults. Unknown version-1 fields are ignored.
+     * trait identities; required destination attributes must be present. Skill/effect ids must exist in current
+     * content. Versions 3/4 preserve modifiers, effect adapter watermarks and exact periodic progress, and reject
+     * unknown fields. Versions 1/2 retain their base-layout and unknown-field policy, migrating absent effects to
+     * empty; v1 also migrates missing cooldowns to zero. Versions 1–3 migrate absent casting to inactive; unknown
+     * versions are rejected. v1–v4 preserve the destination order (or legacy null); coordinated spawn restore supplies
+     * an explicit stable default for those older versions. Unknown v5 order fields/keys are rejected.
+     * @param target Optional coordinator-admitted live target, required for saved linked-other casts. Identity,
+     * registered ActorIdentity, generation, RPG family and same-world constraints are validated before publication.
+     * Default-self/explicit-self/retired restore without this context, preserving their event/cancellation semantics.
      * @thread Call on the actor's owning ECS simulation thread.
      * @reentrancy No callbacks or gameplay events are emitted.
+     * @ownership Borrows input only during this call; all candidate values are detached before publication.
+     * @cost Parses and copies the complete actor state and modifier relationships per restore attempt.
+     * @throws std::bad_alloc Live state remains unchanged.
      */
-    [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
+    [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view                 json,
+                                                          std::optional<CastTargetBinding> target = std::nullopt);
 
     /**
      * @brief 返回当前 Table 中所有存活的 RPGActor（含派生类）。
@@ -289,6 +329,12 @@ public:
      *
      * 实现细节：由 `ecs::View<RPGActor, Attributes>` + `ViewIterator::entity()`
      * 收集，不再维护第二份 handle 注册表。跨帧持有身份仍应使用 EntityHandle。
+     * @remarks Unkeyed actors precede keyed actors; keyed actors sort by their execution value. Equal/absent
+     * keys retain native View order. Replay coordinators must prove complete unique keys. No View escapes.
+     * @cost Scan N actors and sort K keyed actors among them per system phase; temporary ordering storage
+     * is proportional to N and the returned vector reuses its capacity between synchronous calls.
+     * @thread RPG simulation owner thread only; no callbacks.
+     * @throws std::bad_alloc Query storage allocation failed without changing actor facts.
      * @lifetime 返回的 vector 在下一次 `liveActors()` 调用前保持稳定；其中的指针
      * 仅在当前帧/当前 View 语义下借用，销毁后勿跨帧保留裸指针。
      */
@@ -296,15 +342,27 @@ public:
 
 private:
     struct CheckpointCandidate {
-        Attributes attributes;
+        ::eve::attributes::PreparedAttributeSet attributes;
         Skills skills;
         Progression progression;
         Vitals vitals;
         ClassInfo classInfo;
+        Statuses                                statuses;
+        std::optional<SubjectRef>               castTarget;
+        ActorExecutionOrder                     executionOrder;
+        std::uint8_t                            sourceVersion = 5;
     };
 
-    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(std::string_view json) const;
+    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(
+        std::string_view json, std::optional<CastTargetBinding> target = std::nullopt) const;
+    /** @brief Shared canonical parser; skills is a nullable synchronous borrow, never retained.
+     * @remarks Null selects live references; non-null selects exact admitted archive references.
+     */
+    [[nodiscard]] static eve::Result<CheckpointCandidate> prepareCheckpointState(
+        std::string_view json, const ::eve::attributes::AttributeSet &baseAttributes, const Statuses &baseStatuses,
+        const Traits &traits, const ClassInfo &baseClass, const SkillContent *skills);
     void commitCheckpoint(CheckpointCandidate candidate) noexcept;
+    friend class PreparedMemberActor;
     friend class RPGSaveSession;
     friend class Party;
 };

@@ -1,4 +1,6 @@
+// eve-hot-path
 #include "map/TileSystem.h"
+#include <optional>
 #include "common/Module.h"
 #include "common/Profile.h"
 #include "filesystem/Filesystem.h"
@@ -9,6 +11,7 @@
 #include "map/TileConfig.h"
 #include "map/TileLayer.h"
 #include "map/TileProjection.h"
+#include "map/TileRenderViewport.h"
 
 #include <unordered_set>
 #include <vector>
@@ -25,6 +28,9 @@ int gLastVisitedChunkCount = 0;
 int gLastVisitedCellCount = 0;
 double gAnimationTimeMs = 0.0;
 
+bool sameLayerHandle(const ecs::EntityHandle &a, const ecs::EntityHandle &b) {
+    return a.table == b.table && a.type == b.type && a.id == b.id && a.generation == b.generation;
+}
 struct ViewCam {
     float x = 0.f;
     float y = 0.f;
@@ -195,12 +201,8 @@ bool chunkVisible(const TileLayer::Config &cfg, const TileLayer::Tileset &ts, co
     return maxX >= left && minX <= right && maxY >= top && minY <= bottom;
 }
 
-}  // namespace
-
-void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) { collect(out, 0, 0); }
-
-void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewWidth,
-                               int viewHeight) {
+void collectTiles(std::vector<graphics::DrawItem2D> &out, int viewWidth, int viewHeight,
+                  std::optional<ViewCam> cameraOverride, std::optional<std::span<const ecs::EntityHandle>> selected) {
     gLastVisibleTileCount = 0;
     gLastCustomVisualCount = 0;
     gLastAtlasCount = 0;
@@ -214,11 +216,15 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                           TileLayer::Draw>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [cfg, tiles, ts, draw] = *it;
+        if (selected && std::none_of(selected->begin(), selected->end(), [&](const auto &handle) {
+                return sameLayerHandle(handle, ecs::handle_of(it.entity()));
+            }))
+            continue;
         if (!draw->visible || cfg->mapW <= 0 || cfg->mapH <= 0) continue;
         if (tiles->gids.size() < size_t(cfg->mapW * cfg->mapH)) continue;
 
         const Color &tint = draw->tint;
-        const ViewCam cam = fromEntity(draw->camera);
+        const ViewCam cam    = cameraOverride ? *cameraOverride : fromEntity(draw->camera);
         const float scaleX = draw->visualScaleX > 0.f ? draw->visualScaleX : 1.f;
         const float scaleY = draw->visualScaleY > 0.f ? draw->visualScaleY : 1.f;
 
@@ -253,7 +259,7 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                         item.depthY       = tileToDepthY(*cfg, tx, ty);
                         item.layer        = draw->layer;
                         item.canvas       = draw->canvas;
-                        item.camera       = draw->camera;
+                        item.camera       = cameraOverride ? nullptr : draw->camera;
                         item.camValid     = cam.valid;
                         item.camX         = cam.x;
                         item.camY         = cam.y;
@@ -334,6 +340,47 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
         }
     }
     gLastAtlasCount = int(atlases.size());
+}
+
+}  // namespace
+void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out) { collect(out, 0, 0); }
+void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int width, int height) {
+    collectTiles(out, width, height, std::nullopt, std::nullopt);
+}
+Result<void> TileRenderSystem::collectViewport(std::vector<graphics::DrawItem2D> &out,
+                                               std::span<const ecs::EntityHandle> layers,
+                                               const TileRenderViewport          &viewport) {
+    auto invalid = [](DiagnosticCode code, const char *message) {
+        return Result<void>::failure(Diagnostic::error(code, message, "map.tile-viewport"));
+    };
+    if (viewport.width <= 0 || viewport.height <= 0 || !std::isfinite(viewport.centerX) ||
+        !std::isfinite(viewport.centerY) || !std::isfinite(viewport.zoom) || viewport.zoom <= 0)
+        return invalid(DiagnosticCode::InvalidArgument, "Invalid tile viewport");
+    const float halfWidth  = float(viewport.width) * 0.5f / viewport.zoom;
+    const float halfHeight = float(viewport.height) * 0.5f / viewport.zoom;
+    if (!std::isfinite(viewport.centerX - halfWidth) || !std::isfinite(viewport.centerX + halfWidth) ||
+        !std::isfinite(viewport.centerY - halfHeight) || !std::isfinite(viewport.centerY + halfHeight))
+        return invalid(DiagnosticCode::InvalidArgument, "Tile viewport bounds overflow");
+    for (std::size_t i = 0; i < layers.size(); ++i) {
+        auto *entity = ecs::try_get(layers[i]);
+        auto *layer  = entity ? dynamic_cast<TileLayer *>(entity) : nullptr;
+        if (!layer || layer->table != ecs::current())
+            return invalid(DiagnosticCode::StaleHandle, "Tile layer is stale or belongs to another current world");
+        auto &manager = layer->getComponentManager();
+        auto  has     = [&]<class T>() {
+            auto *buffer = manager.getComponentBuffer<T>();
+            return buffer && buffer->has(layer->id);
+        };
+        if (!has.template operator()<TileLayer::Config>() || !has.template operator()<TileLayer::Tiles>() ||
+            !has.template operator()<TileLayer::Tileset>() || !has.template operator()<TileLayer::Draw>())
+            return invalid(DiagnosticCode::PreconditionViolation, "Tile layer render components are missing");
+        for (std::size_t j = 0; j < i; ++j)
+            if (sameLayerHandle(layers[j], layers[i]))
+                return invalid(DiagnosticCode::Conflict, "Duplicate tile layer selection");
+    }
+    collectTiles(out, viewport.width, viewport.height, ViewCam{viewport.centerX, viewport.centerY, viewport.zoom, true},
+                 layers);
+    return Result<void>::success();
 }
 
 void TileRenderSystem::render(graphics::Graphics *gfx) {

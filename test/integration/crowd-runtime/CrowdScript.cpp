@@ -6,9 +6,9 @@
   "default": "script-binding",
   "module": "crowd",
   "origins": [
-    "CrowdScript.cpp",
+    "crowd_contacts.cpp",
     "crowd_spawn.cpp",
-    "crowd_contacts.cpp"
+    "CrowdScript.cpp"
   ]
 }
 */
@@ -332,6 +332,271 @@ TEST_CASE("crowd.script.runtimeBindingContracts") {
     };
 }
 
+namespace {
+struct NativeRequestRestore {
+    std::optional<Crowd::Snapshot>    frozen;
+    std::optional<Crowd::RestorePlan> candidate;
+    ssq::VM                           vm{1024, ssq::Libs::ALL};
+    bool                              persistent  = false;
+    std::uint64_t                     sourceOwner = 0;
+    explicit NativeRequestRestore(bool usePersistent = false) : persistent(usePersistent) {
+        auto eve = vm.addTable("eve");
+        auto cls = eve.addClass<Crowd>("Crowd");
+        Crowd::expose(cls);
+        vm.addFunc("freezeNative", [this](Crowd* source) {
+            frozen.emplace(source->captureSnapshot().expect("freeze native registry/workstate"));
+            sourceOwner = source->getFieldStatus().owner;
+            if (persistent) {
+                const auto text =
+                    frozen->encodeState().expect("seal backend/request graph").toJson().expect("snapshot file");
+                frozen.emplace(Crowd::Snapshot::prepareState(eve::Value::fromJson(text).expect("owning backend file"))
+                                   .expect("admit backend/request graph"));
+                REQUIRE_EQ(frozen->encodeState().expect("repeat snapshot").toJson().expect("repeat bytes"), text);
+            }
+        });
+        vm.addFunc("prepareNative", [this](Crowd* target) {
+            candidate.emplace(target->prepareRestore(*frozen).expect("prepare native registry/workstate"));
+        });
+        vm.addFunc("remapNative", [this](std::int64_t owner, int index, int generation) -> std::int64_t {
+            if (!candidate || owner <= 0 || index < 0 || generation <= 0) return 0;
+            FlowRequestRef source{RuntimeHandle<CrowdFlowRequestTag>(static_cast<std::uint32_t>(index),
+                                                                     static_cast<std::uint32_t>(generation)),
+                                  static_cast<std::uint64_t>(owner)};
+            if (persistent) {
+                if (!frozen || static_cast<std::uint64_t>(owner) != sourceOwner) return 0;
+                auto archived =
+                    frozen->requestReference(static_cast<std::uint32_t>(index), static_cast<std::uint32_t>(generation));
+                if (!archived) return 0;
+                source = std::move(archived).takeValue();
+            }
+            auto remapped = candidate->remapFlowRequest(source);
+            return remapped ? static_cast<std::int64_t>(remapped.value().owner) : 0;
+        });
+        vm.addFunc("commitNative",
+                   [this](Crowd* target) { return candidate && target->commitRestore(std::move(*candidate)).ok(); });
+        vm.addFunc("dropNativeCapture", [this]() { frozen.reset(); });
+        vm.addFunc("residentBytesNative", [](Crowd* target) -> std::int64_t {
+            return static_cast<std::int64_t>(target->getFlowCacheStatus().residentBytes);
+        });
+        vm.addFunc("evictNative", [](Crowd* target) { return target->configureFlowCache(0).ok(); });
+    }
+    void run(const char* script) { vm.run(vm.compileSource(script)); }
+};
+}  // namespace
+
+TEST_CASE("crowd.snapshot.persistentRegistryRejectsForgedWorkWithoutChangingSource") {
+    NativeRequestRestore fixture;
+    fixture.vm.addFunc("rejectWorkNative", [&](Crowd* source) {
+        auto       snapshot = source->captureSnapshot().expect("actual work");
+        const auto value    = snapshot.encodeState().expect("full registry");
+        auto       request  = [](eve::Value& v) -> eve::Value::Array& {
+            return *v.getIf<eve::Value::Object>()
+                        ->at("requests")
+                        .getIf<eve::Value::Array>()
+                        ->front()
+                        .getIf<eve::Value::Array>();
+        };
+        auto plan   = [&](eve::Value& v) -> eve::Value::Array& { return *request(v)[2].getIf<eve::Value::Array>(); };
+        auto reject = [&](auto edit) {
+            auto bad = value;
+            edit(bad);
+            REQUIRE(!Crowd::Snapshot::prepareState(bad).ok());
+        };
+        reject([&](eve::Value& v) { request(v)[0] = 0; });
+        reject([&](eve::Value& v) { request(v)[1] = false; });
+        reject([&](eve::Value& v) { plan(v)[0] = 99; });
+        reject([&](eve::Value& v) { plan(v)[1] = false; });
+        reject([&](eve::Value& v) { plan(v)[2] = "0"; });
+        reject([&](eve::Value& v) { plan(v)[3] = eve::Value{}; });
+        reject([&](eve::Value& v) { plan(v)[3].set("flowCursor", 1000000); });
+        reject([&](eve::Value& v) {
+            auto& rows = *v.getIf<eve::Value::Object>()->at("requests").getIf<eve::Value::Array>();
+            rows[1].getIf<eve::Value::Array>()->at(2).getIf<eve::Value::Array>()->at(0) = 5;
+        });  // Ready field is reachable.
+        REQUIRE_EQ(snapshot.encodeState().expect("source unchanged").toJson().expect("bytes"),
+                   value.toJson().expect("original bytes"));
+    });
+    fixture.run(R"(
+        local c=eve.Crowd();c.resizeField(8,8,1.0,0.0,0.0);
+        local p=c.requestFlowBuild(7,7).value;assert(c.advanceFlowRequest(p,5).ok);
+        local ready=c.requestFlowBuild(6,6).value;while(c.getFlowRequest(ready).value.state=="pending")assert(c.advanceFlowRequest(ready,100).ok);
+        rejectWorkNative(c);assert(c.getFlowRequest(p).value.state=="pending" && c.getFlowRequest(ready).value.state=="ready");
+    )");
+}
+TEST_CASE("crowd.snapshot.requestRegistryResumesExactWorkAndRemapsTokens") {
+    for (bool persistent : {false, true}) {
+        NativeRequestRestore fixture(persistent);
+        fixture.run(R"(
+        function remapped(token) {
+            local result = clone token;
+            result.owner = remapNative(token.owner,token.index,token.generation);
+            assert(result.owner != 0 && result.owner != token.owner);
+            return result;
+        }
+        function finish(c, token) {
+            while(c.getFlowRequest(token).value.state=="pending") assert(c.advanceFlowRequest(token,1000000).ok);
+        }
+        local c=eve.Crowd(); c.resizeField(32,32,1.0,0.0,0.0); c.setBlocked(0,0,true);
+        local pending=c.requestFlowBuild(31,31).value;
+        assert(c.advanceFlowRequest(pending,11).value.heapPops > 0);
+        local ready=c.requestFlowBuild(2,2).value; finish(c,ready);
+        local unreachable=c.requestFlowBuild(0,0).value; finish(c,unreachable);
+        assert(c.getFlowRequest(unreachable).value.state=="unreachable");
+        local cancelled=c.requestFlowBuild(4,4).value; assert(c.cancelFlowRequest(cancelled).ok);
+        local committed=c.requestFlowBuild(5,5).value; finish(c,committed); assert(c.commitFlowRequest(committed).ok);
+        local leased=c.requestFlowBuild(6,6).value; finish(c,leased); assert(c.acquireFlowRequestLease(leased).ok);
+        local stale=c.requestFlowBuild(7,7).value; assert(c.releaseFlowRequest(stale).ok);
+        local reused=c.requestFlowBuild(8,8).value;
+        assert(stale.index==reused.index && stale.generation!=reused.generation);
+        local expectedSample=c.sampleFlowRequestLease(leased,1.5,1.5).value;
+        freezeNative(c);
+        local expected=[];
+        while(c.getFlowRequest(pending).value.state=="pending") {
+            expected.append(c.advanceFlowRequest(pending,3).value);
+            assert(expected.len()<10000);
+        }
+        c=null; collectgarbage();
+        local restored=eve.Crowd(), wrong=eve.Crowd();
+        prepareNative(restored);
+        assert(remapNative(stale.owner,stale.index,stale.generation)==0);
+        assert(remapNative(pending.owner+100000,pending.index,pending.generation)==0);
+        assert(remapNative(pending.owner,-1,pending.generation)==0);
+        local a=remapped(pending), b=remapped(ready), u=remapped(unreachable),
+              d=remapped(cancelled), e=remapped(committed), f=remapped(leased), g=remapped(reused);
+        assert(!restored.getFlowRequest(a).ok);
+        assert(!commitNative(wrong));
+        dropNativeCapture();
+        assert(commitNative(restored));
+        assert(remapNative(pending.owner,pending.index,pending.generation)==0);
+        assert(!commitNative(restored));
+        assert(!restored.getFlowRequest(pending).ok);
+        assert(restored.getFlowRequest(a).value.state=="pending");
+        assert(restored.getFlowRequest(b).value.state=="ready");
+        assert(restored.getFlowRequest(u).value.state=="unreachable");
+        assert(restored.getFlowRequest(d).value.state=="cancelled");
+        assert(restored.getFlowRequest(e).value.state=="committed");
+        assert(restored.getFlowRequest(f).value.state=="committed");
+        assert(restored.getFlowRequest(g).value.state=="pending");
+        local actualSample=restored.sampleFlowRequestLease(f,1.5,1.5).value;
+        assert(actualSample.x==expectedSample.x && actualSample.y==expectedSample.y && actualSample.state==expectedSample.state);
+        foreach(progress in expected) {
+            local actual=restored.advanceFlowRequest(a,3).value;
+            assert(actual.state==progress.state && actual.heapPops==progress.heapPops && actual.directionCells==progress.directionCells);
+        }
+        assert(restored.getFlowRequest(a).value.state=="ready");
+        assert(restored.commitFlowRequest(a).ok);
+        foreach(token in [a,b,u,d,e,f,g]) assert(restored.releaseFlowRequest(token).ok);
+        assert(!restored.getFlowRequest(g).ok);
+        local next=restored.requestFlowBuild(1,1).value;
+        assert(next.index==a.index && next.generation==a.generation+1);
+    )");
+    }
+}
+
+TEST_CASE("crowd.snapshot.requestAndAgentPinsAreIndependentAcrossRestoredWorlds") {
+    for (bool persistent : {false, true}) {
+        NativeRequestRestore fixture(persistent);
+        fixture.run(R"(
+        function remapped(token) {
+            local result=clone token;
+            result.owner=remapNative(token.owner,token.index,token.generation);
+            assert(result.owner!=0); return result;
+        }
+        local c=eve.Crowd(); c.resizeField(8,8,1.0,0.0,0.0);
+        local request=c.requestFlowBuild(7,7).value;
+        while(c.getFlowRequest(request).value.state=="pending") assert(c.advanceFlowRequest(request,3).ok);
+        assert(c.acquireFlowRequestLease(request).ok);
+        local agent=c.agentRef(c.addNamedAgent("linked",1.5,1.5,0.0,0.1)).value;
+        assert(c.updateAgents([{reference=agent,flowRequest=request}]).ok);
+        freezeNative(c);
+        local first=eve.Crowd(), second=eve.Crowd();
+        prepareNative(first); local a=remapped(request); assert(commitNative(first));
+        prepareNative(second); local b=remapped(request); assert(commitNative(second));
+        assert(a.owner!=b.owner);
+        assert(!first.sampleFlowRequestLease(b,1.5,1.5).ok);
+        assert(!evictNative(first));
+        assert(first.releaseFlowRequest(a).ok);
+        assert(!evictNative(first));
+        local restoredAgent=first.agentRef(0).value;
+        assert(first.updateAgents([{reference=restoredAgent,useDefaultFlow=true}]).ok);
+        assert(evictNative(first));
+        assert(second.sampleFlowRequestLease(b,1.5,1.5).value.state=="reachable");
+        assert(c.sampleFlowRequestLease(request,1.5,1.5).value.state=="reachable");
+        assert(!evictNative(second));
+        assert(second.releaseFlowRequest(b).ok);
+        second.clearAgents(); assert(evictNative(second));
+        c=null; collectgarbage();
+        local third=eve.Crowd(); prepareNative(third); local t=remapped(request);
+        dropNativeCapture(); assert(commitNative(third));
+        assert(!evictNative(third));
+        assert(third.sampleFlowRequestLease(t,1.5,1.5).ok);
+        assert(third.releaseFlowRequest(t).ok); third.clearAgents(); assert(evictNative(third));
+    )");
+    }
+}
+
+TEST_CASE("crowd.snapshot.staleRequestInputsStayStaleAndRetiredTokensCannotRevive") {
+    for (bool persistent : {false, true}) {
+        NativeRequestRestore fixture(persistent);
+        fixture.run(R"(
+        local c=eve.Crowd(); c.resizeField(8,8,1.0,0.0,0.0);
+        local pending=c.requestFlowBuild(7,7).value;
+        assert(c.advanceFlowRequest(pending,5).ok);
+        local leased=c.requestFlowBuild(6,6).value;
+        while(c.getFlowRequest(leased).value.state=="pending") assert(c.advanceFlowRequest(leased,3).ok);
+        assert(c.acquireFlowRequestLease(leased).ok);
+        local retired=c.requestFlowBuild(5,5).value; assert(c.releaseFlowRequest(retired).ok);
+        c.setBlocked(0,0,true);
+        freezeNative(c);
+        assert(c.getFlowRequest(pending).value.state=="cancelled");
+        assert(!c.sampleFlowRequestLease(leased,1.5,1.5).ok);
+        c=null; collectgarbage();
+        local t=eve.Crowd(); prepareNative(t);
+        local p=clone pending, l=clone leased;
+        p.owner=remapNative(p.owner,p.index,p.generation);
+        l.owner=remapNative(l.owner,l.index,l.generation);
+        assert(p.owner!=0 && l.owner==p.owner);
+        assert(remapNative(retired.owner,retired.index,retired.generation)==0);
+        dropNativeCapture(); assert(commitNative(t));
+        assert(t.getFlowRequest(p).value.state=="cancelled");
+        assert(!t.advanceFlowRequest(p,3).ok);
+        assert(!t.sampleFlowRequestLease(l,1.5,1.5).ok);
+        assert(t.releaseFlowRequest(p).ok); assert(t.releaseFlowRequest(l).ok);
+    )");
+    }
+}
+
+
+TEST_CASE("crowd.snapshot.requestWorkingCapacityPreservesLaterCacheAdmissionCost") {
+    for (bool persistent : {false, true}) {
+        NativeRequestRestore fixture(persistent);
+        fixture.run(R"(
+        local c=eve.Crowd(); c.resizeField(32,32,1.0,0.0,0.0);
+        local request=c.requestFlowBuild(31,31).value;
+        local steps=0;
+        while(true) {
+            local progress=c.advanceFlowRequest(request,1).value;
+            assert(++steps<10000);
+            if(progress.directionCells>0) break;
+        }
+        assert(c.getFlowRequest(request).value.state=="pending");
+        freezeNative(c);
+        while(c.getFlowRequest(request).value.state=="pending") assert(c.advanceFlowRequest(request,1000000).ok);
+        assert(c.acquireFlowRequestLease(request).ok);
+        local expectedBytes=residentBytesNative(c);
+        c=null; collectgarbage();
+        local t=eve.Crowd(); prepareNative(t);
+        local mapped=clone request;
+        mapped.owner=remapNative(request.owner,request.index,request.generation);
+        assert(mapped.owner!=0);
+        dropNativeCapture(); assert(commitNative(t));
+        while(t.getFlowRequest(mapped).value.state=="pending") assert(t.advanceFlowRequest(mapped,1000000).ok);
+        assert(t.acquireFlowRequestLease(mapped).ok);
+        assert(residentBytesNative(t)==expectedBytes);
+    )");
+    }
+}
+
 // Contract section: crowd contacts
 #include "PrivateTestScope.h"
 
@@ -373,6 +638,7 @@ TEST_CASE("crowd.contacts.scriptAdvanceUsesCanonicalResult") {
     )"));
 }
 }  // namespace test_crowd_contacts
+
 
 // Contract section: crowd spawn
 #include "PrivateTestScope.h"

@@ -4,12 +4,60 @@
 #include "common/Value.h"
 
 #include <algorithm>
+#include <optional>
 #include <unordered_set>
 
 namespace eve::rts {
+Result<ecs::EntityHandle> RTS::resolveOwnedSubject(SubjectRef subject) const {
+    using R = Result<ecs::EntityHandle>;
+    if (!subject.isValid())
+        return R::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Root subject is invalid"));
+    if (!ownedWorld_)
+        return R::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Root resolution needs owned Table"));
+    if (ownedWorld_->is_deferred())
+        return R::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "Root resolution needs idle Table"));
+    ecs::ScopedTable  scope(*ownedWorld_);
+    ecs::EntityHandle result;
+    for (const auto* handles : {&units_, &buildings_, &resourceNodes_, &players_, &factions_, &matches_})
+        for (auto handle : *handles) {
+            if (handle.table != ownedWorld_.get())
+                return R::failure(Diagnostic::error(DiagnosticCode::Conflict, "Foreign owned root Table"));
+            if (snapshot_internal::subjectOf(handle) != subject) continue;
+            if (result.table)
+                return R::failure(Diagnostic::error(DiagnosticCode::Conflict, "Ambiguous owned root identity"));
+            result = handle;
+        }
+    if (!result.table) return R::failure(Diagnostic::error(DiagnosticCode::NotFound, "Owned root identity absent"));
+    return R::success(result);
+}
+Result<RTSCombatSnapshot> RTS::captureCombatState() const {
+    auto* world = ownedWorld_ ? ownedWorld_.get() : ecs::current();
+    if (!world || world->is_deferred())
+        return Result<RTSCombatSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "RTS combat capture needs an idle actual world", "rts.combat"));
+    return Result<RTSCombatSnapshot>::success({combatState_.mirroredSubjects, combatState_.blockedSubjects});
+}
+Result<RTSFrameState> RTS::captureFrameState() const {
+    auto* world = ownedWorld_ ? ownedWorld_.get() : ecs::current();
+    if (!world || world->is_deferred())
+        return Result<RTSFrameState>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "RTS event capture needs an idle actual world", "rts.frame"));
+    return Result<RTSFrameState>::success({frameDamageEvents_, frameCombatEvents_, frameLifecycleEvents_,
+                                           frameEventSequence_, preserveFrameEventsOnNextStep_, gameplayEvents_,
+                                           nextGameplayEventSequence_});
+}
 namespace {
 
 using snapshot_internal::subjectOf;
+
+template <class... Components, class Entity>
+std::string_view missingComponent(Entity& entity) noexcept {
+    std::string_view missing;
+    (void)((detail::existingComponent<Components>(entity) ? false : (missing = typeid(Components).name(), true)) ||
+           ...);
+    return missing;
+}
+
 
 template <typename T>
 std::vector<SubjectRef> subjectsOf(const std::vector<T>& handles) {
@@ -164,80 +212,206 @@ Value ordersValue(const OrderComponent::Snapshot& orders, const std::map<std::st
 }  // namespace
 
 Result<RTSStateSnapshot> RTS::snapshotState() const {
+    auto* currentTable = ownedWorld_ ? ownedWorld_.get() : ecs::current();
+    if (!currentTable || currentTable->is_deferred())
+        return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "RTS snapshot requires its idle owning world outside Views"));
+    ecs::ScopedTable scope(*currentTable);
+    for (const auto& handle : units_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "units_"));
+            continue;
+        }
+        auto* root = dynamic_cast<Unit*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing =
+            missingComponent<Unit::Abilities, Unit::Artillery, Unit::Capture, Unit::Combat, Unit::Command,
+                             Unit::Containment, Unit::Definition, Unit::Durability, Unit::Effects, Unit::Faction,
+                             Unit::Identity, Unit::Morale, Unit::Motion, Unit::Navigation, Unit::Orders, Unit::Shield,
+                             Unit::Supply, Unit::Tactics, Unit::Tags, Unit::Technology, Unit::Veterancy, Unit::Vision,
+                             Unit::Worker, Unit::Attributes>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "RTS snapshot root component is missing: " + std::string(missing), "units_"));
+        if (!detail::existingComponent<Unit::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "units_"));
+    }
+    for (const auto& handle : buildings_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "buildings_"));
+            continue;
+        }
+        auto* root = dynamic_cast<Building*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing =
+            missingComponent<Building::Capture, Building::Combat, Building::Command, Building::Construction,
+                             Building::Definition, Building::Dropoff, Building::Effects, Building::Faction,
+                             Building::Garrison, Building::Identity, Building::IndirectFire, Building::Infrastructure,
+                             Building::Integrity, Building::Orders, Building::Placement, Building::Production,
+                             Building::Rally, Building::Shield, Building::Supply, Building::Tags, Building::Technology,
+                             Building::Vision>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "RTS snapshot root component is missing: " + std::string(missing), "buildings_"));
+        if (!detail::existingComponent<Building::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "buildings_"));
+    }
+    for (const auto& handle : resourceNodes_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "resourceNodes_"));
+            continue;
+        }
+        auto* root = dynamic_cast<ResourceNode*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing = missingComponent<ResourceNode::Harvest, ResourceNode::Identity, ResourceNode::Position,
+                                              ResourceNode::Stock>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "RTS snapshot root component is missing: " + std::string(missing), "resourceNodes_"));
+        if (!detail::existingComponent<ResourceNode::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "resourceNodes_"));
+    }
+    for (const auto& handle : players_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "players_"));
+            continue;
+        }
+        auto* root = dynamic_cast<Player*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing = missingComponent<Player::Identity, Player::Selection>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "RTS snapshot root component is missing: " + std::string(missing), "players_"));
+        if (!detail::existingComponent<Player::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "players_"));
+    }
+    for (const auto& handle : factions_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "factions_"));
+            continue;
+        }
+        auto* root = dynamic_cast<Faction*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing =
+            missingComponent<Faction::Identity, Faction::Intel, Faction::Members, Faction::ProductionPolicy,
+                             Faction::Strategy, Faction::Technology, Faction::Workforce>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "RTS snapshot root component is missing: " + std::string(missing), "factions_"));
+        if (!detail::existingComponent<Faction::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "factions_"));
+    }
+    for (const auto& handle : matches_) {
+        if (handle.table != currentTable) {
+            if (ownedWorld_)
+                return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::StaleHandle, "Owned RTS root belongs to another world", "matches_"));
+            continue;
+        }
+        auto* root = dynamic_cast<Match*>(ecs::try_get(handle));
+        if (!root) continue;
+        const auto missing = missingComponent<Match::Events, Match::Identity, Match::Participants, Match::Rules,
+                                              Match::State, Match::Scores, Match::Objectives, Match::Campaign>(*root);
+        if (!missing.empty())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound,
+                                  "RTS snapshot root component is missing: " + std::string(missing), "matches_"));
+        if (!detail::existingComponent<Match::Identity>(*root)->subject.isValid())
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "RTS snapshot root has no stable identity", "matches_"));
+    }
     RTSStateSnapshot result;
     auto             groups = captureMovementGroups();
     if (!groups) return Result<RTSStateSnapshot>::failure(groups.status());
     result.movementGroups = std::move(groups).takeValue();
-    auto* currentTable    = ecs::current();
     for (const auto& handle : units_) {
         if (handle.table != currentTable) continue;
         auto* unit = dynamic_cast<Unit*>(ecs::try_get(handle));
         if (unit == nullptr) continue;
         RTSUnitSnapshot value;
-        value.subject     = unit->identity()->subject;
-        value.definition  = unit->definition()->id;
-        value.displayName = unit->identity()->displayName;
+        value.subject     = detail::existingComponent<Unit::Identity>(*unit)->subject;
+        value.definition  = detail::existingComponent<Unit::Definition>(*unit)->id;
+        value.displayName = detail::existingComponent<Unit::Identity>(*unit)->displayName;
         auto attributes   = RTSUnitAttributeAdapter::snapshot(*unit);
         if (!attributes) return Result<RTSStateSnapshot>::failure(attributes.status());
-        value.attributes                      = std::move(attributes).takeValue();
-        value.attributes.owner                = {};
-        value.tags                            = unit->tags()->values.values();
-        value.effects                         = unit->effects()->values.snapshot();
-        value.faction                         = subjectOf(unit->faction()->link.resolve());
-        value.motion                          = *unit->motion();
-        value.navigation                      = *unit->navigation();
+        value.attributes       = std::move(attributes).takeValue();
+        value.attributes.owner = {};
+        value.tags             = detail::existingComponent<Unit::Tags>(*unit)->values.values();
+        value.effects          = detail::existingComponent<Unit::Effects>(*unit)->values.snapshot();
+        value.faction          = subjectOf(detail::existingComponent<Unit::Faction>(*unit)->link.resolve());
+        value.motion           = *detail::existingComponent<Unit::Motion>(*unit);
+        value.navigation       = *detail::existingComponent<Unit::Navigation>(*unit);
         value.navigation.formationSpeedFactor = 1.f;
         value.navigation.formationTarget.reset();
         value.navigation.combatSlotTarget.reset();
         value.navigation.combatSlotWaiting = false;
         if (value.navigation.trafficRecoveryTarget) value.navigation.plannedOrderId.clear();
         value.navigation.trafficRecoveryTarget.reset();
-        value.vision         = *unit->vision();
-        value.worker         = {unit->worker()->resourceType,
-                                subjectOf(unit->worker()->resourceNode.resolve()),
-                                subjectOf(unit->worker()->dropoff.resolve()),
-                                unit->worker()->cargo,
-                                unit->worker()->capacity,
-                                unit->worker()->gatherRate,
-                                unit->worker()->buildRate,
-                                unit->worker()->repairRate,
-                                unit->worker()->autoAssign};
-        value.combat         = *unit->combat();
+        value.vision         = *detail::existingComponent<Unit::Vision>(*unit);
+        value.worker         = {detail::existingComponent<Unit::Worker>(*unit)->resourceType,
+                                subjectOf(detail::existingComponent<Unit::Worker>(*unit)->resourceNode.resolve()),
+                                subjectOf(detail::existingComponent<Unit::Worker>(*unit)->dropoff.resolve()),
+                                detail::existingComponent<Unit::Worker>(*unit)->cargo,
+                                detail::existingComponent<Unit::Worker>(*unit)->capacity,
+                                detail::existingComponent<Unit::Worker>(*unit)->gatherRate,
+                                detail::existingComponent<Unit::Worker>(*unit)->buildRate,
+                                detail::existingComponent<Unit::Worker>(*unit)->repairRate,
+                                detail::existingComponent<Unit::Worker>(*unit)->autoAssign};
+        value.combat         = *detail::existingComponent<Unit::Combat>(*unit);
         value.combatTarget   = subjectOf(value.combat.target);
         value.combat.target  = {};
-        value.durability     = *unit->durability();
-        value.shield         = *unit->shield();
-        value.veterancy      = *unit->veterancy();
-        value.command        = *unit->command();
+        value.durability     = *detail::existingComponent<Unit::Durability>(*unit);
+        value.shield         = *detail::existingComponent<Unit::Shield>(*unit);
+        value.veterancy      = *detail::existingComponent<Unit::Veterancy>(*unit);
+        value.command        = *detail::existingComponent<Unit::Command>(*unit);
         value.commandSource  = subjectOf(value.command.source);
         value.commandUplink  = subjectOf(value.command.uplink);
         value.command.source = {};
         value.command.uplink = {};
-        value.abilities      = *unit->abilities();
+        value.abilities      = *detail::existingComponent<Unit::Abilities>(*unit);
         if (value.abilities.channel) {
             value.abilityTarget             = subjectOf(value.abilities.channel->target);
             value.abilities.channel->target = {};
         }
-        value.capture                        = *unit->capture();
-        value.containmentCapacity            = unit->containment()->capacity;
-        value.container                      = subjectOf(unit->containment()->container.resolve());
-        value.occupants                      = subjectsOf(unit->containment()->occupants);
-        value.supply                         = *unit->supply();
-        value.supplyTarget                   = subjectOf(value.supply.assignedTarget);
-        value.convoyLeader                   = subjectOf(value.supply.convoyLeader);
+        value.capture             = *detail::existingComponent<Unit::Capture>(*unit);
+        value.containmentCapacity = detail::existingComponent<Unit::Containment>(*unit)->capacity;
+        value.container           = subjectOf(detail::existingComponent<Unit::Containment>(*unit)->container.resolve());
+        value.occupants           = subjectsOf(detail::existingComponent<Unit::Containment>(*unit)->occupants);
+        value.supply              = *detail::existingComponent<Unit::Supply>(*unit);
+        value.supplyTarget        = subjectOf(value.supply.assignedTarget);
+        value.convoyLeader        = subjectOf(value.supply.convoyLeader);
         value.supply.assignedTarget          = {};
         value.supply.convoyLeader            = {};
-        value.morale                         = *unit->morale();
-        value.artillery                      = *unit->artillery();
+        value.morale                         = *detail::existingComponent<Unit::Morale>(*unit);
+        value.artillery                      = *detail::existingComponent<Unit::Artillery>(*unit);
         value.fireSupportRequester           = subjectOf(value.artillery.fireSupportRequester);
         value.observedFireSpotter            = subjectOf(value.artillery.observedFireSpotter);
         value.artillery.fireSupportRequester = {};
         value.artillery.observedFireSpotter  = {};
-        value.tactics                        = *unit->tactics();
+        value.tactics                        = *detail::existingComponent<Unit::Tactics>(*unit);
         value.escortTarget                   = subjectOf(value.tactics.escortTarget);
         value.tactics.escortTarget           = {};
-        value.technology                     = *unit->technology();
-        auto orders                          = unit->orders()->values.snapshotState();
+        value.technology                     = *detail::existingComponent<Unit::Technology>(*unit);
+        auto orders                          = detail::existingComponent<Unit::Orders>(*unit)->values.snapshotState();
         if (!orders)
             return Result<RTSStateSnapshot>::failure(
                 Diagnostic::error(DiagnosticCode::Failed, "failed to snapshot RTS unit orders", "units.orders"));
@@ -250,49 +424,50 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         auto* building = dynamic_cast<Building*>(ecs::try_get(handle));
         if (building == nullptr) continue;
         RTSBuildingSnapshot value;
-        value.subject      = building->identity()->subject;
-        value.definition   = building->definition()->id;
-        value.displayName  = building->identity()->displayName;
-        value.tags         = building->tags()->values.values();
-        value.effects      = building->effects()->values.snapshot();
-        value.faction      = subjectOf(building->faction()->link.resolve());
-        value.placement    = *building->placement();
-        value.construction = *building->construction();
+        value.subject     = detail::existingComponent<Building::Identity>(*building)->subject;
+        value.definition  = detail::existingComponent<Building::Definition>(*building)->id;
+        value.displayName = detail::existingComponent<Building::Identity>(*building)->displayName;
+        value.tags        = detail::existingComponent<Building::Tags>(*building)->values.values();
+        value.effects     = detail::existingComponent<Building::Effects>(*building)->values.snapshot();
+        value.faction     = subjectOf(detail::existingComponent<Building::Faction>(*building)->link.resolve());
+        value.placement   = *detail::existingComponent<Building::Placement>(*building);
+        value.placement.link.reset();  // External provider binding belongs to the receiving composition.
+        value.construction = *detail::existingComponent<Building::Construction>(*building);
         value.builders     = subjectsOf(value.construction.builders);
         value.construction.builders.clear();
-        value.integrity                  = *building->integrity();
-        value.shield                     = *building->shield();
-        value.capture                    = *building->capture();
+        value.integrity                  = *detail::existingComponent<Building::Integrity>(*building);
+        value.shield                     = *detail::existingComponent<Building::Shield>(*building);
+        value.capture                    = *detail::existingComponent<Building::Capture>(*building);
         value.capturingFaction           = subjectOf(value.capture.capturingFaction);
         value.capture.capturingFaction   = {};
-        value.dropoff                    = *building->dropoff();
-        value.rally                      = *building->rally();
+        value.dropoff                    = *detail::existingComponent<Building::Dropoff>(*building);
+        value.rally                      = *detail::existingComponent<Building::Rally>(*building);
         value.rallyCommandTarget         = subjectOf(value.rally.command.targetEntity);
         value.rallyTransport             = subjectOf(value.rally.transport);
         value.reinforcements             = subjectsOf(value.rally.reinforcements);
         value.rally.transport            = {};
         value.rally.command.targetEntity = {};
         value.rally.reinforcements.clear();
-        value.combat                       = *building->combat();
+        value.combat                       = *detail::existingComponent<Building::Combat>(*building);
         value.combatTarget                 = subjectOf(value.combat.target);
         value.airDefenseNetworkRoot        = subjectOf(value.combat.airDefenseNetworkRoot);
         value.combat.target                = {};
         value.combat.airDefenseNetworkRoot = {};
-        value.garrison                     = *building->garrison();
+        value.garrison                     = *detail::existingComponent<Building::Garrison>(*building);
         value.occupants                    = subjectsOf(value.garrison.occupants);
         value.garrison.occupants.clear();
-        value.supply         = *building->supply();
-        value.vision         = *building->vision();
-        value.technology     = *building->technology();
-        value.infrastructure = *building->infrastructure();
-        value.command        = *building->command();
-        value.indirectFire   = *building->indirectFire();
-        auto production      = building->production()->values.snapshot();
+        value.supply         = *detail::existingComponent<Building::Supply>(*building);
+        value.vision         = *detail::existingComponent<Building::Vision>(*building);
+        value.technology     = *detail::existingComponent<Building::Technology>(*building);
+        value.infrastructure = *detail::existingComponent<Building::Infrastructure>(*building);
+        value.command        = *detail::existingComponent<Building::Command>(*building);
+        value.indirectFire   = *detail::existingComponent<Building::IndirectFire>(*building);
+        auto production      = detail::existingComponent<Building::Production>(*building)->values.snapshot();
         if (!production)
             return Result<RTSStateSnapshot>::failure(
                 Diagnostic::error(DiagnosticCode::Failed, "failed to snapshot RTS production", "buildings.production"));
         value.productionJson = std::move(production).takeValue();
-        auto orders          = building->orders()->values.snapshotState();
+        auto orders          = detail::existingComponent<Building::Orders>(*building)->values.snapshotState();
         if (!orders)
             return Result<RTSStateSnapshot>::failure(Diagnostic::error(
                 DiagnosticCode::Failed, "failed to snapshot RTS building orders", "buildings.orders"));
@@ -304,39 +479,51 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         if (handle.table != currentTable) continue;
         auto* node = dynamic_cast<ResourceNode*>(ecs::try_get(handle));
         if (node == nullptr) continue;
-        result.resourceNodes.push_back({node->identity()->subject, node->identity()->displayName, *node->position(),
-                                        *node->stock(), node->harvest()->capacity,
-                                        subjectsOf(node->harvest()->workers)});
+        result.resourceNodes.push_back({detail::existingComponent<ResourceNode::Identity>(*node)->subject,
+                                        detail::existingComponent<ResourceNode::Identity>(*node)->displayName,
+                                        *detail::existingComponent<ResourceNode::Position>(*node),
+                                        *detail::existingComponent<ResourceNode::Stock>(*node),
+                                        detail::existingComponent<ResourceNode::Harvest>(*node)->capacity,
+                                        subjectsOf(detail::existingComponent<ResourceNode::Harvest>(*node)->workers)});
     }
     for (const auto& handle : players_) {
         if (handle.table != currentTable) continue;
         auto* player = dynamic_cast<Player*>(ecs::try_get(handle));
         if (player == nullptr) continue;
-        result.players.push_back({player->identity()->subject, player->identity()->displayName,
-                                  subjectsOf(player->selection()->units), subjectsOf(player->selection()->buildings)});
+        result.players.push_back({detail::existingComponent<Player::Identity>(*player)->subject,
+                                  detail::existingComponent<Player::Identity>(*player)->displayName,
+                                  subjectsOf(detail::existingComponent<Player::Selection>(*player)->units),
+                                  subjectsOf(detail::existingComponent<Player::Selection>(*player)->buildings),
+                                  detail::existingComponent<Player::Selection>(*player)->revision,
+                                  detail::existingComponent<Player::Selection>(*player)->tick});
     }
     for (const auto& handle : factions_) {
         if (handle.table != currentTable) continue;
         auto* faction = dynamic_cast<Faction*>(ecs::try_get(handle));
         if (faction == nullptr) continue;
-        result.factions.push_back({faction->identity()->subject, faction->identity()->displayName,
-                                   subjectsOf(faction->members()->units), subjectsOf(faction->members()->buildings),
-                                   *faction->strategy(), *faction->workforce(), *faction->productionPolicy(),
-                                   *faction->intel(), *faction->technology()});
+        result.factions.push_back({detail::existingComponent<Faction::Identity>(*faction)->subject,
+                                   detail::existingComponent<Faction::Identity>(*faction)->displayName,
+                                   subjectsOf(detail::existingComponent<Faction::Members>(*faction)->units),
+                                   subjectsOf(detail::existingComponent<Faction::Members>(*faction)->buildings),
+                                   *detail::existingComponent<Faction::Strategy>(*faction),
+                                   *detail::existingComponent<Faction::Workforce>(*faction),
+                                   *detail::existingComponent<Faction::ProductionPolicy>(*faction),
+                                   *detail::existingComponent<Faction::Intel>(*faction),
+                                   *detail::existingComponent<Faction::Technology>(*faction)});
     }
     for (const auto& handle : matches_) {
         if (handle.table != currentTable) continue;
         auto* match = dynamic_cast<Match*>(ecs::try_get(handle));
         if (match == nullptr) continue;
         RTSMatchSnapshot value;
-        value.subject = match->identity()->subject;
-        value.rules       = *match->rules();
-        value.state       = *match->state();
-        value.scores      = *match->scores();
-        value.objectives  = *match->objectives();
-        value.campaign    = *match->campaign();
-        value.events      = *match->events();
-        for (const auto& participant : match->participants()->entries)
+        value.subject    = detail::existingComponent<Match::Identity>(*match)->subject;
+        value.rules      = *detail::existingComponent<Match::Rules>(*match);
+        value.state      = *detail::existingComponent<Match::State>(*match);
+        value.scores     = *detail::existingComponent<Match::Scores>(*match);
+        value.objectives = *detail::existingComponent<Match::Objectives>(*match);
+        value.campaign   = *detail::existingComponent<Match::Campaign>(*match);
+        value.events     = *detail::existingComponent<Match::Events>(*match);
+        for (const auto& participant : detail::existingComponent<Match::Participants>(*match)->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
                                           participant.eliminated, participant.surrendered, participant.reason});
         result.matches.push_back(std::move(value));
@@ -392,6 +579,8 @@ Result<std::string> RTS::canonicalStateJson() const {
                                                       {"key", static_cast<std::int64_t>(payload.key)},
                                                       {"radius", payload.radius},
                                                       {"requiredTags", stringsValue(payload.requiredTargetTags)},
+                                                      {"observer", payload.observer.format()},
+                                                      {"trajectoryTarget", payload.trajectoryTarget.format()},
                                                       {"source", payload.source.format()},
                                                       {"splashMinimum", payload.splashMinimumDamageFactor},
                                                       {"target", payload.target.format()},
@@ -737,6 +926,8 @@ Result<std::string> RTS::canonicalStateJson() const {
     for (const auto& value : state.players)
         players.emplace_back(Value::Object{{"buildings", refsValue(value.buildings)},
                                            {"displayName", value.displayName},
+                                           {"selectionRevision", std::to_string(value.selectionRevision)},
+                                           {"selectionTick", std::to_string(value.selectionTick.value())},
                                            {"subject", value.subject.format()},
                                            {"units", refsValue(value.units)}});
 
@@ -881,16 +1072,18 @@ Result<std::string> RTS::canonicalStateJson() const {
         movementGroups.emplace_back(
             Value::Object{{"leadDistance", group.leadDistance}, {"members", Value(std::move(members))}});
     }
-    Value root(Value::Object{{"movementGroups", Value(std::move(movementGroups))},
-                             {"buildings", Value(std::move(buildings))},
-                             {"factions", Value(std::move(factions))},
-                             {"matches", Value(std::move(matches))},
-                             {"players", Value(std::move(players))},
-                             {"projectiles", Value(Value::Object{{"payloads", Value(std::move(projectilePayloads))},
-                                                                 {"slots", Value(std::move(projectileSlots))}})},
-                             {"resourceNodes", Value(std::move(nodes))},
-                             {"units", Value(std::move(units))},
-                             {"version", static_cast<std::int64_t>(state.version)}});
+    Value root(Value::Object{
+        {"movementGroups", Value(std::move(movementGroups))},
+        {"buildings", Value(std::move(buildings))},
+        {"factions", Value(std::move(factions))},
+        {"matches", Value(std::move(matches))},
+        {"players", Value(std::move(players))},
+        {"projectiles", Value(Value::Object{{"capacity", std::int64_t(state.projectiles.runtime.capacity)},
+                                            {"payloads", Value(std::move(projectilePayloads))},
+                                            {"slots", Value(std::move(projectileSlots))}})},
+        {"resourceNodes", Value(std::move(nodes))},
+        {"units", Value(std::move(units))},
+        {"version", static_cast<std::int64_t>(state.version)}});
     return root.toJson();
 }
 
@@ -914,10 +1107,16 @@ Result<ContentId> RTS::stateHash(const SnapshotHashProvider& hashProvider) const
 namespace eve::rts {
 using snapshot_internal::subjectOf;
 Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
-    if ((snapshot.version != 1 && snapshot.version != 2) || snapshot.units.size() != unitCount() ||
-        snapshot.buildings.size() != buildingCount() || snapshot.resourceNodes.size() != resourceNodeCount() ||
-        snapshot.players.size() != playerCount() || snapshot.factions.size() != factionCount() ||
-        snapshot.matches.size() != matchCount())
+    if (snapshot.version < 3 && std::any_of(snapshot.players.begin(), snapshot.players.end(), [](const auto& p) {
+            return p.selectionRevision != 0 || p.selectionTick.value() != 0;
+        }))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "Legacy RTS snapshots cannot carry v3 player watermarks", "players.selection"));
+
+    if ((snapshot.version != 1 && snapshot.version != 2 && snapshot.version != 3) ||
+        snapshot.units.size() != unitCount() || snapshot.buildings.size() != buildingCount() ||
+        snapshot.resourceNodes.size() != resourceNodeCount() || snapshot.players.size() != playerCount() ||
+        snapshot.factions.size() != factionCount() || snapshot.matches.size() != matchCount())
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::Conflict, "RTS snapshot topology/version does not match this module", "snapshot"));
 
@@ -1243,6 +1442,8 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
     for (const auto& value : snapshot.players) {
         auto* player                    = findPlayer(value.subject);
         player->identity()->displayName = value.displayName;
+        player->selection()->revision   = snapshot.version >= 3 ? value.selectionRevision : 0;
+        player->selection()->tick       = snapshot.version >= 3 ? value.selectionTick : SimulationTick{};
         player->selection()->units.clear();
         for (auto subject : value.units) player->selection()->units.push_back(handle(subject));
         player->selection()->buildings.clear();
@@ -1289,11 +1490,17 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
 }
 
 Result<void> RTS::rebuildState(const RTSStateSnapshot& snapshot) {
+    if (snapshot.version < 3 && std::any_of(snapshot.players.begin(), snapshot.players.end(), [](const auto& p) {
+            return p.selectionRevision != 0 || p.selectionTick.value() != 0;
+        }))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "Legacy RTS snapshots cannot carry v3 player watermarks", "players.selection"));
+
     if (unitCount() != 0 || buildingCount() != 0 || resourceNodeCount() != 0 || playerCount() != 0 ||
         factionCount() != 0 || matchCount() != 0)
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::Conflict, "RTS snapshot topology can only be rebuilt into an empty module", "snapshot"));
-    if (snapshot.version != 1 && snapshot.version != 2)
+    if (snapshot.version != 1 && snapshot.version != 2 && snapshot.version != 3)
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "unsupported RTS snapshot version", "snapshot.version"));
 

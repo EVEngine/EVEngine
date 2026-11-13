@@ -52,6 +52,8 @@ public:
     vkb::DepthTarget &depthImage() { return depth; }
     /** @brief Pending clear color. */
     Color pendingClearColor() const { return clearColor; }
+    /** @brief Observe a queued color clear without consuming it; render-thread only, no callbacks or mutation. */
+    [[nodiscard]] bool hasPendingColorClear() const noexcept { return hasPendingClear; }
     /** @brief Take pending clear. */
     bool takePendingClear();
     /** @brief True when hdr. */

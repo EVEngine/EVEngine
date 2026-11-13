@@ -249,6 +249,151 @@ TEST_CASE("settlement replay record: request round trip and tampering is rejecte
     CHECK_EQ(differences.value()[1], std::string("result.payload.stages[0].details.rule"));
 }
 
+TEST_CASE("settlement standalone request round trip preserves executable chain and rejects incomplete templates") {
+    using namespace eve;
+    using namespace eve::settlement;
+    auto request = sampleRequest();
+    request.tick = SimulationTick(std::numeric_limits<std::uint64_t>::max());
+    request.causation =
+        game_event::CausationRef::fromCommandId(*game_event::CommandId::parse("01900000-0000-7000-8000-000000000d31"));
+    request.correlation =
+        game_event::CorrelationId::fromEventId(*game_event::EventId::parse("01900000-0000-7000-8000-000000000d32"));
+    request.context.set("text", "exact\ncontext");
+    request.trigger            = "followup";
+    request.chain.depth        = 1;
+    request.chain.emittedCount = 1;
+    request.chain.triggerPath  = {request.trigger};
+    const auto text            = settlementRequestCanonicalJson(request).takeValue();
+    auto       decoded         = settlementRequestFromJson(text).takeValue();
+    REQUIRE_EQ(settlementRequestCanonicalJson(decoded).takeValue(), text);
+    REQUIRE_EQ(decoded.tick, request.tick);
+    REQUIRE_EQ(decoded.causation, request.causation);
+    REQUIRE_EQ(decoded.correlation, request.correlation);
+    REQUIRE_EQ(decoded.decisions[0].sample, request.decisions[0].sample);
+    const auto original = Value::fromJson(text).takeValue();
+    auto       changed  = original;
+    changed.set("version", 2);
+    REQUIRE(!settlementRequestFromJson(changed.toJson().takeValue()).ok());
+    changed = original;
+    changed.set("unknown", true);
+    REQUIRE(!settlementRequestFromJson(changed.toJson().takeValue()).ok());
+    changed = original;
+    changed.find("payload")->set("unknown", true);
+    REQUIRE(!settlementRequestFromJson(changed.toJson().takeValue()).ok());
+    changed = original;
+    changed.find("payload")->find("chain")->set("depth", 0);
+    REQUIRE(!settlementRequestFromJson(changed.toJson().takeValue()).ok());
+    request.chain.depth = 0;
+    REQUIRE(!settlementRequestCanonicalJson(request).ok());
+    request.chain.depth = 1;
+    request.trace       = static_cast<SettlementTraceLevel>(99);
+    REQUIRE(!settlementRequestCanonicalJson(request).ok());
+    REQUIRE(!settlementRequestFromJson("null").ok());
+    REQUIRE(settlementRequestFromJson(text).ok());
+}
+
+TEST_CASE("settlement result semantic decode preserves audit and derived inputs without transport metadata") {
+    using namespace eve;
+    using namespace eve::settlement;
+    auto expected                 = sampleResult();
+    expected.absorbed             = 2;
+    expected.clamped              = 3;
+    expected.critical             = true;
+    expected.tick                 = SimulationTick(std::numeric_limits<std::uint64_t>::max());
+    auto derived                  = sampleRequest();
+    derived.tick                  = expected.tick;
+    derived.decisions[0].sequence = static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max());
+    REQUIRE(validateSettlementRequest(derived).ok());
+    expected.derived.push_back(derived);
+    expected.event->schemaId      = *LogicalId::parse("audit:damage");
+    expected.event->schemaVersion = SchemaVersion(std::numeric_limits<std::uint64_t>::max());
+    expected.event->tick          = expected.tick;
+    expected.event->flags         = std::numeric_limits<std::uint32_t>::max();
+    expected.event->correlation   = game_event::CorrelationId::fromEventId(expected.event->eventId);
+    for (int causal = 0; causal <= 2; ++causal) {
+        expected.event->causation = causal == 0 ? game_event::CausationRef{}
+                                    : causal == 1
+                                        ? game_event::CausationRef::fromEventId(expected.event->eventId)
+                                        : game_event::CausationRef::fromCommandId(
+                                              *game_event::CommandId::parse(expected.event->eventId.format()));
+        for (int disposition = 0; disposition <= int(SettlementDisposition::InvalidTarget); ++disposition) {
+            expected.disposition = static_cast<SettlementDisposition>(disposition);
+            expected.stages.clear();
+            for (int kind = 0; kind <= int(StageKind::Event); ++kind)
+                expected.stages.push_back({static_cast<StageKind>(kind), "audit", StatusCode::Applied, 20, 15,
+                                           Value::object({{"explanation", "exact\ntrace"}})});
+            auto text    = settlementResultCanonicalJson(expected).takeValue();
+            auto decoded = settlementResultFromJson(text).expect("complete semantic audit decode");
+            REQUIRE_EQ(settlementResultCanonicalJson(decoded).takeValue(), text);
+            REQUIRE_EQ(decoded.derived[0].decisions[0].sequence,
+                       static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()));
+            REQUIRE_EQ(decoded.tick.value(), std::numeric_limits<std::uint64_t>::max());
+            REQUIRE(decoded.event);
+            REQUIRE(decoded.event->eventId.isNil());
+            REQUIRE_EQ(decoded.event->sequence.value(), std::uint64_t(0));
+            REQUIRE_EQ(decoded.event->flags, std::numeric_limits<std::uint32_t>::max());
+        }
+    }
+}
+TEST_CASE("settlement result semantic decode rejects malformed identities ranges and unknown fields") {
+    using namespace eve;
+    using namespace eve::settlement;
+    const auto text    = settlementResultCanonicalJson(sampleResult()).takeValue();
+    const auto value   = Value::fromJson(text).takeValue();
+    auto       changed = value;
+    changed.set("version", 2);
+    REQUIRE(!settlementResultFromJson(changed.toJson().takeValue()).ok());
+    changed = value;
+    changed.set("unknown", true);
+    REQUIRE(!settlementResultFromJson(changed.toJson().takeValue()).ok());
+    for (const auto* field : {"requested", "critical", "tick", "derived", "stages"}) {
+        changed = value;
+        changed.find("payload")->set(field, Value{});
+        REQUIRE(!settlementResultFromJson(changed.toJson().takeValue()).ok());
+    }
+    for (const auto* field : {"causation", "correlation", "schema"}) {
+        changed     = value;
+        auto* event = changed.find("payload")->find("event");
+        event->set(field, "invalid identity");
+        if (std::string_view(field) == "causation") event->set("causationKind", 1);
+        if (std::string_view(field) == "correlation") event->set("correlationKind", 1);
+        REQUIRE(!settlementResultFromJson(changed.toJson().takeValue()).ok());
+    }
+    changed = value;
+    changed.find("payload")->find("event")->set("flags", std::int64_t(4294967296LL));
+    REQUIRE(!settlementResultFromJson(changed.toJson().takeValue()).ok());
+    auto invalidDerived = sampleResult();
+    invalidDerived.derived.push_back(sampleRequest());
+    invalidDerived.derived[0].decisions[0].sequence = std::numeric_limits<std::uint64_t>::max();
+    REQUIRE(!settlementResultFromJson(settlementResultCanonicalJson(invalidDerived).takeValue()).ok());
+    REQUIRE(!settlementResultFromJson("null").ok());
+    REQUIRE(settlementResultFromJson(text).ok());
+}
+
+TEST_CASE("settlement replay decode observes malformed sibling fields before returning") {
+    auto record =
+        eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(), testHashProvider())
+            .takeValue();
+    const auto original = eve::Value::fromJson(record).takeValue();
+    for (const auto* field : {"source", "target", "kind", "resource", "trigger", "tick", "magnitude", "trace",
+                              "causation", "causationKind", "correlation", "correlationKind"}) {
+        auto changed = original;
+        changed.find("request")->set(field, eve::Value{});
+        REQUIRE(!eve::settlement::settlementReplayRequest(changed.toJson().takeValue()).ok());
+    }
+    for (const auto* field : {"depth", "emittedCount"}) {
+        auto changed = original;
+        changed.find("request")->find("chain")->set(field, eve::Value{});
+        REQUIRE(!eve::settlement::settlementReplayRequest(changed.toJson().takeValue()).ok());
+    }
+    for (const auto* field : {"kind", "name", "status", "before", "after"}) {
+        auto changed = original;
+        changed.find("result")->find("payload")->find("stages")->at(0).set(field, eve::Value{});
+        REQUIRE(!eve::settlement::settlementReplayRequest(changed.toJson().takeValue()).ok());
+    }
+    REQUIRE(eve::settlement::settlementReplayRequest(record).ok());
+}
+
 TEST_CASE("settlement replay decode: invalid version and fields have located errors") {
     auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
                                                                 testHashProvider());
@@ -479,5 +624,43 @@ TEST_CASE(
     CHECK(!rules.configureJson(invalidJson.value()).ok());
     CHECK_EQ(rules.size(), 1u);
 }
+
+TEST_CASE("settlement RuleSet decoding checks malformed scalar and filter results without replacing live rules") {
+    eve::settlement::SettlementRule base;
+    base.id    = "original.rule";
+    base.value = 1;
+    eve::settlement::SettlementRuleSet rules;
+    rules.configure({base}).expect("actual live configuration");
+    const auto before = rules.canonicalJson().takeValue();
+    auto       verify = [&](const eve::Value& candidate) {
+        auto rejected = rules.configureJson(candidate.toJson().takeValue());
+        REQUIRE(!rejected.ok());
+        REQUIRE_EQ(rules.canonicalJson().takeValue(), before);
+    };
+    for (const auto* field : {"schema", "version", "conditionLanguageVersion"}) {
+        auto candidate = eve::Value::fromJson(before).takeValue();
+        candidate.set(field, eve::Value::object({}));
+        verify(candidate);
+    }
+    for (const auto* field : {"id", "source", "stage", "operation", "when"}) {
+        auto  candidate = eve::Value::fromJson(before).takeValue();
+        auto& rule      = candidate.find("rules")->getIf<eve::Value::Array>()->front();
+        rule.set(field, eve::Value(42));
+        verify(candidate);
+    }
+    for (const auto* field : {"priority", "stacks", "value", "valuePerExtraStack"}) {
+        auto  candidate = eve::Value::fromJson(before).takeValue();
+        auto& rule      = candidate.find("rules")->getIf<eve::Value::Array>()->front();
+        rule.set(field, eve::Value("invalid"));
+        verify(candidate);
+    }
+    for (const auto* field : {"excludedTags", "kinds", "requiredTags"}) {
+        auto  candidate = eve::Value::fromJson(before).takeValue();
+        auto& rule      = candidate.find("rules")->getIf<eve::Value::Array>()->front();
+        rule.find("filter")->set(field, eve::Value(42));
+        verify(candidate);
+    }
+}
+
 #endif
 }  // namespace test_settlement_contract

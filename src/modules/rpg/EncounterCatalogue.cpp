@@ -1,4 +1,5 @@
 #include "rpg/EncounterCatalogue.h"
+#include "rpg/ActorInitialization.h"
 
 #include "common/Json.h"
 #include "rpg/Quest.h"
@@ -198,15 +199,9 @@ RPGActor *EncounterCatalogue::createMemberActor(const std::string &id, int membe
         static_cast<std::size_t>(memberIndex) >= definition->members.size())
         return nullptr;
     const auto &member = definition->members[static_cast<std::size_t>(memberIndex)];
-    RPGActor *actor = RPGActor::createActor();
+    auto        actor  = createInitializedActor(member);
     if (!actor) return nullptr;
-    actor->setBaseAttribute("attack", member.attack);
-    actor->setBaseAttribute("defense", member.defense);
-    actor->setBaseAttribute("hp", member.maxHp);
-    actor->setBaseAttribute("speed", member.speed);
-    actor->setCurrent("hp", member.maxHp);
-    actor->learnSkill(member.skillId);
-    return actor;
+    return static_cast<RPGActor *>(ecs::try_get(actor.value()));
 }
 
 }  // namespace eve::rpg

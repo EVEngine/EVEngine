@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "effects/EffectContainer.h"
 
 #include <algorithm>
@@ -31,6 +32,13 @@ eve::Result<EffectUpdateSummary> invalidDelta() {
 }
 
 double normalisedRemaining(double duration) { return duration > 0.0 ? duration : -1.0; }
+
+eve::Result<void> eventBudget(std::uint64_t next, std::uint64_t count) {
+    if (!next || count > std::numeric_limits<std::uint64_t>::max() - next)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "effect event sequence exhausted"));
+    return eve::Result<void>::success();
+}
 
 eve::Result<double> mergeDuration(const EffectInstance& current, const EffectDefinition& definition) {
     switch (definition.policy.duration) {
@@ -112,7 +120,7 @@ EffectContainer::EffectContainer(const EffectContainer& other)
       generation_(other.generation_),
       lastTick_(other.lastTick_),
       hasLastTick_(other.hasLastTick_),
-      events_(other.events_) {
+      events_(other.events_ ? std::make_unique<std::deque<EffectEvent>>(*other.events_) : nullptr) {
     for (const auto& effect : other.effects_)
         effects_.push_back(effect ? std::make_unique<EffectInstance>(*effect) : nullptr);
 }
@@ -138,6 +146,8 @@ EffectContainer EffectContainer::clone() const { return EffectContainer(*this); 
 EffectContainer EffectContainer::snapshot() const { return clone(); }
 
 eve::Result<void> EffectContainer::restore(const EffectContainer& snapshotValue) {
+    auto valid = snapshotValue.validateState();
+    if (!valid) return valid;
     if (this == &snapshotValue) {
         if (generation_ == std::numeric_limits<std::uint64_t>::max())
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
@@ -170,7 +180,8 @@ void EffectContainer::emit(EffectEventKind kind, const EffectInstance& effect, c
     event.reason         = reason;
     event.effectIdentity = effect.identity;
     event.tick           = lastTick_;
-    events_.push_back(std::move(event));
+    if (!events_) events_ = std::make_unique<std::deque<EffectEvent>>();
+    events_->push_back(std::move(event));
 }
 
 EffectContainer::Store::iterator EffectContainer::findIterator(const std::string& id) {
@@ -212,6 +223,23 @@ eve::Result<std::string> EffectContainer::apply(const EffectDefinition& definiti
         return effect->subject == subject && effect->stackKey == key;
     };
     auto existing = std::find_if(effects_.begin(), effects_.end(), matches);
+
+    const bool reuses =
+        existing != effects_.end() &&
+        (definition.policy.stackMode == StackMode::Reuse || definition.policy.stackMode == StackMode::Accumulate) &&
+        !(stackWouldOverflow(**existing, definition) && definition.policy.overflow == OverflowPolicy::ReplaceOldest);
+    if (!reuses && !effectIdGenerator_ && nextId_ == std::numeric_limits<std::uint64_t>::max())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                        "effect instance identity sequence exhausted"));
+    const auto requiredEvents = definition.policy.stackMode == StackMode::Replace
+                                    ? std::uint64_t(std::count_if(effects_.begin(), effects_.end(), matches)) + 1
+                                    : (!reuses && existing != effects_.end() &&
+                                               (definition.policy.stackMode == StackMode::Reuse ||
+                                                definition.policy.stackMode == StackMode::Accumulate)
+                                           ? std::uint64_t(2)
+                                           : std::uint64_t(1));
+    auto       budget         = eventBudget(nextSequence_, requiredEvents);
+    if (!budget) return eve::Result<std::string>::failure(budget.status());
 
     if (existing != effects_.end() && definition.policy.stackMode == StackMode::Reuse) {
         EffectInstance& current  = **existing;
@@ -375,6 +403,8 @@ eve::Result<std::string> EffectContainer::apply(const std::string& subject, cons
 eve::Result<void> EffectContainer::remove(const std::string& id, const std::string& reason) {
     const auto it = findIterator(id);
     if (it == effects_.end()) return notFound("effect instance is not active");
+    auto budget = eventBudget(nextSequence_, 1);
+    if (!budget) return budget;
     emit(EffectEventKind::Removed, **it, reason);
     effects_.erase(it);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -383,6 +413,8 @@ eve::Result<void> EffectContainer::remove(const std::string& id, const std::stri
 eve::Result<void> EffectContainer::remove(eve::EffectId id, const std::string& reason) {
     const auto it = findIterator(id);
     if (it == effects_.end()) return notFound("effect instance is not active");
+    auto budget = eventBudget(nextSequence_, 1);
+    if (!budget) return budget;
     emit(EffectEventKind::Removed, **it, reason);
     effects_.erase(it);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -461,6 +493,8 @@ eve::Result<EffectUpdateSummary> EffectContainer::advanceInstances(double dtSeco
                     eve::DiagnosticCode::InvalidArgument, "effect periodic accumulator overflow"));
             effect.periodElapsed += activeDelta;
             while (effect.periodElapsed >= effect.period) {
+                auto budget = eventBudget(nextSequence_, 1);
+                if (!budget) return eve::Result<EffectUpdateSummary>::failure(budget.status());
                 effect.periodElapsed -= effect.period;
                 EffectPeriodicTick periodic;
                 periodic.effectId       = effect.id;
@@ -481,6 +515,8 @@ eve::Result<EffectUpdateSummary> EffectContainer::advanceInstances(double dtSeco
         }
         effect.remaining = std::max(0.0, effect.remaining - dtSeconds);
         if (effect.remaining == 0.0) {
+            auto budget = eventBudget(nextSequence_, 1);
+            if (!budget) return eve::Result<EffectUpdateSummary>::failure(budget.status());
             emit(EffectEventKind::Expired, effect);
             ++summary.expired;
             it = effects_.erase(it);
@@ -528,7 +564,7 @@ eve::Result<EffectUpdateSummary> EffectContainer::advance(const eve::SimulationS
 
 void EffectContainer::clear() {
     effects_.clear();
-    events_.clear();
+    if (events_) events_->clear();
     nextId_ = nextSequence_ = 1;
     lastTick_               = eve::SimulationTick::zero();
     hasLastTick_            = false;
@@ -608,19 +644,23 @@ const EffectInstance* EffectContainer::taggedAt(const std::string& subject, cons
     return nullptr;
 }
 
-int EffectContainer::eventCount() const { return static_cast<int>(events_.size()); }
+int EffectContainer::eventCount() const { return events_ ? static_cast<int>(events_->size()) : 0; }
 
 EffectEvent* EffectContainer::eventAt(int index) {
-    return index < 0 || static_cast<std::size_t>(index) >= events_.size() ? nullptr
-                                                                          : &events_[static_cast<std::size_t>(index)];
+    return !events_ || index < 0 || static_cast<std::size_t>(index) >= events_->size()
+               ? nullptr
+               : &(*events_)[static_cast<std::size_t>(index)];
 }
 
 const EffectEvent* EffectContainer::eventAt(int index) const {
-    return index < 0 || static_cast<std::size_t>(index) >= events_.size() ? nullptr
-                                                                          : &events_[static_cast<std::size_t>(index)];
+    return !events_ || index < 0 || static_cast<std::size_t>(index) >= events_->size()
+               ? nullptr
+               : &(*events_)[static_cast<std::size_t>(index)];
 }
 
-void EffectContainer::clearEvents() { events_.clear(); }
+void EffectContainer::clearEvents() {
+    if (events_) events_->clear();
+}
 
 eve::Result<EffectUpdateSummary> EffectExecutor::advance(EffectContainer& container, double dtSeconds) const {
     return container.update(dtSeconds);

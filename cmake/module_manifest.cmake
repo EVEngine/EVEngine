@@ -37,6 +37,7 @@ set(EVE_TP_ORDER
     CACHE INTERNAL "Third-party groups, in link order")
 
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/core_foundation.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/spawn.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/platform_resources.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/input_playback.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/rendering_hub.cmake)

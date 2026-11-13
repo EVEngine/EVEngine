@@ -9,6 +9,7 @@ namespace detail {
 struct ComponentSchedule {
     Component *component = nullptr;  // Owner invalidates before destruction; never exposed as a handle.
     bool       queued    = false;
+    std::optional<std::string> windowTitle;
 };
 namespace {
 std::vector<std::weak_ptr<ComponentSchedule>> pending;
@@ -50,6 +51,11 @@ void Component::markDirty() {
 }
 
 
+void Component::setWindowFrame(std::optional<std::string> title) {
+    markDirty();
+    schedule_->windowTitle = std::move(title);
+}
+
 void Component::attach(UIHostHandle host) {
     host_ = host;
     markDirty();
@@ -68,7 +74,9 @@ void Component::rebuild(bool forceFull) {
     building_ = true;
     dirty_    = false;
     try {
+        const auto title = schedule_->windowTitle;
         auto tree = build();
+        if (title && tree.type != NodeType::Window) tree = window(*title, {std::move(tree)});
         host      = UIHost::resolve(host_);
         if (host) {
             if (forceFull)

@@ -1,5 +1,7 @@
 #pragma once
 #include "common/Export.h"
+#include "common/Result.h"
+#include "common/Value.h"
 
 
 // 连续流场：Dijkstra 积分场 + 梯度方向场 + 双线性采样。
@@ -174,8 +176,30 @@ public:
     /** @brief 只读访问方向场 Y 分量（调试渲染用）。 */
     const std::vector<float> &flowY() const { return flowY_; }
 
+    /** @brief Encode complete field/build facts and retained buffer capacities as crowd.field v1.
+     * @return Owning canonical data or invalid/nonfinite/unsupported storage failure; no graph work runs.
+     * @remarks Includes terrain/projection, stale derived arrays, goals, heap order and direction cursor.
+     * No Crowd owner, lease, cache pin or publication permission is serialized.
+     * @thread Read-only CPU operation; caller synchronizes mutation. No callbacks.
+     * @cost Copies complete grid/build storage once per explicit checkpoint.
+     * @throws std::bad_alloc Source and live backends remain unchanged.
+     */
+    [[nodiscard]] Result<Value> encodeState() const;
+    /** @brief Admit strict crowd.field v1 without rebuilding, publishing or issuing a flow lease.
+     * @param value Synchronously borrowed tree; result owns all buffers independently.
+     * @return Field with exact capacities or unknown version/algorithm/fields, malformed facts or unsupported ABI.
+     * @remarks Initial v1 has no implicit migration. Grid product/dimensions are at most 4M cells; retained storage
+     * is bounded by the existing 8 GiB cache ceiling. A backend/work participant must separately authorize
+     * plan phase/input correspondence and live owner rebinding before continuation/publication.
+     * @thread Pure CPU admission, no clocks/RNG, providers or callbacks.
+     * @cost Validates and allocates full retained grid/build storage per explicit load.
+     * @throws std::bad_alloc Input and live backends remain unchanged.
+     */
+    [[nodiscard]] static Result<CrowdField> prepareState(const Value &value);
+
 private:
     friend class Crowd;
+    [[nodiscard]] Result<void> validateArchiveState() const;
     void                beginBuildWorking();
     std::pair<int, int> advanceBuildWorking(int maxWork);
     void                invalidate();

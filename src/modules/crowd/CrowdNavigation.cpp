@@ -51,6 +51,11 @@ Result<Crowd::FlowBuildPlan> Crowd::prepareFlowBuild(std::span<const FlowGoal> g
 } catch (const std::exception& error) {
     return Result<FlowBuildPlan>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "flowBuild"));
 }
+Crowd::FlowBuildState Crowd::classifyCompletedFlow(const CrowdField& field) {
+    for (std::size_t i = 0; i + 1 < field.goals_.size(); i += 2)
+        if (field.isReachable(field.goals_[i], field.goals_[i + 1])) return FlowBuildState::Ready;
+    return FlowBuildState::Unreachable;
+}
 Result<Crowd::FlowBuildProgress> Crowd::advanceFlowBuild(FlowBuildPlan& plan, int maxWork) try {
     if (maxWork < 0 || maxWork > 1000000)
         return Result<FlowBuildProgress>::failure(
@@ -71,11 +76,7 @@ Result<Crowd::FlowBuildProgress> Crowd::advanceFlowBuild(FlowBuildPlan& plan, in
         return Result<FlowBuildProgress>::success({plan.state_, 0, 0}, Status::success(StatusCode::NoOp));
     const auto [pops, cells] = plan.field_->advanceBuildWorking(maxWork);
     if (plan.field_->isBuilt()) {
-        bool reachable = false;
-        for (size_t index = 0; index + 1 < plan.field_->goals_.size(); index += 2)
-            reachable =
-                reachable || plan.field_->isReachable(plan.field_->goals_[index], plan.field_->goals_[index + 1]);
-        plan.state_ = reachable ? FlowBuildState::Ready : FlowBuildState::Unreachable;
+        plan.state_ = classifyCompletedFlow(*plan.field_);
     }
     return Result<FlowBuildProgress>::success({plan.state_, pops, cells});
 } catch (const std::exception& error) {

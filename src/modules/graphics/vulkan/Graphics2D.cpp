@@ -560,7 +560,9 @@ void Graphics::setCanvas(Canvas *canvas) {
     bool hasSolid = false;
     for (const auto &sb : solidBatches)
         if (!sb.batch.empty()) hasSolid = true;
-    if (hasSolid || !texturedBatches.empty() || !litBatches.empty()) flushBatch();
+    const auto *previousOffscreen = dynamic_cast<const OffscreenCanvas *>(activeCanvas);
+    const bool  pendingClear      = previousOffscreen && previousOffscreen->hasPendingColorClear();
+    if (hasSolid || !texturedBatches.empty() || !litBatches.empty() || pendingClear) flushBatch();
     if (next && sceneColorPassOpen) {
         endSceneColorRenderPass();
         queueSceneColorResolve();

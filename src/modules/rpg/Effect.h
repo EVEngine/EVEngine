@@ -36,7 +36,7 @@ struct EffectModifierSpec {
 struct EVENGINE_API_PLATFORM EffectDefinition {
     std::string id;
 
-    /** @brief "instant" | "duration" | "infinite"（未知值按 "instant" 处理）。 */
+    /** @brief "instant" | "duration" | "infinite"；canonical 校验拒绝未知值。 */
     std::string durationPolicy = "instant";
     float duration = 0.f;  ///< durationPolicy == "duration" 时使用（秒）
 
@@ -45,7 +45,7 @@ struct EVENGINE_API_PLATFORM EffectDefinition {
 
     /**
      * @brief "none" | "refresh" | "extend" | "stack"，或 StatusSystem::registerStackPolicy 注册的名字。
-     * 未知且未注册时按 "none" 处理。
+     * 未知且未注册的策略在实际应用时明确拒绝；codec 不执行策略。
      */
     std::string stackPolicy = "none";
     int maxStacks = 1;
@@ -64,6 +64,15 @@ struct EVENGINE_API_PLATFORM EffectDefinition {
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
+/**
+ * @brief Exchange every effect definition field without allocating or throwing.
+ * @param left First exclusively borrowed definition; owns the right-hand facts after the call.
+ * @param right Second exclusively borrowed definition; owns the left-hand facts after the call.
+ * @thread Call on the owning registry/content thread with exclusive access to both definitions.
+ * @reentrancy Synchronous field exchange; invokes no callbacks or registry operations.
+ */
+EVENGINE_API_PLATFORM void swap(EffectDefinition &left, EffectDefinition &right) noexcept;
+
 /** @brief 全局效果定义表：进程级单例，供任意模块 / 脚本按 id 引用。 */
 class EVENGINE_API_PLATFORM EffectRegistry {
 public:
@@ -71,8 +80,10 @@ public:
     static void registerEffect(const EffectDefinition &def);
     /**
      * @brief Find a registered effect definition by id.
-     * @return Borrowed nullable definition owned by the process-local registry.
-     * @ownership EffectRegistry owns the definition; callers must not delete or mutate it.
+     * @return Borrowed nullable definition from the active immutable SkillContentScope, otherwise the live registry.
+     * @remarks An active content scope is exclusive: missing names never consult the live registry. Its definitions
+     * remain borrowed only until that scope ends; global catalogue mutations do not modify scoped content.
+     * @ownership The selected content scope or EffectRegistry owns it; callers must not delete or mutate it.
      * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
      * @thread Call on the RPG registry thread.
      * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.

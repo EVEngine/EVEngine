@@ -715,6 +715,7 @@ std::string digestCondition(std::string_view source) {
         hash *= 1099511628211ull;
     }
     std::ostringstream stream;
+    stream.exceptions(std::ios::badbit | std::ios::failbit);
     stream << std::hex << std::setfill('0') << std::setw(16) << hash;
     return stream.str();
 }

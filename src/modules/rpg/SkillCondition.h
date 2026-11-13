@@ -10,6 +10,7 @@
 #include "common/Condition.h"
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -17,6 +18,7 @@ namespace eve::rpg {
 
 class RPGActor;
 struct SkillDefinition;
+class SkillConditionBindings;
 
 /**
  * @brief Read-only extension points for authority and policy queries.
@@ -32,6 +34,11 @@ struct SkillConditionQueries {
 
     Authority authority;
     Policy    policy;
+    /** @brief Optional actual immutable executor set, shared through evaluation.
+     * @remarks Authoritative for all PolicyCall names including authority.allow. If absent, the actor's Skills binding
+     * is used; only when both are absent are legacy authority/policy callbacks consulted.
+     */
+    std::shared_ptr<const SkillConditionBindings> bindings{};
 };
 
 /**
@@ -77,6 +84,8 @@ public:
      * @param condition Owning, side-effect-free condition tree.
      * @param queries Optional read-only authority and policy providers.
      * @return A stable, UI-ready condition explanation.
+     * @remarks A versioned owner requires every PolicyCall in the supplied tree to be bound with matching declaration
+     * before any callback, including currently short-circuited branches. Legacy queries keep their existing semantics.
      */
     [[nodiscard]] static condition::ConditionResult evaluate(const RPGActor* actor, const SkillDefinition& definition,
                                                              const condition::Condition& condition,

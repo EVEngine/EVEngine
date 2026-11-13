@@ -42,6 +42,11 @@ import utf8_stdio  # noqa: E402
 
 
 PROFILES = (
+    "spawn-map-rpg-runtime",
+    "spawn-map-rts-runtime",
+    "spawn-rpg-only",
+    "spawn-content-only",
+    "spawn-core-only",
     "minimal",
     "2d",
     "3d",
@@ -58,8 +63,9 @@ PROFILES = (
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "physics-bake-only", "physics-bake-script-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
-RUNTIME_ONLY = {"runtime-3d"}
+HOSTLESS = {"spawn-rpg-only", "spawn-content-only", "spawn-core-only", "procgen-core-only", "physics-core-only", "physics-bake-only", "physics-bake-script-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
+MAP_RUNTIME_ROOTS = {"spawn-map-rpg-runtime": "map_rpg_spawn", "spawn-map-rts-runtime": "map_rts_spawn"}
+RUNTIME_ONLY = {"runtime-3d", *MAP_RUNTIME_ROOTS}
 _MODULE_DIRS: dict[str, str] | None = None
 
 
@@ -71,6 +77,9 @@ def is_editor_module(name: str) -> bool:
 
 
 CORE_SEEDS = {
+    "spawn-rpg-only": ("common", "spawn", "rpg_spawn"),
+    "spawn-content-only": ("common", "spawn", "spawn_definitions"),
+    "spawn-core-only": ("common", "spawn"),
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
     "physics-bake-only": ("common", "physics_backend"),
@@ -103,7 +112,7 @@ CORE_SEEDS = {
         "settlement",
     ),
 }
-FORBIDDEN_HOSTLESS = {"cmdline", "window", "graphics", "physics", "procgen"}
+FORBIDDEN_HOSTLESS = { "cmdline", "window", "graphics", "physics", "procgen"}
 PHYSICS_CORE_SOURCES = (
     "physics/Body.cpp",
     "physics/Body3D.cpp",
@@ -255,10 +264,12 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
         wanted = []
         for module in modules:
             selection_profile = "3d" if profile == "runtime-3d" else profile
-            if profile == "physics-bake-render":
+            if profile == "physics-bake-render" or profile in MAP_RUNTIME_ROOTS:
                 selection_profile = "minimal"
             enabled = module.required or profile == "full" or selection_profile in module.groups
             if profile == "physics-bake-render" and module.name in {"physics_backend", "physics_bake_graphics", "font", "devtools"}:
+                enabled = True
+            if profile in MAP_RUNTIME_ROOTS and module.name == MAP_RUNTIME_ROOTS[profile]:
                 enabled = True
             if profile in RUNTIME_ONLY and is_editor_module(module.name):
                 enabled = False
@@ -429,6 +440,22 @@ def run_smoke(args: argparse.Namespace, profile: str) -> None:
         else:
             raise RuntimeError(f"{profile}: smoke binary is not executable: {candidate}")
 
+    if profile.startswith("spawn-"):
+        test_folders = ["spawn"]
+        if profile in MAP_RUNTIME_ROOTS:
+            test_folders.append("map_spawn")
+        if profile == "spawn-map-rts-runtime":
+            test_folders.append("rts_spawn")
+        for folder in test_folders:
+            run_command(["ctest", "--test-dir", str(directory / "profile" / folder), "--no-tests=error",
+                         "--output-on-failure"], ROOT)
+    if profile in MAP_RUNTIME_ROOTS:
+        executable = directory / "src/engine" / ("eve.exe" if os.name == "nt" else "eve")
+        if not executable.is_file():
+            raise RuntimeError(f"{profile}: native host missing")
+        examples = ["spawn-rpg-camp", "spawn-rpg-waves"] if profile == "spawn-map-rpg-runtime" else ["spawn-rts-reinforcements"]
+        environment = dict(os.environ, EVE=str(executable), MIN_RUN_SECONDS="2", RUN_SECONDS="8")
+        run_command(["bash", "scripts/smoke_examples.sh", *examples], ROOT, env=environment)
     if profile == "physics-bake-render":
         run_command(["ctest", "--test-dir", str(directory), "--no-tests=error", "--output-on-failure",
                      "-R", "^bake.render."], ROOT)
@@ -457,6 +484,8 @@ def execute_profile(args: argparse.Namespace, profile: str) -> None:
             )
         if args.smoke:
             print(f"$ <run {directory}/profile/eve_capability_{'{present,absent}'}_check>")
+        if args.audit_link:
+            print(f"$ <audit native OBJECT spawn link/symbol artifacts under {directory}>")
         return
     if args.configure:
         run_command(command, ROOT)
@@ -475,6 +504,12 @@ def execute_profile(args: argparse.Namespace, profile: str) -> None:
         )
     if args.smoke:
         run_smoke(args, profile)
+    if args.audit_link:
+        from spawn_link_audit import audit
+
+        modules, _ = resolve(profile)
+        report = audit(directory, profile, modules)
+        print(f"spawn link boundary OK: {profile}; evidence={report['evidence']}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -486,6 +521,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--configure", action="store_true", help="run CMake configure")
     parser.add_argument("--build", action="store_true", help="build eve_profile_smoke")
     parser.add_argument("--smoke", action="store_true", help="run independent capability probes")
+    parser.add_argument("--audit-link", action="store_true", help="audit actual native OBJECT spawn link/symbol artifacts")
     parser.add_argument("--dry-run", action="store_true", help="print commands without executing them")
     parser.add_argument("--build-root", default=str(ROOT / "build" / "profile-matrix"))
     parser.add_argument("--generator", default="Ninja")
@@ -498,17 +534,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--jobs", type=int, default=min(os.cpu_count() or 1, 4))
     args = parser.parse_args(argv)
 
-    if not any((args.check, args.configure, args.build, args.smoke, args.dry_run)):
+    if not any((args.check, args.configure, args.build, args.smoke, args.audit_link, args.dry_run)):
         args.check = True
-    if args.dry_run and not any((args.configure, args.build, args.smoke)):
+    if args.dry_run and not any((args.configure, args.build, args.smoke, args.audit_link)):
         args.configure = args.build = args.smoke = True
     if args.check:
         result = check_contracts()
         if result:
             return result
     selected = list(PROFILES) if args.all else ([args.profile] if args.profile else [])
-    if (args.configure or args.build or args.smoke or args.dry_run) and not selected:
+    if (args.configure or args.build or args.smoke or args.audit_link or args.dry_run) and not selected:
         parser.error("--profile or --all is required with configure/build/smoke/dry-run")
+    if args.audit_link:
+        from spawn_link_audit import PROFILES as link_profiles
+
+        if any(profile not in link_profiles for profile in selected):
+            parser.error("--audit-link supports the native spawn core/content/RPG and map-runtime profiles")
     for profile in selected:
         execute_profile(args, profile)
     return 0

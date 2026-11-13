@@ -10,6 +10,7 @@
  */
 
 #include "common/Result.h"
+#include "rpg/ActorEventRef.h"
 
 #include <string>
 #include <vector>
@@ -22,7 +23,7 @@ class RPGActor;
 
 /** @brief 生命等资源事件：damage | heal | death | revive。 */
 struct VitalsEvent {
-    class RPGActor *actor = nullptr;
+    ActorEventRef actor;
     std::string resource;
     std::string action;
     double amount = 0.0;
@@ -47,6 +48,8 @@ public:
     /**
      * @brief 造成伤害：current -= amount，下限 0；归零时发 death 事件。
      * @return 实际生效的伤害量（夹在 [0, currentBefore]）。
+     * @throws std::bad_alloc Event preparation failed before resource or queue mutation.
+     * @remarks Damage and optional death events are prepared before changing HP; publication does not allocate.
      */
     static double takeDamage(RPGActor *actor, const std::string &resource, double amount,
                              const std::string &source = "");
@@ -71,7 +74,8 @@ public:
     /** @brief 是否死亡：max > 0 且 current <= 0。 */
     static bool isDead(RPGActor *actor, const std::string &resource);
 
-    /** @brief 取出并清空自上次调用以来累积的资源事件（push/poll 风格）。 */
+    /** @brief Replace out with this simulation's queued resource facts; self-output is a no-op.
+     * @ownership Transfers event values without retaining actors/worlds; no callbacks or allocation. */
     static void pollEvents(std::vector<VitalsEvent> &out);
 };
 

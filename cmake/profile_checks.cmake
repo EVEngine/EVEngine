@@ -23,6 +23,22 @@ if(EVENGINE_PROFILE STREQUAL "physics-bake-render")
     add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/physics_bake_render_check" "${CMAKE_BINARY_DIR}/profile/bake_render")
 endif()
 
+if(TARGET EVMap_spawn AND TARGET eve)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/map_spawn_check" "${CMAKE_BINARY_DIR}/profile/map_spawn")
+endif()
+
+if(TARGET EVRts AND TARGET eve)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/rts_spawn_check" "${CMAKE_BINARY_DIR}/profile/rts_spawn")
+endif()
+
+if(TARGET EVSpawn_editing)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/spawn_editing_check" "${CMAKE_BINARY_DIR}/profile/spawn_editing")
+endif()
+
+if(TARGET EVSpawn)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/spawn_check" "${CMAKE_BINARY_DIR}/profile/spawn")
+endif()
+
 # The real crowd solver and bindings link without graphics, window or RTS.
 if(TARGET EVCrowd)
     add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/crowd_check" "${CMAKE_BINARY_DIR}/profile/crowd")
@@ -138,7 +154,10 @@ set_target_properties(eve_public_header_checks PROPERTIES
 
 set(_eve_capability_sources
     "${CMAKE_SOURCE_DIR}/src/engine/common/Capability.cpp"
-    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp")
+    "${CMAKE_SOURCE_DIR}/src/engine/common/CapabilityOwned.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Diagnostic.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Status.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Result.cpp")
 eve_add_test_executable(eve_capability_present_check
     "${CMAKE_SOURCE_DIR}/test/profile/capability_present.cpp"
     ${_eve_capability_sources})
@@ -148,7 +167,9 @@ eve_add_test_executable(eve_capability_absent_check
 foreach(_eve_capability_target IN ITEMS
         eve_capability_present_check eve_capability_absent_check)
     target_compile_features(${_eve_capability_target} PRIVATE cxx_std_20)
-    target_link_libraries(${_eve_capability_target} PRIVATE eve_engine_includes)
+    # The isolated probes own the canonical capability and Result implementation closure.
+    # Debug invariants in both use zeroerr; do not pull in another capability registry.
+    target_link_libraries(${_eve_capability_target} PRIVATE zeroerr eve_engine_includes)
     if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
         # These isolated executables own their registry sources rather than importing an engine group.
         target_compile_definitions(${_eve_capability_target} PRIVATE
@@ -162,6 +183,9 @@ set(_eve_profile_smoke_dependencies
     eve_public_header_checks
     eve_capability_present_check
     eve_capability_absent_check)
+if(TARGET eve_spawn_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_spawn_check)
+endif()
 if(TARGET eve_bake_playback_check)
     list(APPEND _eve_profile_smoke_dependencies eve_bake_playback_check eve_bake_measure eve_bake_collapse_inspect)
 endif()
@@ -184,6 +208,14 @@ if(TARGET EVPhysicsCoreCheck)
 endif()
 if(TARGET EVProcgenCoreCheck)
     list(APPEND _eve_profile_smoke_dependencies EVProcgenCoreCheck)
+endif()
+# Map runtime profiles prove the actual host plus every map composition consumer, with authoring absent.
+if(EVENGINE_PROFILE MATCHES "^spawn-map-(rpg|rts)-runtime$")
+    foreach(_spawn_runtime_target eve eve_map_spawn_contracts eve_rts_spawn_contracts)
+        if(TARGET ${_spawn_runtime_target})
+            list(APPEND _eve_profile_smoke_dependencies ${_spawn_runtime_target})
+        endif()
+    endforeach()
 endif()
 add_custom_target(eve_profile_smoke
     DEPENDS ${_eve_profile_smoke_dependencies})
@@ -269,4 +301,9 @@ if(TARGET EVAsset)
     add_test(NAME profile.gltf_animation COMMAND eve_gltf_animation_check)
     eve_label_test_group(profile.gltf_animation asset_import_gltf_animation.cpp asset_import_gltf_material.cpp
         asset_migration.cpp asset_mesh_uv.cpp asset_mesh_attributes.cpp asset_import_tiff.cpp asset_import_tga.cpp)
+endif()
+
+if(TARGET EVSpawn_editor)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/spawn_editor_check"
+                     "${CMAKE_BINARY_DIR}/profile/spawn_editor")
 endif()

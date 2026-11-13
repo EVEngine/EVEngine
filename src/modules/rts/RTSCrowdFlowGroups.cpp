@@ -3,13 +3,13 @@
 #include "rts/RTSCrowdFlowNavigationInternal.h"
 
 namespace eve::rts {
-namespace {
-bool handleLess(const ecs::EntityHandle& left, const ecs::EntityHandle& right) {
+bool CrowdFlowNavigation::handleLess(const ecs::EntityHandle& left, const ecs::EntityHandle& right) {
     if (left.table != right.table) return std::less<ecs::Table*>{}(left.table, right.table);
     if (left.type != right.type) return left.type < right.type;
     if (left.id != right.id) return left.id < right.id;
     return left.generation < right.generation;
 }
+namespace {
 template <class T>
 Result<T> groupFailure(DiagnosticCode code, const char* message) {
     return Result<T>::failure(Diagnostic::error(code, message, "crowdFlowNavigation.group"));

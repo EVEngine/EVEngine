@@ -1,5 +1,6 @@
 // eve-hot-path
 #include "combat/Damage.h"
+#include "combat/DamageStateInternal.h"
 
 #include "common/Profile.h"
 #include "tags/GameplayTag.h"
@@ -9,6 +10,13 @@
 #include <utility>
 
 namespace eve::combat {
+DamageRuntime::DamageRuntime(const IDamageRule* rule, HitReactionPolicy policy)
+    : rule_(rule), policy_(policy), settlement_(std::make_shared<const SettlementState>()) {}
+DamageRuntime::~DamageRuntime()                                   = default;
+DamageRuntime::DamageRuntime(const DamageRuntime&)                = default;
+DamageRuntime& DamageRuntime::operator=(const DamageRuntime&)     = default;
+DamageRuntime::DamageRuntime(DamageRuntime&&) noexcept            = default;
+DamageRuntime& DamageRuntime::operator=(DamageRuntime&&) noexcept = default;
 namespace {
 
 bool finiteNonNegative(double value) { return std::isfinite(value) && value >= 0.0; }
@@ -206,7 +214,11 @@ Result<DamageAmounts> DamageRuntime::preview(const CombatState& target, const Da
 }
 
 Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request) const {
-    return apply(target, request, settlement_);
+    const auto state = settlement_;
+    if (!state)
+        return Result<DamageOutcome>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "Damage runtime was moved; configure it before settlement"));
+    return apply(target, request, state->pipeline);
 }
 
 Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request,
@@ -294,12 +306,17 @@ Result<settlement::SettlementResult> DamageRuntime::heal(CombatState& target, Su
     request.resource  = "health";
     request.magnitude = amount;
     HealingSettlementPolicy policy(target);
-    return settlement_.settle(request, policy);
+    const auto              state = settlement_;
+    if (!state)
+        return Result<settlement::SettlementResult>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "Damage runtime was moved; configure it before settlement"));
+    return state->pipeline.settle(request, policy);
 }
 
 Result<void> DamageRuntime::configureSettlementRules(const settlement::SettlementRuleSet& rules) {
-    settlement::SettlementPipeline candidate;
-    auto                           installed = rules.install(candidate);
+    auto candidate   = std::make_shared<SettlementState>();
+    candidate->rules = rules;
+    auto installed   = candidate->rules.install(candidate->pipeline);
     if (!installed) return installed;
     settlement_ = std::move(candidate);
     return Result<void>::success(Status::success(StatusCode::Applied));

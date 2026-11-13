@@ -1,6 +1,7 @@
 // eve-hot-path
 #include "common/Profile.h"
 #include "rts/RTS.h"
+#include "rts/RTSComponentAccessInternal.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"
 #include "rts/RTSSystemMovementInternal.h"
 
@@ -225,10 +226,17 @@ Result<std::vector<RTSMovementGroupSnapshot>> RTS::captureMovementGroups() const
         active.leadDistance = group.state.leadDistance;
         for (std::size_t i = 0; i < group.handles.size(); ++i) {
             auto* unit = dynamic_cast<Unit*>(ecs::try_get(group.handles[i]));
-            if (!unit || !unit->durability()->alive || unit->containment()->container.isBound() ||
-                unit->orders()->values.membershipEpoch_ != group.epochs[i])
+            if (!unit) continue;
+            const auto* durability  = detail::existingComponent<Unit::Durability>(*unit);
+            const auto* containment = detail::existingComponent<Unit::Containment>(*unit);
+            auto*       orders      = detail::existingComponent<Unit::Orders>(*unit);
+            if (!durability || !containment || !orders)
+                return Result<std::vector<RTSMovementGroupSnapshot>>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "Movement-group snapshot components are missing"));
+            if (!durability->alive || containment->container.isBound() ||
+                orders->values.membershipEpoch_ != group.epochs[i])
                 continue;
-            auto current = systems_internal::readCurrent(unit->orders()->values);
+            auto current = systems_internal::readCurrent(orders->values);
             if (!current) return Result<std::vector<RTSMovementGroupSnapshot>>::failure(current.status());
             if (current.value() &&
                 (current.value()->kind == OrderKind::Move || current.value()->kind == OrderKind::AttackMove) &&

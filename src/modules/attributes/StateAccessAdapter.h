@@ -5,6 +5,7 @@
  * @brief AttributeSet implementation of the common world-state contracts.
  */
 
+#include <functional>
 #include "attributes/AttributeSet.h"
 #include "common/StateAccess.h"
 
@@ -52,8 +53,11 @@ public:
                                                           const eve::MutationContext&         context) override;
 
 private:
+    friend class AttributeSet;
+    // Only the owning set transfers its registered adapter; no callbacks or allocation.
+    void          rebind(AttributeSet& attributes) noexcept { attributes_ = std::ref(attributes); }
     bool          owns(std::string_view subject) const noexcept;
-    AttributeSet& attributes_;
+    std::reference_wrapper<AttributeSet> attributes_;
 };
 
 }  // namespace eve::attributes

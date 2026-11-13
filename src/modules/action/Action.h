@@ -10,11 +10,14 @@
  * Skill, Weapon Attack, Card Play, or RTS command into an ActionDefinition and
  * ActionRequest; they do not keep a second phase/timer state. Conditions,
  * targeting, resource accounts and active effects are injected ports so the
- * core does not depend on any particular gameplay domain. Resource
+ * core does not depend on any particular gameplay domain. The persistent data face
+ * action.definition v1 shares its canonical fields with ability assets; execution
+ * state and implementation authority remain separate. Resource
  * reservations are created only when Active is entered; validation performs
  * an affordability query and therefore never leaves a cross-frame reservation.
  */
 
+#include "action/ActionIdentity.h"
 #include "action/ActionTimeline.h"
 #include "common/Condition.h"
 #include "common/ECS.h"
@@ -28,9 +31,11 @@
 #include "transaction/Transaction.h"
 
 #include <cstdint>
+#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -143,6 +148,26 @@ struct EVENGINE_API_PLATFORM ActionDefinition {
      * @return Success or a structured rejection diagnostic.
      */
     [[nodiscard]] Result<void> validate() const;
+    /** @brief Encode complete action.definition v1 data using the canonical ability action-field codec.
+     * @ownership Returns owning definition values; retains no runtime, entity, provider or callback.
+     * @return Definition data or invalid/nonserializable condition, targeting, cost, metadata or timeline.
+     * @remarks Does not evaluate conditions or resolve effect/policy implementation revisions. Runtime execution
+     * cursors, receipts, bindings and phase belong to the separate execution participant.
+     * @thread Read-only; caller synchronizes definition mutation. No clocks, services or callbacks.
+     * @cost Copies and validates complete nested definition data once per explicit save/content boundary.
+     * @throws std::bad_alloc Source and live worlds remain unchanged.
+     */
+    [[nodiscard]] Result<Value> encodeState() const;
+    /** @brief Admit strict action.definition v1 without submitting or executing an action.
+     * @param state Synchronous borrowed value; result independently owns all admitted fields.
+     * @return Complete definition or unknown version/fields, malformed values or canonical validation failure.
+     * @remarks Initial v1 has no implicit migration; nested timeline and condition use their existing canonical
+     * codecs. Reading names does not authorize external implementations or current-world entity bindings.
+     * @thread Pure CPU content admission; no capabilities, evaluation, time/RNG or callbacks.
+     * @cost Parses nested targeting/conditions/cost/timeline once per admitted definition.
+     * @throws std::bad_alloc Input and live worlds remain unchanged.
+     */
+    [[nodiscard]] static Result<ActionDefinition> prepareState(const Value& state);
 };
 
 /**
@@ -172,6 +197,10 @@ struct EVENGINE_API_PLATFORM ActionRequest {
     std::string transactionId;
     /** @brief Simulation tick at which the request entered the pipeline. */
     SimulationTick requestedTick = SimulationTick::zero();
+    /** @brief Authoritative producer identity retained after source retirement; not a live-entity authorization. */
+    std::optional<SubjectRef> sourceSubject;
+    /** @brief Optional complete parallel stable identities supplied by the domain producer. */
+    std::vector<SubjectRef> targetSubjects;
 
     /**
      * @brief Validate request/definition correspondence without side effects.
@@ -181,9 +210,6 @@ struct EVENGINE_API_PLATFORM ActionRequest {
     [[nodiscard]] Result<void> validate(const ActionDefinition& definition) const;
 };
 
-/** @brief Opaque runtime identity for one ActionExecution. */
-struct ActionExecutionIdTag {};
-using ActionExecutionId = eve::detail::StrongUint64<ActionExecutionIdTag>;
 
 /** @brief One phase change observed while advancing an action. */
 struct ActionTransition {
@@ -412,6 +438,25 @@ struct ActionServices {
  * `find()` are borrowed and are invalidated by runtime destruction.
  */
 class ActionRuntime;
+class ActionCapture;
+class PreparedActionRestore;
+struct ActionEntityBinding;
+
+/** @brief Historical debit facts, with numeric audit identities that cannot authorize resource operations.
+ * @ownership Owns the canonical cost; no account, reservation credential or callback is retained.
+ */
+struct ActionResourceReceiptAudit {
+    /** @brief Historical account nonce; never a live resource::AccountNonce. */
+    std::uint64_t account = 0;
+    /** @brief Historical receipt id, scoped to the saved account audit. */
+    resource::ReceiptId id;
+    /** @brief Historical reservation id, scoped to the saved account audit. */
+    resource::ReservationId reservation;
+    /** @brief Recorded operation. */
+    resource::ReceiptOperation operation = resource::ReceiptOperation::Debit;
+    /** @brief Recorded canonical cost. */
+    resource::CostSpec cost;
+};
 
 /**
  * @brief Read-only view of one execution owned by ActionRuntime.
@@ -451,6 +496,14 @@ public:
     [[nodiscard]] const sensing::TargetSet* resolvedTargets() const noexcept {
         return resolvedTargets_ ? &*resolvedTargets_ : nullptr;
     }
+    /** @brief Borrow an audit-only historical resource receipt until execution/runtime destruction.
+     * @remarks Account nonce is not a persistent account identity or authority to spend/refund.
+     */
+    [[nodiscard]] std::optional<std::reference_wrapper<const ActionResourceReceiptAudit>> resourceReceipt()
+        const noexcept {
+        if (!receipt_) return std::nullopt;
+        return std::cref(*receipt_);
+    }
     /** @brief Whether Active committed a resource debit. */
     [[nodiscard]] bool hasCommittedCost() const noexcept { return receipt_.has_value(); }
     /** @brief Whether the Active transaction has committed successfully. */
@@ -481,6 +534,8 @@ public:
 
 private:
     friend class ActionRuntime;
+    friend class PreparedActionRestore;
+    friend class ActionCapture;
 
     struct SectionTimingOverride {
         Duration targetDuration = Duration::zero();
@@ -504,7 +559,7 @@ private:
     SimulationTick                                 lastTick_     = SimulationTick::zero();
     Status                                         status_;
     std::optional<sensing::TargetSet>              resolvedTargets_;
-    std::optional<resource::Receipt>               receipt_;
+    std::optional<ActionResourceReceiptAudit>       receipt_;
     std::optional<transaction::TransactionReceipt> transactionReceipt_;
     bool                                           activeExecuted_  = false;
     bool                                           timelineStarted_ = false;
@@ -570,6 +625,8 @@ public:
      * @param delta Non-negative simulation duration; zero is allowed.
      * @return Transition summary, or a structured failure. A failed/cancelled
      *         execution is observable through find() after the failure.
+     * @remarks Reentry is rejected. An escaping exception faults the runtime because a phase/transaction may
+     * have advanced; inspect and explicitly clear or restore with coordinated ledgers, never replay the call.
      */
     [[nodiscard]] Result<ActionAdvance> advance(ActionExecutionId id, SimulationTick tick, Duration delta);
 
@@ -627,6 +684,27 @@ public:
      * @lifetime The caller must not retain the pointer beyond that owner.
      */
     [[nodiscard]] ActionExecution* find(ActionExecutionId id) noexcept;
+    /** @brief Freeze exact lifecycle/timeline state with stable references, without services or ECS owners.
+     * @param world Actual source Table, retained only during this call; no default-world lookup.
+     * @param bindings Caller-authoritative current/historical identity correspondence for referenced entities.
+     * @return Owning detached participant or missing/ambiguous/stale reference or mid-advance failure.
+     * @thread Owner thread, outside Views and service callbacks; no callbacks or time/RNG advancement.
+     * @cost Copies every retained definition/request/receipt and timeline cursor per explicit checkpoint boundary.
+     * @throws std::bad_alloc Candidate allocation failed without runtime mutation.
+     */
+    [[nodiscard]] Result<ActionCapture> capture(PersistentId saveEpoch, std::shared_ptr<ecs::Table> world,
+                                                std::span<const ActionEntityBinding> bindings) const;
+    /** @brief Publish a prepared same-world rebind by swapping owned executions and the next-id watermark.
+     * @return Failure preserves runtime and plan; success consumes plan without submitting/advancing actions.
+     * @remarks Existing services remain injected. Coordinator restores matching resource/transaction ledgers;
+     * audit receipts do not authorize a debit/refund. Required future providers must be present before commit.
+     * @thread Owner thread outside Views/advance/capture; no callbacks or resource/effect/timeline replay.
+     * @cost Linear handle/provider admission plus one store swap per explicit restore publication.
+     */
+    [[nodiscard]] Result<void> restore(PreparedActionRestore&& prepared);
+    /** @brief Whether an escaping advance exception left completion uncertain; capture/advance reject until recovery.
+     */
+    [[nodiscard]] bool isFaulted() const noexcept { return faulted_; }
     /** @brief Number of executions retained by this runtime. */
     [[nodiscard]] std::size_t executionCount() const noexcept { return executions_.size(); }
     /** @brief Discard every retained execution and restart deterministic local ids at one. */
@@ -649,6 +727,9 @@ private:
     ActionServices    services_;
     ExecutionStore    executions_;
     ActionExecutionId nextId_{1};
+    bool              advancing_    = false;
+    mutable bool      snapshotting_ = false;
+    bool              faulted_      = false;
 };
 
 }  // namespace eve::action

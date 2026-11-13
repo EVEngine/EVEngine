@@ -1,5 +1,6 @@
 #pragma once
 #include "common/StringMapInstances.h"
+#include "rpg/ActorEventRef.h"
 
 // 状态（buff/debuff）系统的运行时兼容投影与 adapter metadata。
 //
@@ -68,7 +69,7 @@ struct StatusUpdateSummary {
  * 而不是被引擎硬编码为直接扣血。
  */
 struct StatusTickEvent {
-    class RPGActor *actor = nullptr;
+    ActorEventRef actor;
     int instanceId = 0;
     std::string effectId;
     std::string source;
@@ -83,7 +84,7 @@ struct StatusTickEvent {
  *   "apply" | "refresh" | "extend" | "stack" | "remove" | "expire" | "reject"
  */
 struct StatusChangeEvent {
-    class RPGActor *actor = nullptr;
+    ActorEventRef actor;
     int instanceId = 0;
     std::string effectId;
     std::string source;

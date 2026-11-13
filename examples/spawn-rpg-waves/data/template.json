@@ -1,0 +1,83 @@
+{
+  "schema": "eve.spawn-template",
+  "version": 1,
+  "id": "forest.three_waves",
+  "schedule": {
+    "kind": "waves",
+    "waves": [
+      {
+        "id": "scouts",
+        "delay_seconds": 0,
+        "members": [
+          {
+            "id": "scouts",
+            "unit": {
+              "type": "rpg.unit",
+              "id": "wolf"
+            },
+            "count": 3
+          }
+        ],
+        "complete_when": "all_members_dead"
+      },
+      {
+        "id": "guards",
+        "delay_seconds": 0.5,
+        "members": [
+          {
+            "id": "guards",
+            "unit": {
+              "type": "rpg.unit",
+              "id": "wolf"
+            },
+            "count": 2
+          }
+        ],
+        "complete_when": "all_members_dead"
+      },
+      {
+        "id": "alpha",
+        "delay_seconds": 0.75,
+        "members": [
+          {
+            "id": "alpha",
+            "unit": {
+              "type": "rpg.unit",
+              "id": "alpha"
+            },
+            "count": 1
+          }
+        ],
+        "complete_when": "all_members_dead"
+      }
+    ]
+  },
+  "limits": {
+    "alive": 3,
+    "total": {
+      "kind": "finite",
+      "count": 6
+    },
+    "budget_group": "hostiles"
+  },
+  "placement": {
+    "kind": "random_in_region",
+    "constraints": [
+      {
+        "kind": "walkable"
+      },
+      {
+        "kind": "clearance",
+        "radius": 6
+      }
+    ],
+    "attempts_per_unit": 12
+  },
+  "batch_policy": "atomic",
+  "failure": {
+    "placement_blocked": {
+      "kind": "retry",
+      "delay_seconds": 1
+    }
+  }
+}

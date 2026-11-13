@@ -20,6 +20,42 @@
 
 using namespace eve::effects;
 
+TEST_CASE("effects.owning_moves_preserve_borrowed_instances_and_retained_events") {
+    EffectContainer source;
+    source.apply("unit:move", "move.effect", "source", 0, 10, "move", StackPolicy::Stack).expect("first effect");
+    const auto* instance = source.effectAt(0);
+    const auto* event    = source.eventAt(0);
+    REQUIRE(instance != nullptr);
+    REQUIRE(event != nullptr);
+    const auto id = instance->id;
+    for (int index = 0; index < 512; ++index)
+        source.apply("unit:" + std::to_string(index), "move.effect", "source", 0, 10, "move", StackPolicy::Stack)
+            .expect("grow owning stores");
+    CHECK(source.find(id) == instance);
+    CHECK(source.eventAt(0) == event);
+
+    EffectContainer moved(std::move(source));
+    CHECK(moved.find(id) == instance);
+    CHECK(moved.eventAt(0) == event);
+    CHECK_EQ(moved.effectCount(), 513);
+    CHECK_EQ(moved.eventCount(), 513);
+
+    EffectContainer assigned;
+    assigned.apply("unit:old", "old.effect", "source", 0, 10, "old", StackPolicy::Stack).expect("old owner");
+    assigned = std::move(moved);
+    CHECK(assigned.find(id) == instance);
+    CHECK(assigned.eventAt(0) == event);
+    auto copied = assigned.clone();
+    REQUIRE(copied.find(id) != nullptr);
+    REQUIRE(copied.eventAt(0) != nullptr);
+    CHECK(copied.find(id) != instance);
+    CHECK(copied.eventAt(0) != event);
+    assigned.clear();
+    CHECK_EQ(copied.effectCount(), 513);
+    CHECK_EQ(copied.eventCount(), 513);
+    CHECK_EQ(copied.eventAt(0)->effectId, id);
+}
+
 TEST_CASE("effects.legacy_apply_creates_stable_facts_in_creation_order") {
     EffectContainer container;
     const auto      first  = container.apply("unit:7", "weather.wet", "zone:2", 3, 10.0, "surface", StackPolicy::Stack);
@@ -295,3 +331,170 @@ TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally"
     CHECK(legacy.find(legacyResult.value())->identity.isNil());
 }
 }  // namespace test_identity_effects_audit_unit
+
+TEST_CASE("effects.stateFilePreservesAllLifecycleFactsAfterSourceRetirement") {
+    using namespace eve;
+    std::string              wire;
+    std::vector<std::string> golden;
+    {
+        EffectContainer  source;
+        EffectDefinition definition;
+        definition.id        = "saved-poison";
+        definition.duration  = 2.25;
+        definition.period    = .25;
+        definition.magnitude = 7.5;
+        definition.tags      = {"poison", "debuff"};
+        definition.payload.setJson("nested", "{\"array\":[true,null,3.25],\"id\":\"retired-source\"}")
+            .expect("payload");
+        const auto original =
+            source.apply(definition, "subject:retained", "retired:caster").expect("source application");
+        auto* instance = source.find(original);
+        REQUIRE(instance != nullptr);
+        const auto identity = *PersistentId::parse("01900000-0000-7000-8000-000000000e61");
+        instance->id        = identity.format();
+        instance->identity  = EffectId::fromUuid(identity);
+        instance->definitionIdentity =
+            definition::InstanceIdentity::create(
+                identity, DefinitionRef::parse("effect:saved-poison").expect("definition"), Generation(17))
+                .expect("typed binding");
+        instance->reloadPolicy = definition::ReloadPolicy::RejectWhileActive;
+        instance->policy       = {StackMode::Accumulate, StackCountPolicy::Increment, DurationPolicy::Extend,
+                                  MagnitudePolicy::Add,  OverflowPolicy::Clamp,       19};
+        instance->stackCount   = 3;
+        definition.id          = "retired-effect";
+        definition.duration    = 0;
+        definition.period      = 0;
+        auto retired           = source.apply(definition, "subject:other").expect("retired application");
+        source.remove(retired, "retained-history").expect("retired history");
+        source.advance({SimulationTick(3), Duration::fromSeconds(.6).expect("delta")}).expect("partial periodic work");
+        wire = source.encodeState().expect("full state").toJson().expect("state file");
+        for (std::uint64_t tick = 4; tick < 8; ++tick) {
+            source.advance({SimulationTick(tick), Duration::fromSeconds(.5).expect("delta")})
+                .expect("source continuation");
+            golden.push_back(source.encodeState().expect("golden facts").toJson().expect("golden file"));
+        }
+        source.apply(definition, "future:subject").expect("future identity");
+        golden.push_back(source.encodeState().expect("future facts").toJson().expect("future file"));
+    }
+    auto value    = Value::fromJson(wire).expect("independent file read");
+    auto admitted = EffectContainer::prepareState(value).expect("CPU admission");
+    value         = Value{};
+    EffectContainer target;
+    auto            old   = target.apply("old", "old", "", 0, 0, "", StackPolicy::Stack).expect("old target");
+    auto            stale = target.handleFor(old).expect("old handle");
+    target.restore(admitted).expect("atomic native publication");
+    REQUIRE(!target.resolve(stale).ok());
+    REQUIRE_EQ(target.encodeState().expect("restored facts").toJson().expect("restored file"), wire);
+    for (std::uint64_t tick = 4; tick < 8; ++tick) {
+        target.advance({SimulationTick(tick), Duration::fromSeconds(.5).expect("delta")})
+            .expect("restored continuation");
+        CHECK_EQ(target.encodeState().expect("actual facts").toJson().expect("actual file"), golden[tick - 4]);
+    }
+    EffectDefinition future;
+    future.id        = "retired-effect";
+    future.duration  = 0;
+    future.period    = 0;
+    future.magnitude = 7.5;
+    future.tags      = {"poison", "debuff"};
+    future.payload.setJson("nested", "{\"array\":[true,null,3.25],\"id\":\"retired-source\"}").expect("future payload");
+    REQUIRE_EQ(target.apply(future, "future:subject").expect("future application"), "effect-0000000000000003");
+    CHECK_EQ(target.encodeState().expect("future facts").toJson().expect("future file"), golden.back());
+}
+TEST_CASE("effects.stateFileRejectsMalformedFactsAndPreservesNativeOwner") {
+    using namespace eve;
+    EffectContainer source, target;
+    auto            id    = source.apply("subject", "poison", "caster", 0, 4, "", StackPolicy::Stack).expect("source");
+    auto            value = source.encodeState().expect("baseline");
+    auto            rejects                = [&](Value bad) { REQUIRE(!EffectContainer::prepareState(bad).ok()); };
+    auto            bad                    = value;
+    (*bad.getIf<Value::Object>())["extra"] = 1;
+    rejects(bad);
+    bad                                      = value;
+    (*bad.getIf<Value::Object>())["version"] = 2;
+    rejects(bad);
+    bad                                     = value;
+    (*bad.getIf<Value::Object>())["nextId"] = "1";
+    rejects(bad);
+    bad                                           = value;
+    (*bad.getIf<Value::Object>())["nextSequence"] = "0";
+    rejects(bad);
+    bad                                      = value;
+    (*bad.getIf<Value::Object>())["hasTick"] = 1;
+    rejects(bad);
+    auto instances = *value.getIf<Value::Object>()->at("instances").getIf<Value::Array>();
+    auto row       = *instances[0].getIf<Value::Array>();
+    auto changed   = [&](Value::Array fields) {
+        auto bad                                   = value;
+        (*bad.getIf<Value::Object>())["instances"] = Value::Array{Value(std::move(fields))};
+        rejects(bad);
+    };
+    auto fields = row;
+    fields[7]   = 0.0;
+    changed(fields);
+    fields     = row;
+    fields[11] = "4294967296";
+    changed(fields);
+    fields     = row;
+    fields[17] = 255;
+    changed(fields);
+    fields = row;
+    fields.push_back(0);
+    changed(fields);
+    bad                                        = value;
+    (*bad.getIf<Value::Object>())["instances"] = Value::Array{instances[0], instances[0]};
+    rejects(bad);
+    target.apply("old", "old", "", 0, 0, "", StackPolicy::Stack).expect("old target");
+    const auto before          = target.encodeState().expect("old facts").toJson().expect("old wire");
+    source.find(id)->remaining = 0;
+    REQUIRE(!target.restore(source).ok());
+    CHECK_EQ(target.encodeState().expect("intact target").toJson().expect("intact wire"), before);
+    EffectContainer zero;
+    zero.advance({SimulationTick(0), Duration(0)}).expect("consume zero tick");
+    auto restored = EffectContainer::prepareState(zero.encodeState().expect("zero facts")).expect("zero restore");
+    REQUIRE(!restored.advance({SimulationTick(0), Duration(0)}).ok());
+}
+TEST_CASE("effects.stateFileRejectsUnidentifiedUuidCallbacksWithoutCallingThem") {
+    bool            called = false;
+    EffectContainer callback([&](std::span<std::uint8_t>) {
+        called = true;
+        return true;
+    });
+    auto            result = callback.encodeState();
+    REQUIRE(!result.ok());
+    CHECK_EQ(result.code(), eve::StatusCode::Unsupported);
+    CHECK(!called);
+}
+
+TEST_CASE("effects.stateFileExhaustedCountersRejectBeforeObservableMutation") {
+    using namespace eve;
+    EffectDefinition def;
+    def.id       = "bounded";
+    def.duration = 2;
+    def.period   = .25;
+    EffectContainer seed;
+    const auto      id                              = seed.apply(def, "subject").expect("seed");
+    auto            value                           = seed.encodeState().expect("seed values");
+    (*value.getIf<Value::Object>())["nextSequence"] = std::to_string(UINT64_MAX - 1);
+    auto       source = EffectContainer::prepareState(value).expect("near-exhausted events");
+    const auto before = source.encodeState().expect("before").toJson().expect("before wire");
+    // Replace needs removal + application; rejecting must retain both active effect and watermark.
+    REQUIRE(!source.apply(def, "subject").ok());
+    REQUIRE_EQ(source.encodeState().expect("after rejection").toJson().expect("after wire"), before);
+    // Two periodic triggers exceed the one remaining event; candidate progress must not leak.
+    REQUIRE(!source.advance({SimulationTick(1), Duration::fromSeconds(.5).expect("delta")}).ok());
+    CHECK_EQ(source.encodeState().expect("intact periodic work").toJson().expect("intact wire"), before);
+    source.remove(id).expect("consume final event budget");
+    auto exhausted = source.encodeState().expect("exhausted values");
+    CHECK_EQ(*exhausted.getIf<Value::Object>()->at("nextSequence").getIf<std::string>(), std::to_string(UINT64_MAX));
+    REQUIRE(!source.apply(def, "subject").ok());
+    CHECK_EQ(source.encodeState().expect("no wrap").toJson().expect("no wrap wire"),
+             exhausted.toJson().expect("exhausted wire"));
+    value                                     = seed.encodeState().expect("identity boundary");
+    (*value.getIf<Value::Object>())["nextId"] = std::to_string(UINT64_MAX);
+    auto       ids                            = EffectContainer::prepareState(value).expect("exhausted identities");
+    const auto identityBefore = ids.encodeState().expect("identity before").toJson().expect("identity wire");
+    REQUIRE(!ids.apply(def, "subject").ok());
+    CHECK_EQ(ids.encodeState().expect("identity unchanged").toJson().expect("identity after wire"), identityBefore);
+    def.policy.stackMode = StackMode::Reuse;
+    REQUIRE(ids.apply(def, "subject").ok());
+}

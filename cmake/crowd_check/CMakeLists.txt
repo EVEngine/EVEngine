@@ -61,7 +61,11 @@ foreach(_eve_crowd_source IN LISTS _eve_crowd_sources)
             "--testcase=^${_eve_crowd_name}$")
         set_tests_properties("profile.${_eve_crowd_name}" PROPERTIES LABELS
             "source:${_eve_crowd_source};crowd"
-            FAIL_REGULAR_EXPRESSION "Assertion Failed" TIMEOUT 60)
+            # Match the canonical ZeroErr discovery policy: FATAL is a throwing
+            # assertion and CHECK_THROWS may intentionally catch it. Unexpected
+            # throws still fail via the process status; non-throwing failures
+            # must fail even when a test executable exits zero.
+            FAIL_REGULAR_EXPRESSION "(WARN|ERROR) Assertion Failed" TIMEOUT 60)
         eve_label_test_case("profile.${_eve_crowd_name}" "${_eve_crowd_source}" "${_eve_crowd_name}")
     endforeach()
 endforeach()

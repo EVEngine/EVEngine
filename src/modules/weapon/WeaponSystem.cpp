@@ -212,13 +212,14 @@ void updateRanged(WeaponEntity& w, const WeaponDefinition* def, float dt) {
     }
 
     // 装填推进
+    if (r.reloading && state->ammoPool.isStale()) WeaponSystem::cancelReload(w);
     if (r.reloading) {
         r.reloadProgress += dt;
         if (r.reloadProgress >= def->reloadTime) {
             const int missing = static_cast<int>(r.max) - static_cast<int>(r.value);
             if (def->reserveSize < 0) {
                 r.value = r.max;
-            } else if (AmmoPoolEntity* pool = state->ammoPool) {
+            } else if (AmmoPoolEntity* pool = state->ammoPool.resolve()) {
                 const int take = std::min(missing, pool->state()->count);
                 r.value += static_cast<float>(take);
                 pool->state()->count -= take;
@@ -416,14 +417,15 @@ void WeaponSystem::startReload(WeaponEntity& w) {
     auto     state = w.state();
     Resource& r     = state->resource;
     if (r.reloading || r.value >= r.max) return;
-    if (AmmoPoolEntity* pool = state->ammoPool) {
-        if (pool->state()->count <= 0) return;
+    if (state->ammoPool.isBound()) {
+        AmmoPoolEntity* pool = state->ammoPool.resolve();
+        if (!pool || pool->state()->count <= 0) return;
     } else if (!r.infinite && (def->reserveSize == 0 || r.reserve <= 0)) {
         return;
     }
 
-    r.reloading      = true;
-    r.reloadProgress = 0.f;
+    r.reloading           = true;
+    r.reloadProgress      = 0.f;
     state->burstRemaining = 0;
 
     WeaponEvent e;

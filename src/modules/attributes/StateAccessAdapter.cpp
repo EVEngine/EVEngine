@@ -23,12 +23,12 @@ bool numeric(const eve::Value& value, double& out) {
 }  // namespace
 
 bool AttributeSetStateAdapter::owns(std::string_view subject) const noexcept {
-    return !subject.empty() && !attributes_.subject().empty() && attributes_.subject() == subject;
+    return !subject.empty() && !attributes_.get().subject().empty() && attributes_.get().subject() == subject;
 }
 
 std::optional<eve::Value> AttributeSetStateAdapter::value(std::string_view subject, std::string_view key) const {
-    if (!owns(subject) || key.empty() || !attributes_.has(std::string(key))) return std::nullopt;
-    return eve::Value(attributes_.getFinal(std::string(key)));
+    if (!owns(subject) || key.empty() || !attributes_.get().has(std::string(key))) return std::nullopt;
+    return eve::Value(attributes_.get().getFinal(std::string(key)));
 }
 
 std::optional<eve::Value> AttributeSetStateAdapter::attribute(std::string_view subject, std::string_view key) const {
@@ -60,7 +60,7 @@ eve::Result<eve::MutationReceipt> AttributeSetStateAdapter::apply(std::span<cons
                            "mutations[" + std::to_string(index) + "].value");
     }
 
-    AttributeSet candidate = attributes_;
+    AttributeSet candidate = attributes_.get();
     std::size_t  changed   = 0;
     for (const auto& mutation : mutations) {
         const double amount =
@@ -71,9 +71,9 @@ eve::Result<eve::MutationReceipt> AttributeSetStateAdapter::apply(std::span<cons
         else
             candidate.modifyBase(mutation.key, amount);
         const double after = candidate.getFinal(mutation.key);
-        if (before != after || !attributes_.has(mutation.key)) ++changed;
+        if (before != after || !attributes_.get().has(mutation.key)) ++changed;
     }
-    attributes_ = std::move(candidate);
+    attributes_.get() = std::move(candidate);
     return eve::Result<eve::MutationReceipt>::success(
         eve::MutationReceipt{context.transactionId, changed},
         eve::Status::success(changed == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));

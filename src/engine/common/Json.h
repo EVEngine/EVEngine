@@ -214,7 +214,9 @@ struct UnsignedIntegerScan {
  * @param value Owning value containing only JSON-compatible kinds.
  * @return JSON text, or SerializationError when a Double is NaN or infinity.
  * @remarks Object keys are emitted in lexicographic order. This is the single
- *          canonical JSON serializer used by owning Value adapters.
+ *          canonical JSON serializer used by owning Value adapters. Stream failures never produce successful
+ *          partial numeric text; output remains local until the complete value is encoded.
+ * @throws std::bad_alloc Encoding storage allocation failed; input is unchanged.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> stringify(const eve::Value& value);
 

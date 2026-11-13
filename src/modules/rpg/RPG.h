@@ -27,6 +27,7 @@
 #include "rpg/VitalsSystem.h"
 
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -288,7 +289,7 @@ public:
 
     /** @brief 升级事件缓存（上一次 update() 产生的，供脚本轮询）。 */
     int getLevelUpEventCount() const;
-    /** @brief Returns the level up event actor. */
+    /** @brief Immediately borrow the live level-up actor, or nullptr if retired; re-resolve after callbacks. */
     RPGActor *getLevelUpEventActor(int index) const;
     /** @brief Returns the level up event previous level. */
     int getLevelUpEventPreviousLevel(int index) const;
@@ -297,7 +298,11 @@ public:
 
     /** @brief 生命等资源事件缓存（上一次 update() 产生的，供脚本轮询）。 */
     int getVitalsEventCount() const;
-    /** @brief Returns the vitals event actor. */
+    /** @brief Borrow the already-polled vitals batch without consuming it.
+     * @ownership Borrowed until the next RPG update or module destruction; no actor pointer resolution.
+     * @thread RPG owner thread; consumers share this same immutable event batch. */
+    [[nodiscard]] std::span<const VitalsEvent> vitalsEvents() const noexcept;
+    /** @brief Immediately borrow the live vitals event actor, or nullptr if retired; re-resolve after callbacks. */
     RPGActor *getVitalsEventActor(int index) const;
     /** @brief Returns the vitals event resource. */
     std::string getVitalsEventResource(int index) const;
@@ -431,10 +436,10 @@ public:
     /** @brief 周期状态 tick 事件（上一次 update() 产生的，供脚本轮询）。 */
     int getTickEventCount() const;
     /**
-     * @brief Returns the actor referenced by a retained tick event, or null for an invalid index.
+     * @brief Returns the actor referenced by a retained tick event, or null for an invalid index or retired actor.
      * @return Borrowed nullable ECS actor pointer from the event projection.
      * @ownership The ECS world owns the actor; the event cache never transfers ownership.
-     * @lifetime Valid until actor/world destruction; use the actor's persistent identity or handle after the poll.
+     * @lifetime Immediate borrow only; reacquire from the event after callbacks or structural mutations.
      * @thread Call on the RPG simulation thread before the next event-producing update.
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
@@ -451,10 +456,10 @@ public:
     /** @brief 状态生命周期变更事件（apply/refresh/extend/stack/remove/expire/reject）。 */
     int getStatusChangeEventCount() const;
     /**
-     * @brief Returns the actor referenced by a status event, or null for an invalid index.
+     * @brief Returns the actor referenced by a status event, or null for an invalid index or retired actor.
      * @return Borrowed nullable ECS actor pointer from the event projection.
      * @ownership The ECS world owns the actor; the event cache never transfers ownership.
-     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @lifetime Immediate borrow only; reacquire from the event after callbacks or structural mutations.
      * @thread Call on the RPG simulation thread before the next event-producing update.
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
@@ -475,19 +480,19 @@ public:
     /** @brief 技能释放结算事件。 */
     int getCastEventCount() const;
     /**
-     * @brief Returns the caster referenced by a cast event, or null for an invalid index.
+     * @brief Returns the caster referenced by a cast event, or null for an invalid index or retired actor.
      * @return Borrowed nullable ECS actor pointer from the event projection.
      * @ownership The ECS world owns the actor; the event cache never transfers ownership.
-     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @lifetime Immediate borrow only; reacquire from the event after callbacks or structural mutations.
      * @thread Call on the RPG simulation thread before the next event-producing update.
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */
     RPGActor *getCastEventCaster(int index) const;
     /**
-     * @brief Returns the target referenced by a cast event, or null for an invalid index.
+     * @brief Returns the target referenced by a cast event, or null for an invalid index or retired actor.
      * @return Borrowed nullable ECS actor pointer from the event projection.
      * @ownership The ECS world owns the actor; the event cache never transfers ownership.
-     * @lifetime Valid until actor/world destruction; use a persistent identity or handle after polling.
+     * @lifetime Immediate borrow only; reacquire from the event after callbacks or structural mutations.
      * @thread Call on the RPG simulation thread before the next event-producing update.
      * @reentrancy Do not retain across callbacks or event-cache refresh.
      */

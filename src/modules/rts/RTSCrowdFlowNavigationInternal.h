@@ -103,6 +103,10 @@ public:
 
 
 private:
+    friend class RTS;
+    friend class PreparedRTSCrowdRestore;
+    /** @brief Compare qualified handles for the derived membership lookup; borrows values only for the call. */
+    static EVENGINE_API_DOMAINS bool handleLess(const ecs::EntityHandle& left, const ecs::EntityHandle& right);
     struct GroupBinding {
         GroupMember                                         member;
         std::shared_ptr<const std::vector<crowd::FlowGoal>> goals;

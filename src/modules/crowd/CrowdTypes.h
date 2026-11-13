@@ -76,6 +76,21 @@ struct NavigationSurfaceSnapshot {
     bool                   destinationEntryCost = false;  ///< Forward movement charges destination costs when true.
 };
 
+/** @brief Owner-local identity for a request retained by Crowd's navigation registry. */
+struct CrowdFlowRequestTag {};
+/** @brief Generation-qualified transient request reference; never a persistent identity.
+ * @ownership Value only; no VM object, provider or cache pin retained.
+ * @lifetime Invalid after release, restore or provider destruction; restore remapping requires a matching candidate.
+ */
+struct FlowRequestRef {
+    RuntimeHandle<CrowdFlowRequestTag> handle;
+    std::uint64_t                      owner = 0;
+    /** @brief Query syntactic validity; does not prove registry liveness. */
+    [[nodiscard]] bool isValid() const noexcept { return owner != 0 && handle.isValid(); }
+    /** @brief Compare exact process-local request identity. */
+    friend bool operator==(const FlowRequestRef&, const FlowRequestRef&) noexcept = default;
+};
+
 /** @brief Owner-local registry identity for a Crowd agent, independent of dense storage. */
 struct CrowdAgentTag {};
 /** @brief Generation-qualified runtime agent identity; never persist its packed representation. */

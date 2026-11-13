@@ -102,14 +102,21 @@ eve::Result<std::vector<settlement::SettlementBatchItemResult>> Battle::settleRe
 
 eve::Result<std::vector<settlement::SettlementBatchItemResult>> Battle::settleStatusTick(
     const StatusTickEvent& tick, SubjectRef source, SimulationTick simulationTick) {
-    const SubjectRef target = settlementSubjectOf(tick.actor);
+    auto actor = tick.actor.resolve();
+    if (!actor)
+        return eve::Result<std::vector<settlement::SettlementBatchItemResult>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "Periodic tick actor has retired", "tick.actor"));
+    const SubjectRef target = settlementSubjectOf(&actor->get());
+    actor.reset();
     auto request = makeStatusTickSettlementRequest(tick, std::move(source), target, simulationTick);
     if (!request) return eve::Result<std::vector<settlement::SettlementBatchItemResult>>::failure(request.status());
     auto settled = settleRequest(request.value());
     if (!settled) return settled;
     for (const auto& outcome : settled.value()) {
         if (!outcome.result) {
-            events_.push_back(BattleEvent{"settlementFailed", tick.effectId, nullptr, tick.actor, 0.0, false});
+            auto current = tick.actor.resolve();
+            events_.push_back(BattleEvent{"settlementFailed", tick.effectId, nullptr,
+                                          current ? &current->get() : nullptr, 0.0, false});
             break;
         }
         RPGActor* eventTarget = nullptr;

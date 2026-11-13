@@ -36,7 +36,10 @@ namespace eve::map {
  */
 EVENGINE_API_WORLD void declareScriptTileCollisionSinkSeam();
 
-/** @brief 撤回接缝与仍然在位的脚本适配器（由 `Map` 模块析构时调用）。 */
+/** @brief Withdraw the seam and retire live adapters without allocating registry or retirement storage.
+ * @remarks Called when the final native Map leaves. Adapter addresses remain valid for an in-flight dispatch.
+ * @thread Simulation owner thread; does not invoke script callbacks.
+ */
 EVENGINE_API_WORLD void withdrawScriptTileCollisionSinkSeam();
 
 /**

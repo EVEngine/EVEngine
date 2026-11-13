@@ -105,23 +105,23 @@ eve::Result<SettlementRule> decodeRule(const eve::Value& value, const std::strin
                                     "valuePerExtraStack", "when"},
                                    path);
     if (!object) return eve::Result<SettlementRule>::failure(object.status());
-    auto id       = stringValue(*object.value(), "id", path);
-    auto source   = stringValue(*object.value(), "source", path);
-    auto stage    = stringValue(*object.value(), "stage", path);
-    auto operation = stringValue(*object.value(), "operation", path);
-    auto priority = integerValue(*object.value(), "priority", path);
-    auto stacks   = integerValue(*object.value(), "stacks", path);
-    auto operand  = numberValue(*object.value(), "value", path);
-    auto perStack = numberValue(*object.value(), "valuePerExtraStack", path);
-    auto when     = stringValue(*object.value(), "when", path);
+    auto id = stringValue(*object.value(), "id", path);
     if (!id) return eve::Result<SettlementRule>::failure(id.status());
+    auto source = stringValue(*object.value(), "source", path);
     if (!source) return eve::Result<SettlementRule>::failure(source.status());
+    auto stage = stringValue(*object.value(), "stage", path);
     if (!stage) return eve::Result<SettlementRule>::failure(stage.status());
+    auto operation = stringValue(*object.value(), "operation", path);
     if (!operation) return eve::Result<SettlementRule>::failure(operation.status());
+    auto priority = integerValue(*object.value(), "priority", path);
     if (!priority) return eve::Result<SettlementRule>::failure(priority.status());
+    auto stacks = integerValue(*object.value(), "stacks", path);
     if (!stacks) return eve::Result<SettlementRule>::failure(stacks.status());
+    auto operand = numberValue(*object.value(), "value", path);
     if (!operand) return eve::Result<SettlementRule>::failure(operand.status());
+    auto perStack = numberValue(*object.value(), "valuePerExtraStack", path);
     if (!perStack) return eve::Result<SettlementRule>::failure(perStack.status());
+    auto when = stringValue(*object.value(), "when", path);
     if (!when) return eve::Result<SettlementRule>::failure(when.status());
     if (priority.value() < std::numeric_limits<int>::min() || priority.value() > std::numeric_limits<int>::max())
         return invalid<SettlementRule>(eve::DiagnosticCode::InvalidArgument, "priority is out of range",
@@ -130,18 +130,18 @@ eve::Result<SettlementRule> decodeRule(const eve::Value& value, const std::strin
         return invalid<SettlementRule>(eve::DiagnosticCode::InvalidArgument, "stacks is out of range",
                                        path + ".stacks");
     auto decodedStage = stageValue(stage.value(), path + ".stage");
-    auto decodedOperation = operationValue(operation.value(), path + ".operation");
     if (!decodedStage) return eve::Result<SettlementRule>::failure(decodedStage.status());
+    auto decodedOperation = operationValue(operation.value(), path + ".operation");
     if (!decodedOperation) return eve::Result<SettlementRule>::failure(decodedOperation.status());
 
     auto filter = objectWithFields(object.value()->at("filter"), {"excludedTags", "kinds", "requiredTags"},
                                    path + ".filter");
     if (!filter) return eve::Result<SettlementRule>::failure(filter.status());
     auto kinds = stringsValue(filter.value()->at("kinds"), path + ".filter.kinds");
-    auto required = stringsValue(filter.value()->at("requiredTags"), path + ".filter.requiredTags");
-    auto excluded = stringsValue(filter.value()->at("excludedTags"), path + ".filter.excludedTags");
     if (!kinds) return eve::Result<SettlementRule>::failure(kinds.status());
+    auto required = stringsValue(filter.value()->at("requiredTags"), path + ".filter.requiredTags");
     if (!required) return eve::Result<SettlementRule>::failure(required.status());
+    auto excluded = stringsValue(filter.value()->at("excludedTags"), path + ".filter.excludedTags");
     if (!excluded) return eve::Result<SettlementRule>::failure(excluded.status());
 
     SettlementRule rule;
@@ -177,10 +177,10 @@ eve::Result<void> SettlementRuleSet::configureJson(std::string_view json) {
                                  "document");
     if (!root) return eve::Result<void>::failure(root.status());
     auto schema = stringValue(*root.value(), "schema", "document");
-    auto version = integerValue(*root.value(), "version", "document");
-    auto conditionVersion = integerValue(*root.value(), "conditionLanguageVersion", "document");
     if (!schema) return eve::Result<void>::failure(schema.status());
+    auto version = integerValue(*root.value(), "version", "document");
     if (!version) return eve::Result<void>::failure(version.status());
+    auto conditionVersion = integerValue(*root.value(), "conditionLanguageVersion", "document");
     if (!conditionVersion) return eve::Result<void>::failure(conditionVersion.status());
     if (schema.value() != "settlement.rules")
         return invalid<void>(eve::DiagnosticCode::InvalidArgument, "unexpected settlement rules schema",

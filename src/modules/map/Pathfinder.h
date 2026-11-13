@@ -1,4 +1,5 @@
 #pragma once
+#include "common/BorrowedRef.h"
 #include "common/Export.h"
 
 
@@ -14,6 +15,7 @@
 #include "common/Result.h"
 
 namespace eve::map {
+class PathfinderState;
 /** @brief Logical adjacency of a captured map navigation grid. */
 enum class NavigationTopology { Ortho4, Ortho8, Hex };
 /** @brief Cheap invalidation hint, distinct from immutable capture content revisions.
@@ -26,6 +28,7 @@ struct NavigationChangeStamp {
 /** @brief Immutable owning capture; independent of Pathfinder and TileLayer lifetimes. */
 class EVENGINE_API_WORLD NavigationGridSnapshot {
     friend class Pathfinder;
+    friend class PathfinderState;
     struct Data;
     std::shared_ptr<const Data> data_;
 
@@ -69,6 +72,32 @@ public:
     explicit Pathfinder(int width, int height);
     /** @brief Pathfinder. */
     ~Pathfinder();
+    /** @brief Freeze native provider facts without synchronizing or advancing capture revisions.
+     * @return Detached state or moved-from/inconsistent bound-layer failure.
+     * @ownership No source pointers retained; a bound layer must be alive throughout this call.
+     * @thread Map owner thread only. @reentrancy No callbacks.
+     * @cost Copies grid and flow-cache sized CPU facts per checkpoint.
+     * @throws std::bad_alloc Local capture failed without source mutation.
+     */
+    [[nodiscard]] Result<PathfinderState> captureState() const;
+    /** @brief Construct an isolated provider from detached native facts and the actual restored map layer.
+     * @param state Native checkpoint; a moved-from checkpoint rejects.
+     * @param binding Required exactly for bound checkpoints; layer facts and revision must match.
+     * @return Independent owner, preserving pending synchronization and capture/cache counters.
+     * @ownership Borrows binding during validation; returned provider follows bindLayer's layer lifetime contract:
+     * the owning map must outlive the provider. Does not publish into an existing provider.
+     * @thread Map owner thread only. @reentrancy No callbacks.
+     * @cost Copies and validates grid/cache sized facts per isolated restoration attempt.
+     * @throws std::bad_alloc Local preparation failed without modifying binding or checkpoint.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<Pathfinder>> prepareRestored(const PathfinderState &state,
+                                                                             OptionalRef<TileLayer> binding);
+    /** @brief Whether this still-pristine provider was prepared from this exact native checkpoint.
+     * @remarks Pure O(1) provenance check, not semantic equality. Mutation/cache work invalidates it.
+     * @ownership Bound layer must remain alive; checkpoint expiration invalidates the proof.
+     * @thread Map owner thread only. @reentrancy No callbacks.
+     */
+    [[nodiscard]] bool isRestoredFrom(const PathfinderState &state) const noexcept;
     /** @brief Capture canonical grid inputs into immutable owned storage, without mutating the live grid.
      * @return Opaque snapshot; unchanged content shares the prior immutable capture and revision.
      * @ownership Retains no provider/layer pointers; a bound layer must remain alive during this call.
@@ -190,6 +219,7 @@ public:
     void invalidateCache();
 
 private:
+    friend class PathfinderState;
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

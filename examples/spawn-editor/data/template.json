@@ -1,0 +1,57 @@
+{
+  "schema": "eve.spawn-template",
+  "version": 1,
+  "id": "wolves",
+  "content": {
+    "kind": "weighted",
+    "selection": "per_unit",
+    "entries": [
+      {
+        "unit": {
+          "type": "rpg.unit",
+          "id": "wolf"
+        },
+        "weight": 1
+      }
+    ]
+  },
+  "schedule": {
+    "kind": "maintain_population",
+    "target_alive": 4,
+    "initial_population": 4,
+    "replacement": {
+      "after": "death",
+      "delay_seconds": [
+        2,
+        2
+      ]
+    }
+  },
+  "limits": {
+    "alive": 4,
+    "total": {
+      "kind": "unlimited"
+    },
+    "budget_group": "hostiles"
+  },
+  "placement": {
+    "kind": "random_in_region",
+    "constraints": [
+      {
+        "kind": "walkable"
+      },
+      {
+        "kind": "clearance",
+        "radius": 6
+      }
+    ],
+    "attempts_per_unit": 12
+  },
+  "batch_policy": "atomic",
+  "failure": {
+    "placement_blocked": {
+      "kind": "retry",
+      "delay_seconds": 1
+    }
+  }
+}

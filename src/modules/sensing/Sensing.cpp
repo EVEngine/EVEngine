@@ -1,10 +1,12 @@
 // eve-hot-path
 #include "sensing/Sensing.h"
+#include <ranges>
 #include "common/Identity.h"
 #include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "sensing/SensingQueryBinding.h"
 #include "sensing/SensingScriptCandidateSeam.h"
+#include "sensing/SensingStateCodecInternal.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
 #include "spatial/SpatialHash3D.h"
@@ -91,14 +93,6 @@ std::string quote(std::string_view s) {
     }
     return o.str() + '"';
 }
-std::string join(const std::set<std::string>& s) {
-    std::string o;
-    for (auto& v : s) {
-        if (!o.empty()) o += ',';
-        o += v;
-    }
-    return o;
-}
 bool finite(float v) { return std::isfinite(v); }
 // Keep float-to-cell conversion within int and bound query-cell traversal.
 bool indexable(float x, float y, float z, float cellSize) {
@@ -136,10 +130,30 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     return result;
 }
 }  // namespace
-SensingWorld::SensingWorld()                                   = default;
-SensingWorld::SensingWorld(SensingWorld&&) noexcept            = default;
-SensingWorld& SensingWorld::operator=(SensingWorld&&) noexcept = default;
-SensingWorld::~SensingWorld() { spatialCellQueryCache.invalidate(this); }
+SensingWorld::SensingWorld() = default;
+SensingWorld::SensingWorld(SensingWorld&& other) : SensingWorld() { *this = std::move(other); }
+SensingWorld& SensingWorld::operator=(SensingWorld&& other) noexcept {
+    if (this == &other) return *this;
+    spatialCellQueryCache.invalidate(this);
+    spatialCellQueryCache.invalidate(&other);
+    subjects_             = std::move(other.subjects_);
+    results_              = std::move(other.results_);
+    spatialIndex_         = std::move(other.spatialIndex_);
+    spatialIndex3D_       = std::move(other.spatialIndex3D_);
+    indexKind_            = other.indexKind_;
+    subjectSpatialIds_    = std::move(other.subjectSpatialIds_);
+    spatialIdSubjects_    = std::move(other.spatialIdSubjects_);
+    nextSpatialId_        = other.nextSpatialId_;
+    lastQuery_            = std::move(other.lastQuery_);
+    lastEnvironmentQuery_ = std::move(other.lastEnvironmentQuery_);
+    return *this;
+}
+SensingWorld::~SensingWorld() {
+    lifetime_.reset();
+    spatialCellQueryCache.invalidate(this);
+}
+LifetimeWitness SensingWorld::lifetimeWitness() const noexcept { return lifetime_.witness(); }
+void            SensingWorld::publishPrepared(SensingWorld&& prepared) noexcept { *this = std::move(prepared); }
 
 namespace {
 std::vector<std::string> toVector(const std::set<std::string>& values) {
@@ -374,13 +388,13 @@ Result<void> SensingWorld::upsertPosition(std::string_view id, float x, float y,
 }
 
 eve::Result<void> SensingWorld::remove(std::string_view id) {
-    results_.clear();
-    const std::string key(id);
-    if (!subjects_.contains(key))
+    const auto found = subjects_.find(id);
+    if (found == subjects_.end())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id", {}, "sensing"));
-    unindexSubject(key);
-    subjects_.erase(key);
+    results_.clear();
+    unindexSubject(found->first);
+    subjects_.erase(found);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -950,17 +964,8 @@ std::string SensingWorld::debugLastQueryJson() const {
 }
 
 std::string SensingWorld::snapshotJson() const {
-    std::ostringstream o;
-    o << "{\"schema\":\"eve.sensing.world\",\"version\":2,\"subjects\":[";
-    bool first = true;
-    for (auto& [id, s] : subjects_) {
-        if (!first) o << ',';
-        first = false;
-        o << "{\"id\":" << quote(id) << ",\"x\":" << std::setprecision(9) << s.x << ",\"y\":" << s.y << ",\"z\":" << s.z
-          << ",\"faction\":" << quote(s.faction) << ",\"tags\":" << quote(join(s.tags))
-          << ",\"visibleTo\":" << quote(join(s.visibleTo)) << ",\"zones\":" << quote(join(s.zones)) << '}';
-    }
-    return o.str() + "]}";
+    // Coordinates enter through finite-checked mutation APIs; the shared canonical writer handles all strings.
+    return detail::sensingWorldPayload(std::views::values(subjects_)).toJson().expect("valid sensing world payload");
 }
 eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
     std::string err;
@@ -1002,8 +1007,7 @@ eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
                                           : 1.f;
     auto        rebuilt = next.rebuildIndex(indexKind_, size);
     if (!rebuilt) return Result<void>::failure(rebuilt.status());
-    spatialCellQueryCache.invalidate(this);
-    *this = std::move(next);
+    publishPrepared(std::move(next));
     results_.clear();
     lastQuery_ = {};
     lastEnvironmentQuery_ = "null";

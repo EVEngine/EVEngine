@@ -1,5 +1,6 @@
 #include "map/Map.h"
 
+#include "common/Assert.h"
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
@@ -14,6 +15,7 @@
 #include "map/Pathfinder.h"
 #include "map/TileCollisionScriptSink.h"
 #include "map/TileConfig.h"
+#include "map/TileConfigInternal.inl"
 #include "map/TileSystem.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -24,22 +26,32 @@
 
 namespace eve::map {
 namespace {
+// Map identities are noncopyable and simulation-thread confined. Staging and
+// published maps share one process-level script seam until the last owner leaves.
+std::size_t liveMapOwners = 0;
+
 
 void retireReplacedLayers(const std::vector<TileLayer *> &previous,
-                          const std::vector<TileLayer *> &replacement) {
+                          const std::vector<TileLayer *> &replacement) noexcept {
     for (TileLayer *layer : previous) {
-        if (!layer || std::find(replacement.begin(), replacement.end(), layer) != replacement.end())
-            continue;
-        layer->clear();
-        layer->setVisible(false);
+        if (!layer || std::find(replacement.begin(), replacement.end(), layer) != replacement.end()) continue;
+        auto &manager = layer->getComponentManager();
+        if (auto *tiles = manager.getComponentBuffer<TileLayer::Tiles>(); tiles && tiles->has(layer->id)) {
+            auto      &data    = *tiles->ptr(layer->id);
+            const bool changed = std::any_of(data.gids.begin(), data.gids.end(), [](auto gid) { return gid != 0; });
+            std::fill(data.gids.begin(), data.gids.end(), 0);
+            for (auto &chunk : data.chunks) chunk.nonEmpty = 0;
+            if (changed) ++data.revision;
+        }
+        if (auto *draw = manager.getComponentBuffer<TileLayer::Draw>(); draw && draw->has(layer->id))
+            draw->ptr(layer->id)->visible = false;
     }
 }
 
 void discardCandidateLayers(const std::vector<TileLayer *> &layers) {
     for (TileLayer *layer : layers) {
         if (!layer) continue;
-        layer->clear();
-        layer->setVisible(false);
+        ecs::DestroyEntity(layer);
     }
 }
 
@@ -48,9 +60,14 @@ void discardCandidateLayers(const std::vector<TileLayer *> &layers) {
 Map::Map() {
     registerMapArtifactProvider();
     declareScriptTileCollisionSinkSeam();
+    ++liveMapOwners;
 }
 
-Map::~Map() { withdrawScriptTileCollisionSinkSeam(); }
+Map::~Map() {
+    lifetime_.reset();
+    EV_ASSERT(liveMapOwners != 0, "Map destruction must release an acquired seam owner");
+    if (--liveMapOwners == 0) withdrawScriptTileCollisionSinkSeam();
+}
 
 Module_IMPL(Map, new Map());
 
@@ -250,48 +267,45 @@ int Map::getObjectGid(int i) const {
     return int(objects_[size_t(i)].gid);
 }
 
-eve::Result<int> Map::loadFromFileWithObjectContract(const std::string &path,
-                                                     std::string_view contractJson) {
+eve::Result<int> Map::loadFromFileWithObjectContract(const std::string &path, std::string_view contractJson) {
     std::vector<MapObject> objects;
     std::string error;
     auto layers = loadMapFile(path, &objects, &error);
-    if (layers.empty()) {
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, error.empty() ? "map could not be loaded" : error, path, {},
-            "map.load"));
-    }
+    return publishCandidateLayers(std::move(layers), std::move(objects), std::move(error), contractJson, path);
+}
+eve::Result<int> Map::loadFromTextWithObjectContract(std::string_view mapJson, std::string_view contractJson) {
+    std::vector<MapObject> objects;
+    std::string error;
+    auto layers = loadMapText(std::string(mapJson), &objects, &error);
+    return publishCandidateLayers(std::move(layers), std::move(objects), std::move(error), contractJson, "$map");
+}
+eve::Result<int> Map::publishCandidateLayers(std::vector<TileLayer *> layers, std::vector<MapObject> objects,
+                                             std::string error, std::string_view contractJson,
+                                             std::string_view errorPath) {
+    if (layers.empty())
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                error.empty() ? "map could not be loaded" : error,
+                                                                std::string(errorPath), {}, "map.load"));
     auto admitted = validateMapObjects(objects, contractJson);
-    if (!admitted.ok()) {
+    if (!admitted) {
         discardCandidateLayers(layers);
         return eve::Result<int>::failure(admitted.status());
     }
-    retireReplacedLayers(loadedLayers_, layers);
-    setObjects(std::move(objects));
-    loadedLayers_ = std::move(layers);
+    publishPreparedLayers(std::move(layers), std::move(objects));
     return eve::Result<int>::success(static_cast<int>(loadedLayers_.size()),
                                      eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<int> Map::loadFromTextWithObjectContract(std::string_view mapJson,
-                                                     std::string_view contractJson) {
-    std::vector<MapObject> objects;
-    std::string error;
-    auto layers = loadMapText(std::string(mapJson), &objects, &error);
-    if (layers.empty()) {
-        return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, error.empty() ? "map text could not be loaded" : error,
-            "$map", {}, "map.load"));
-    }
-    auto admitted = validateMapObjects(objects, contractJson);
-    if (!admitted.ok()) {
-        discardCandidateLayers(layers);
-        return eve::Result<int>::failure(admitted.status());
-    }
+Result<std::unique_ptr<PreparedMapLoad>> Map::prepareAssetTextWithObjectContract(std::string_view      json,
+                                                                                 const std::string    &path,
+                                                                                 service::IFileSystem &files,
+                                                                                 std::string_view      contract) {
+    return PreparedMapLoad::prepare(observeLifetime(), json, path, files, contract);
+}
+void Map::publishPreparedLayers(std::vector<TileLayer *> layers, std::vector<MapObject> objects) noexcept {
     retireReplacedLayers(loadedLayers_, layers);
-    setObjects(std::move(objects));
+    objects_      = std::move(objects);
     loadedLayers_ = std::move(layers);
-    return eve::Result<int>::success(static_cast<int>(loadedLayers_.size()),
-                                     eve::Status::success(eve::StatusCode::Applied));
 }
 
 int Map::getObjectPropertyCount(int objectIndex) const {

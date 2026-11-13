@@ -15,6 +15,33 @@ import test_levels as levels  # noqa: E402
 
 
 class TestLevelCatalogueTests(unittest.TestCase):
+    def test_standalone_test_targets_use_explicit_windows_poco_link_contract(self):
+        # Exercise the CMake target factory's Windows branch on every host;
+        # actual MSVC linkage and dependency ABI remain native CI obligations.
+        for linkage in ("SHARED", "OBJECT"):
+            with self.subTest(linkage=linkage), tempfile.TemporaryDirectory() as directory:
+                base = Path(directory)
+                (base / "probe.cpp").write_text("int main() { return 0; }\n", encoding="utf-8")
+                (base / "CMakeLists.txt").write_text(
+                    'cmake_minimum_required(VERSION 3.21)\nproject(poco_contract CXX)\n'
+                    f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                    f'set(EVENGINE_MODULE_LINKAGE {linkage})\n'
+                    'set(WIN32 TRUE)\neve_add_test_executable(consumer probe.cpp)\n'
+                    'get_target_property(definitions consumer COMPILE_DEFINITIONS)\n'
+                    'foreach(required POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)\n'
+                    'if(NOT required IN_LIST definitions)\n'
+                    'message(FATAL_ERROR "Standalone consumer lacks ${required}")\n'
+                    'endif()\nendforeach()\n'
+                    'set(WIN32 FALSE)\neve_add_test_executable(other_host probe.cpp)\n'
+                    'get_target_property(other_definitions other_host COMPILE_DEFINITIONS)\n'
+                    'if("POCO_NO_AUTOMATIC_LIBS" IN_LIST other_definitions)\n'
+                    'message(FATAL_ERROR "Windows dependency contract leaked to other hosts")\nendif()\n',
+                    encoding="utf-8")
+                configured = subprocess.run(
+                    ["cmake", "-S", str(base), "-B", str(base / "build")],
+                    capture_output=True, text=True, encoding="utf-8", check=False)
+                self.assertEqual(configured.returncode, 0, configured.stdout + configured.stderr)
+
     def test_default_ctest_selection_excludes_physical_gpu_benchmarks_and_their_bundles(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)

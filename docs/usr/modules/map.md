@@ -374,3 +374,59 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 tile revision。它不复制/同步网格；计数不同只说明需要重新捕获，不承诺内容变化。
 `captureNavigationGrid()` 的内容版本仍是拥有型快照权威。RTS 表面跟踪使用前者跳过未变化帧，
 用后者识别同值编辑。两种版本均是进程内状态，不可作为跨进程持久身份。
+
+
+## Tiled 生成区域的一次性导入计划
+
+原生 `spawn_editor::PreparedTiledSpawnImport` 提供准备 → 预览 source/importedIds → 显式 commit 的几何导入后端，声明见 `map/spawn/editor/TiledSpawnImport.h`。它处理有限正交 Tiled JSON；对象 ID、像素坐标及顺时针 rotation 的语义遵循 [Tiled JSON 格式](https://doc.mapeditor.org/en/stable/reference/json-map-format/)。正式编辑器宿主的入口/界面仍需接入，不能把这个原生接口当成已有文件导入按钮。
+
+`eve.spawn` 类型及属性是引擎约定。例如 objectgroup 中的对象：
+
+```json
+{
+  "id": 42,
+  "type": "eve.spawn",
+  "point": true,
+  "x": 96,
+  "y": 64,
+  "properties": [
+    {"name": "eve.spawn.instance", "type": "string", "value": "north"}
+  ]
+}
+```
+
+该引用要求当前 sidecar 已有稳定实例 north；导入只替换 region，模板、激活、预算相关覆盖等仍由 sidecar 独占。`eve.spawn.template`、`eve.spawn.activation` 等配置属性明确拒绝，避免配置双写。无引用的新对象由宿主提供 canonical 创建默认字段（template/activation/inactive_policy/unload_policy/可选 overrides，不含 id/region）；没有默认字段时不能猜测创建。已有生成 ID 重新导入也保留其 sidecar 配置。
+
+新身份为 `tiled.<源 AssetGuid>.<Tiled object ID>`；UUID 必须是源资产稳定身份，不能使用文件路径、数组下标或对象 name 代替。对象改名/重排不改 ID；重新导入按 ID 更新，不删除源文件中已消失的旧实例。多个源对象不能更新同一目标。所有 Tiled 对象 ID 全局校验，目标地图中其他实例保留。
+
+调用方必须传入实际共享表单、模板/单位解析器，以及与加载描述一致的显式 PixelTransform。导入复用 pixelToWorld，累加分组/图层 offsetx/y，并绕对象原点应用旋转；不从 tilewidth 猜世界单位。支持点、圆形 ellipse、矩形和简单多边形。非圆 ellipse、tile/text/polyline/capsule/template 对象及选中图层的非零 tile offset/非单位 parallax 明确拒绝。普通非生成对象的几何与自定义属性忽略；选中几何、图层的未知字段和未知 eve.spawn 保留属性拒绝。
+
+准备阶段完整 canonical 编译候选，不修改文档和历史；commit 检查原表单身份、源修订和 preimage，通过同一 `$source` 属性事务发布，因此可使用既有 undo/redo、保存和运行 JSON 导出。过期、被消费或已销毁表单的计划拒绝。后端失败的待提交操作继续由表单 retry/discard 管理。导入不写 Tiled 文件、不启动运行世界，也不建立第二套历史。
+
+已知 JSON 格式版本为 1.0–1.12（旧数字编码仅 1.0–1.5）；结构上限为嵌套 32、图层 4096、源对象/几何点各 65536、选中对象 1024、单多边形顶点 1024。一般旋转使用导入平台 double/libm 舍入，不承诺跨导入平台逐位一致；运行资产保存最终 World2D 数值，运行时和撤销不会重新求旋转。
+
+
+正式 RPG 生成编辑器的会话面板现有 Tiled geometry import 页。先停止独立运行预览，填写来源路径、登记的稳定来源 UUID；新对象还须填写要继承配置的已有实例 ID，引用已有实例时可留空。Prepare 只显示琥珀色候选，Commit 使用现有撤销事务，Cancel 不改源。错误保留候选供检查；正常关闭和重新启动运行预览前须先提交或取消。Save 和 Export 仍由原面板执行。示例操作见 examples/spawn-editor/README.md。
+
+
+### 无编辑器的地图生成运行组合
+
+`spawn-map-rpg-runtime` 和 `spawn-map-rts-runtime` 分别保留 RPG / RTS 地图生成组合，排除 authoring 卫星及另一领域。地图依旧包含图形与窗口依赖，运行正式示例需要可用的图形环境；它们不是 headless profile。显式开启编辑卫星或禁用所需组合根会在配置阶段失败。
+
+沿用根 Makefile 的 profile 入口，例如：
+
+```sh
+make profile/configure PROFILE=spawn-map-rpg-runtime
+make profile/build PROFILE=spawn-map-rpg-runtime
+make profile/smoke PROFILE=spawn-map-rpg-runtime
+```
+
+RTS 将 profile 替换为 `spawn-map-rts-runtime`。smoke 会执行 provider present/absent、所需核心/地图/领域契约，以及正式营地和三波或增援示例；RTS 的逐分配点恢复测试耗时较长，不应省略。构建依赖、宿主平台和 generator 参数沿用标准 profile 入口。
+
+对于已构建的 native OBJECT 产物，可额外运行实际链接审计：
+
+```sh
+python3 scripts/profile_matrix.py --profile spawn-map-rpg-runtime --audit-link
+```
+
+如配置使用了自定义目录，同步传入 `--build-root`。证据保存在该 profile 的 `profile/map_spawn/boundary/`，包括实际模块输入、实现符号、动态依赖及二进制摘要。审计器目前接纳 Darwin/Linux OBJECT；macOS 已有本机验证，Linux 和其他链接模式不能仅据此宣称通过。SDK 安装仍沿用标准 `cmake --install`，先完成标准依赖构建；平台验收范围见设计文档 §12。

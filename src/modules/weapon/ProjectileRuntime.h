@@ -38,11 +38,19 @@ struct ProjectileVector {
     friend bool operator==(const ProjectileVector&, const ProjectileVector&) = default;
 };
 
-/** @brief Generation-qualified reference to one pooled projectile slot. */
+/** @brief Pool-scoped generation-qualified reference; empty slots at maximum generation retire permanently. */
 struct ProjectileHandle {
     std::uint32_t slot       = 0;
     std::uint32_t generation = 0;
 
+    /** @brief Lossless pool-scoped value key; does not identify a world or issue live permission. */
+    [[nodiscard]] constexpr std::uint64_t packedKey() const noexcept {
+        return (std::uint64_t(generation) << 32) | slot;
+    }
+    /** @brief Decode value bits only; the owning pool must validate generation and slot correspondence. */
+    [[nodiscard]] static constexpr ProjectileHandle fromPackedKey(std::uint64_t key) noexcept {
+        return {std::uint32_t(key), std::uint32_t(key >> 32)};
+    }
     /** @brief Operator ==. */
     friend bool operator==(const ProjectileHandle&, const ProjectileHandle&) = default;
 };
@@ -57,7 +65,7 @@ struct ProjectileDefinition {
     Duration       lifetime           = Duration::zero();
 
     /** @brief Validate finite, non-negative trajectory parameters and mode-specific requirements. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validate() const;
 };
 
 /** @brief Owning spawn request; homing requests require a generation-checked target. */
@@ -79,6 +87,12 @@ struct ProjectileState {
     Duration                         age;
     Duration                         lifetime;
     std::optional<ecs::EntityHandle> target;
+    /** @brief Validate portable trajectory facts without resolving or requiring a process-local homing target.
+     * @return Invalid mode, id/handle generation, nonfinite transform/parameters or age/lifetime diagnostics.
+     * @remarks The owning adapter separately admits stable relationships and binds native homing targets.
+     * @thread Read-only owner-thread inspection; no callbacks, services or mutations.
+     */
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validateTrajectory() const;
 };
 
 /** @brief Owning result of one atomic projectile simulation step. */
@@ -96,6 +110,7 @@ struct ProjectileSlotSnapshot {
 /** @brief Complete deterministic projectile-pool state for rollback and save games. */
 struct ProjectileRuntimeSnapshot {
     std::vector<ProjectileSlotSnapshot> slots;
+    std::uint32_t capacity = 0;  ///< Active slot window; slots retain generation history across shrinking/regrowing.
 };
 
 /** @brief Optional target-position boundary used only by homing projectiles. */
@@ -120,12 +135,21 @@ public:
     /** @brief Projectile runtime. */
     ProjectileRuntime();
 
-    /** @brief Resize the pool while empty; capacity must be in 1..1048576. */
+    /** @brief Maximum retained slot history and active capacity, without allocation or callbacks. */
+    [[nodiscard]] static constexpr std::uint32_t maximumCapacity() noexcept { return 1024 * 1024; }
+    /** @brief Resize the active window while empty, preserving generation history; capacity in 1..maximumCapacity.
+     * @return Applied or invalid/capacity-in-use failure; allocation failure leaves the pool unchanged.
+     * @thread Owner thread, no callbacks.
+     * @cost Copies retained slot history once per explicit pool configuration; shrinking does not discard history.
+     * @throws std::bad_alloc No capacity or generation changed.
+     */
     [[nodiscard]] Result<void> configurePool(std::uint32_t capacity);
     /** @brief Spawn one projectile or return a structured capacity/validation failure. */
     [[nodiscard]] Result<ProjectileHandle> spawn(const ProjectileDefinition&   definition,
                                                  const ProjectileSpawnRequest& request);
-    /** @brief Atomically advance all live projectiles by supplied deterministic time. */
+    /** @brief Atomically advance all live projectiles by supplied deterministic time.
+     * @ownership Borrows provider only during call; it must keep this runtime alive and must not re-enter mutation.
+     * @thread Owner thread; target queries execute without locks. */
     [[nodiscard]] Result<ProjectileUpdate> update(Duration delta, const IProjectileTargetProvider* targets = nullptr);
     /** @brief Explicitly release one live handle; stale handles are rejected. */
     [[nodiscard]] Result<void> release(ProjectileHandle handle);
@@ -133,14 +157,22 @@ public:
     [[nodiscard]] std::optional<ProjectileState> find(ProjectileHandle handle) const;
     /** @brief Return owning live states in stable slot order. */
     [[nodiscard]] std::vector<ProjectileState> states() const;
-    /** @brief Capture live trajectories plus empty-slot generations. */
+    /** @brief Capture live trajectories, active capacity and all retained empty-slot generation history.
+     * @ownership Owning CPU values; no world or provider retained. @thread Owner thread, no callbacks.
+     * @cost Copies every retained slot once per explicit checkpoint.
+     */
     [[nodiscard]] ProjectileRuntimeSnapshot snapshot() const;
-    /** @brief Atomically replace this pool from a validated snapshot. */
+    /** @brief Atomically replace this pool from a validated snapshot, including active capacity and generation history.
+     * @return Invalid slot/state/capacity/native-target failure or Applied; target changes only after full validation.
+     * @ownership Borrows snapshot during call; retains copied values only. @thread Owner thread, no callbacks.
+     * @cost Copies all retained slots once per explicit restore attempt.
+     * @throws std::bad_alloc The original pool remains intact.
+     */
     [[nodiscard]] Result<void> restore(const ProjectileRuntimeSnapshot& snapshot);
     /** @brief Number of live projectiles. */
     [[nodiscard]] std::size_t activeCount() const noexcept { return activeCount_; }
     /** @brief Current fixed pool capacity. */
-    [[nodiscard]] std::size_t capacity() const noexcept { return slots_.size(); }
+    [[nodiscard]] std::size_t capacity() const noexcept { return capacity_; }
 
 private:
     struct Slot {
@@ -152,6 +184,7 @@ private:
                                                     const ProjectileSpawnRequest& request);
 
     std::vector<Slot> slots_;
+    std::uint32_t     capacity_    = 0;
     std::size_t       activeCount_ = 0;
 };
 

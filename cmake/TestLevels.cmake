@@ -139,6 +139,14 @@ function(eve_add_test_executable TARGET)
   eve_test_origin_definitions(_definitions ${ARGN})
   eve_resolve_test_sources(_sources ${ARGN})
   add_executable(${TARGET} ${_sources})
+  if(WIN32)
+    # Independent consumers do not inherit module-private definitions through
+    # SHARED link groups. Match the native unit-test dependency contract:
+    # CMake selects the canonical static md/mdd Poco archives, never MSVC's
+    # header auto-link default (PocoFoundationd.lib).
+    target_compile_definitions(${TARGET} PRIVATE
+      POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
   eve_apply_test_origin_definitions(${TARGET} ${_definitions})
   get_filename_component(_root "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/.." ABSOLUTE)
   target_include_directories(${TARGET} PRIVATE "${_root}/test")

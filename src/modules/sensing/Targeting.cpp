@@ -238,6 +238,14 @@ bool GridArea::contains(GridPoint point) const noexcept {
 }
 
 Result<void> TargetingSpec::validate() const {
+    if ((space != CoordinateSpace::World2D && space != CoordinateSpace::World3D && space != CoordinateSpace::Grid2D &&
+         space != CoordinateSpace::Grid3D) ||
+        (domain != TargetDomain::Any && domain != TargetDomain::Self && domain != TargetDomain::Ally &&
+         domain != TargetDomain::Enemy && domain != TargetDomain::Neutral) ||
+        (countPolicy != CountPolicy::FailIfOutOfRange && countPolicy != CountPolicy::TruncateToMax) ||
+        (lineOfSight != LineOfSightMode::NotRequired && lineOfSight != LineOfSightMode::Required))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unknown targeting specification enum", {}));
     if ((isWorldSpace(space) && gridArea) || (isGridSpace(space) && worldArea))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "TargetingSpec area uses a different coordinate space", {}));

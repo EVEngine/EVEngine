@@ -1,0 +1,9 @@
+{
+  "schema": "eve.map-spawns", "version": 1, "map": "reinforcement-map",
+  "budgets": [{"id": "reinforcements", "alive_limit": 6}],
+  "instances": [{
+    "id": "west.reinforcements", "template": {"type": "spawn.template", "id": "rts.reinforcements"},
+    "region": {"kind": "points", "space": "world2d", "points": [[2, 8]]},
+    "activation": {"kind": "map_loaded"}, "inactive_policy": "pause", "unload_policy": "persist"
+  }]
+}

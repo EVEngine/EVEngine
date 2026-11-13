@@ -10,18 +10,23 @@
 */
 // clang-format on
 
+#include "combat/DamageCapture.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayControlJson.h"
 #include "common/GameplayInstanceCatalog.h"
+#include "definitions/DefinitionRegistryCapture.h"
+#include "definitions/Definitions.h"
 #include "rts/RTS.h"
 #include "rts/RTSTerrainTraceInternal.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <array>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace {
@@ -108,6 +113,14 @@ TEST_CASE("rts.control.spec.selected_unit_move_receipt_and_event") {
     const auto receipt = std::move(submitted).takeValue();
     CHECK_EQ(receipt.commandId, command.id);
     CHECK(receipt.resultingRevision > before.value().revision);
+    const auto frozenEvents = rts.captureFrameState().expect("native gameplay queue freeze");
+    REQUIRE_EQ(frozenEvents.gameplay.size(), std::size_t(1));
+    REQUIRE_EQ(frozenEvents.nextGameplaySequence, std::uint64_t(2));
+    REQUIRE_EQ(frozenEvents.gameplay[0].causationCommandId, command.id);
+    {
+        auto view = ecs::View<eve::rts::Unit>(world);
+        REQUIRE(!rts.captureFrameState().ok());
+    }
     auto events = rts.gameplayEvents(playerSession, playerId, 0);
     REQUIRE(events.ok());
     REQUIRE_EQ(events.value().size(), std::size_t{1});
@@ -117,6 +130,21 @@ TEST_CASE("rts.control.spec.selected_unit_move_receipt_and_event") {
     REQUIRE(advanced.ok());
     const auto next = std::move(advanced).takeValue();
     CHECK_EQ(next.tick.value(), std::uint64_t{1});
+    REQUIRE_EQ(frozenEvents.gameplay[0].causationCommandId, command.id);
+    REQUIRE_EQ(rts.captureFrameState().expect("native queue was not consumed").gameplay.size(), std::size_t(1));
+    player->selection()->revision = UINT64_MAX;
+    const auto queue              = unit->orders()->values.snapshot().expect("queue before exhaustion");
+    const auto xBefore            = unit->motion()->x;
+    REQUIRE(!rts.advanceGameplay(playerSession, playerId, {eve::SimulationTick(2), eve::Duration(1000000000)}).ok());
+    CHECK_EQ(player->selection()->tick.value(), std::uint64_t(1));
+    CHECK_EQ(unit->motion()->x, xBefore);
+    command.id               = "exhausted-revision";
+    command.observedTick     = eve::SimulationTick(1);
+    command.expectedRevision = UINT64_MAX;
+    REQUIRE(!rts.submitGameplay(playerSession, playerId, command).ok());
+    CHECK_EQ(player->selection()->revision, UINT64_MAX);
+    CHECK_EQ(unit->orders()->values.snapshot().expect("intact queue"), queue);
+    CHECK_EQ(rts.captureFrameState().expect("intact events").gameplay.size(), std::size_t(1));
 }
 
 // Rejection contract: an unselected unit is invisible to available-actions,
@@ -228,3 +256,135 @@ TEST_CASE("rts.performanceOrderProjectionInvalidatesOnLifecycleAndSameIdRestore"
     CHECK_EQ(afterReplace.formationSlot, 4);
 }
 }  // namespace test_rts_performance_semantics_migrated
+
+namespace test_rts_snapshot_readonly {
+TEST_CASE("rts.snapshot.canonicalRootsFreezeWithoutMaterializingAndIgnoreUnrelatedCurrentScope") {
+    auto             world = std::make_shared<ecs::Table>();
+    eve::rts::RTS    domain(world);
+    ecs::ScopedTable actualOwner(*world);
+    const auto       base = *eve::PersistentId::parse("01900000-0000-7000-8000-000000000a01");
+    auto             id   = [&](const char* name) { return eve::SubjectRef::fromPersistentId(base.child(name)); };
+    {
+        ecs::ScopedTable scope(*world);
+        domain.newUnit(id("unit")).expect("native unit");
+        domain.newBuilding(id("building")).expect("native building");
+        domain.newResourceNode(id("node"), "ore", 10, {1, 2}).expect("native resource");
+        domain.newPlayer(id("player")).expect("native player");
+        domain.newFaction(id("faction")).expect("native faction");
+        domain.newMatch(id("match")).expect("native match");
+    }
+    auto*      unit    = domain.findUnit(id("unit"));
+    const auto buffers = unit->getComponentManager().components.size();
+    auto       before  = domain.canonicalStateJson().expect("native initial state");
+    {
+        ecs::Table       unrelated;
+        ecs::ScopedTable unrelatedScope(unrelated);
+        auto             snapshot = domain.snapshotState().expect("actual owning Table selected");
+        REQUIRE_EQ(snapshot.units.size(), std::size_t(1));
+        REQUIRE_EQ(snapshot.buildings.size(), std::size_t(1));
+        REQUIRE_EQ(snapshot.resourceNodes.size(), std::size_t(1));
+        REQUIRE_EQ(snapshot.players.size(), std::size_t(1));
+        REQUIRE_EQ(snapshot.factions.size(), std::size_t(1));
+        REQUIRE_EQ(snapshot.matches.size(), std::size_t(1));
+        REQUIRE(snapshot.units[0].attributes.owner.table == nullptr);
+        REQUIRE_EQ(domain.canonicalStateJson().expect("same actual state"), before);
+    }
+    REQUIRE_EQ(unit->getComponentManager().components.size(), buffers);
+    {
+        auto view = ecs::View<eve::rts::Unit>(*world);
+        REQUIRE(!domain.snapshotState().ok());
+    }
+}
+TEST_CASE("rts.snapshot.missingRootComponentsAndAttributesRejectWithoutRepair") {
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    const auto       id     = subject("01900000-0000-7000-8000-000000000a02");
+    auto*            unit   = domain.newUnit(id).expect("native root");
+    auto*            motion = unit->getComponentManager().getComponentBuffer<eve::rts::Unit::Motion>();
+    motion->reset_slot(unit->id);
+    const auto buffers = unit->getComponentManager().components.size();
+    REQUIRE(!domain.snapshotState().ok());
+    REQUIRE(!motion->has(unit->id));
+    REQUIRE_EQ(unit->getComponentManager().components.size(), buffers);
+    (void)*unit->motion();
+    auto* attributes = unit->getComponentManager().getComponentBuffer<eve::rts::Unit::Attributes>();
+    attributes->reset_slot(unit->id);
+    REQUIRE(!domain.snapshotState().ok());
+    REQUIRE(!eve::rts::RTSUnitAttributeAdapter::snapshot(*unit).ok());
+    REQUIRE(!attributes->has(unit->id));
+    (void)*unit->attributes();
+    REQUIRE(!domain.snapshotState().ok());
+    REQUIRE(!unit->attributes()->values.initialized());
+    eve::rts::RTSUnitAttributeAdapter::ensure(*unit).expect("explicit repair");
+    REQUIRE(domain.snapshotState().ok());
+}
+TEST_CASE("rts.snapshot.foreignAttributesAndMissingFactionIdentityRemainUnchangedOnFailure") {
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    eve::rts::RTS    domain(world);
+    const auto       base       = *eve::PersistentId::parse("01900000-0000-7000-8000-000000000a03");
+    auto             id         = [&](const char* name) { return eve::SubjectRef::fromPersistentId(base.child(name)); };
+    auto*            first      = domain.newUnit(id("first")).expect("first native root");
+    auto*            second     = domain.newUnit(id("second")).expect("second native root");
+    first->attributes()->values = second->attributes()->values;
+    REQUIRE(!domain.snapshotState().ok());
+    REQUIRE(!eve::rts::RTSUnitAttributeAdapter::snapshot(*first).ok());
+    const std::array<std::string_view, 1> names{"health"};
+    auto raw = first->attributes()->values.snapshot(names).expect("observe existing wrong owner");
+    REQUIRE(ecs::try_get(raw.owner) == second);
+    first->attributes()->values = eve::rts::AttributeComponent{};
+    eve::rts::RTSUnitAttributeAdapter::ensure(*first).expect("explicit owner rebuild");
+    auto*      faction    = domain.newFaction(id("faction")).expect("native faction");
+    auto*      identities = faction->getComponentManager().getComponentBuffer<eve::rts::Faction::Identity>();
+    const auto prior      = *faction->identity();
+    identities->reset_slot(faction->id);
+    REQUIRE(!domain.snapshotState().ok());
+    REQUIRE(!identities->has(faction->id));
+    *faction->identity() = prior;
+    REQUIRE(domain.snapshotState().ok());
+}
+}  // namespace test_rts_snapshot_readonly
+
+TEST_CASE("rts.snapshot.definitionCaptureRequiresActualOwnedContentAuthorityAndIdleWorld") {
+    eve::definitions::DefinitionRegistry content, foreign;
+    content.insert("unit", "fighter", 1, R"({"health":77})").expect("actual bound content");
+    foreign.insert("unit", "fighter", 1, R"({"health":1})").expect("different authority");
+    auto          table = std::make_shared<ecs::Table>();
+    eve::rts::RTS domain(table);
+    REQUIRE(!domain.captureDefinitions(content).ok());
+    domain.setDefinitionRegistry(&content);
+    REQUIRE(!domain.captureDefinitions(foreign).ok());
+    const auto before = content.snapshotJson();
+    {
+        auto view = ecs::View<eve::rts::Unit>(*table);
+        REQUIRE(!domain.captureDefinitions(content).ok());
+    }
+    auto captured = domain.captureDefinitions(content).takeValue();
+    REQUIRE_EQ(content.snapshotJson(), before);
+    domain.setDefinitionRegistry(nullptr);
+    auto restored = eve::definitions::DefinitionRegistry::prepareRestored(captured).takeValue();
+    REQUIRE_EQ(restored->snapshotJson(), before);
+    eve::rts::RTS borrowed;
+    borrowed.setDefinitionRegistry(&content);
+    REQUIRE(!borrowed.captureDefinitions(content).ok());
+}
+
+TEST_CASE("rts.snapshot.damageCaptureRequiresTheActualBoundGameServiceAndIdleOwnedWorld") {
+    eve::combat::DamageRuntime service, foreign;
+    auto                       table = std::make_shared<ecs::Table>();
+    eve::rts::RTS              domain(table);
+    REQUIRE(!domain.captureDamage(service).ok());
+    domain.setCombatProviders(nullptr, &service);
+    REQUIRE(!domain.captureDamage(foreign).ok());
+    {
+        auto view = ecs::View<eve::rts::Unit>(*table);
+        REQUIRE(!domain.captureDamage(service).ok());
+    }
+    auto captured = domain.captureDamage(service).takeValue();
+    domain.setCombatProviders(nullptr, nullptr);
+    REQUIRE(eve::combat::DamageRuntime::prepareRestored(captured).ok());
+    eve::rts::RTS borrowed;
+    borrowed.setCombatProviders(nullptr, &service);
+    REQUIRE(!borrowed.captureDamage(service).ok());
+}

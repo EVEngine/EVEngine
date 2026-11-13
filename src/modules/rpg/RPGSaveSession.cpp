@@ -94,10 +94,17 @@ std::size_t applyIdRename(eve::Value &payload, RPGSaveIdDomain domain, std::stri
                     return renameStringValue(objective.find("id"), oldId, newId);
                 });
             });
-        case RPGSaveIdDomain::Skill:
-            return visitArray(actor ? actor->find("learnedSkills") : nullptr, [&](eve::Value &skill) {
-                return renameStringValue(&skill, oldId, newId);
+        case RPGSaveIdDomain::Skill: {
+            auto changed = visitArray(actor ? actor->find("learnedSkills") : nullptr,
+                                      [&](eve::Value &skill) { return renameStringValue(&skill, oldId, newId); });
+            changed += visitArray(actor ? actor->find("cooldowns") : nullptr, [&](eve::Value &cooldown) {
+                return renameStringValue(cooldown.find("id"), oldId, newId);
             });
+            auto *casting = actor ? actor->find("casting") : nullptr;
+            changed +=
+                renameStringValue(casting && casting->isObject() ? casting->find("skill") : nullptr, oldId, newId);
+            return changed;
+        }
         case RPGSaveIdDomain::Class: {
             eve::Value *classValue = actor ? actor->find("class") : nullptr;
             return renameStringValue(classValue ? classValue->find("id") : nullptr, oldId, newId);

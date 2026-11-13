@@ -208,7 +208,8 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
     runs-on: windows-latest
     # Vulkan build and unit tests; Dawn has its own independent job.
-    timeout-minutes: 240
+    # Includes SHARED consumers and a trimmed OBJECT Debug allocation-contract lane.
+    timeout-minutes: 330
     env:
       CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
       CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
@@ -336,6 +337,81 @@ jobs:
         run: >-
           make test/ci-win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Build Windows SHARED Spawn contract consumers
+        timeout-minutes: 30
+        run: |
+          cmake/with-msvc.cmd cmake.exe -S . -B build/win32-debug -DEVENGINE_BUILD_PROFILE_CHECKS=ON
+          grep -q '^EVENGINE_MODULE_LINKAGE:STRING=SHARED' build/win32-debug/CMakeCache.txt
+          cmake/with-msvc.cmd cmake.exe --build build/win32-debug --config Debug --parallel 4 \
+            --target eve_spawn_check eve_map_spawn_contracts eve_rts_spawn_contracts \
+              eve_spawn_editing_check eve_spawn_editor_check
+
+      - name: Run Windows SHARED Spawn contract consumers
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          # Group DLLs and their third-party runtime are staged at this root.
+          export PATH="$PWD/build/win32-debug:$PATH"
+          cmake/with-msvc.cmd ctest.exe --test-dir build/win32-debug/profile/spawn -C Debug --no-tests=error \
+            --output-on-failure -R '^profile[.]spawn[.]capabilityShutdown$'
+          for suite in spawn map_spawn rts_spawn spawn_editing spawn_editor; do
+            cmake/with-msvc.cmd ctest.exe --test-dir "build/win32-debug/profile/$suite" -C Debug \
+              --no-tests=error --output-on-failure
+          done
+          EVE="$PWD/build/win32-debug/src/engine/eve.exe" MIN_RUN_SECONDS=2 RUN_SECONDS=8 \
+            cmake/with-msvc.cmd bash.exe scripts/smoke_examples.sh spawn-rpg-camp spawn-rpg-waves spawn-rts-reinforcements
+
+      - name: Build Windows OBJECT Debug Spawn profile
+        timeout-minutes: 35
+        env:
+          PROFILE: spawn-rpg-only
+          PROFILE_PLATFORM: win32
+          PROFILE_BUILD_ROOT: ${{ runner.temp }}/spawn-windows-object
+          PROFILE_JOBS: 4
+        run: |
+          # AUTO can use a published package on a cache miss. Reuse the actual
+          # host install, not the cache action's default source-install path.
+          prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/win32-debug/CMakeCache.txt | tr -d '\r')"
+          test -n "$prefix"
+          prefix="$(cygpath -am "$prefix")"
+          bash .github/scripts/verify-third-party-cache.sh "$prefix" win32 Debug
+          export PROFILE_CMAKE_COMMAND="cmake.exe -DEVENGINE_MODULE_LINKAGE=OBJECT -DEVENGINE_ENABLE_STRICT_WARNINGS=ON -DEVENGINE_COMPILER_CACHE=SCCACHE \
+            \"-DEVENGINE_THIRD_PARTY_BINARY_DIR=$prefix\" -DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF"
+          cmake/with-msvc.cmd make.exe profile/configure
+          grep -q '^EVENGINE_MODULE_LINKAGE:STRING=OBJECT' "$PROFILE_BUILD_ROOT/$PROFILE/CMakeCache.txt"
+          cmake/with-msvc.cmd make.exe profile/build
+
+      - name: Run Windows OBJECT Debug Spawn profile
+        timeout-minutes: 10
+        env:
+          PROFILE: spawn-rpg-only
+          PROFILE_PLATFORM: win32
+          PROFILE_BUILD_ROOT: ${{ runner.temp }}/spawn-windows-object
+        run: cmake/with-msvc.cmd make.exe profile/smoke
+
+      - name: Upload Windows OBJECT Debug Spawn profile evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-contracts-windows-object-debug
+          path: |
+            ${{ runner.temp }}/spawn-windows-object/spawn-rpg-only/CMakeCache.txt
+            ${{ runner.temp }}/spawn-windows-object/spawn-rpg-only/profile/spawn/Testing/Temporary/*.log
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Windows SHARED Spawn contract evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: spawn-contracts-windows-shared
+          path: |
+            build/win32-debug/CMakeCache.txt
+            build/win32-debug/profile/**/Testing/Temporary/*.log
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload Windows test failure diagnostics
         if: failure()
@@ -634,7 +710,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -685,9 +761,10 @@ jobs:
           toolchain: ${{ steps.third-party-toolchain.outputs.id }}
 
       - name: Build ios debug
-        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
-        # jitter can push xcodebuild past 40 without a compile error.
-        timeout-minutes: 50
+        # Run 43024609662 was still compiling Action sources at the 50m limit
+        # after a cold dependency build; no compiler/linker error was reported.
+        # Keep the full build and give cold engine compilation bounded headroom.
+        timeout-minutes: 90
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -729,7 +806,7 @@ jobs:
     # previous 60-minute job cap even though each step stayed within its guard.
     # Cold third-party restore + read-only sccache (PR) can push the build step
     # past 40 minutes, so keep headroom for tests afterward.
-    timeout-minutes: 120
+    timeout-minutes: 150
     env:
       CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
       CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
@@ -823,7 +900,9 @@ jobs:
       - name: Build linux debug
         # PR compilation caches are read-only. Keep the budget for a full engine
         # rebuild; dependency libraries are downloaded from their own release.
-        timeout-minutes: 60
+        # Run 43186708559 reached the final graphics-test link at 60m with
+        # 2330 successful cold compilations and zero compiler failures.
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -1090,11 +1169,17 @@ jobs:
       - name: Install fuzz toolchain
         timeout-minutes: 5
         run: |
+          # Match the native lanes: use the canonical mirror instead of image mirror indirection.
+          # Keep Ubuntu signature checks and fail if any required index cannot refresh.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
           # Only Ubuntu indexes are needed for this toolchain.
           test -s /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update \
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
-            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
+            -o APT::Update::Error-Mode=any
           sudo apt-get install -y --no-install-recommends clang ninja-build
 
       - name: Setup C/C++ compilation cache

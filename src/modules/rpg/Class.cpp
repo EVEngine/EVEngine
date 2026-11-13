@@ -88,6 +88,7 @@ int ClassRegistry::loadFromJson(const std::string &json, std::string *error) {
 #include "rpg/Class.h"
 #include "rpg/LevelSystem.h"
 #include "rpg/RPGActor.h"
+#include "rpg/SimulationEvents.h"
 #include "rpg/SkillSystem.h"
 #include "rpg/TraitSystem.h"
 
@@ -164,18 +165,19 @@ int ClassSystem::getLearnLevelAt(RPGActor *actor, int index) {
 
 // LevelSystem implementation (previously LevelSystem.cpp).
 #include "rpg/LevelSystem.h"
+#include "rpg/SimulationEvents.h"
 
 #include "rpg/RPGActor.h"
 
 #include <cmath>
+#include <limits>
+#include <new>
+#include <type_traits>
 
 namespace eve::rpg {
 
 namespace {
-std::vector<LevelUpEvent> &levelUpEvents() {
-    static std::vector<LevelUpEvent> events;
-    return events;
-}
+std::vector<LevelUpEvent> &levelUpEvents() { return detail::simulationEvents().levels; }
 }  // namespace
 
 int LevelSystem::getLevel(RPGActor *actor) { return actor ? actor->progression()->level : 1; }
@@ -233,14 +235,19 @@ eve::Result<PreparedProgressionGain> LevelSystem::prepareGainXp(RPGActor *actor,
     if (!std::isfinite(xpGrowth) || xpGrowth < 1.0)
         return eve::Result<PreparedProgressionGain>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "XP growth must be finite and at least one", "xpGrowth"));
-    const auto &current = *actor->progression();
+    auto *buffer = actor->getComponentManager().getComponentBuffer<RPGActor::Progression>();
+    if (!buffer || !buffer->has(actor->id))
+        return eve::Result<PreparedProgressionGain>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "XP preparation requires an initialized progression", "progression"));
+    const auto &current = *buffer->ptr(actor->id);
     if (current.level < 1 || !std::isfinite(current.xp) || current.xp < 0.0 || !std::isfinite(current.xpToNext) ||
         current.xpToNext <= 0.0 || current.xp >= current.xpToNext)
         return eve::Result<PreparedProgressionGain>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvariantViolation, "actor progression is not valid for XP gain", "progression"));
 
     PreparedProgressionGain prepared;
-    prepared.actor_            = actor;
+    prepared.actor_            = ActorEventRef(*actor);
     prepared.previousLevel_    = current.level;
     prepared.previousXp_       = current.xp;
     prepared.previousXpToNext_ = current.xpToNext;
@@ -258,6 +265,9 @@ eve::Result<PreparedProgressionGain> LevelSystem::prepareGainXp(RPGActor *actor,
                 eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
                                        "XP gain exceeds the maximum levels allowed in one transaction", "amount"));
         prepared.nextXp_ -= prepared.nextXpToNext_;
+        if (prepared.nextLevel_ == std::numeric_limits<int>::max())
+            return eve::Result<PreparedProgressionGain>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "XP gain would overflow the level", "level"));
         ++prepared.nextLevel_;
         prepared.nextXpToNext_ *= xpGrowth;
         if (!std::isfinite(prepared.nextXpToNext_) || prepared.nextXpToNext_ <= 0.0)
@@ -269,29 +279,49 @@ eve::Result<PreparedProgressionGain> LevelSystem::prepareGainXp(RPGActor *actor,
 }
 
 eve::Result<int> LevelSystem::commitGainXp(PreparedProgressionGain prepared) {
-    if (!prepared.actor_)
+    if (prepared.actor_.presence() == ActorEventPresence::None)
         return eve::Result<int>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "prepared XP gain is empty", "prepared"));
-    auto &current = *prepared.actor_->progression();
+    auto actor = prepared.actor_.resolve();
+    if (!actor)
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                "prepared XP actor has retired", "prepared.actor"));
+    auto *buffer = actor->get().getComponentManager().getComponentBuffer<RPGActor::Progression>();
+    if (!buffer || !buffer->has(actor->get().id))
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "prepared XP actor lost its progression", "progression"));
+    auto &current = *buffer->ptr(actor->get().id);
     if (current.level != prepared.previousLevel_ || current.xp != prepared.previousXp_ ||
         current.xpToNext != prepared.previousXpToNext_)
         return eve::Result<int>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "actor progression changed after XP preparation", "progression"));
+    const int levels = prepared.nextLevel_ - prepared.previousLevel_;
+    auto     &queue  = levelUpEvents();
+    if (static_cast<std::size_t>(levels) > queue.max_size() - queue.size())
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "progression event queue capacity exhausted", "events"));
+    try {
+        queue.reserve(queue.size() + static_cast<std::size_t>(levels));
+    } catch (const std::bad_alloc &) {
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "progression event queue allocation failed", "events"));
+    }
+    static_assert(std::is_nothrow_move_constructible_v<LevelUpEvent>);
     current.level    = prepared.nextLevel_;
     current.xp       = prepared.nextXp_;
     current.xpToNext = prepared.nextXpToNext_;
-    const int levels = prepared.nextLevel_ - prepared.previousLevel_;
     for (int offset = 0; offset < levels; ++offset) {
         LevelUpEvent event;
         event.actor         = prepared.actor_;
         event.previousLevel = prepared.previousLevel_ + offset;
         event.newLevel      = event.previousLevel + 1;
-        levelUpEvents().push_back(std::move(event));
+        queue.push_back(std::move(event));
     }
     return eve::Result<int>::success(levels, eve::Status::success(eve::StatusCode::Applied));
 }
 
 void LevelSystem::pollLevelUps(std::vector<LevelUpEvent> &out) {
+    if (&out == &levelUpEvents()) return;
     out.clear();
     out = std::move(levelUpEvents());
     levelUpEvents().clear();

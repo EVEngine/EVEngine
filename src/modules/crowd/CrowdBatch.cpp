@@ -87,21 +87,24 @@ Result<AgentBatchReceipt> Crowd::removeAgents(const AgentRemovalBatch& batch) {
     return Result<AgentBatchReceipt>::success({batch.agents.size()});
 }
 
+void Crowd::Impl::fillAgentFrame(AgentFrame& destination) const {
+    destination.agents.resize(xs.size());
+    for (std::size_t slot = 0; slot < xs.size(); ++slot) {
+        const auto registryIndex = denseToRegistry[slot];
+        destination.agents[slot] = {{AgentHandle(registryIndex, registry[registryIndex].generation), owner},
+                                    agentState(slot)};
+    }
+    destination.simulationSeconds = elapsed.seconds();
+    destination.tick              = tick;
+}
+
 Result<AgentBatchReceipt> Crowd::copyAgentFrame(AgentFrame& destination) const {
     try {
         destination.agents.reserve(impl_->xs.size());
     } catch (const std::bad_alloc&) {
         return failed(DiagnosticCode::Failed, "Cannot reserve output frame storage");
     }
-    destination.agents.resize(impl_->xs.size());
-    for (std::size_t slot = 0; slot < impl_->xs.size(); ++slot) {
-        const auto registryIndex = impl_->denseToRegistry[slot];
-        destination.agents[slot] = {
-            {AgentHandle(registryIndex, impl_->registry[registryIndex].generation), impl_->owner},
-            getAgentState(static_cast<int>(slot))};
-    }
-    destination.simulationSeconds = impl_->elapsed.seconds();
-    destination.tick              = impl_->tick;
+    impl_->fillAgentFrame(destination);
     return Result<AgentBatchReceipt>::success({destination.agents.size()});
 }
 

@@ -13,6 +13,29 @@
 // Each public header group is compiled in its own translation unit.  This is
 // intentionally outside test/CMakeLists.txt: it is a compile contract, not a
 // zeroerr case and must remain usable without the full unit-test executable.
+// A consumer may include Windows/SDL headers without NOMINMAX before this API.
+// Preload the standard dependencies so the probe isolates our header, and leave
+// the caller's macro environment unchanged after checking sentinel semantics.
+#include <compare>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <optional>
+#pragma push_macro("max")
+#undef max
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#include "common/RuntimeHandle.h"
+namespace {
+struct MacroHandleTag;
+using MacroHandle = eve::RuntimeHandle<MacroHandleTag>;
+static_assert(MacroHandle::invalidIndex == 0xffffffffu);
+static_assert(!MacroHandle::nextGeneration(0xffffffffu).has_value());
+static_assert(MacroHandle::nextGeneration(1u).value() == 2u);
+static_assert(max(1, 2) == 2);
+}  // namespace
+#pragma pop_macro("max")
+
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/EventSequence.h"

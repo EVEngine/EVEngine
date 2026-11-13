@@ -1,4 +1,6 @@
 #pragma once
+// Process teardown: borrowed queries observe absence and withdrawals remain idempotent after the registry owner
+// is destroyed. Publishing a non-null implementation after process registry shutdown is an invalid lifetime.
 
 // Capability registry: how one module uses another without depending on it.
 //

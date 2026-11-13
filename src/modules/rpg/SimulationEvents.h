@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "rpg/LevelSystem.h"
 #include "rpg/SkillTypes.h"
 #include "rpg/StatusTypes.h"
 #include "rpg/VitalsSystem.h"
@@ -8,12 +9,15 @@
 #include <vector>
 
 namespace eve::rpg::detail {
-/** @brief One simulation's owning event queues; actors are borrowed until that simulation ends. */
+/** @brief One simulation's owning skill/status/resource/progression queues.
+ * @remarks ActorEventRef values detect entity/world retirement; queues never retain a world.
+ * This is process-local state, not a persistent event protocol or acknowledgement watermark. */
 struct SimulationEvents {
     std::vector<SkillCastEvent>    casts;
     std::vector<StatusTickEvent>   ticks;
     std::vector<StatusChangeEvent> changes;
     std::vector<VitalsEvent>       vitals;
+    std::vector<LevelUpEvent>      levels;
 };
 /** @brief Borrow the current thread's event owner for the immediate synchronous operation. */
 EVENGINE_API_PLATFORM SimulationEvents& simulationEvents();

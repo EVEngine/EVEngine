@@ -1,38 +1,59 @@
+// eve-hot-path
 #include "rpg/RPGActor.h"
+#include "rpg/ActorInitialization.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/ClassSystem.h"
 #include "rpg/LevelSystem.h"
-#include "rpg/StatusSystem.h"
 #include "rpg/SkillSystem.h"
+#include "rpg/StatusSystem.h"
 #include "rpg/TraitSystem.h"
 #include "rpg/VitalsSystem.h"
 
+#include <algorithm>
 #include <utility>
 
 namespace eve::rpg {
 
 RPGActor *RPGActor::createActor() {
     RPGActor *actor = RPGActor::create();
-    // Touch each component once so accessors are cheap/valid immediately.
-    actor->attributes();
-    actor->statuses();
-    actor->skills();
-    actor->progression();
-    actor->vitals();
-    actor->traits();
-    actor->classInfo();
+    try {
+        initializeActorComponents(*actor);
+    } catch (...) {
+        ecs::DestroyEntity(actor);
+        throw;
+    }
     return actor;
 }
 
+// Roster phase: View<RPGActor, Attributes>; read ActorExecutionOrder; write no components.
+// No structural mutations, events, services or callbacks. Consumers freeze handles before gameplay execution.
 const std::vector<RPGActor *> &RPGActor::liveActors() {
     // Prefer ViewIterator::entity() over a parallel handle registry: the ECS
     // View already skips dead/staging slots, and freelist reuse cannot resurrect
     // a previous incarnation inside the same live View.
     static std::vector<RPGActor *> resolved;
     resolved.clear();
-    auto view = ecs::View<RPGActor, RPGActor::Attributes>();
-    for (auto it = view.begin(); it != view.end(); ++it)
-        resolved.push_back(it.entity());
+    struct Row {
+        RPGActor         *actor;
+        ActorExecutionKey key;
+    };
+    std::vector<Row> keyed;
+    {
+        auto view = ecs::View<RPGActor, RPGActor::Attributes>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto *actor  = it.entity();
+            auto *buffer = actor->getComponentManager().getComponentBuffer<ActorExecutionOrder>();
+            std::optional<ActorExecutionKey> key;
+            if (buffer && buffer->has(actor->id)) key = buffer->ptr(actor->id)->key;
+            if (key)
+                keyed.push_back({actor, *key});
+            else
+                resolved.push_back(actor);
+        }
+    }
+    std::stable_sort(keyed.begin(), keyed.end(), [](const Row &a, const Row &b) { return a.key < b.key; });
+    resolved.reserve(resolved.size() + keyed.size());
+    for (const auto &row : keyed) resolved.push_back(row.actor);
     return resolved;
 }
 

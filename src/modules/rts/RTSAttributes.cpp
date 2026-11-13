@@ -1,5 +1,6 @@
 #include "rts/RTSAttributes.h"
 
+#include "rts/RTSComponentAccessInternal.h"
 #include "rts/RTSTypes.h"
 
 #include <array>
@@ -79,13 +80,23 @@ eve::Result<eve::attributes::ModifierId> RTSUnitAttributeAdapter::addModifier(
 }
 
 eve::Result<eve::attributes::AttributeProjectionSnapshot> RTSUnitAttributeAdapter::snapshot(Unit& unit) {
-    auto ready = ensure(unit);
-    if (!ready)
-        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(eve::Status::failure(
-            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
-                                                 "attributes", {}, "rts.attributes")));
-    const auto names = selectedAttributes();
-    return unit.attributes()->values.snapshot(names);
+    const auto* selected = detail::existingComponent<Unit::Attributes>(unit);
+    const auto  owner    = ecs::handle_of(&unit);
+    if (!owner.table || owner.table->is_deferred() || ecs::try_get(owner) != &unit)
+        return Result<attributes::AttributeProjectionSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "RTS attributes require a live idle owner", "rts.attributes"));
+    if (!selected || !selected->values.initialized())
+        return Result<attributes::AttributeProjectionSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "Canonical RTS attributes are missing or uninitialized", "rts.attributes"));
+    const auto names    = selectedAttributes();
+    auto       captured = selected->values.snapshot(names);
+    if (!captured) return captured;
+    const auto& bound = captured.value().owner;
+    if (bound.table != owner.table || bound.type != owner.type || bound.id != owner.id ||
+        bound.generation != owner.generation)
+        return Result<attributes::AttributeProjectionSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "Canonical RTS attributes belong to another owner", "rts.attributes"));
+    return captured;
 }
 
 eve::Result<void> RTSUnitAttributeAdapter::restore(Unit&                                               unit,

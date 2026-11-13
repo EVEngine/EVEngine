@@ -22,9 +22,12 @@ if(EVENGINE_NATIVE_ARM64)
     if(NOT EVENGINE_COMPILER_IS_ARM64)
         message(FATAL_ERROR "EVENGINE_NATIVE_ARM64 requires an ARM64 compiler")
     endif()
-    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(CMAKE_PROJECT_NAME STREQUAL "EVEngine" AND CMAKE_SYSTEM_NAME STREQUAL "Linux"
+       AND CMAKE_BUILD_TYPE STREQUAL "Release")
         # The OBJECT test executable exceeds CALL26's 128 MiB branch range.
         # LLD inserts range-extension thunks for this large native AArch64 link.
+        # This host policy must not reach EVEngineDeps through the project include
+        # used above to validate its compiler; dependencies own their linker policy.
         find_program(EVENGINE_NATIVE_ARM64_LLD NAMES ld.lld REQUIRED)
         add_link_options(-fuse-ld=lld)
     endif()

@@ -1730,9 +1730,11 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (resource.kind != weapon::ResourceKind::Ammo || resource.infinite) return {0, 0};
         int carried = std::max(0, static_cast<int>(std::floor(resource.value)));
         int capacity = std::max(0, static_cast<int>(std::floor(resource.max)));
-        if (auto* pool = weaponEntity->state()->ammoPool) {
-            carried += std::max(0, pool->state()->count);
-            capacity += pool->state()->max < 0 ? std::max(0, pool->state()->count) : pool->state()->max;
+        if (weaponEntity->state()->ammoPool.isBound()) {
+            if (auto* pool = weaponEntity->state()->ammoPool.resolve()) {
+                carried += std::max(0, pool->state()->count);
+                capacity += pool->state()->max < 0 ? std::max(0, pool->state()->count) : pool->state()->max;
+            }
         } else if (resource.reserve >= 0) {
             carried += resource.reserve;
             capacity += std::max(resource.reserve, weaponEntity->definition()->def->reserveSize);
@@ -1752,8 +1754,10 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         rounds -= magazineRounds;
         if (magazineRounds > 0) weapon::WeaponSystem::cancelReload(*weaponEntity);
         if (rounds <= 0) return accepted;
-        if (auto* pool = weaponEntity->state()->ammoPool) {
-            const int space = pool->state()->max < 0 ? rounds : std::max(0, pool->state()->max - pool->state()->count);
+        if (weaponEntity->state()->ammoPool.isBound()) {
+            auto* pool = weaponEntity->state()->ammoPool.resolve();
+            if (!pool) return accepted;
+            const int space  = pool->state()->max < 0 ? rounds : std::max(0, pool->state()->max - pool->state()->count);
             const int pooled = std::min(rounds, space);
             pool->state()->count += pooled;
             return accepted + pooled;
@@ -3002,24 +3006,28 @@ Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
 }
 
-std::uint64_t RTSProjectileSystem::key(weapon::ProjectileHandle handle) noexcept {
-    return (static_cast<std::uint64_t>(handle.generation) << 32u) | handle.slot;
-}
+std::uint64_t RTSProjectileSystem::key(weapon::ProjectileHandle handle) noexcept { return handle.packedKey(); }
 
 RTSProjectileSystemSnapshot RTSProjectileSystem::snapshot() const {
     RTSProjectileSystemSnapshot result;
     result.runtime = runtime_.snapshot();
-    for (auto& slot : result.runtime.slots)
-        if (slot.state) slot.state->target.reset();
     result.payloads.reserve(payloads_.size());
     for (const auto& [payloadKey, payload] : payloads_) {
-        result.payloads.push_back({payloadKey, payload.source, stableSubject(ecs::try_get(payload.faction)),
-            stableSubject(ecs::try_get(payload.target)), stableSubject(ecs::try_get(payload.observer)),
-            payload.targetPoint, payload.targetHeight, payload.damageType, payload.damage,
-            payload.radius, payload.splashMinimumDamageFactor, payload.targetsGround, payload.targetsAir,
-            payload.friendlyFire, payload.blockedByObstacles, payload.requiredTargetTags,
-            payload.excludedTargetTags});
+        SubjectRef trajectoryTarget;
+        const auto handle = weapon::ProjectileHandle::fromPackedKey(payloadKey);
+        if (handle.slot < result.runtime.slots.size()) {
+            const auto& state = result.runtime.slots[handle.slot].state;
+            if (state && state->target) trajectoryTarget = stableSubject(ecs::try_get(*state->target));
+        }
+        result.payloads.push_back(
+            {payloadKey, payload.source, stableSubject(ecs::try_get(payload.faction)),
+             stableSubject(ecs::try_get(payload.target)), stableSubject(ecs::try_get(payload.observer)),
+             payload.targetPoint, payload.targetHeight, payload.damageType, payload.damage, payload.radius,
+             payload.splashMinimumDamageFactor, payload.targetsGround, payload.targetsAir, payload.friendlyFire,
+             payload.blockedByObstacles, payload.requiredTargetTags, payload.excludedTargetTags, trajectoryTarget});
     }
+    for (auto& slot : result.runtime.slots)
+        if (slot.state) slot.state->target.reset();
     return result;
 }
 
@@ -3029,36 +3037,29 @@ Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& sna
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "RTS projectile restore requires a stable subject resolver",
                                                        "projectiles.resolver"));
-    weapon::ProjectileRuntime stagedRuntime;
-    auto runtimeRestored = stagedRuntime.restore(snapshot.runtime);
-    if (!runtimeRestored) return runtimeRestored;
-    std::set<std::uint64_t> liveKeys;
-    for (const auto& state : stagedRuntime.states()) liveKeys.insert(key(state.handle));
-    if (liveKeys.size() != snapshot.payloads.size())
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS projectile snapshot payload count does not match live trajectories",
-            "projectiles.payloads"));
+    auto saved    = snapshot;
+    auto admitted = saved.validate();
+    if (!admitted) return admitted;
+    auto                             trajectories = saved.runtime;
     std::map<std::uint64_t, Payload> stagedPayloads;
-    for (const auto& value : snapshot.payloads) {
-        if (!liveKeys.contains(value.key) || stagedPayloads.contains(value.key) || !value.source.isValid() ||
-            !value.faction.isValid() || !isFinitePosition(value.targetPoint) || !std::isfinite(value.targetHeight) ||
-            value.damageType.empty() || !std::isfinite(value.damage) || value.damage < 0.0 ||
-            !std::isfinite(value.radius) || value.radius < 0.0f || !std::isfinite(value.splashMinimumDamageFactor) ||
-            value.splashMinimumDamageFactor < 0.0f || value.splashMinimumDamageFactor > 1.0f ||
-            (!value.targetsGround && !value.targetsAir))
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                           "RTS projectile snapshot contains an invalid payload",
-                                                           "projectiles.payloads"));
+    for (const auto& value : saved.payloads) {
         auto* faction = dynamic_cast<Faction*>(resolver(value.faction));
         ecs::Entity* target = value.target.isValid() ? resolver(value.target) : nullptr;
         ecs::Entity* observer = value.observer.isValid() ? resolver(value.observer) : nullptr;
-        if (faction == nullptr || (value.target.isValid() && dynamic_cast<Unit*>(target) == nullptr &&
-                                   dynamic_cast<Building*>(target) == nullptr) ||
+        ecs::Entity* trajectoryTarget = value.trajectoryTarget.isValid() ? resolver(value.trajectoryTarget) : nullptr;
+        if ((value.trajectoryTarget.isValid() && dynamic_cast<Unit*>(trajectoryTarget) == nullptr &&
+             dynamic_cast<Building*>(trajectoryTarget) == nullptr) ||
+            faction == nullptr ||
+            (value.target.isValid() && dynamic_cast<Unit*>(target) == nullptr &&
+             dynamic_cast<Building*>(target) == nullptr) ||
             (value.observer.isValid() && dynamic_cast<Unit*>(observer) == nullptr &&
              dynamic_cast<Building*>(observer) == nullptr))
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
                                                            "RTS projectile snapshot relationship cannot be resolved",
                                                            "projectiles.payloads"));
+        const auto slot       = weapon::ProjectileHandle::fromPackedKey(value.key).slot;
+        auto&      trajectory = *trajectories.slots[slot].state;
+        if (trajectoryTarget) trajectory.target = ecs::handle_of(trajectoryTarget);
         Payload payload;
         payload.source = value.source;
         payload.faction = ecs::handle_of(faction);
@@ -3078,6 +3079,11 @@ Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& sna
         payload.excludedTargetTags = value.excludedTargetTags;
         stagedPayloads.emplace(value.key, std::move(payload));
     }
+    weapon::ProjectileRuntime stagedRuntime;
+    auto                      runtimeRestored = stagedRuntime.restore(trajectories);
+    if (!runtimeRestored) return runtimeRestored;
+    static_assert(noexcept(runtime_ = std::move(stagedRuntime)));
+    static_assert(noexcept(payloads_ = std::move(stagedPayloads)));
     runtime_ = std::move(stagedRuntime);
     payloads_ = std::move(stagedPayloads);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -3363,20 +3369,19 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         if (fireEvents && !state.blockedSubjects.contains(key))
             fireEvents({CombatFireEventKind::FireBlocked, source, target, point}, step.tick);
     };
-    const auto updateWeapon = [&](weapon::WeaponEntity& weaponEntity, SubjectRef source,
-                                  WorldPosition position) {
+    const auto updateWeapon = [&](weapon::WeaponEntity& weaponEntity, SubjectRef source, WorldPosition position) {
         const auto* definition = weaponEntity.definition()->def;
         auto weaponState = weaponEntity.state();
-        const auto& resource = weaponState->resource;
-        const float dt = static_cast<float>(step.delta.seconds());
-        const bool hasReserve = weaponState->ammoPool != nullptr
-                                    ? weaponState->ammoPool->state()->count > 0
-                                    : definition->reserveSize != 0 && resource.reserve > 0;
-        const bool startsReload = definition->kind == weapon::WeaponKind::Ranged &&
-                                  !resource.reloading && resource.value <= 0.0f &&
-                                  weaponState->cooldown <= dt && !weaponState->jammed && hasReserve;
-        const bool completesReload = definition->kind == weapon::WeaponKind::Ranged &&
-                                     resource.reloading &&
+        const auto& resource     = weaponState->resource;
+        const float dt           = static_cast<float>(step.delta.seconds());
+        auto*       pool         = weaponState->ammoPool.resolve();
+        const bool  hasReserve   = weaponState->ammoPool.isBound() ? pool && pool->state()->count > 0
+                                                                   : definition->reserveSize != 0 && resource.reserve > 0;
+        const bool  startsReload = definition->kind == weapon::WeaponKind::Ranged && !resource.reloading &&
+                                  resource.value <= 0.0f && weaponState->cooldown <= dt && !weaponState->jammed &&
+                                  hasReserve;
+        const bool completesReload = definition->kind == weapon::WeaponKind::Ranged && resource.reloading &&
+                                     (!weaponState->ammoPool.isBound() || pool) &&
                                      resource.reloadProgress + dt >= definition->reloadTime;
         weapon::WeaponSystem::update(weaponEntity, dt);
         if (startsReload && fireEvents)
@@ -3385,10 +3390,10 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             fireEvents({CombatFireEventKind::ReloadCompleted, source, {}, position}, step.tick);
     };
     struct Target {
-        ecs::EntityHandle handle{};
-        SubjectRef subject;
-        FactionLink* faction = nullptr;
-        WorldPosition position{};
+        ecs::EntityHandle    handle{};
+        SubjectRef           subject;
+        FactionLink*         faction = nullptr;
+        WorldPosition        position{};
         combat::CombatState* durability = nullptr;
         bool* alive = nullptr;
         Unit::Morale* morale = nullptr;

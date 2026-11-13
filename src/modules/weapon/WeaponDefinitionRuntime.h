@@ -18,6 +18,7 @@
 #include "definitions/Definitions.h"
 #include "weapon/WeaponTypes.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -37,7 +38,7 @@ class Weapon;
 /**
  * @brief Mutable state owned by one typed weapon runtime instance.
  *
- * The target handle, staged request and shared ammo-pool pointer are transient
+ * The target handle, staged request and shared ammunition link are transient
  * ECS links and are intentionally not persisted here. The owning WeaponEntity
  * remains responsible for those links; the stable firing/resource state below
  * is the snapshot contract.
@@ -60,9 +61,10 @@ struct WeaponRuntimeState {
 /**
  * @brief Binds a typed WeaponDefinition to one mutable runtime instance.
  *
- * The registry is borrowed and must outlive this adapter. All calls are
- * synchronous and owner-thread affine. `RebuildInstance` is the default
- * policy: changing a definition preserves compatible firing state while
+ * Registry-backed create() borrows its registry for definition/reload/restore;
+ * that registry must outlive the adapter. prepareCaptured() owns an immutable
+ * revision and retains no registry. All calls are synchronous and owner-thread affine.
+ * Registry-backed creation defaults to `RebuildInstance`: changing a definition preserves compatible firing state while
  * clamping it to the new typed limits. `RejectWhileActive` rejects replacement
  * while the instance is marked active.
  */
@@ -79,6 +81,18 @@ public:
     [[nodiscard]] static eve::Result<WeaponDefinitionRuntime> create(
         eve::definitions::DefinitionRegistry& registry, eve::DefinitionRef definition, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
+
+    /**
+     * @brief Prepare an independent immutable weapon revision from a captured canonical source.
+     * @param source Borrowed canonical record; typed data and exact generation are owned by the result.
+     * @param instanceId Non-nil persistent identity for the future weapon instance.
+     * @return Owning runtime token; creates no ECS entity and retains no registry pointer.
+     * @remarks Captured mode rejects reload; same-generation snapshot restore uses its pinned revision.
+     * @thread Owner thread; no callbacks. Use applyTo inside the owning entity transaction.
+     * @cost Definition parsing and owned typed copy, amortized once per prepared weapon instance.
+     */
+    [[nodiscard]] static eve::Result<WeaponDefinitionRuntime> prepareCaptured(
+        const eve::definitions::Definition& source, eve::PersistentId instanceId);
 
     /** @brief Create from a `weapon:<definitionId>` logical name. */
     [[nodiscard]] static eve::Result<WeaponDefinitionRuntime> create(
@@ -107,9 +121,9 @@ public:
     [[nodiscard]] WeaponRuntimeState& state() noexcept;
     /** @brief Return the exact generation-qualified definition handle. */
     [[nodiscard]] eve::definition::DefinitionHandle definitionHandle() const noexcept;
-    /** @brief Resolve the current strongly typed WeaponDefinition projection. */
+    /** @brief Copy the exact typed revision; captured mode reads its owned immutable storage. */
     [[nodiscard]] eve::Result<WeaponDefinition> definition() const;
-    /** @brief Return the policy used by the next reload call. */
+    /** @brief Return the stored reload preference also carried into projected entity metadata. */
     [[nodiscard]] eve::definition::ReloadPolicy reloadPolicy() const noexcept { return policy_; }
     /** @brief Set the active guard used by RejectWhileActive. */
     void setActive(bool active) noexcept;
@@ -127,7 +141,7 @@ public:
      */
     [[nodiscard]] eve::Result<void> applyTo(WeaponEntity* entity) const;
 
-    /** @brief Reload the registry's current generation using a typed policy. */
+    /** @brief Reload the bound registry using a typed policy; captured mode returns Unsupported. */
     [[nodiscard]] eve::Result<eve::definition::ReloadOutcome> reload(eve::definition::ReloadPolicy policy);
 
     /** @brief Capture stable typed runtime state in the common SnapshotEnvelope. */
@@ -149,6 +163,9 @@ private:
                             eve::definition::ReloadPolicy                        policy)
         : registry_(&registry), runtime_(std::move(runtime)), policy_(policy) {}
 
+    WeaponDefinitionRuntime(eve::definition::RuntimeInstance<WeaponRuntimeState> runtime,
+                            std::shared_ptr<const WeaponDefinition>              captured);
+    std::shared_ptr<const WeaponDefinition>              captured_;
     eve::definitions::DefinitionRegistry*                registry_ = nullptr;  // borrowed
     eve::definition::RuntimeInstance<WeaponRuntimeState> runtime_;
     eve::definition::ReloadPolicy                        policy_ = eve::definition::ReloadPolicy::RebuildInstance;

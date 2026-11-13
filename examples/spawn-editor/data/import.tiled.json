@@ -1,0 +1,28 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "orientation": "orthogonal",
+  "infinite": false,
+  "layers": [
+    {
+      "type": "objectgroup",
+      "objects": [
+        {
+          "id": 1,
+          "class": "eve.spawn",
+          "x": 180,
+          "y": 160,
+          "width": 160,
+          "height": 120,
+          "properties": [
+            {
+              "name": "eve.spawn.instance",
+              "type": "string",
+              "value": "wolf-camp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

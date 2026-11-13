@@ -113,7 +113,7 @@ def parse_diagnostics(output: str, root: Path) -> list[dict]:
         if not path.is_absolute():
             path = root / path
         try:
-            file = path.resolve().relative_to(root).as_posix()
+            file = path.resolve().relative_to(root.resolve()).as_posix()
         except ValueError:
             continue
         if not file.startswith("src/"):

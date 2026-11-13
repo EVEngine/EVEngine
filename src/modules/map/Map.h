@@ -2,13 +2,16 @@
 #include "common/Export.h"
 
 
+#include <cstddef>
+#include <memory>
 #include "common/Module.h"
 #include "common/Result.h"
-#include "map/TileLayer.h"
+#include "map/Fov.h"
 #include "map/MapObject.h"
 #include "map/Pathfinder.h"
-#include "map/Fov.h"
+#include "map/PreparedMapLoad.h"
 #include "map/TileCollision.h"
+#include "map/TileLayer.h"
 
 #include <optional>
 #include <string>
@@ -17,6 +20,10 @@
 
 namespace eve::graphics {
 class Graphics;
+}
+
+namespace eve::service {
+class IFileSystem;
 }
 
 namespace eve::map {
@@ -30,10 +37,18 @@ namespace eve::map {
 class EVENGINE_API_WORLD Map : public Module {
 public:
     Module_REG(Map);
-    /** @brief Map. */
+    /** @brief Construct a map identity and retain the process script collision seam.
+     * @thread Simulation owner thread; declarations invoke no script callbacks.
+     */
     Map();
-    /** @brief Map. */
+    /** @brief Release this identity; the final native map withdraws the shared script seam. */
     ~Map() override;
+    /** @brief Map module identities cannot be copied while lifetime observers exist. */
+    Map(const Map &) = delete;
+    /** @brief Map ownership and registered module identity cannot be reassigned. */
+    Map &operator=(const Map &) = delete;
+    /** @brief Observe this Map lifetime without retaining it; nonserialized and callback-free. */
+    [[nodiscard]] MapLease observeLifetime() const noexcept { return MapLease(lifetime_); }
 
     /** @brief Creates a layer. @ownership Caller deletes unless documented otherwise. */
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
@@ -91,6 +106,21 @@ public:
      */
     [[nodiscard]] eve::Result<int> loadFromTextWithObjectContract(std::string_view mapJson,
                                                                   std::string_view contractJson);
+
+    /**
+     * @brief Prepare an isolated map candidate, including dependent assets and object-contract validation.
+     * @param mapJson Borrowed root text; no reread of the root asset occurs.
+     * @param sourcePath Borrowed project path for canonical relative dependency resolution.
+     * @param files Borrowed canonical read service, never retained; no native-path fallback or persistent watches.
+     * @param contractJson Borrowed object contract validated before returning a candidate.
+     * @return Owning cancellable token; no live ECS entities or Map metadata are changed.
+     * @ownership Token weak-observes this Map, and becomes stale when it is destroyed.
+     * @thread Map owner thread; synchronous asset reads, no gameplay callbacks.
+     * @cost Map/dependency-sized parsing and isolated ECS admission, amortized per map load.
+     */
+    [[nodiscard]] Result<std::unique_ptr<PreparedMapLoad>> prepareAssetTextWithObjectContract(
+        std::string_view mapJson, const std::string &sourcePath, service::IFileSystem &files,
+        std::string_view contractJson);
 
     /** @brief Updates . */
     void update(float dt);
@@ -237,6 +267,13 @@ public:
     std::string lastDualGridError() const;
 
 private:
+    friend class PreparedMapLoad;
+    friend class MapGridState;
+    void publishPreparedLayers(std::vector<TileLayer *> layers, std::vector<MapObject> objects) noexcept;
+    std::shared_ptr<const std::byte> lifetime_ = std::make_shared<const std::byte>();
+    [[nodiscard]] eve::Result<int>   publishCandidateLayers(std::vector<TileLayer *> layers,
+                                                            std::vector<MapObject> objects, std::string error,
+                                                            std::string_view contractJson, std::string_view errorPath);
     std::vector<MapObject> objects_;
     std::vector<TileLayer *> loadedLayers_;
     std::string dualGridError_;

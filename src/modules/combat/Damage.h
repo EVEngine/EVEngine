@@ -11,10 +11,12 @@
 #include "settlement/Settlement.h"
 #include "settlement/SettlementRules.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
 namespace eve::combat {
+class DamageCapture;
 
 /** @brief Renderer/physics-neutral knockback impulse authored in world units. */
 struct Impulse3 {
@@ -65,7 +67,7 @@ struct DamageRequest {
     bool critical = false;
 
     /** @brief Validate target, canonical gameplay-tag damage type and finite amounts. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Provider result prepared before the authoritative state is mutated. */
@@ -96,7 +98,7 @@ struct HitReactionPolicy {
     double staggerPoiseFraction  = 0.5;
 
     /** @brief Validate finite non-negative thresholds and fraction in [0,1]. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_BACKENDS Result<void> validate() const;
 };
 
 /** @brief Complete owning audit result of one committed damage transaction. */
@@ -130,9 +132,34 @@ struct DamageOutcome {
 class EVENGINE_API_BACKENDS DamageRuntime {
 public:
     /** @brief Construct with an optional borrowed rule provider and owning policy copy. */
-    explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})
-        /** @brief Rule. */
-        : rule_(rule), policy_(policy) {}
+    explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {});
+    /** @brief Release local immutable configuration owners; never invokes external providers. */
+    ~DamageRuntime();
+    /** @brief Share immutable configuration; the external rule remains a caller-owned synchronous borrow. */
+    DamageRuntime(const DamageRuntime&);
+    /** @brief Share the complete configuration atomically without allocating. */
+    DamageRuntime& operator=(const DamageRuntime&);
+    /** @brief Transfer configuration; configure a moved-from runtime before configured settlement/capture. */
+    DamageRuntime(DamageRuntime&&) noexcept;
+    /** @brief Replace configuration by move, without callbacks. */
+    DamageRuntime& operator=(DamageRuntime&&) noexcept;
+    /** @brief Freeze actual reaction policy and canonical declarative rules, excluding external providers.
+     * @return Independent CPU data or moved/invalid-policy/unsupported borrowed rule failure, without callbacks.
+     * @ownership No external IDamageRule, source runtime, target state or compiled callbacks retained.
+     * @thread Simulation owner thread outside apply/configure/callbacks; no clock/RNG advancement.
+     * @cost Rule-sized canonical encoding and ordering per explicit checkpoint, independent of body count.
+     * @throws std::bad_alloc Source runtime remains unchanged.
+     */
+    [[nodiscard]] Result<DamageCapture> capture() const;
+    /** @brief Build an independent runtime through the canonical rule compiler and pipeline installer.
+     * @param captured Native CPU facts borrowed only during this call; moved captures reject.
+     * @return Unpublished owner or policy/rule validation failure; no existing runtime changes.
+     * @ownership Owns fresh compiled rules/cache, never the source or an external rule provider.
+     * @thread Simulation owner thread; no policy, service or script callbacks.
+     * @cost Rule decode/condition compilation and pipeline installation once per isolated restoration attempt.
+     * @throws std::bad_alloc Candidate discarded; same capture remains retryable.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<DamageRuntime>> prepareRestored(const DamageCapture& captured);
 
     /**
      * @brief Replace the optional declarative buff/effect rules used by subsequent damage settlements.
@@ -141,6 +168,7 @@ public:
      * @return Applied, or a duplicate/invalid stage diagnostic without changing the previous pipeline.
      * @thread Call on the owning simulation thread while no apply call is active.
      * @reentrancy Does not invoke gameplay callbacks.
+     * @cost Rule-sized copying/compilation cache installation per explicit configuration, amortized over settlements.
      */
     [[nodiscard]] Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
 
@@ -181,7 +209,9 @@ public:
 private:
     const IDamageRule*             rule_ = nullptr;
     HitReactionPolicy              policy_;
-    settlement::SettlementPipeline settlement_;
+    struct SettlementState;
+    // Immutable rules are authoritative; the pipeline is their derived execution cache, published together.
+    std::shared_ptr<const SettlementState> settlement_;
 };
 
 }  // namespace eve::combat

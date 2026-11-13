@@ -46,6 +46,38 @@
 namespace eve {
 namespace filesystem {
 
+namespace detail {
+struct AtomicWriteOwner {
+    Filesystem *provider;  // @lifetime owned by this exact provider; synchronous lease calls only, cleared on teardown.
+};
+}  // namespace detail
+Filesystem::Filesystem()
+    : atomicWriteOwner_(std::make_shared<detail::AtomicWriteOwner>(detail::AtomicWriteOwner{this})) {
+    eve::cap::provide<eve::service::IFileSystem>(this);
+}
+Filesystem::~Filesystem() {
+    atomicWriteOwner_->provider = nullptr;
+    atomicWriteOwner_.reset();
+    eve::cap::revoke<eve::service::IFileSystem>(this);
+}
+AtomicTextWriteLease Filesystem::observeAtomicWrites() const noexcept {
+    return AtomicTextWriteLease(atomicWriteOwner_);
+}
+AtomicTextWriteLease::AtomicTextWriteLease(std::weak_ptr<detail::AtomicWriteOwner> owner) noexcept
+    : owner_(std::move(owner)) {}
+bool AtomicTextWriteLease::available() const noexcept {
+    auto owner = owner_.lock();
+    return owner && owner->provider;
+}
+Result<void> AtomicTextWriteLease::write(std::string_view relativePath, std::string_view text) const {
+    auto owner = owner_.lock();
+    if (!owner || !owner->provider)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "Atomic text writer is unavailable or its original provider was destroyed",
+            "filesystem.atomic-write"));
+    return owner->provider->writeTextAtomic(relativePath, text);
+}
+
 namespace {
 
 std::filesystem::path pathFromUtf8(std::string_view text) {

@@ -2,6 +2,35 @@
 
 #include "common/config.h"
 
+#include <algorithm>
+#include <memory>
+#include <vector>
+namespace eve::ui {
+struct UIAutomationWorld::Impl {};
+namespace {
+struct ObservedWorld {
+    std::weak_ptr<const void> lease;
+    std::weak_ptr<ecs::Table> world;
+};
+std::vector<ObservedWorld>& observedWorlds() {
+    static std::vector<ObservedWorld> worlds;
+    return worlds;
+}
+}  // namespace
+UIAutomationWorld::UIAutomationWorld(std::shared_ptr<Impl> impl) : impl_(std::move(impl)) {}
+UIAutomationWorld::~UIAutomationWorld() = default;
+Result<std::unique_ptr<UIAutomationWorld>> UIAutomationWorld::observe(const std::shared_ptr<ecs::Table>& world) {
+    using R = Result<std::unique_ptr<UIAutomationWorld>>;
+    if (!world) return R::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Actual UI world required"));
+    auto& observations = observedWorlds();
+    std::erase_if(observations, [](const auto& row) { return row.lease.expired() || row.world.expired(); });
+    auto impl  = std::make_shared<Impl>();
+    auto lease = std::unique_ptr<UIAutomationWorld>(new UIAutomationWorld(impl));
+    observedWorlds().push_back({impl, world});
+    return R::success(std::move(lease));
+}
+}  // namespace eve::ui
+
 #if defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__)
 
 namespace eve::ui {
@@ -23,12 +52,18 @@ void registerUIAutomationCapabilities() {}
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Stringifier.h>
 
+#include <algorithm>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace eve::ui {
 namespace {
+struct WorldHosts {
+    std::shared_ptr<ecs::Table> owner;
+    UIHostHandle                host;
+};
 
 const char* nodeTypeName(NodeType type) {
     switch (type) {
@@ -224,32 +259,49 @@ Poco::JSON::Object::Ptr hostJson(UIHost& host) {
     return out;
 }
 
-std::vector<UIHostHandle> hosts() {
-    std::vector<UIHostHandle> result;
-    if (ecs::current()->getManager<UIHost>() == nullptr) return result;
-    auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [meta, tree] = *it;
-        (void)tree;
-        if (UIHost::resolve(meta->entity)) result.push_back(meta->entity);
+std::vector<WorldHosts> hosts() {
+    std::vector<WorldHosts>                  result;
+    std::vector<std::shared_ptr<ecs::Table>> owners;
+    auto&                                    observations = observedWorlds();
+    std::erase_if(observations, [](const auto& row) { return row.lease.expired() || row.world.expired(); });
+    auto* current = ecs::current();  // @lifetime Call-only caller world, unchanged throughout this query.
+    for (const auto& row : observations)
+        if (auto world = row.world.lock();
+            world && world.get() != current &&
+            std::none_of(owners.begin(), owners.end(), [&](const auto& existing) { return existing == world; }))
+            owners.push_back(std::move(world));
+    auto collect = [&](const std::shared_ptr<ecs::Table>& owner) {
+        if (ecs::current()->getManager<UIHost>() == nullptr) return;
+        auto view = ecs::View<UIHost, UIHost::Meta, UIHost::Tree>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [meta, tree] = *it;
+            (void)tree;
+            if (UIHost::resolve(meta->entity)) result.push_back({owner, meta->entity});
+        }
+    };
+    collect({});
+    for (const auto& owner : owners) {
+        ecs::ScopedTable scope(*owner);
+        collect(owner);
     }
     return result;
 }
 
 struct WidgetMatch {
+    std::shared_ptr<ecs::Table> owner;
     UIHostHandle host{};
     int          nodeIndex = -1;
 };
 
 std::vector<WidgetMatch> findWidgets(const std::string& hostName, const std::string& widgetId) {
     std::vector<WidgetMatch> result;
-    for (UIHostHandle handle : hosts()) {
-        auto host = UIHost::resolve(handle);
+    for (auto entry : hosts()) {
+        auto host = UIHost::resolve(entry.host);
         if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
         auto node = host->get().findById(widgetId);
         if (!node) continue;
         const auto tree = host->get().tree();
-        result.push_back({handle, static_cast<int>(&node->get() - tree->nodes.data())});
+        result.push_back({std::move(entry.owner), entry.host, static_cast<int>(&node->get() - tree->nodes.data())});
     }
     return result;
 }
@@ -263,12 +315,23 @@ std::string matchError(const std::string& host, const std::string& widget, size_
     return "error: widget id is ambiguous; specify host: " + widget;
 }
 
+bool acceptsInput(const UIHost::Tree& tree, int index) {
+    std::size_t remaining = tree.nodes.size();
+    while (index >= 0 && remaining-- != 0) {
+        if (static_cast<std::size_t>(index) >= tree.nodes.size()) return false;
+        const auto& node = tree.nodes[static_cast<std::size_t>(index)];
+        if (!node.visible || !node.enabled) return false;
+        index = node.parent;
+    }
+    return index < 0;
+}
+
 class UIAutomationImpl final : public eve::IUIAutomation {
 public:
     std::string tree(const std::string& hostName) const override {
         Poco::JSON::Array::Ptr items(new Poco::JSON::Array());
-        for (UIHostHandle handle : hosts()) {
-            auto host = UIHost::resolve(handle);
+        for (const auto& entry : hosts()) {
+            auto host = UIHost::resolve(entry.host);
             if (!host || (!hostName.empty() && host->get().getName() != hostName)) continue;
             items->add(hostJson(host->get()));
         }
@@ -305,7 +368,7 @@ public:
             return "error: widget is not visible: " + resolvedHost.getName() + "/" + widgetId;
         if (!isClickable(node)) return "error: widget is not clickable: " + resolvedHost.getName() + "/" + widgetId;
 
-        UIEvent event;
+        UIEvent event(matches[0].host);
         event.host         = matches[0].host;
         event.hostName     = resolvedHost.getName();
         event.nodeId       = node.id;
@@ -320,6 +383,36 @@ public:
         out->set("widget", widgetId);
         out->set("event", "click");
         return stringify(Poco::Dynamic::Var(out));
+    }
+
+    Result<void> setText(const std::string& hostName, const std::string& widgetId, std::string text) override {
+        const auto matches = findWidgets(hostName, widgetId);
+        if (matches.size() != 1)
+            return Result<void>::failure(
+                Diagnostic::error(matches.empty() ? DiagnosticCode::NotFound : DiagnosticCode::Conflict,
+                                  matchError(hostName, widgetId, matches.size())));
+        auto host = UIHost::resolve(matches[0].host);
+        if (!host) return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "UI host retired"));
+        auto tree = host->get().tree();
+        if (matches[0].nodeIndex < 0 || matches[0].nodeIndex >= static_cast<int>(tree->nodes.size()))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "UI widget retired"));
+        auto& node = tree->nodes[static_cast<std::size_t>(matches[0].nodeIndex)];
+        if (!host->get().meta()->visible || !acceptsInput(*tree, matches[0].nodeIndex) || node.readOnly ||
+            node.mouseFilter == MouseFilter::Ignore ||
+            (node.type != NodeType::InputText && node.type != NodeType::SearchField))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::PreconditionViolation, "Editable visible text widget required"));
+        UIEvent event(matches[0].host);
+        event.hostName      = host->get().getName();
+        event.nodeId        = node.id;
+        event.nodeIndex     = matches[0].nodeIndex;
+        event.kind          = "text";
+        event.handlerIndex  = node.handlerText;
+        std::string display = text;
+        event.textValue     = std::move(text);
+        UISystem::pendingEvents().push_back(std::move(event));
+        node.valueText.swap(display);
+        return Result<void>::success();
     }
 
 private:

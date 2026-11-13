@@ -20,6 +20,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -54,11 +55,23 @@ public:
      */
     [[nodiscard]] static eve::definitions::DefinitionRegistry &definitionRegistry();
 
+    /** @brief Freeze the exact canonical record for a currently registered gameplay skill.
+     * @param id Synchronous UTF-8 key borrow; never retained.
+     * @return Owning record, or failure if the gameplay projection is absent or differs from canonical typed facts.
+     * @ownership Does not retain the live definition, registry or adapter; no state is published.
+     * @thread RPG content owner thread; no callbacks. Use at a quiescent save boundary.
+     * @cost Canonical encoding, JSON comparison and record copy per distinct captured skill.
+     * @throws std::bad_alloc Allocation failed without registry mutation.
+     */
+    [[nodiscard]] static eve::Result<eve::definitions::Definition> captureDefinition(std::string_view id);
+
     static void registerSkill(const SkillDefinition &def);
     /**
      * @brief Find a registered skill definition by id.
-     * @return Borrowed nullable definition owned by the process-local registry.
-     * @ownership SkillRegistry owns the definition; callers must not delete or mutate it.
+     * @return Borrowed nullable definition from the active immutable SkillContentScope, otherwise the live registry.
+     * @remarks An active content scope is exclusive: missing names never consult the live registry. Its definitions
+     * remain borrowed only until that scope ends; global catalogue mutations do not modify scoped content.
+     * @ownership The selected content scope or SkillRegistry owns it; callers must not delete or mutate it.
      * @lifetime Valid until remove(), clear(), or replacement of the same id; copy data before registry mutation.
      * @thread Call on the RPG registry thread.
      * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.

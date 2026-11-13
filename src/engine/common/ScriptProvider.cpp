@@ -19,6 +19,11 @@ namespace eve {
 
 namespace {
 
+struct CapabilityNameHash {
+    using is_transparent = void;
+    std::size_t operator()(std::string_view name) const noexcept { return std::hash<std::string_view>{}(name); }
+};
+
 /** One published provider: its rooted instance plus its publishing bookkeeping. */
 struct ProviderEntry {
     /** Rooted while published; unbound after retirement. */
@@ -63,15 +68,16 @@ std::string lastScriptErrorText(HSQUIRRELVM vm) {
  *
  * @return The unbinder's outcome, or success when the entry had no adapter.
  */
-Result<void> retireEntry(ProviderEntry& entry, const std::string& name) {
-    const std::uint64_t retiredGeneration = entry.generation;
+Result<void> retireEntry(ProviderEntry& entry, const ScriptProviderHandle& retired) {
+    // Pin the old object before detaching it: release hooks must not run while
+    // registry entry references are still used below.
+    [[maybe_unused]] auto retiredInstance = std::move(entry.instance);
     entry.instance                        = script::OwnedSquirrelObject{};
     ++entry.generation;
     entry.capability.clear();
     ScriptCapabilityUnbinder unbinder = std::move(entry.unbinder);
     entry.unbinder                    = {};
     if (!unbinder) return Result<void>::success();
-    const ScriptProviderHandle retired{name, retiredGeneration};
     return unbinder(retired);
 }
 
@@ -273,8 +279,8 @@ auto invokeProvider(const ssq::Object& instance, std::string_view method, std::s
 }  // namespace
 
 struct ScriptProviderRegistry::Impl {
-    std::unordered_map<std::string, ProviderEntry>  entries;
-    std::unordered_map<std::string, CapabilitySeam> capabilities;
+    std::unordered_map<std::string, ProviderEntry>                                       entries;
+    std::unordered_map<std::string, CapabilitySeam, CapabilityNameHash, std::equal_to<>> capabilities;
 };
 
 ScriptArg ScriptArg::fromInteger(std::int64_t value) {
@@ -334,15 +340,17 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publish(std::string name, c
 
     // Superseding a capability-bound provider must also remove its adapter; leaving
     // it installed would keep routing native consumers into a dead script object.
+    auto incoming = script::OwnedSquirrelObject(instance);
     auto previous = impl_->entries.find(name);
     if (previous != impl_->entries.end() && previous->second.unbinder) {
-        auto retired = retireEntry(previous->second, name);
+        const ScriptProviderHandle previousHandle{name, previous->second.generation};
+        auto                       retired = retireEntry(previous->second, previousHandle);
         if (!retired) return Result<ScriptProviderHandle>::failure(retired.status());
     }
 
     // Re-lookup: running the unbinder above may have rehashed the map.
     ProviderEntry& entry = impl_->entries[name];
-    entry.instance       = script::OwnedSquirrelObject(instance);
+    entry.instance       = std::move(incoming);
     entry.capability.clear();
     entry.unbinder                 = {};
     const std::uint64_t generation = ++entry.generation;
@@ -358,7 +366,11 @@ Result<void> ScriptProviderRegistry::unload(const ScriptProviderHandle& handle) 
     }
     // Keep the slot so the retired generation can never be resolved again, and so a
     // later publish cannot hand an old handle a new instance.
-    return retireEntry(found->second, handle.name);
+    if (found->second.unbinder) {
+        const ScriptProviderHandle retired{handle.name, handle.generation};
+        return retireEntry(found->second, retired);
+    }
+    return retireEntry(found->second, handle);
 }
 
 std::uint64_t ScriptProviderRegistry::generationOf(std::string_view name) const {
@@ -410,21 +422,23 @@ void ScriptProviderRegistry::declareCapability(std::string capability, ScriptCap
 }
 
 bool ScriptProviderRegistry::hasCapabilitySeam(std::string_view capability) const {
-    return impl_->capabilities.find(std::string(capability)) != impl_->capabilities.end();
+    return impl_->capabilities.find(capability) != impl_->capabilities.end();
 }
 
 Result<void> ScriptProviderRegistry::removeCapability(std::string_view capability) {
-    const std::string key(capability);
-    if (impl_->capabilities.erase(key) == 0) {
+    const auto seam = impl_->capabilities.find(capability);
+    if (seam == impl_->capabilities.end()) {
+        const std::string key(capability);
         return Result<void>::failure(providerDiagnostic(
             DiagnosticCode::NotFound, "capability '" + key + "' has no declared script binding seam", key));
     }
+    impl_->capabilities.erase(seam);
     return Result<void>::success();
 }
 
 Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::string_view capability, std::string name,
                                                                           const ssq::Object& instance) {
-    auto seam = impl_->capabilities.find(std::string(capability));
+    auto seam = impl_->capabilities.find(capability);
     if (seam == impl_->capabilities.end()) {
         return Result<ScriptProviderHandle>::failure(providerDiagnostic(
             DiagnosticCode::NotFound,
@@ -435,45 +449,52 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::s
     // capabilities, which can rehash the map and invalidate `seam`.
     ScriptCapabilityBinder   binder   = seam->second.binder;
     ScriptCapabilityUnbinder unbinder = seam->second.unbinder;
+    std::string              declaredCapability(capability);
+    ScriptProviderHandle     resultHandle{name, 0};
 
     auto published = publish(std::move(name), instance);
     if (!published) return Result<ScriptProviderHandle>::failure(published.status());
-    auto handle = std::move(published).takeValue();
+    const ScriptProviderHandle& handle = published.value();
+    resultHandle.generation            = handle.generation;
+    auto rollbackCurrent               = [&]() -> Result<void> {
+        auto current = impl_->entries.find(handle.name);
+        if (current == impl_->entries.end() || !current->second.instance.isBound() ||
+            current->second.generation != handle.generation)
+            return Result<void>::success();
+        return retireEntry(current->second, handle);
+    };
 
-    // Record the seam on the entry *before* running the binder. A binder that fails
-    // halfway has usually already installed part of its adapter, and the rollback
-    // below removes it through this unbinder -- so the entry has to hold it by then
-    // (`publish` clears both fields). Measured before the fix: the rollback ran with
-    // an empty unbinder, so nothing was undone (plan doc §9.50).
-    {
+    try {
+        // Own every fallible input copy before publication, then install the
+        // unbinder before running user code. Exceptions retire only this generation.
         auto pending = impl_->entries.find(handle.name);
         if (pending == impl_->entries.end() || pending->second.generation != handle.generation) {
             return Result<ScriptProviderHandle>::failure(providerDiagnostic(
                 DiagnosticCode::Failed, "the published provider vanished before its binder ran", handle.name));
         }
-        pending->second.capability = std::string(capability);
+        pending->second.capability = std::move(declaredCapability);
         pending->second.unbinder   = std::move(unbinder);
-    }
 
-    auto bound = binder(handle);
-    if (!bound) {
-        // Roll back so a caller never observes a published provider that serves
-        // nothing. `unload` also runs the unbinder, which is what a partial bind
-        // needs; its own outcome is secondary to the binder's.
-        auto rolledBack = unload(handle);
-        rolledBack.ignore("a failed bind is already reported; the rollback only has to retire the generation");
-        return Result<ScriptProviderHandle>::failure(bound.status());
-    }
+        auto bound = binder(handle);
+        if (!bound) {
+            auto failedStatus = bound.status();
+            auto rolledBack   = rollbackCurrent();
+            rolledBack.ignore("a failed bind is already reported; retire only its generation");
+            return Result<ScriptProviderHandle>::failure(std::move(failedStatus));
+        }
 
-    // Re-lookup after the binder: it is user code and may have re-published this same
-    // name, which invalidates the iterator above.
-    auto entry = impl_->entries.find(handle.name);
-    if (entry == impl_->entries.end() || entry->second.generation != handle.generation) {
-        // The binder re-published the same name; that generation owns its own bind.
-        return Result<ScriptProviderHandle>::failure(providerDiagnostic(
-            DiagnosticCode::Failed, "the capability binder replaced the provider it was binding", handle.name));
+        // Re-lookup after user code; a replacement owns its own bind and must survive.
+        auto entry = impl_->entries.find(handle.name);
+        if (entry == impl_->entries.end() || entry->second.generation != handle.generation) {
+            return Result<ScriptProviderHandle>::failure(providerDiagnostic(
+                DiagnosticCode::Failed, "the capability binder replaced the provider it was binding", handle.name));
+        }
+        return Result<ScriptProviderHandle>::success(std::move(resultHandle));
+    } catch (...) {
+        auto rolledBack = rollbackCurrent();
+        rolledBack.ignore("a throwing bind must retire its still-current generation before propagating");
+        throw;
     }
-    return Result<ScriptProviderHandle>::success(std::move(handle));
 }
 
 void ScriptProviderRegistry::clearAll() {

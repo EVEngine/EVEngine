@@ -1,0 +1,38 @@
+# Authoring contracts use the composed dependency closure, independently of map/graphics host wiring.
+enable_testing()
+set(_document_pending spawn_editing common)
+set(_document_seen)
+set(_document_libraries)
+set(_document_thirdparty)
+while(_document_pending)
+    list(POP_FRONT _document_pending _module)
+    if(_module IN_LIST _document_seen)
+        continue()
+    endif()
+    list(APPEND _document_seen ${_module})
+    list(APPEND _document_pending ${EVE_MODULE_${_module}_DEPS})
+    list(APPEND _document_thirdparty ${EVE_MODULE_${_module}_THIRDPARTY})
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        list(APPEND _document_libraries ${EVE_MODULE_${_module}_LINK_GROUP})
+    else()
+        list(APPEND _document_libraries ${EVE_MODULE_${_module}_LIB})
+    endif()
+endwhile()
+list(REMOVE_DUPLICATES _document_libraries)
+list(REMOVE_DUPLICATES _document_thirdparty)
+eve_thirdparty_libs(_document_external ${_document_thirdparty})
+find_package(Threads REQUIRED)
+eve_add_test_executable(eve_spawn_editing_check
+    "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+    "${CMAKE_SOURCE_DIR}/test/integration/spawn_editing/spawn_editing.cpp")
+target_compile_features(eve_spawn_editing_check PRIVATE cxx_std_20)
+target_link_libraries(eve_spawn_editing_check PRIVATE ${_document_libraries}
+    ${_document_external} zeroerr eve_engine_includes Threads::Threads ${CMAKE_DL_LIBS})
+eve_test_source_case_names(spawn_editing.cpp _document_cases eve_spawn_editing_check)
+foreach(_case IN LISTS _document_cases)
+    add_test(NAME "profile.spawn_editing.${_case}" COMMAND eve_spawn_editing_check "--testcase=^${_case}$" --no-color)
+    set_tests_properties("profile.spawn_editing.${_case}" PROPERTIES TIMEOUT 30
+        PASS_REGULAR_EXPRESSION "TEST CASE: +1 +0 +0 +0"
+        FAIL_REGULAR_EXPRESSION "Assertion Failed" LABELS "spawn_editing")
+    eve_label_test_case("profile.spawn_editing.${_case}" spawn_editing.cpp "${_case}")
+endforeach()

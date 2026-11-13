@@ -188,56 +188,56 @@ Result<std::string> Value::toJson() const { return json::stringify(*this); }
 
 std::int64_t Value::asInt() const {
     const auto* value = getIf<std::int64_t>();
-    EV_ASSERT(value != nullptr, "Value::asInt requires an Int64 value");
+    if (!value) EV_ASSERT(value != nullptr, "Value::asInt requires an Int64 value");
     return value ? *value : 0;
 }
 
 double Value::asDouble() const {
     const auto* value = getIf<double>();
-    EV_ASSERT(value != nullptr, "Value::asDouble requires a Double value");
+    if (!value) EV_ASSERT(value != nullptr, "Value::asDouble requires a Double value");
     return value ? *value : 0.0;
 }
 
 bool Value::asBool() const {
     const auto* value = getIf<bool>();
-    EV_ASSERT(value != nullptr, "Value::asBool requires a Bool value");
+    if (!value) EV_ASSERT(value != nullptr, "Value::asBool requires a Bool value");
     return value ? *value : false;
 }
 
 const std::string& Value::asString() const {
     const auto* value = getIf<std::string>();
-    EV_ASSERT(value != nullptr, "Value::asString requires a String value");
+    if (!value) EV_ASSERT(value != nullptr, "Value::asString requires a String value");
     static const std::string empty;
     return value ? *value : empty;
 }
 
 void Value::pushBack(Value value) {
     auto* array = getIf<Array>();
-    EV_ASSERT(array != nullptr, "Value::pushBack requires an Array value");
+    if (!array) EV_ASSERT(array != nullptr, "Value::pushBack requires an Array value");
     if (array) array->push_back(std::move(value));
 }
 
 std::size_t Value::arraySize() const {
     const auto* array = getIf<Array>();
-    EV_ASSERT(array != nullptr, "Value::arraySize requires an Array value");
+    if (!array) EV_ASSERT(array != nullptr, "Value::arraySize requires an Array value");
     return array ? array->size() : 0;
 }
 
 Value& Value::at(std::size_t index) {
     auto* array = getIf<Array>();
-    EV_ASSERT(array != nullptr, "Value::at requires an Array value");
+    if (!array) EV_ASSERT(array != nullptr, "Value::at requires an Array value");
     return array->at(index);
 }
 
 const Value& Value::at(std::size_t index) const {
     const auto* array = getIf<Array>();
-    EV_ASSERT(array != nullptr, "Value::at requires an Array value");
+    if (!array) EV_ASSERT(array != nullptr, "Value::at requires an Array value");
     return array->at(index);
 }
 
 void Value::set(const std::string& key, Value value) {
     auto* object = getIf<Object>();
-    EV_ASSERT(object != nullptr, "Value::set requires an Object value");
+    if (!object) EV_ASSERT(object != nullptr, "Value::set requires an Object value");
     if (object) (*object)[key] = std::move(value);
 }
 

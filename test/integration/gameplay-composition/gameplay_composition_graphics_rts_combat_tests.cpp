@@ -2559,7 +2559,7 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);
 
-    Unit* unit            = Unit::createUnit();
+    Unit* unit            = Unit::createUnit(subject("00000000-0000-7000-8000-00000000ac01"));
     unit->motion()->speed = 10.0f;
     const CommandSpec move{OrderKind::Move, {20.0f, 0.0f}, {}, 0, 0.0};
     auto              order = unit->orders()->values.enqueue(move);

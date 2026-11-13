@@ -1,5 +1,6 @@
 #include "weapon/WeaponDefinitionRuntime.h"
 #include "common/ValueRead.h"
+#include "weapon/WeaponCaptureCodecInternal.h"
 
 #include "common/Value.h"
 #include "weapon/Weapon.h"
@@ -405,6 +406,9 @@ eve::Result<WeaponRuntimeState> decodeState(const eve::Value& value) {
 
 }  // namespace
 
+Value                      capture_codec::encodeRuntime(const WeaponRuntimeState& state) { return encodeState(state); }
+Result<WeaponRuntimeState> capture_codec::decodeRuntime(const Value& state) { return decodeState(state); }
+
 eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source) {
     auto logical = eve::LogicalId::fromParts("weapon", source.id);
     if (!logical)
@@ -437,6 +441,33 @@ eve::Result<WeaponDefinitionRuntime> WeaponDefinitionRuntime::create(eve::defini
     if (!runtime) return eve::Result<WeaponDefinitionRuntime>::failure(runtime.status());
     return eve::Result<WeaponDefinitionRuntime>::success(
         WeaponDefinitionRuntime(registry, std::move(runtime).takeValue(), policy));
+}
+
+WeaponDefinitionRuntime::WeaponDefinitionRuntime(eve::definition::RuntimeInstance<WeaponRuntimeState> runtime,
+                                                 std::shared_ptr<const WeaponDefinition>              captured)
+    : captured_(std::move(captured)),
+      runtime_(std::move(runtime)),
+      policy_(eve::definition::ReloadPolicy::RebuildInstance) {}
+
+eve::Result<WeaponDefinitionRuntime> WeaponDefinitionRuntime::prepareCaptured(
+    const eve::definitions::Definition& source, eve::PersistentId instanceId) {
+    if (source.version != eve::SchemaVersion(1))
+        return eve::Result<WeaponDefinitionRuntime>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Unsupported captured weapon schema version", "definition.version"));
+    auto typed = parseWeaponDefinition(source);
+    if (!typed) return eve::Result<WeaponDefinitionRuntime>::failure(typed.status());
+    auto logical = eve::LogicalId::fromParts("weapon", source.id);
+    if (!logical)
+        return eve::Result<WeaponDefinitionRuntime>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Invalid captured weapon identity", "definition"));
+    auto reference = eve::DefinitionRef::fromId(*logical);
+    if (!reference) return eve::Result<WeaponDefinitionRuntime>::failure(reference.status());
+    auto captured = std::make_shared<const WeaponDefinition>(std::move(typed).takeValue());
+    auto runtime  = eve::definition::RuntimeInstance<WeaponRuntimeState>::create(
+        instanceId, std::move(reference).takeValue(), source.generation, initialState(*captured));
+    if (!runtime) return eve::Result<WeaponDefinitionRuntime>::failure(runtime.status());
+    return eve::Result<WeaponDefinitionRuntime>::success(
+        WeaponDefinitionRuntime(std::move(runtime).takeValue(), std::move(captured)));
 }
 
 eve::Result<WeaponDefinitionRuntime> WeaponDefinitionRuntime::create(eve::definitions::DefinitionRegistry& registry,
@@ -472,6 +503,7 @@ eve::definition::DefinitionHandle WeaponDefinitionRuntime::definitionHandle() co
 }
 
 eve::Result<WeaponDefinition> WeaponDefinitionRuntime::definition() const {
+    if (captured_) return eve::Result<WeaponDefinition>::success(*captured_);
     if (registry_ == nullptr)
         return eve::Result<WeaponDefinition>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon definition registry is not bound",
@@ -508,6 +540,7 @@ eve::Result<void> WeaponDefinitionRuntime::applyTo(WeaponEntity* entity) const {
         targetState.jammed         = source.jammed;
         targetState.stage          = source.stage;
         targetState.stageTimer     = source.stageTimer;
+        targetState.ownedStages.reset();
         targetState.stages         = &definitionComponent.def->stages;
         targetState.currentSpread  = source.currentSpread;
         targetState.recoilPitch    = source.recoilPitch;
@@ -527,6 +560,9 @@ eve::Result<void> WeaponDefinitionRuntime::applyTo(WeaponEntity* entity) const {
 }
 
 eve::Result<eve::definition::ReloadOutcome> WeaponDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
+    if (captured_)
+        return eve::Result<eve::definition::ReloadOutcome>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Captured weapon revisions are immutable", "definition"));
     if (registry_ == nullptr)
         return eve::Result<eve::definition::ReloadOutcome>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon definition registry is not bound",
@@ -583,16 +619,18 @@ eve::Result<std::string> WeaponDefinitionRuntime::snapshotJson(eve::Revision rev
 
 eve::Result<void> WeaponDefinitionRuntime::restore(const eve::SnapshotEnvelope&     snapshotValue,
                                                    const eve::SnapshotHashProvider& hashProvider) {
-    if (registry_ == nullptr)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                 "weapon definition registry is not bound", "registry",
-                                                                 {}, "weapon.definition_runtime"));
-    auto current = currentHandle(*registry_, identity().definition);
-    if (!current) return eve::Result<void>::failure(current.status());
-    if (current.value() != definitionHandle())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::StaleHandle, "weapon snapshot cannot restore against a replaced definition",
-            "definitionGeneration", {}, "weapon.definition_runtime"));
+    if (!captured_) {
+        if (registry_ == nullptr)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "weapon definition registry is not bound",
+                                                                     "registry", {}, "weapon.definition_runtime"));
+        auto current = currentHandle(*registry_, identity().definition);
+        if (!current) return eve::Result<void>::failure(current.status());
+        if (current.value() != definitionHandle())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::StaleHandle, "weapon snapshot cannot restore against a replaced definition",
+                "definitionGeneration", {}, "weapon.definition_runtime"));
+    }
     const eve::definition::RuntimeStateDecoder<WeaponRuntimeState> decoder = decodeState;
     return eve::definition::restoreRuntimeInstance(runtime_, snapshotValue, "weapon.runtime", runtimeSchema(),
                                                    eve::SchemaVersion(1), hashProvider, decoder);

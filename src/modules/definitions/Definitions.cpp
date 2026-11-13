@@ -1,5 +1,6 @@
 #include "definitions/Definitions.h"
 #include "common/ValueRead.h"
+#include "definitions/DefinitionRegistryCapture.h"
 
 #include "common/SquirrelBinding.h"
 #include "schema/SchemaRegistry.h"
@@ -393,12 +394,17 @@ void DefinitionRegistry::clearEvents() {
 }
 
 std::string DefinitionRegistry::snapshotJson() const {
-    const auto        state = storage_.snapshotState();
+    auto encoded = encodeSnapshotState(storage_.snapshotState()).toJson();
+    if (!encoded) std::terminate();
+    return std::move(encoded).takeValue();
+}
+
+eve::Value DefinitionRegistry::encodeSnapshotState(const Storage::State& state) {
     eve::Value::Array definitions;
     eve::Value::Array events;
     eve::Value::Array generations;
-    definitions.reserve(storage_.size());
-    events.reserve(storage_.eventCount());
+    definitions.reserve(state.entries.size());
+    events.reserve(state.events.size());
     generations.reserve(state.entries.size());
 
     for (const auto& [key, entry] : state.entries) {
@@ -437,22 +443,21 @@ std::string DefinitionRegistry::snapshotJson() const {
     root.emplace("generations", eve::Value(std::move(generations)));
     root.emplace("nextEventSequence", eve::Value(std::to_string(state.nextEventSequence.value())));
     root.emplace("version", eve::Value(std::int64_t(1)));
-    auto encoded = eve::Value(std::move(root)).toJson();
-    if (!encoded.ok()) std::terminate();
-    return std::move(encoded).takeValue();
+    return eve::Value(std::move(root));
 }
 
-eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
+eve::Result<DefinitionRegistry::Storage::State> DefinitionRegistry::prepareSnapshotState(const std::string& json) {
+    using R               = eve::Result<Storage::State>;
     auto schemaValidation = validateDefinitionsSnapshot(json);
-    if (!schemaValidation.ok()) return schemaValidation;
+    if (!schemaValidation.ok()) return R::failure(schemaValidation.status());
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) {
-        return eve::Result<void>::failure(parsed.status());
+        return R::failure(parsed.status());
     }
     const eve::Value value = std::move(parsed).takeValue();
     const auto*      root  = value.getIf<eve::Value::Object>();
     if (!root) {
-        return eve::Result<void>::failure(
+        return R::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "definitions snapshot must be an object"));
     }
     const auto*   snapshotVersion   = field(*root, "version");
@@ -467,7 +472,7 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
     std::uint64_t nextSequence      = 0;
     if (!versionNumber || *versionNumber != 1 || !definitionArray || !generationArray || !eventArray ||
         !nextSequenceValue || !readUint64String(*nextSequenceValue, nextSequence) || nextSequence == 0) {
-        return eve::Result<void>::failure(
+        return R::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definitions snapshot fields"));
     }
 
@@ -482,7 +487,7 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
             !generationValue || !readUint64String(*generationValue, generation) || generation == 0 ||
             !candidate.entries.emplace(Key{type, id}, Storage::Entry{eve::Generation(generation), std::nullopt})
                  .second) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
+            return R::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "invalid definition generation at index " + std::to_string(index)));
         }
     }
@@ -499,20 +504,20 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
         if (!item || !readString(*item, "type", type) || !readString(*item, "id", id) || type.empty() || id.empty() ||
             !versionField || !readPositiveSchemaVersion(*versionField, versionValue) || !generationField ||
             !readUint64String(*generationField, generation) || generation == 0 || !jsonValue) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::ParseError, "invalid definition at index " + std::to_string(index)));
+            return R::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                     "invalid definition at index " + std::to_string(index)));
         }
         const Key key{type, id};
         auto      entry = candidate.entries.find(key);
         if (entry == candidate.entries.end() || entry->second.generation != eve::Generation(generation) ||
             entry->second.value.has_value()) {
-            return eve::Result<void>::failure(
+            return R::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
                                        "inconsistent definition generation at index " + std::to_string(index)));
         }
         auto canonical = jsonValue->toJson();
         if (!canonical.ok()) {
-            return eve::Result<void>::failure(canonical.status());
+            return R::failure(canonical.status());
         }
         Definition definition;
         definition.type       = type;
@@ -541,8 +546,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
             !sequenceField || !readUint64String(*sequenceField, sequence) || sequence == 0 ||
             (!previousSequence.isZero() && eve::EventSequence(sequence) <= previousSequence) || !generationField ||
             !readUint64String(*generationField, generation) || generation == 0) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::ParseError, "invalid definition event at index " + std::to_string(index)));
+            return R::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                     "invalid definition event at index " + std::to_string(index)));
         }
         const bool     removed = name == "definition_removed";
         Storage::Event event;
@@ -558,26 +563,95 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
         previousSequence = eve::EventSequence(sequence);
     }
     if (!previousSequence.isZero() && eve::EventSequence(nextSequence) <= previousSequence) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
-                                                                 "next event sequence must exceed retained events"));
+        return R::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                 "next event sequence must exceed retained events"));
     }
     candidate.nextEventSequence = eve::EventSequence(nextSequence);
 
-    auto restored = storage_.restoreState(std::move(candidate));
-    if (!restored.ok()) {
-        return eve::Result<void>::failure(restored.status());
+    eve::detail::EventLogValidator validator;
+    for (const auto& event : candidate.events) {
+        auto accepted = validator.accept(event.sequence, event.generation,
+                                         event.operation == eve::RegistryOperation::Remove, event.tombstone);
+        if (!accepted) return R::failure(accepted.status());
     }
+    auto boundary = validator.finish(candidate.nextEventSequence);
+    if (!boundary) return R::failure(boundary.status());
+    return R::success(std::move(candidate));
+}
+
+eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
+    auto candidate = prepareSnapshotState(json);
+    if (!candidate) return eve::Result<void>::failure(candidate.status());
+    const auto next     = candidate.value().nextEventSequence;
+    auto       restored = storage_.restoreState(std::move(candidate).takeValue());
+    if (!restored) return restored;
     clearEventProjection();
-    revision_ = eve::Revision(nextSequence - 1);
+    revision_ = eve::Revision(next.value() - 1);
     tick_     = eve::SimulationTick{};
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
+struct DefinitionRegistryCapture::Data {
+    DefinitionRegistry::Storage::State state;
+    PersistentId                       instance;
+    Revision                           revision;
+    SimulationTick                     tick;
+};
+DefinitionRegistryCapture::DefinitionRegistryCapture(std::unique_ptr<Data> data) : data_(std::move(data)) {}
+DefinitionRegistryCapture::~DefinitionRegistryCapture()                                                      = default;
+DefinitionRegistryCapture::DefinitionRegistryCapture(DefinitionRegistryCapture&&) noexcept                   = default;
+DefinitionRegistryCapture&        DefinitionRegistryCapture::operator=(DefinitionRegistryCapture&&) noexcept = default;
+Result<DefinitionRegistryCapture> DefinitionRegistry::capture() const {
+    return Result<DefinitionRegistryCapture>::success(
+        DefinitionRegistryCapture(std::make_unique<DefinitionRegistryCapture::Data>(
+            DefinitionRegistryCapture::Data{storage_.snapshotState(), instanceId_, revision_, tick_})));
+}
+Result<SnapshotEnvelope> DefinitionRegistryCapture::seal(const SnapshotHashProvider& hashProvider) const {
+    if (!data_)
+        return Result<SnapshotEnvelope>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "Definition registry capture was moved"));
+    auto       payload  = DefinitionRegistry::encodeSnapshotState(data_->state);
+    const auto instance = data_->instance;
+    const auto revision = data_->revision;
+    const auto tick     = data_->tick;
+    // No member access after the provider is invoked; it may retire this capture.
+    return makeSnapshotEnvelope("definitions.registry", definitionsSchema(), SchemaVersion(1), instance, revision, tick,
+                                std::move(payload), hashProvider);
+}
+Result<DefinitionRegistryCapture> DefinitionRegistryCapture::parse(SnapshotEnvelope            snapshot,
+                                                                   const SnapshotHashProvider& hash) {
+    using R = Result<DefinitionRegistryCapture>;
+    if (snapshot.type != "definitions.registry" || snapshot.schema != definitionsSchema())
+        return R::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected definitions registry snapshot"));
+    auto migrated = definitionsMigrations().migrate(std::move(snapshot), SchemaVersion(1), hash);
+    if (!migrated) return R::failure(migrated.status());
+    auto envelope = std::move(migrated).takeValue();
+    auto metadata = validateSnapshotPayloadMetadata(envelope.payload, envelope.revision, envelope.tick);
+    if (!metadata) return R::failure(metadata.status());
+    auto json = envelope.payload.toJson();
+    if (!json) return R::failure(json.status());
+    auto state = DefinitionRegistry::prepareSnapshotState(json.value());
+    if (!state) return R::failure(state.status());
+    return R::success(DefinitionRegistryCapture(std::make_unique<Data>(
+        Data{std::move(state).takeValue(), envelope.instanceId, envelope.revision, envelope.tick})));
+}
+Result<std::unique_ptr<DefinitionRegistry>> DefinitionRegistry::prepareRestored(
+    const DefinitionRegistryCapture& captured) {
+    using R = Result<std::unique_ptr<DefinitionRegistry>>;
+    if (!captured.data_)
+        return R::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "Definition registry capture was moved"));
+    auto candidate = std::make_unique<DefinitionRegistry>(captured.data_->instance);
+    auto restored  = candidate->storage_.restoreState(captured.data_->state);
+    if (!restored) return R::failure(restored.status());
+    candidate->revision_ = captured.data_->revision;
+    candidate->tick_     = captured.data_->tick;
+    return R::success(std::move(candidate));
+}
 eve::Result<eve::SnapshotEnvelope> DefinitionRegistry::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
-    auto payload = eve::Value::fromJson(snapshotJson());
-    if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("definitions.registry", definitionsSchema(), eve::SchemaVersion(1), instanceId_,
-                                     revision_, tick_, std::move(payload).takeValue(), hashProvider);
+    auto captured = capture();
+    if (!captured) return Result<SnapshotEnvelope>::failure(captured.status());
+    return captured.value().seal(hashProvider);
 }
 
 eve::Result<void> DefinitionRegistry::restoreSnapshot(const eve::SnapshotEnvelope&     source,

@@ -19,6 +19,7 @@
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/ECS.h"
+#include "weapon/AmmoPoolRestore.h"
 #include "weapon/CarrierRecipeCodec.h"
 #include "weapon/ProjectileRuntime.h"
 #include "weapon/SpellFragmentCompiler.h"
@@ -183,6 +184,52 @@ TEST_CASE("weapon.projectile.spec.poolLifetimeAndSnapshot") {
     };
 }
 }  // namespace test_projectile_runtime_unit
+namespace test_projectile_pool_history {
+using namespace eve;
+TEST_CASE("weapon.projectile.spec.poolConfigurationAndMaximumGenerationNeverReviveOldHandles") {
+    weapon::ProjectileRuntime pool;
+    pool.configurePool(2).expect("small active pool");
+    weapon::ProjectileDefinition def;
+    def.id       = *LogicalId::fromParts("projectile", "history");
+    def.speed    = 1;
+    def.lifetime = Duration(1000000000);
+    auto a       = pool.spawn(def, {{}, {1, 0, 0}, {}}).takeValue();
+    auto b       = pool.spawn(def, {{}, {1, 0, 0}, {}}).takeValue();
+    pool.release(a).expect("release first");
+    pool.release(b).expect("release second");
+    pool.configurePool(1).expect("shrink active capacity");
+    auto saved = pool.snapshot();
+    CHECK_EQ(saved.capacity, 1u);
+    REQUIRE(saved.slots.size() >= 2);
+    weapon::ProjectileRuntime restored;
+    restored.restore(saved).expect("restore inactive slot history");
+    restored.configurePool(2).expect("regrow active capacity");
+    auto c = restored.spawn(def, {{}, {1, 0, 0}, {}}).takeValue();
+    auto d = restored.spawn(def, {{}, {1, 0, 0}, {}}).takeValue();
+    CHECK(c != a);
+    CHECK(d != b);
+    CHECK(!restored.find(a));
+    CHECK(!restored.find(b));
+    restored.release(c).expect("release revived slot");
+    restored.release(d).expect("release second slot");
+    saved                     = restored.snapshot();
+    saved.slots[0].generation = UINT32_MAX;
+    restored.restore(saved).expect("last generation history");
+    auto next = restored.spawn(def, {{}, {1, 0, 0}, {}}).takeValue();
+    CHECK_EQ(next.slot, 1u);
+    CHECK_EQ(restored.snapshot().slots[0].generation, UINT32_MAX);
+    restored.release(next).expect("release usable slot");
+    restored.configurePool(1).expect("only retired slot active");
+    REQUIRE(!restored.spawn(def, {{}, {1, 0, 0}, {}}).ok());
+    auto bad     = saved;
+    bad.capacity = 0;
+    REQUIRE(!restored.restore(bad).ok());
+    def.mode = weapon::ProjectileMode(255);
+    REQUIRE(!def.validate().ok());
+    CHECK(weapon::ProjectileHandle::fromPackedKey(next.packedKey()) == next);
+}
+}  // namespace test_projectile_pool_history
+
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_spell_fragment_compiler)
@@ -688,6 +735,169 @@ TEST_CASE("weapon.spec.servicesPoseAndAdvancedState") {
     };
 }
 
+TEST_CASE("weapon.ammoPool.retirementCancelsReloadWithoutReserveFallbackOrReplacementAdoption") {
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    Weapon           weapons;
+    REQUIRE(weapons.registerWeaponsFromJson(kP0Defs) > 0);
+    auto* gun  = weapons.newWeapon("poolgun");
+    auto* pool = weapons.newAmmoPool("shared", "rifle", 20);
+    REQUIRE(gun != nullptr);
+    REQUIRE(pool != nullptr);
+    pool->state()->count           = 5;
+    gun->state()->resource.value   = 0;
+    gun->state()->resource.reserve = 7;
+    REQUIRE(weapons.bindAmmoPool(gun, pool));
+    const auto old = gun->state()->ammoPool;
+    WeaponSystem::startReload(*gun);
+    REQUIRE(gun->state()->resource.reloading);
+    pool->release();
+    auto* replacement           = weapons.newAmmoPool("shared", "rifle", 20);
+    replacement->state()->count = 8;
+    REQUIRE(old.isStale());
+    REQUIRE(weapons.getAmmoPool(gun) == nullptr);
+    WeaponSystem::update(*gun, .6f);
+    REQUIRE(!gun->state()->resource.reloading);
+    REQUIRE_EQ(gun->state()->resource.value, 0.f);
+    REQUIRE_EQ(gun->state()->resource.reserve, 7);
+    REQUIRE_EQ(replacement->state()->count, 8);
+    REQUIRE(weapons.bindAmmoPool(gun, replacement));
+    WeaponSystem::startReload(*gun);
+    WeaponSystem::update(*gun, .6f);
+    REQUIRE_EQ(gun->state()->resource.value, 2.f);
+    REQUIRE_EQ(replacement->state()->count, 6);
+    REQUIRE_EQ(gun->state()->resource.reserve, 7);
+    weapons.unbindAmmoPool(gun);
+    REQUIRE(!gun->state()->ammoPool.isBound());
+}
+TEST_CASE("weapon.ammoPool.linksRejectForeignViewsMissingLifetimeAndSurviveEitherEndpointRetirement") {
+    ecs::Table      first, second;
+    WeaponEntity*   gun;
+    AmmoPoolEntity* pool;
+    AmmoPoolLink    retained;
+    {
+        ecs::ScopedTable scope(first);
+        gun  = WeaponEntity::createWeapon();
+        pool = AmmoPoolEntity::createPool();
+        {
+            auto view = ecs::View<WeaponEntity>(first);
+            REQUIRE(!AmmoPoolLink::bind(*gun, *pool).ok());
+        }
+    }
+    {
+        ecs::ScopedTable scope(second);
+        auto*            foreign = AmmoPoolEntity::createPool();
+        REQUIRE(!AmmoPoolLink::bind(*gun, *foreign).ok());
+        REQUIRE(AmmoPoolLink::bind(*gun, *pool).ok());
+    }
+    {
+        ecs::ScopedTable scope(first);
+        retained = AmmoPoolLink::bind(*gun, *pool).expect("live same-world link");
+        AmmoPoolEntity::Lifetime copied(*pool->lifetime());
+        REQUIRE(retained.resolve() == pool);
+        *pool->lifetime() = std::move(copied);
+        REQUIRE(retained.isStale());
+        retained     = AmmoPoolLink::bind(*gun, *pool).expect("explicit rebind after publication");
+        auto* buffer = pool->getComponentManager().getComponentBuffer<AmmoPoolEntity::Lifetime>();
+        buffer->reset_slot(pool->id);
+        REQUIRE(retained.isStale());
+        REQUIRE(!AmmoPoolLink::bind(*gun, *pool).ok());
+        REQUIRE(!buffer->has(pool->id));
+        (void)*pool->lifetime();
+        retained = AmmoPoolLink::bind(*gun, *pool).expect("explicitly restored lifetime");
+        gun->release();
+        REQUIRE(retained.resolve() == pool);
+        pool->release();
+        REQUIRE(retained.isStale());
+    }
+}
+TEST_CASE("weapon.ammoPool.valueArchiveRetainsFactsAfterSourceRetirementAndRebuildsLifetime") {
+    const auto   epoch = *eve::PersistentId::parse("01900000-0000-7000-8000-000000000880");
+    std::string  text;
+    AmmoPoolLink retired;
+    {
+        ecs::Table       source;
+        ecs::ScopedTable scope(source);
+        auto*            pool      = AmmoPoolEntity::createPool();
+        auto*            gun       = WeaponEntity::createWeapon();
+        pool->identity()->id       = "same\nname\t\"";
+        pool->identity()->ammoType = "round";
+        pool->state()->count       = 13;
+        pool->state()->max         = -7;
+        retired                    = AmmoPoolLink::bind(*gun, *pool).expect("source pool");
+        CapturedAmmoPool facts{*pool->identity(), *pool->state(), epoch.child("pool")};
+        text = facts.encodeState().expect("pool value").toJson().expect("pool text");
+    }
+    REQUIRE(retired.isStale());
+    auto value = eve::Value::fromJson(text).expect("pool wire");
+    auto saved = CapturedAmmoPool::prepareState(value).expect("detached pool");
+    REQUIRE_EQ(saved.encodeState().expect("pool encode").toJson().expect("wire"), text);
+    auto             world = std::make_shared<ecs::Table>();
+    ecs::ScopedTable scope(*world);
+    auto*            pool     = AmmoPoolEntity::createPool();
+    auto*            gun      = WeaponEntity::createWeapon();
+    const auto       old      = AmmoPoolLink::bind(*gun, *pool).expect("old destination lifetime");
+    auto             prepared = PreparedAmmoPoolRestore::prepare(saved, world, *pool).expect("native pool admission");
+    auto             receipt  = prepared.commit().expect("native lifetime publication");
+    REQUIRE(old.isStale());
+    REQUIRE(receipt.pool.resolve() == pool);
+    REQUIRE(receipt.archiveId == saved.archiveId);
+    REQUIRE_EQ(pool->identity()->id, saved.identity.id);
+    REQUIRE_EQ(pool->identity()->ammoType, saved.identity.ammoType);
+    REQUIRE_EQ(pool->state()->count, 13);
+    REQUIRE_EQ(pool->state()->max, -7);
+    auto distinct      = saved;
+    distinct.archiveId = epoch.child("other-pool");
+    REQUIRE(distinct.encodeState().expect("same name distinct identity").toJson().expect("wire") != text);
+    REQUIRE(!retired.resolve());
+}
+TEST_CASE("weapon.ammoPool.valueArchiveRejectsMalformedFieldsWithoutNormalizingNativeIntegers") {
+    CapturedAmmoPool facts{{"", ""},
+                           {std::numeric_limits<int>::min(), std::numeric_limits<int>::max()},
+                           *eve::PersistentId::parse("01900000-0000-7000-8000-000000000881")};
+    const auto       valid    = facts.encodeState().expect("all native signed facts");
+    const auto       restored = CapturedAmmoPool::prepareState(valid).expect("exact signed native limits");
+    REQUIRE_EQ(restored.state.count, std::numeric_limits<int>::min());
+    REQUIRE_EQ(restored.state.max, std::numeric_limits<int>::max());
+    auto reject = [&](const char* field, eve::Value value) {
+        auto changed                                  = valid;
+        (*changed.getIf<eve::Value::Object>())[field] = std::move(value);
+        REQUIRE(!CapturedAmmoPool::prepareState(changed).ok());
+    };
+    reject("unknown", 1);
+    reject("schema", "wrong");
+    reject("version", 2);
+    reject("version", true);
+    reject("archive", "00000000-0000-0000-0000-000000000000");
+    reject("archive", "01900000-0000-7000-8000-00000000088A");
+    reject("name", 1);
+    reject("ammo_type", eve::Value{});
+    reject("count", 13.0);
+    reject("max", true);
+    reject("count", std::int64_t(std::numeric_limits<int>::max()) + 1);
+    reject("max", std::int64_t(std::numeric_limits<int>::min()) - 1);
+    auto missing = valid;
+    missing.getIf<eve::Value::Object>()->erase("count");
+    REQUIRE(!CapturedAmmoPool::prepareState(missing).ok());
+    facts.archiveId = {};
+    REQUIRE(!facts.encodeState().ok());
+}
+TEST_CASE("weapon.ammoPool.retainedLinksDoNotKeepTargetWorldAliveOrResolveReusedWorlds") {
+    AmmoPoolLink retained;
+    auto         world = std::make_unique<ecs::Table>();
+    {
+        ecs::ScopedTable scope(*world);
+        auto*            gun  = WeaponEntity::createWeapon();
+        auto*            pool = AmmoPoolEntity::createPool();
+        retained              = AmmoPoolLink::bind(*gun, *pool).expect("original world");
+    }
+    world.reset();
+    REQUIRE(retained.isStale());
+    auto             replacement = std::make_unique<ecs::Table>();
+    ecs::ScopedTable scope(*replacement);
+    AmmoPoolEntity::createPool();
+    REQUIRE(retained.resolve() == nullptr);
+}
 }  // namespace test_weapon_unit
 #endif
 

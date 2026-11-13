@@ -9,7 +9,7 @@ include("${EVE_ROOT}/cmake/TestLevels.cmake")
 include("${CMAKE_CURRENT_BINARY_DIR}/balance/test_levels.cmake")
 set(EVE_ECS_SOURCE "${EVE_ROOT}/external/ECS.hpp" CACHE PATH "Canonical ECS source checkout")
 target_include_directories(balance_core PUBLIC "${EVE_ECS_SOURCE}/src")
-set(rpg_sources RPGActor AttributeSystem Skill SkillDefinitionRuntime Effect StatusSystem VitalsSystem
+set(rpg_sources RPGActor RPGActorPersistence ActorInitialization AttributeSystem Skill SkillDefinitionRuntime SkillContent SkillConditionBindings Effect StatusSystem VitalsSystem
     Class Trait Battle BattleControl Settlement SettlementAdapter EquipmentSystem SimulationEvents)
 set(runtime_sources)
 foreach(name IN LISTS rpg_sources)
@@ -60,6 +60,7 @@ list(APPEND runtime_sources
     "${EVE_ROOT}/src/engine/common/RuntimeRegistry.cpp"
     "${EVE_ROOT}/src/engine/common/Module.cpp"
     "${EVE_ROOT}/src/engine/common/ModuleRegistry.cpp"
+    "${EVE_ROOT}/src/engine/common/ModulePlugin.cpp"
     "${EVE_ROOT}/src/engine/common/Subscription.cpp"
     "${EVE_ROOT}/src/engine/common/Time.cpp"
     "${EVE_ROOT}/src/engine/common/Uri.cpp"
@@ -90,7 +91,9 @@ foreach(target IN ITEMS rpg_balance_runtime rpg_balance_demo rpg_balance_tests)
         target_link_options(${target} PRIVATE /OPT:REF)
     else()
         target_compile_options(${target} PRIVATE -Wall -Wextra -ffunction-sections -fdata-sections)
-        if(NOT APPLE)
+        if(APPLE)
+            target_link_options(${target} PRIVATE -Wl,-dead_strip)
+        else()
             target_link_options(${target} PRIVATE -Wl,--gc-sections)
         endif()
     endif()

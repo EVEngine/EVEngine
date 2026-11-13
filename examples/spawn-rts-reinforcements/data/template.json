@@ -1,0 +1,17 @@
+{
+  "schema": "eve.spawn-template",
+  "version": 1,
+  "id": "rts.reinforcements",
+  "content": {
+    "kind": "weighted", "selection": "per_unit",
+    "entries": [{"unit": {"type": "unit", "id": "reinforcement"}, "weight": 1}]
+  },
+  "schedule": {"kind": "interval", "period_seconds": 0.4, "initial_delay_seconds": 0, "count_per_batch": 1, "on_missed": "skip"},
+  "limits": {"alive": 6, "total": {"kind": "finite", "count": 6}, "budget_group": "reinforcements"},
+  "placement": {
+    "kind": "random_in_region",
+    "constraints": [{"kind": "walkable"}, {"kind": "clearance", "radius": 0.35}],
+    "attempts_per_unit": 3
+  },
+  "batch_policy": "atomic"
+}

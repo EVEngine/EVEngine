@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/Result.h"
 
 
 // 技能释放流程：冷却 / 消耗 / 读条 / 授予效果。
@@ -27,6 +28,10 @@ public:
         /** @brief Bool. */
         std::function<bool(RPGActor *actor, const SkillDefinition &def, std::string &outReason)>;
 
+    /** @brief Reject global legacy cast callbacks without a versioned persistence contract.
+     * @return Applied when none are registered, otherwise Unsupported; no callbacks or mutation.
+     * @thread RPG owner thread; check at capture/admission and before publication. */
+    [[nodiscard]] static Result<void> validatePersistenceContext();
     /** @brief Registers cast condition. */
     static void registerCastCondition(const std::string &name, CastCondition fn);
     /** @brief Unregisters cast condition. */
@@ -56,6 +61,10 @@ public:
      * @brief 尝试释放技能：通过 canCast 检查后立即扣除消耗并进入冷却；
      * castTime<=0 时立即结算（授予效果 + 产生 SkillCastEvent），
      * 否则进入读条状态，由 update() 在读条结束时结算。
+     * @remarks Target must be in the caster's physical Table. Timed casts retain a generation-qualified link;
+     * retirement/reuse cancels resolution without redirecting effects to the caster. The Table owner outlives calls.
+     * No target means default self resolution; an explicit self target retains its event projection.
+     * Cross-world rejection occurs before cost/cooldown mutation.
      */
     static bool beginCast(RPGActor *actor, const std::string &skillId, RPGActor *target = nullptr,
                            std::string *reason = nullptr);
@@ -70,10 +79,19 @@ public:
     /** @brief Returns the cast progress. */
     static float getCastProgress(RPGActor *actor);  ///< 0..1，非读条状态返回 0
 
-    /** @brief 遍历存活 RPGActor（liveActors / View）：冷却倒计时 + 读条推进/结算。 */
+    /** @brief Advance current-world RPG skill clocks, then resolve completed casts outside Views.
+     * @param dt Injected seconds; invalid deltas produce no mutation or callbacks.
+     * @cost Scan actors/known skills plus O(K log K) ordering for K keyed actors per phase;
+     * effect work is delegated per completed cast.
+     * @thread Simulation owner, outside caller Views; the owning Table remains alive through callbacks.
+     * @remarks Nonfinite, zero or negative dt leaves all state unchanged. Cooldowns clamp at zero;
+     * completed casts clear the full casting state before effect callbacks. */
     static void update(float dt);
 
-    /** @brief Polls cast events. */
+    /** @brief Append cast facts to out and drain the active simulation queue; self-output is a no-op.
+     * @ownership Event values own weak actor references, never the actor or its Table.
+     * @throws std::bad_alloc or std::length_error Before either vector's event facts change.
+     * @cost One move per queued event; output growth is amortized over the caller-owned vector. */
     static void pollCastEvents(std::vector<SkillCastEvent> &out);
 };
 

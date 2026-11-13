@@ -1,3 +1,7 @@
+// eve-hot-path
+// ECS: current RPG Table; frame reads/writes Skills and typed targets, then delegates target Attributes/Statuses.
+// Phase: injected skill clocks -> completed-cast effects/events. No View or lock spans callback execution.
+// Canonical codecs/control admission in this TU are explicit cold calls; content lookup is cast-completion work.
 #include "rpg/SkillDefinitionRuntime.h"
 #include <algorithm>
 #include <cmath>
@@ -18,6 +22,9 @@
 #include "rpg/StatusSystem.h"
 
 // SkillDefinitionRuntime.cpp
+#include <stdexcept>
+#include <type_traits>
+
 namespace eve::rpg {
 namespace {
 
@@ -83,6 +90,14 @@ eve::Result<SkillDefinition> parseDefinition(const eve::definitions::Definition 
         return eve::Result<SkillDefinition>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "skill definition payload must be an object",
                                    "json", {}, "rpg.skill.definition_runtime"));
+
+    if (const auto *id = field(*payload, "id")) {
+        const auto *text = id->getIf<std::string>();
+        if (!text || *text != source.id)
+            return eve::Result<SkillDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "skill payload id differs from record key", "id",
+                                       {}, "rpg.skill.definition_runtime"));
+    }
 
     SkillDefinition result;
     result.id          = source.id;
@@ -209,6 +224,19 @@ eve::Result<SkillRuntimeState> decodeState(const eve::Value &value) {
 
 }  // namespace
 
+eve::Result<SkillDefinition> SkillDefinitionRuntime::prepareCaptured(const eve::definitions::Definition &source) {
+    if (source.type != "rpg.skill")
+        return eve::Result<SkillDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::TypeMismatch, "Expected rpg.skill record"));
+    if (source.version.value() != 1)
+        return eve::Result<SkillDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "Unsupported skill record version"));
+    if (source.generation.isZero() || !eve::LogicalId::fromParts(source.type, source.id))
+        return eve::Result<SkillDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Invalid skill record identity/generation"));
+    return parseDefinition(source);
+}
+
 eve::Result<SkillDefinitionRuntime> SkillDefinitionRuntime::create(eve::definitions::DefinitionRegistry &registry,
                                                                    eve::DefinitionRef                    definition,
                                                                    eve::PersistentId                     instanceId,
@@ -221,7 +249,7 @@ eve::Result<SkillDefinitionRuntime> SkillDefinitionRuntime::create(eve::definiti
     if (!handle) return eve::Result<SkillDefinitionRuntime>::failure(handle.status());
     auto resolved = registry.resolveHandle(handle.value());
     if (!resolved) return eve::Result<SkillDefinitionRuntime>::failure(resolved.status());
-    auto typed = parseDefinition(resolved.value().get());
+    auto typed = prepareCaptured(resolved.value().get());
     if (!typed) return eve::Result<SkillDefinitionRuntime>::failure(typed.status());
     auto runtime = eve::definition::RuntimeInstance<SkillRuntimeState>::create(
         instanceId, std::move(definition), handle.value().generation, SkillRuntimeState{});
@@ -262,7 +290,7 @@ eve::Result<SkillDefinition> SkillDefinitionRuntime::definition() const {
                                    "registry", {}, "rpg.skill.definition_runtime"));
     auto resolved = registry_->resolveHandle(definitionHandle());
     if (!resolved) return eve::Result<SkillDefinition>::failure(resolved.status());
-    return parseDefinition(resolved.value().get());
+    return prepareCaptured(resolved.value().get());
 }
 
 void SkillDefinitionRuntime::setActive(bool active) noexcept { runtime_.setActive(active); }
@@ -294,7 +322,7 @@ eve::Result<eve::definition::ReloadOutcome> SkillDefinitionRuntime::reload(eve::
     if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
     auto resolved = registry_->resolveHandle(next.value());
     if (!resolved) return eve::Result<eve::definition::ReloadOutcome>::failure(resolved.status());
-    auto typed = parseDefinition(resolved.value().get());
+    auto typed = prepareCaptured(resolved.value().get());
     if (!typed) return eve::Result<eve::definition::ReloadOutcome>::failure(typed.status());
     const float       nextCooldown = typed.value().cooldown;
     SkillRuntimeState defaults{};
@@ -372,20 +400,38 @@ void deductCosts(RPGActor *actor, const SkillDefinition &def) {
 }
 
 void resolveCast(RPGActor *actor, const SkillDefinition &def, RPGActor *target) {
-    RPGActor *effectTarget = target ? target : actor;
-    for (const std::string &effectId : def.grantedEffects)
-        StatusSystem::apply(effectTarget, effectId, "skill:" + def.id)
+    // Own completion facts before lifecycle callbacks may replace the registry record or retire an actor.
+    std::string skillId        = def.id;
+    const auto  effects        = def.grantedEffects;
+    const auto  caster         = ActorEventRef(*actor);
+    const auto  recipient      = ActorEventRef(target ? *target : *actor);
+    const bool  explicitTarget = target != nullptr;
+    for (const auto &effectId : effects) {
+        if (!caster.resolve()) return;
+        auto currentTarget = recipient.resolve();
+        if (!currentTarget) return;
+        StatusSystem::apply(&currentTarget->get(), effectId, "skill:" + skillId)
             .ignore("skill effect application is reported through cast events");
-
-    SkillCastEvent evt;
-    evt.caster  = actor;
-    evt.target  = target;
-    evt.skillId = def.id;
-    castQueue().push_back(std::move(evt));
+    }
+    auto currentCaster = caster.resolve();
+    auto currentTarget = recipient.resolve();
+    if (!currentCaster || !currentTarget) return;
+    SkillCastEvent event;
+    event.caster  = caster;
+    event.target  = explicitTarget ? recipient : ActorEventRef{};
+    event.skillId = std::move(skillId);
+    castQueue().push_back(std::move(event));
 }
 
 }  // namespace
 
+Result<void> SkillSystem::validatePersistenceContext() {
+    if (!conditions().empty())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Legacy global cast callbacks require an explicit persistence contract",
+            "rpg.skill.callbacks"));
+    return Result<void>::success();
+}
 void SkillSystem::registerCastCondition(const std::string &name, CastCondition fn) {
     conditions()[name] = std::move(fn);
 }
@@ -451,6 +497,10 @@ bool SkillSystem::canCast(RPGActor *actor, const std::string &skillId, std::stri
 }
 
 bool SkillSystem::beginCast(RPGActor *actor, const std::string &skillId, RPGActor *target, std::string *reason) {
+    if (target && actor && target->table != actor->table) {
+        if (reason) *reason = "target_world_mismatch";
+        return false;
+    }
     if (!canCast(actor, skillId, reason)) return false;
     const SkillDefinition *def = SkillRegistry::find(skillId);
 
@@ -467,7 +517,8 @@ bool SkillSystem::beginCast(RPGActor *actor, const std::string &skillId, RPGActo
     cs.skillId       = skillId;
     cs.remaining     = def->castTime;
     cs.totalCastTime = def->castTime;
-    cs.target        = target;
+    cs.target.intent = target ? CastTargetIntent::Linked : CastTargetIntent::DefaultSelf;
+    cs.target.entity = ecs::handle_of(target);
     return true;
 }
 
@@ -491,24 +542,61 @@ float SkillSystem::getCastProgress(RPGActor *actor) {
 }
 
 void SkillSystem::update(float dt) {
-    for (RPGActor *actor : RPGActor::liveActors()) {
-        for (auto &kv : actor->skills()->known)
-            if (kv.second.cooldownRemaining > 0.f) kv.second.cooldownRemaining -= dt;
+    if (!std::isfinite(dt) || dt <= 0.f) return;
+    // ECS scope: current RPG Table; read ActorExecutionOrder through the roster helper.
+    // No View remains active during effect execution or lifecycle callbacks.
+    // Snapshot only handles: an earlier actor's callbacks may retire another actor before its turn.
+    std::vector<ecs::EntityHandle> actors;
+    {
+        const auto &live = RPGActor::liveActors();
+        actors.reserve(live.size());
+        for (auto *actor : live) actors.push_back(ecs::handle_of(actor));
+    }
+    for (const auto &handle : actors) {
+        auto *actor = dynamic_cast<RPGActor *>(ecs::try_get(handle));
+        if (!actor) continue;
+        for (auto &[id, skill] : actor->skills()->known)
+            if (skill.cooldownRemaining > 0.f) skill.cooldownRemaining = std::max(0.f, skill.cooldownRemaining - dt);
 
-        CastingState &cs = actor->skills()->casting;
-        if (!cs.active) continue;
-        cs.remaining -= dt;
-        if (cs.remaining <= 0.f) {
-            const SkillDefinition *def    = SkillRegistry::find(cs.skillId);
-            RPGActor              *target = cs.target;
-            cs.active                     = false;  // clear before resolveCast in case it re-enters casting
-            if (def) resolveCast(actor, *def, target);
+        auto &cast = actor->skills()->casting;
+        if (!cast.active) continue;
+        if (cast.target.intent == CastTargetIntent::Linked) {
+            const auto target = cast.target.entity;
+            if (!target.table || target.table != actor->table || !dynamic_cast<RPGActor *>(ecs::try_get(target)))
+                cast.target = {CastTargetIntent::Retired, {}};
         }
+        cast.remaining -= dt;
+        if (cast.remaining > 0.f) continue;
+        auto       skillId    = std::move(cast.skillId);
+        const auto targetLink = cast.target.entity;
+        const auto intent     = cast.target.intent;
+        cast                  = CastingState{};
+        RPGActor *target      = nullptr;
+        if (intent == CastTargetIntent::Retired) continue;
+        if (intent == CastTargetIntent::Linked) {
+            // Compare the world before dereferencing a handle; a foreign world's lifetime is not borrowed here.
+            if (!targetLink.table || targetLink.table != actor->table) continue;
+            target = dynamic_cast<RPGActor *>(ecs::try_get(targetLink));
+            if (!target) continue;
+        }
+        if (intent != CastTargetIntent::DefaultSelf && intent != CastTargetIntent::Linked) continue;
+        if (intent == CastTargetIntent::DefaultSelf && targetLink.table) continue;
+        const auto *definition = SkillRegistry::find(skillId);
+        if (definition) resolveCast(actor, *definition, target);
     }
 }
 
 void SkillSystem::pollCastEvents(std::vector<SkillCastEvent> &out) {
     auto &q = castQueue();
+    if (&out == &q) return;
+    if (q.size() > out.max_size() - out.size()) throw std::length_error("RPG cast output capacity exhausted");
+    static_assert(std::is_nothrow_move_constructible_v<SkillCastEvent>);
+    const auto required = out.size() + q.size();
+    if (required > out.capacity()) {
+        const auto capacity = out.capacity();
+        const auto growth   = capacity > out.max_size() / 2 ? out.max_size() : capacity * 2;
+        out.reserve(std::max(required, growth));
+    }
     for (auto &e : q) out.push_back(std::move(e));
     q.clear();
 }

@@ -47,14 +47,16 @@ const std::string &neighbor(const UINode &node, FocusDirection direction) {
 }  // namespace
 
 UIHostHandle UIHost::createHost(const std::string &name) {
+    std::string ownedName = name.empty() ? "host" + std::to_string(++g_anonHostSeq) : name;
     UIHost *h = UIHost::create();
     if (!h) return {};
     const UIHostHandle handle = ecs::handle_of(h);
-    h->meta()->entity         = handle;
-    if (name.empty()) {
-        h->meta()->name = "host" + std::to_string(++g_anonHostSeq);
-    } else {
-        h->meta()->name = name;
+    try {
+        h->meta()->entity = handle;
+        h->meta()->name   = std::move(ownedName);
+    } catch (...) {
+        ecs::DestroyEntity(h);
+        throw;
     }
     return handle;
 }

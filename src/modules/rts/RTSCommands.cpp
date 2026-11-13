@@ -1,8 +1,12 @@
+#include <limits>
 #include "rts/RTS.h"
 
 namespace eve::rts {
 Result<FanOutReceipt> RTS::fanOut(Player::Selection& selection, const CommandSpec& command,
                                   const FormationSpec& formation) const {
+    if (selection.revision == std::numeric_limits<std::uint64_t>::max())
+        return Result<FanOutReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::InvariantViolation, "RTS player selection revision exhausted", "selection.revision"));
     auto result = CommandFanOutSystem::fanOut(selection.units, command, formation);
     if (!result) return result;
     ++selection.revision;

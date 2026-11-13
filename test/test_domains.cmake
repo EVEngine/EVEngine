@@ -78,6 +78,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "spatial;core"
     "ik;core"
     "grid;core"
+    "spawn;core"
     "timer;core"
     "os;core"
     "thread;core"
