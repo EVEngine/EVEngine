@@ -1,6 +1,7 @@
 #include "procgen/algorithms/TreeMesh.h"
 
 #include "procgen/algorithms/FoliageCluster.h"
+#include "procgen/texture/NoiseField.h"
 
 #include <algorithm>
 #include <cmath>
@@ -54,22 +55,22 @@ void addTaperedCylinder(MeshBuild& out, V3 a, V3 b, float r0, float r1, int side
     for (int ring = 0; ring < 2; ++ring) {
         const V3    center = ring ? b : a;
         const float radius = ring ? r1 : r0;
-        for (int i = 0; i < sides; ++i) {
+        for (int i = 0; i <= sides; ++i) {
             const float t      = float(i) / float(sides);
-            const float angle  = t * 2.f * kPi;
+            const float angle  = float(i % sides) / float(sides) * 2.f * kPi;
             const V3    radial = add(mul(right, std::cos(angle)), mul(forward, std::sin(angle)));
             const V3    p      = add(center, mul(radial, radius));
             // Left side of the tree atlas is bark; foliage uses the right side.
-            out.addVertex(p.x, p.y, p.z, radial.x, radial.y, radial.z, t * 0.45f, float(ring));
+            out.addVertex(p.x, p.y, p.z, radial.x, radial.y, radial.z, 0.005f + t * 0.47f, float(ring));
         }
     }
     for (int i = 0; i < sides; ++i) {
-        const uint32_t n  = uint32_t((i + 1) % sides);
+        const uint32_t n  = uint32_t(i + 1);
         const uint32_t i0 = base + uint32_t(i), i1 = base + n;
-        const uint32_t i2 = base + uint32_t(sides) + uint32_t(i);
-        const uint32_t i3 = base + uint32_t(sides) + n;
-        out.addTriangle(i0, i2, i1);
-        out.addTriangle(i1, i2, i3);
+        const uint32_t i2 = base + uint32_t(sides + 1) + uint32_t(i);
+        const uint32_t i3 = base + uint32_t(sides + 1) + n;
+        out.addTriangle(i0, i1, i2);
+        out.addTriangle(i1, i3, i2);
     }
 }
 
@@ -149,6 +150,7 @@ struct Tip {
     V3    p;
     V3    dir;
     float scale;
+    float radius = 0.f;
 };
 
 /** @brief Knobs for the blue-noise leaf-cluster foliage mode. */
@@ -265,15 +267,150 @@ StemPath makeCurvedStem(V3 start, V3 direction, V3 bendAxis, float length, float
     return path;
 }
 
-void addStem(MeshBuild& out, const StemPath& path, float r0, float r1, int sides) {
-    const int segmentCount = int(path.points.size()) - 1;
-    for (int i = 0; i < segmentCount; ++i) {
-        const float t0 = float(i) / float(segmentCount);
-        const float t1 = float(i + 1) / float(segmentCount);
-        const float a  = std::pow(t0, 1.25f);
-        const float b  = std::pow(t1, 1.25f);
-        addTaperedCylinder(out, path.points[size_t(i)], path.points[size_t(i + 1)], r0 + (r1 - r0) * a,
-                           r0 + (r1 - r0) * b, sides);
+struct StemSurface {
+    float    taper        = 0.85f;
+    float    rootFlare    = 0.f;
+    float    flareLength  = 0.5f;
+    float    relief       = 0.04f;
+    float    collar       = 0.f;
+    uint32_t seed         = 0;
+    float    noiseAmount  = 0.18f;
+    float    noiseScale   = 3.f;
+    int      knots        = 3;
+    float    knotStrength = 0.35f;
+    int      segments     = 64;
+};
+
+float stemRadius(float t, float r0, float r1, float taper) {
+    return r0 + (r1 - r0) * std::pow(std::clamp(t, 0.f, 1.f), taper);
+}
+
+// One continuous sweep: transported frames, shared rings and arc-length UVs.
+// Local input/output only; does not consume the skeleton/foliage RNG stream.
+void addStem(MeshBuild& out, const StemPath& path, float r0, float r1, int sides, const StemSurface& surface) {
+    const int       sourceSegments = int(path.points.size()) - 1;
+    const int       segments       = std::max(sourceSegments, surface.segments);
+    std::vector<V3> centers;
+    centers.reserve(size_t(segments + 1));
+    for (int i = 0; i <= segments; ++i) {
+        const float at   = float(i) * float(sourceSegments) / float(segments);
+        const int   edge = std::min(int(at), sourceSegments - 1);
+        centers.push_back(add(path.points[size_t(edge)],
+                              mul(sub(path.points[size_t(edge + 1)], path.points[size_t(edge)]), at - float(edge))));
+    }
+    const int          rings = int(centers.size());
+    std::vector<float> arc(size_t(rings), 0.f);
+    std::vector<V3>    tangent(size_t(rings), V3{});
+    for (int i = 0; i < rings; ++i) {
+        const V3 before    = centers[size_t(std::max(0, i - 1))];
+        const V3 after     = centers[size_t(std::min(rings - 1, i + 1))];
+        tangent[size_t(i)] = norm(sub(after, before));
+        if (i > 0) arc[size_t(i)] = arc[size_t(i - 1)] + std::sqrt(distanceSquared(centers[size_t(i)], before));
+    }
+    const float     length = std::max(arc.back(), 1e-5f);
+    const float     phase  = hash01(surface.seed ^ 0xb5297a4du) * 2.f * kPi;
+    const int       stride = sides + 1;
+    std::vector<V3> positions(size_t(rings * stride));
+    NoiseField      coarse, fine;
+    coarse.seed    = surface.seed ^ 0x68e31da4u;
+    coarse.periodX = 4;
+    fine.seed      = surface.seed ^ 0x1b56c4e9u;
+    fine.periodX   = 8;
+    struct Knot {
+        float angle, distance, width, height, strength;
+    };
+    std::vector<Knot> knots;
+    for (int i = 0; i < surface.knots; ++i) {
+        const uint32_t key = surface.seed ^ 0x9e3779b9u ^ (uint32_t(i + 1) * 0x85ebca6bu);
+        knots.push_back({2.f * kPi * hash01(key), length * (0.12f + 0.70f * hash01(key ^ 0x514e28b7u)),
+                         0.45f + 0.4f * hash01(key ^ 0x7feb352du), r0 * (1.4f + 1.8f * hash01(key ^ 0x846ca68bu)),
+                         surface.knotStrength * (0.7f + 0.3f * hash01(key ^ 0xa511e9b3u))});
+    }
+    const float noiseLength = std::max(r0 * surface.noiseScale, 1e-4f);
+    V3          right, forward;
+    basisFor(tangent[0], right, forward);
+    for (int i = 0; i < rings; ++i) {
+        const V3 axis = tangent[size_t(i)];
+        // Project the preceding frame onto this ring instead of switching the
+        // helper axis at an arbitrary direction threshold on every segment.
+        const V3 transported = sub(right, mul(axis, dot(right, axis)));
+        if (dot(transported, transported) < 1e-8f)
+            basisFor(axis, right, forward);
+        else {
+            right   = norm(transported);
+            forward = norm(cross(axis, right));
+        }
+        const float t      = arc[size_t(i)] / length;
+        const float radius = stemRadius(t, r0, r1, surface.taper);
+        const float foot   = surface.rootFlare * std::exp(-3.f * arc[size_t(i)] / surface.flareLength);
+        const float collar = surface.collar * std::exp(-2.5f * arc[size_t(i)] / std::max(r0 * 2.f, 1e-4f));
+        for (int j = 0; j <= sides; ++j) {
+            const float angle  = 2.f * kPi * float(j % sides) / float(sides);
+            const V3    radial = add(mul(right, std::cos(angle)), mul(forward, std::sin(angle)));
+            const float roots  = 0.22f + 1.25f * std::pow(std::max(0.f, std::cos(5.f * angle + phase)), 4.f) +
+                                0.55f * std::pow(std::max(0.f, std::cos(3.f * angle - phase)), 6.f);
+            const float u          = float(j % sides) / float(sides);
+            const float growthMask = std::min(1.f, t * 20.f) * std::min(1.f, (1.f - t) * 8.f);
+            const float body =
+                surface.noiseAmount * (2.f * coarse.valueNoise(u * 4.f, arc[size_t(i)] / noiseLength) - 1.f);
+            const float grain =
+                surface.relief * (2.f * fine.valueNoise(u * 8.f, arc[size_t(i)] / (noiseLength * 0.4f)) - 1.f);
+            float localKnots = 0.f;
+            for (const Knot& knot : knots) {
+                const float angular = 2.f * std::sin((angle - knot.angle) * 0.5f) / knot.width;
+                const float axial   = (arc[size_t(i)] - knot.distance) / knot.height;
+                const float d2      = angular * angular + axial * axial;
+                if (d2 >= 1.f) continue;
+                // A raised lip around a shallow centre gives each knot local
+                // structure instead of inflating a ring around the whole stem.
+                const float falloff = 1.f - d2;
+                localKnots += knot.strength * falloff * falloff * (0.35f + 2.f * d2);
+            }
+            const float detail                = (body + grain + std::clamp(localKnots, 0.f, 0.65f)) * growthMask;
+            const float shaped                = radius * (1.f + detail + collar) + r0 * foot * roots;
+            positions[size_t(i * stride + j)] = add(centers[size_t(i)], mul(radial, shaped));
+        }
+    }
+    const uint32_t base = uint32_t(out.getVertexCount());
+    for (int i = 0; i < rings; ++i) {
+        for (int j = 0; j <= sides; ++j) {
+            const int column = j % sides;
+            const V3  around = sub(positions[size_t(i * stride + (column + 1) % sides)],
+                                   positions[size_t(i * stride + (column + sides - 1) % sides)]);
+            const V3  along  = sub(positions[size_t(std::min(rings - 1, i + 1) * stride + column)],
+                                   positions[size_t(std::max(0, i - 1) * stride + column)]);
+            const V3  normal = norm(cross(norm(around), norm(along)));
+            const V3  p      = positions[size_t(i * stride + j)];
+            out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, 0.005f + 0.47f * float(j) / float(sides),
+                          arc[size_t(i)] / length);
+        }
+    }
+    for (int i = 0; i + 1 < rings; ++i) {
+        for (int j = 0; j < sides; ++j) {
+            const uint32_t a = base + uint32_t(i * stride + j);
+            const uint32_t b = a + 1;
+            const uint32_t c = a + uint32_t(stride);
+            const uint32_t d = c + 1;
+            out.addTriangle(a, b, c);
+            out.addTriangle(b, d, c);
+        }
+    }
+    for (int end = 0; end < 2; ++end) {
+        const int      row = end ? rings - 1 : 0;
+        const V3       n   = mul(tangent[size_t(row)], end ? 1.f : -1.f);
+        const V3       c   = centers[size_t(row)];
+        const uint32_t cap = uint32_t(out.getVertexCount());
+        out.addVertex(c.x, c.y, c.z, n.x, n.y, n.z, 0.24f, end ? 1.f : 0.f);
+        for (int j = 0; j <= sides; ++j) {
+            const V3 p = positions[size_t(row * stride + j)];
+            out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, 0.24f, end ? 1.f : 0.f);
+        }
+        for (int j = 0; j < sides; ++j) {
+            if (end)
+                out.addTriangle(cap, cap + uint32_t(j + 1), cap + uint32_t(j + 2));
+            else
+                out.addTriangle(cap, cap + uint32_t(j + 2), cap + uint32_t(j + 1));
+        }
     }
 }
 
@@ -534,6 +671,16 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
     const float lowerLeafCoverage   = std::clamp(params.getFloat("lowerLeafCoverage", 0.72f), 0.f, 1.f);
     const float upperLeafCoverage   = std::clamp(params.getFloat("upperLeafCoverage", 0.18f), 0.f, 1.f);
     const int   maxChildren         = std::clamp(params.getInt("maxChildren", 2), 1, 4);
+    const float trunkTipRatio       = std::clamp(params.getFloat("trunkTipRatio", 0.10f), 0.03f, 0.4f);
+    const float trunkTaper          = std::clamp(params.getFloat("trunkTaper", 0.85f), 0.5f, 2.f);
+    const float rootFlare           = std::clamp(params.getFloat("rootFlare", 0.70f), 0.f, 1.5f);
+    const float rootFlareHeight     = std::clamp(params.getFloat("rootFlareHeight", 0.10f), 0.03f, 0.25f);
+    const float barkRelief          = std::clamp(params.getFloat("barkRelief", 0.04f), 0.f, 0.12f);
+    const float trunkNoise          = std::clamp(params.getFloat("trunkNoise", 0.18f), 0.f, 0.35f);
+    const float trunkNoiseScale     = std::clamp(params.getFloat("trunkNoiseScale", 3.f), 1.f, 8.f);
+    const int   trunkKnots          = std::clamp(params.getInt("trunkKnots", 3), 0, 8);
+    const float trunkKnotStrength   = std::clamp(params.getFloat("trunkKnotStrength", 0.35f), 0.f, 0.6f);
+    const int   surfaceSegments     = std::clamp(params.getInt("surfaceSegments", 64), 8, 192);
     const ClusterSettings clusters{
         .size           = std::clamp(params.getFloat("clusterSize", 0.30f), 0.04f, 0.8f),
         .leafScale      = std::clamp(params.getFloat("clusterLeafScale", 0.85f), 0.1f, 3.f),
@@ -551,10 +698,26 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
     const V3       root{0.f, 0.f, 0.f};
     const float    trunkAzimuth = randomRange(rng, 0.f, 2.f * kPi);
     const V3       trunkBend{std::cos(trunkAzimuth), 0.f, std::sin(trunkAzimuth)};
-    const StemPath trunk =
+    StemPath       trunk =
         makeCurvedStem(root, {0.f, 1.f, 0.f}, trunkBend, height, trunkCurve * randomRange(rng, 0.72f, 1.28f),
                        curveBack * randomRange(rng, 0.72f, 1.28f), 0.f, curveSegments + 2);
-    addStem(out, trunk, trunkRadius, trunkRadius * 0.16f, sides);
+    // A second broad bend avoids constraining the entire trunk to one plane.
+    const V3 crossBend = cross(V3{0.f, 1.f, 0.f}, trunkBend);
+    for (size_t i = 1; i < trunk.points.size(); ++i) {
+        const float t   = float(i) / float(trunk.points.size() - 1);
+        trunk.points[i] = add(trunk.points[i], mul(crossBend, height * trunkCurve * 0.65f * t * std::sin(kPi * t)));
+    }
+    const StemSurface trunkSurface{.taper        = trunkTaper,
+                                   .rootFlare    = rootFlare,
+                                   .flareLength  = height * rootFlareHeight,
+                                   .relief       = barkRelief,
+                                   .seed         = params.getSeed(),
+                                   .noiseAmount  = trunkNoise,
+                                   .noiseScale   = trunkNoiseScale,
+                                   .knots        = trunkKnots,
+                                   .knotStrength = trunkKnotStrength,
+                                   .segments     = surfaceSegments};
+    addStem(out, trunk, trunkRadius, trunkRadius * trunkTipRatio, sides, trunkSurface);
 
     std::vector<Tip> tips;
     std::vector<Tip> foliageAnchors;
@@ -612,7 +775,10 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                 const float lengthTaper = 1.f - branchLengthFalloff * relativeHeight;
                 const float radiusTaper = 1.f - branchRadiusFalloff * relativeHeight;
                 const float length      = crownRadius * randomRange(rng, 0.72f, 1.18f) * lengthTaper * levelScale;
-                const float r           = trunkRadius * (0.36f * radiusTaper) * levelScale;
+                const float parentRadius = level == 0
+                                               ? stemRadius(h, trunkRadius, trunkRadius * trunkTipRatio, trunkTaper)
+                                               : tips[size_t(i) % tips.size()].radius;
+                const float r = std::min(trunkRadius * (0.36f * radiusTaper) * levelScale, parentRadius * 0.60f);
                 V3          bendRight, bendForward;
                 basisFor(dir, bendRight, bendForward);
                 const V3 bendAxis =
@@ -624,7 +790,15 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                                                      branchCurve * flexibility * randomRange(rng, 0.65f, 1.35f),
                                                      curveBack * 0.55f * flexibility * randomRange(rng, 0.55f, 1.25f),
                                                      verticalAcceleration, std::max(2, curveSegments - level));
-                addStem(out, stem, r, r * 0.22f, std::max(3, sides - level * 2));
+                const StemSurface branchSurface{.taper       = 1.f,
+                                                .relief      = barkRelief,
+                                                .collar      = 0.25f,
+                                                .seed        = params.getSeed() ^ uint32_t(level * 131 + i * 977),
+                                                .noiseAmount = trunkNoise * 0.45f,
+                                                .noiseScale  = trunkNoiseScale,
+                                                .knots       = 0,
+                                                .segments    = std::max(4, surfaceSegments / (4 << level))};
+                addStem(out, stem, r, r * 0.22f, std::max(3, sides - level * 2), branchSurface);
                 const float    coverage = lowerLeafCoverage + (upperLeafCoverage - lowerLeafCoverage) * relativeHeight;
                 const uint32_t coverageKey = params.getSeed() ^ uint32_t(level * 131 + i * 977);
                 if (hash01(coverageKey) < coverage && stem.points.size() > 3) {
@@ -633,7 +807,7 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                     foliageAnchors.push_back(
                         {stem.points[middle], middleDirection, levelScale * (0.72f + 0.28f * (1.f - relativeHeight))});
                 }
-                next.push_back({stem.points.back(), stem.endDirection, levelScale});
+                next.push_back({stem.points.back(), stem.endDirection, levelScale, r * 0.22f});
             }
             foliageAnchors.insert(foliageAnchors.end(), next.begin(), next.end());
             tips.swap(next);

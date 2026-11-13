@@ -12,9 +12,9 @@ namespace eve::procgen {
  * A cluster is a spherical volume filled with a handful of leaf planes. Each
  * plane is a disk whose leaf centres come from a blue-noise (Poisson-disk)
  * sampler, so the leaves stay evenly spread instead of clumping the way an
- * independent per-leaf random draw does. Only leaf quads are emitted, which is
- * the geometric equivalent of "leaves opaque, everything else transparent":
- * the gaps between leaves cost no geometry, no blending and no sort order.
+ * independent per-leaf random draw does. Each leaf is a rectangular quad; use a masked material with a single-leaf
+ * alpha-cutout atlas (leafLayout="single") for rounded silhouettes and
+ * transparent padding. Alpha cutoff avoids transparent blending sort order.
  *
  * The planes are placed at stratified yaw angles around the cluster's Y axis
  * with a small random tilt and offset, and vertex normals are transferred from

@@ -663,6 +663,28 @@ void sampleLeafCardAtlas(const NoiseField &noise, float fu, float v,
     sampleOvateLeafCard(noise, localU, localV, panels[size_t(panel)], cover, shade);
 }
 
+/** @brief Six rounded single-leaf cutouts with transparent padding and seeded shape variation. */
+void sampleSingleLeafAtlas(const NoiseField &noise, float fu, float v, float &cover, float &shade) {
+    const int   col = std::clamp(int(fu * 2.f), 0, 1), row = std::clamp(int(v * 3.f), 0, 2);
+    const int   panel = col + 2 * row;
+    const float x = fu * 2.f - float(col), y = v * 3.f - float(row);
+    const float angle = (noise.hash01(panel, 71) - 0.5f) * 0.28f;
+    const float dx = x - 0.5f, dy = y - 0.5f;
+    const float rx     = dx * std::cos(angle) - dy * std::sin(angle);
+    const float ry     = dx * std::sin(angle) + dy * std::cos(angle);
+    const float halfH  = 0.37f + noise.hash01(panel, 73) * 0.035f;
+    const float halfW  = (0.28f + noise.hash01(panel, 79) * 0.075f) * (1.f - ry * 0.38f);
+    const float bend   = (noise.hash01(panel, 83) - 0.5f) * ry * ry * 0.8f;
+    const float side   = rx - bend;
+    const float d      = side * side / (halfW * halfW) + ry * ry / (halfH * halfH);
+    cover              = 1.f - smoothstep(0.94f, 1.02f, d);
+    const float midrib = std::exp(-std::fabs(side) * 95.f);
+    const float veins  = std::pow(std::max(0.f, std::cos((ry - std::fabs(side) * 0.65f) * 62.f)), 12.f);
+    shade              = std::clamp(0.39f + 0.27f * noise.hash01(panel, 19) + 0.13f * noise.fbm(x * 4.f, y * 7.f, 3) -
+                                        0.09f * std::fabs(side) + 0.07f * midrib + 0.025f * veins,
+                                    0.f, 1.f);
+}
+
 /**
  * @brief Dense leafy fill for bush/canopy blobs (mostly opaque).
  */
@@ -698,37 +720,111 @@ void sampleFoliageFill(const NoiseField &noise, float u, float v, float scale, f
     cover = std::clamp(cover * 0.55f + 0.45f, 0.f, 1.f);
 }
 
-/**
- * @brief Sample brown bark colour (shared by tex.tree_atlas / tex.foliage twigs).
- */
-Rgba8 sampleBarkColor(const NoiseField &noise, float bu, float v, float scale, int colors) {
-    ColorRamp barkRamp;
-    barkRamp.add(0.00f, 28, 18, 12);
-    barkRamp.add(0.22f, 58, 38, 24);
-    barkRamp.add(0.48f, 102, 72, 44);
-    barkRamp.add(0.72f, 148, 110, 70);
-    barkRamp.add(1.00f, 68, 46, 28);
-    const float warp = noise.warp(bu * scale, v * scale, 2.1f, 3);
-    const float grain = 0.5f + 0.5f * std::sin((bu * 9.f + warp * 6.f) * 6.28318f);
-    const float ridge = noise.ridged(bu * 1.6f * scale, v * 0.28f * scale, 5);
-    const float crack =
-        std::pow(std::fabs(noise.valueNoise(bu * 1.4f * scale, v * 4.2f * scale) - 0.5f) * 2.f, 1.55f);
-    const float flake = noise.fbm(bu * 3.2f * scale + 1.7f, v * 0.9f * scale, 3);
-    const float h =
-        std::clamp(grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f, 0.f, 1.f);
-    return barkRamp.sampleBanded(h, colors);
+// Shared relief for colour, normals and packed roughness/AO. The two samples
+// wrap circumference without imposing a short repeat along the trunk.
+struct BarkSample {
+    float height, pigment, roughness, ao;
+};
+
+BarkSample sampleBark(const NoiseField &source, float u, float v, float scale) {
+    NoiseField noise = source;
+    noise.periodX = noise.periodY = 0;
+    const auto field              = [&](float x) {
+        const float y    = v * scale;
+        const float warp = noise.fbm(x * 5.f + 19.f, y * 1.7f, 3) - 0.5f;
+        const float bend = noise.fbm(x * 12.f, y * 4.f + 37.f, 3) - 0.5f;
+        const float px   = x * 30.f + warp * 3.5f + bend * 0.8f;
+        const float py   = y * 3.2f + noise.fbm(x * 7.f, y * 2.f, 2) * 1.2f;
+        // Stretched cellular boundaries give irregular plate widths, forks and
+        // finite lengths; no equally spaced sine grooves.
+        const float edge    = noise.worleyEdge(px, py);
+        const float fissure = 1.f - smoothstep(0.025f, 0.16f, edge);
+        const float chips   = noise.fbm(x * 64.f + warp, y * 18.f, 3);
+        const float grain   = noise.fbm(x * 180.f, y * 55.f, 2);
+        const float weather = noise.fbm(x * 9.f + 41.f, y * 7.f, 3);
+        const float h = std::clamp(0.58f - fissure * 0.40f + (chips - 0.5f) * 0.26f + (grain - 0.5f) * 0.10f, 0.f, 1.f);
+        return BarkSample{
+            h, std::clamp(0.48f + (weather - 0.5f) * 0.6f + (chips - 0.5f) * 0.18f - fissure * 0.30f, 0.f, 1.f),
+            std::clamp(0.77f + weather * 0.16f + fissure * 0.06f, 0.f, 1.f), 1.f - fissure * 0.35f};
+    };
+    const float blend = smoothstep(0.f, 1.f, u);
+    const auto  a = field(u), b = field(u - 1.f);
+    return {a.height + (b.height - a.height) * blend, a.pigment + (b.pigment - a.pigment) * blend,
+            a.roughness + (b.roughness - a.roughness) * blend, a.ao + (b.ao - a.ao) * blend};
+}
+
+Rgba8 sampleBarkColor(const NoiseField &noise, float u, float v, float scale, int colors) {
+    ColorRamp ramp;
+    ramp.add(0.f, 28, 23, 19);
+    ramp.add(0.3f, 58, 47, 37);
+    ramp.add(0.6f, 99, 84, 66);
+    ramp.add(1.f, 145, 131, 108);
+    return ramp.sampleBanded(sampleBark(noise, u, v, scale).pigment, colors);
+}
+
+// Generate atlas-aware maps: finite differences wrap inside the bark strip,
+// never across its boundary into the leaves. Leaves retain their sphere normals.
+std::unique_ptr<image::ImageData> genBarkAtlasMap(const Params &params, const TextureGenContext &ctx, float barkWidth,
+                                                  std::string &error) {
+    const std::string map = params.getString("map", "albedo");
+    if (map != "normal" && map != "surface") {
+        error = "map must be albedo|normal|surface";
+        return nullptr;
+    }
+    NoiseField noise;
+    noise.seed                 = ctx.seed;
+    const int               bw = std::max(2, int(std::ceil(barkWidth * float(ctx.width - 1))));
+    std::vector<BarkSample> samples(size_t(bw * ctx.height));
+    for (int y = 0; y < ctx.height; ++y)
+        for (int x = 0; x < bw; ++x)
+            samples[size_t(y * bw + x)] =
+                sampleBark(noise, float(x) / float(bw - 1), float(y) / float(std::max(1, ctx.height - 1)), ctx.scale);
+    auto        img      = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    const float strength = std::clamp(params.getFloat("barkNormalStrength", 1.f), 0.f, 3.f);
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            float nx = 0.f, ny = 0.f, nz = 1.f, roughness = 0.88f, ao = 1.f;
+            if (x < bw) {
+                const int column = x % (bw - 1);
+                const int left = (column + bw - 2) % (bw - 1), right = (column + 1) % (bw - 1);
+                const int below = std::max(0, y - 1), above = std::min(ctx.height - 1, y + 1);
+                nx = -(samples[size_t(y * bw + right)].height - samples[size_t(y * bw + left)].height) * float(bw - 1) *
+                     0.035f * strength;
+                ny = -(samples[size_t(above * bw + x)].height - samples[size_t(below * bw + x)].height) *
+                     float(ctx.height - 1) * 0.008f * strength;
+                const float inv = 1.f / std::sqrt(nx * nx + ny * ny + 1.f);
+                nx *= inv;
+                ny *= inv;
+                nz        = inv;
+                roughness = samples[size_t(y * bw + x)].roughness;
+                ao        = samples[size_t(y * bw + x)].ao;
+            }
+            img->setPixel(
+                x, y,
+                image::ImageData::Colorf{nx * 0.5f + 0.5f, ny * 0.5f + 0.5f, map == "surface" ? ao : nz * 0.5f + 0.5f,
+                                         map == "surface" ? 1.f - roughness : 1.f});
+        }
+    }
+    return img;
 }
 
 /**
  * tex.tree_atlas — split atlas matching mesh.tree UV layout:
- *   u in [0, 0.45] bark on the left, u in [0.55, 1] foliage on the right.
+ *   u in [0, 0.48] bark on the left, u in [0.52, 1] foliage on the right.
  */
 std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string &error) {
+    const std::string layout = params.getString("leafLayout", "cards");
+    if (layout != "cards" && layout != "single") {
+        error = "leafLayout must be cards|single";
+        return nullptr;
+    }
+
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
+    if (params.getString("map", "albedo") != "albedo") return genBarkAtlasMap(params, ctx, 0.48f, error);
     auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     NoiseField noise;
     noise.seed = ctx.seed;
@@ -759,8 +855,14 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
-                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
-                if (cover < 0.5f) {
+                if (layout == "single")
+                    sampleSingleLeafAtlas(noise, fu, v, cover, shade);
+                else
+                    sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
+                if (layout == "single") {
+                    color   = leafRamp.sample(shade);
+                    color.a = uint8_t(std::clamp(cover, 0.f, 1.f) * 255.f);
+                } else if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
                     color   = leafRamp.sample(shade);
@@ -784,11 +886,18 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
  *   u in [0.52, 1] 3×3 transparent ovate leaf stamps for leaf cards.
  */
 std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
+    const std::string layout = params.getString("leafLayout", "cards");
+    if (layout != "cards" && layout != "single") {
+        error = "leafLayout must be cards|single";
+        return nullptr;
+    }
+
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
         error = "texture size too large (max 4096)";
         return nullptr;
     }
+    if (params.getString("map", "albedo") != "albedo") return genBarkAtlasMap(params, ctx, 0.22f, error);
     auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
     NoiseField noise;
     noise.seed = ctx.seed;
@@ -830,8 +939,14 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
                 color = {40, 78, 36, 255};
             } else {
                 const float fu = (u - 0.52f) / 0.48f;
-                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
-                if (cover < 0.5f) {
+                if (layout == "single")
+                    sampleSingleLeafAtlas(noise, fu, v, cover, shade);
+                else
+                    sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
+                if (layout == "single") {
+                    color   = leafRamp.sample(shade);
+                    color.a = uint8_t(std::clamp(cover, 0.f, 1.f) * 255.f);
+                } else if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
                     color   = leafRamp.sample(shade);
@@ -953,6 +1068,10 @@ void TextureRecipeRegistry::registerBuiltins() {
         atlas.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
         atlas.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
         atlas.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        atlas.params.push_back(ParamDescriptor::choice("map", "Map", "albedo", {"albedo", "normal", "surface"}));
+        atlas.params.push_back(
+            ParamDescriptor::floating("barkNormalStrength", "Bark Normal Strength", 1.f, 0.f, 3.f, 0.1f));
+        atlas.params.push_back(ParamDescriptor::choice("leafLayout", "Leaf Layout", "cards", {"cards", "single"}));
         registerRecipe(std::move(atlas), genTreeAtlas);
     }
     {
@@ -960,6 +1079,10 @@ void TextureRecipeRegistry::registerBuiltins() {
         foliage.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
         foliage.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
         foliage.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        foliage.params.push_back(ParamDescriptor::choice("map", "Map", "albedo", {"albedo", "normal", "surface"}));
+        foliage.params.push_back(
+            ParamDescriptor::floating("barkNormalStrength", "Bark Normal Strength", 1.f, 0.f, 3.f, 0.1f));
+        foliage.params.push_back(ParamDescriptor::choice("leafLayout", "Leaf Layout", "cards", {"cards", "single"}));
         registerRecipe(std::move(foliage), genFoliage);
     }
     {
