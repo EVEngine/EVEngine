@@ -33,7 +33,7 @@ function(ensure_third_party_checkout)
     message(STATUS "third-party: cloning https://github.com/EVEngine/third-party at ${EVENGINE_THIRD_PARTY_PIN} ...")
     file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}")
     execute_process(
-        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main --recurse-submodules
+        COMMAND ${GIT_EXECUTABLE} clone --depth 1 --branch main
             https://github.com/EVEngine/third-party.git "${_eve_tp_dir}"
         RESULT_VARIABLE _eve_tp_clone_result
         OUTPUT_VARIABLE _eve_tp_clone_out
@@ -43,7 +43,7 @@ function(ensure_third_party_checkout)
         message(FATAL_ERROR
             "Failed to clone third-party (exit ${_eve_tp_clone_result}).\n"
             "${_eve_tp_clone_out}${_eve_tp_clone_err}\n"
-            "Manually run: git clone --recurse-submodules https://github.com/EVEngine/third-party ${_eve_tp_dir}")
+            "Manually run: git clone https://github.com/EVEngine/third-party ${_eve_tp_dir}")
     endif()
     # The shallow main clone is not guaranteed to be the pinned commit; move
     # it onto the pin before submodules are synced.
@@ -71,9 +71,10 @@ function(ensure_third_party_checkout)
             "Failed to check out pinned third-party commit ${EVENGINE_THIRD_PARTY_PIN}.\n"
             "${_eve_tp_checkout_out}${_eve_tp_checkout_err}")
     endif()
-    # Shallow + recurse can leave nested submodules empty on some runners; force-init.
+    # Initialize only after selecting the pin. OpenSSL's optional nested test
+    # repositories are not inputs to the aggregate's production build.
     execute_process(
-        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive -- . ":(exclude)openssl"
         WORKING_DIRECTORY "${_eve_tp_dir}"
         RESULT_VARIABLE _eve_tp_sub_result
         OUTPUT_VARIABLE _eve_tp_sub_out
@@ -83,6 +84,17 @@ function(ensure_third_party_checkout)
         message(FATAL_ERROR
             "Failed to init third-party submodules (exit ${_eve_tp_sub_result}).\n"
             "${_eve_tp_sub_out}${_eve_tp_sub_err}")
+    endif()
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} submodule update --init --depth 1 -- openssl
+        WORKING_DIRECTORY "${_eve_tp_dir}"
+        RESULT_VARIABLE _eve_tp_ssl_result
+        OUTPUT_VARIABLE _eve_tp_ssl_out
+        ERROR_VARIABLE _eve_tp_ssl_err)
+    if(NOT _eve_tp_ssl_result EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to init pinned OpenSSL (exit ${_eve_tp_ssl_result}).\n"
+            "${_eve_tp_ssl_out}${_eve_tp_ssl_err}")
     endif()
     if(NOT EXISTS "${_eve_tp_dir}/imgui/imgui.cpp")
         message(FATAL_ERROR
@@ -161,6 +173,12 @@ function(check_third_party_project name repo)
         # parent build, so nested dependencies must not install another layer.
         -DASSIMP_BUILD_USE_CCACHE=OFF
     )
+    # Source builds may use a portable native Perl instead of the standard
+    # Strawberry installation. Preserve an explicit host-tool selection across
+    # the ExternalProject configure boundary; OpenSSL validates its platform.
+    if(PERL_EXECUTABLE)
+        list(APPEND _eve_tp_cmake_args "-DPERL_EXECUTABLE:FILEPATH=${PERL_EXECUTABLE}")
+    endif()
     # A sanitizer-enabled monolithic unit-test executable can exceed the x86-64
     # small model's 2 GiB section reach. Every static dependency must use the
     # same large code model as the executable; otherwise internal references in

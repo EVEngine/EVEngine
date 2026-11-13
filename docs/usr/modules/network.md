@@ -27,6 +27,34 @@ req.submit();
 
 用 `newHttp(method, url)`，设置 header、body、timeout 和 TLS 校验后 `submit()`；每帧调用 `net.pump()` 派发结果。不要阻塞渲染线程等待网络。
 
+### HTTPS 与证书信任
+
+原生 HTTPS 请求使用 Poco NetSSL 和 OpenSSL，最低 TLS 1.2。默认检查证书链、有效期和主机名。
+Windows 使用系统根证书存储；Linux/macOS 使用系统 CA 文件。设置了 `SSL_CERT_FILE` 或
+`SSL_CERT_DIR` 时使用 OpenSSL 的环境信任配置。没有可用默认根证书的平台需要显式提供 CA。
+
+```squirrel
+local net = eve.Network();
+net.setCaLocation("certificates/root-ca.pem"); // PEM 文件或 OpenSSL 哈希 CA 目录
+local req = net.newHttp("GET", "https://localhost:8443/");
+req.setCaLocation("certificates/request-ca.pem"); // 仅覆盖此请求
+req.setTimeout(5000);
+req.submit();
+```
+
+自定义 CA 独占替换默认信任源；空路径恢复默认。请求没有设置 CA 时继承模块配置。
+`setVerifySsl` 同样支持模块默认值与请求覆盖，每个请求使用独立 TLS 上下文。
+配置在 `submit()` 时复制，后续修改不影响已经提交的请求。
+
+成功投递 `httpresp(request, status, ByteData)`，HTTP 404 等状态仍是正常 HTTP 响应。
+证书不可信、过期、主机名不匹配或 CA 配置无效会投递 `neterr(request, "tls")`；
+超时与 DNS 失败分别为 `"timeout"`、`"dns"`，其他连接失败为 `"refused"`。
+
+请求的配置、提交、销毁和 `pump()` 在模块所属线程执行。销毁请求会丢弃尚未 pump 的结果，
+已经进入事件队列的消息借用请求身份，因此消费这些事件前需要保留请求对象。
+请求可以晚于模块销毁，之后不能再提交。模块销毁会等待后台任务结束；套接字超时约束各次 I/O，
+操作系统 DNS 解析可能耗时更长。C++ 请求复制只复制配置，不复制在途任务。
+
 ### 建立 TCP 会话
 
 服务端 `newTcp()` 后 bind/listen/accept，客户端 connect；用 `newChannel(socket)` 封装消息发送，并把多个连接加入 `newSession()` 统一管理。断线时从 Session 移除并清理 socket。
