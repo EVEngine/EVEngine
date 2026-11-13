@@ -52,3 +52,13 @@ make run/linux-debug GAME=examples/flight-vehicle-controllers
 python3 scripts/check_examples.py
 MIN_RUN_SECONDS=2 RUN_SECONDS=8 bash scripts/smoke_examples.sh flight-vehicle-controllers
 ```
+
+## 2026-11-13 画面复查
+
+修复每帧同步覆盖部件偏移的问题，按车体/飞机姿态变换局部部件；补齐车轮、玻璃、灯组、机翼、尾翼与座舱，改善追踪镜头、连续道路和 HUD 对比度。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。
+
+### 圆形车轮修正
+
+四轮改为圆形轮胎、轮毂和五辐条；轮辐随实际车速转动。按 C 切换近景。[最新实帧与验证](../../docs/images/examples/review-2026-11-13/round-wheels/README.md)。

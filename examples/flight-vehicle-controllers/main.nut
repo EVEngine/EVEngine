@@ -8,6 +8,7 @@ const STEP = 0.016666666666667;
 
 persist mode = "car"
 persist ready = false
+persist closeView = false
 
 local physicsOwner = null;
 local world2 = null;
@@ -17,6 +18,7 @@ local flyCtrl = null;
 local camera = null;
 local cubeMesh = null;
 local carParts = [];
+local wheelRoll = 0.0;
 local planeParts = [];
 local scenery = [];
 local materials = [];
@@ -70,7 +72,7 @@ function buildScenery() {
         local a = i * 2.0 * PI / 48.0;
         local x = cos(a) * 34.0;
         local z = sin(a) * 22.0;
-        box(x, 0.02, z, 5.5, 0.05, 3.2, asphalt, -a);
+        box(x, 0.02, z, 7.0, 0.05, 4.6, asphalt, -a);
         if (i % 2 == 0) box(x, 0.04, z, 0.35, 0.04, 2.4, stripe, -a);
     }
     // Runway strip for the plane.
@@ -82,63 +84,102 @@ function buildScenery() {
     box(-42.0, 12.5, -8.0, 4.2, 1.0, 4.2, material(0.55, 0.75, 0.9, 0.0, true));
     for (local i = 0; i < 10; ++i) {
         local a = i * 0.62;
-        box(cos(a) * 90.0, 4.0 + (i % 3), sin(a) * 90.0, 18.0, 8.0 + i, 14.0, material(0.18, 0.32, 0.22));
+        local hill=box(cos(a)*90.0,0.0,sin(a)*90.0,26.0,15.0+i,23.0,material(0.08,0.19,0.12));
+        hill.setMesh(gfx.newMeshSphere(16,10));
     }
     for (local i = 0; i < 8; ++i)
         box(-20.0 + i * 8.0, 28.0 + (i % 3) * 2.0, -70.0 + (i % 2) * 12.0, 10.0, 3.0, 6.0, cloud);
 }
 
+// Keep local offsets alongside their renderables; the controller remains pose authority.
+function carPart(x,y,z,sx,sy,sz,m) {
+    local part={e=box(x,y,z,sx,sy,sz,m),x=x,y=y,z=z,pitch=0.0,spoke=false,phase=0.0};
+    carParts.append(part);
+    return part;
+}
+function planePart(x,y,z,sx,sy,sz,m) {
+    planeParts.append({e=box(x,y,z,sx,sy,sz,m),x=x,y=y,z=z});
+}
 function buildCarVisual() {
-    local body = material(0.15, 0.55, 0.95, 0.35);
-    local dark = material(0.05, 0.06, 0.08, 0.4);
-    local glass = material(0.55, 0.75, 0.9, 0.1);
-    carParts = [
-        box(0.0, 0.0, 0.0, 2.2, 0.55, 4.2, body),
-        box(0.0, 0.55, -0.2, 1.8, 0.45, 2.0, glass),
-        box(0.0, 0.05, 0.0, 2.35, 0.12, 4.4, dark)
-    ];
+    local body=material(0.08,0.32,0.48,0.35), dark=material(0.025,0.035,0.045), glass=material(0.07,0.15,0.21,0.3);
+    local lamp=material(0.95,0.85,0.52,0.0,true), red=material(0.85,0.12,0.07,0.0,true);
+    carPart(0.0,0.65,0.0,4.3,0.65,2.0,body);
+    carPart(-0.35,1.22,0.0,2.0,0.65,1.75,glass);
+    carPart(-0.45,1.59,0.0,2.0,0.12,1.85,body);
+    carPart(2.1,0.55,0.0,0.15,0.3,2.15,dark);
+    carPart(-2.1,0.55,0.0,0.15,0.3,2.15,dark);
+    // Native cylinder: radius 1, height 2 along Y. Rotate its axle onto local Z.
+    local wheelMesh=gfx.newMeshCylinder(40,1,true);
+    local alloy=material(0.42,0.47,0.50,0.65);
+    for(local axle=0;axle<2;++axle) foreach(side in [-1.0,1.0]) {
+        local x=axle==0?-1.35:1.35,z=side*1.08;
+        local tire=carPart(x,0.46,z,0.44,0.18,0.44,dark);
+        tire.e.setMesh(wheelMesh);tire.pitch=PI*0.5;
+        local rim=carPart(x,0.46,side*1.255,0.29,0.018,0.29,alloy);
+        rim.e.setMesh(wheelMesh);rim.pitch=PI*0.5;
+        local hub=carPart(x,0.46,side*1.28,0.095,0.022,0.095,dark);
+        hub.e.setMesh(wheelMesh);hub.pitch=PI*0.5;
+        for(local i=0;i<5;++i) {
+            local spoke=carPart(x,0.46,side*1.28,0.22,0.045,0.025,alloy);
+            spoke.spoke=true;spoke.phase=i*2.0*PI/5.0;
+        }
+    }
+    foreach(z in [-0.72,0.72]) {
+        carPart(2.19,0.84,z,0.05,0.22,0.42,lamp);
+        carPart(-2.19,0.84,z,0.05,0.22,0.42,red);
+    }
 }
-
 function buildPlaneVisual() {
-    local body = material(0.85, 0.88, 0.92, 0.25);
-    local accent = material(0.9, 0.25, 0.18, 0.2);
-    local dark = material(0.12, 0.14, 0.16, 0.3);
-    planeParts = [
-        box(0.0, 0.0, 0.0, 4.8, 0.55, 1.1, body),
-        box(0.2, 0.05, 0.0, 1.4, 0.12, 6.5, accent),
-        box(-1.8, 0.35, 0.0, 0.9, 0.08, 2.4, accent),
-        box(-2.0, 0.7, 0.0, 0.7, 1.1, 0.12, dark)
-    ];
+    local body=material(0.70,0.72,0.63,0.25), accent=material(0.72,0.19,0.09), dark=material(0.06,0.14,0.19,0.3);
+    planePart(0.0,0.0,0.0,5.2,0.65,0.95,body);
+    planePart(0.4,0.07,0.0,1.5,0.14,7.5,accent);
+    planePart(-1.8,0.22,0.0,1.1,0.12,2.6,accent);
+    planePart(-2.0,0.62,0.0,1.0,1.0,0.15,accent);
+    planePart(0.3,0.48,0.0,1.3,0.5,0.65,dark);
+    planePart(2.65,0.0,0.0,0.08,2.2,0.15,dark);
 }
-
 function syncCarVisual(p) {
-    // Vehicle heading is degrees in XY; pose.yaw is already render radians.
-    foreach (e in carParts) {
-        e.setPosition(p.x, 0.45, p.z);
-        e.setRotation(p.yaw, 0.0, 0.0);
+    foreach(part in carParts) {
+        local angle=wheelRoll+part.phase;
+        local lx=part.x+(part.spoke?cos(angle)*0.16:0.0);
+        local ly=part.y+(part.spoke?sin(angle)*0.16:0.0);
+        local x=cos(p.yaw)*lx+sin(p.yaw)*part.z;
+        local z=-sin(p.yaw)*lx+cos(p.yaw)*part.z;
+        part.e.setPosition(p.x+x,ly,p.z+z);
+        part.e.setRotation(p.yaw,part.pitch,part.spoke?angle:0.0);
     }
 }
-
 function syncPlaneVisual(p) {
-    foreach (e in planeParts) {
-        e.setPosition(p.x, p.y, p.z);
-        e.setRotation(p.yaw, p.pitch, p.roll);
+    // Render transform is Y * X * Z, matching RenderTransformProjection.
+    foreach(part in planeParts) {
+        local x=cos(p.roll)*part.x-sin(p.roll)*part.y;
+        local y=sin(p.roll)*part.x+cos(p.roll)*part.y;
+        local z=sin(p.pitch)*y+cos(p.pitch)*part.z;
+        y=cos(p.pitch)*y-sin(p.pitch)*part.z;
+        part.e.setPosition(p.x+cos(p.yaw)*x+sin(p.yaw)*z,p.y+y,p.z-sin(p.yaw)*x+cos(p.yaw)*z);
+        part.e.setRotation(p.yaw,p.pitch,p.roll);
     }
 }
 
+function toggleCloseView() { closeView = !closeView; }
 function followCamera(target, lookAhead, height, distance, dt) {
+    if(closeView && mode=="car") {lookAhead=0.0;height=2.4;distance=6.5;}
     // headingRad: vehicle forward in XZ (neon-racing convention). Plane uses yaw as heading.
     local h = "headingRad" in target ? target.headingRad : target.yaw;
-    local desiredX = target.x - cos(h) * distance;
-    local desiredZ = target.z - sin(h) * distance;
+    local desiredX = target.x - cos(h - 0.42) * distance;
+    local desiredZ = target.z - sin(h - 0.42) * distance;
     local desiredY = target.y + height;
-    local k = clampf(dt * 4.5, 0.0, 1.0);
+    // Fast aircraft need a locked chase offset; smoothing adds a speed-dependent camera lag.
+    local k = mode == "plane" ? 1.0 : clampf(dt * 4.5, 0.0, 1.0);
     camX += (desiredX - camX) * k;
     camY += (desiredY - camY) * k;
     camZ += (desiredZ - camZ) * k;
     camera.setEye(camX, camY, camZ);
     camera.setTarget(target.x + cos(h) * lookAhead, target.y + 0.8, target.z + sin(h) * lookAhead);
 }
+
+// Input intent is separate from the fixed-step controller/physics update.
+function readCarInput(controller) { controller.sampleKeyboard(); }
 
 function toggleMode() {
     mode = mode == "car" ? "plane" : "car";
@@ -190,9 +231,10 @@ eve_init <- function() {
     camera.setUp(0.0, 1.0, 0.0);
     camera.setFov(55.0);
     camera.setClipPlanes(0.2, 500.0);
-    camera.setAmbient(0.48, 0.55, 0.68);
+    camera.setAmbient(0.18, 0.22, 0.27);
+    camera.setExposure(0.85);
     camera.setActive(true);
-    gfx.setDirectionalLight(-0.35, -1.0, -0.25, 1.6, 1.5, 1.35);
+    gfx.setDirectionalLight(-0.35, 1.0, -0.25, 0.85, 0.80, 0.70);
 
     fontOwner = eve.Font();
     local data = fontOwner.newFontDataFromFile("assets/DejaVuSans-Bold.ttf", 22);
@@ -212,17 +254,19 @@ eve_update <- function(dt) {
     if (!ready) return;
     if (pressed("tab") || pressed("TAB")) toggleMode();
     if (pressed("r") || pressed("R")) resetActive();
+    if (pressed("c") || pressed("C")) toggleCloseView();
 
     accumulator += clampf(dt, 0.0, 0.25);
     while (accumulator >= STEP) {
         if (mode == "car") {
-            carCtrl.sampleKeyboard();
+            readCarInput(carCtrl);
             flyCtrl.cruiseHold();
         } else {
             flyCtrl.sampleKeyboard();
             carCtrl.park();
         }
         carCtrl.step(STEP);
+        wheelRoll = (wheelRoll - carCtrl.pose().speed * STEP / 0.44) % (2.0 * PI);
         flyCtrl.step(STEP);
         accumulator -= STEP;
     }
@@ -232,9 +276,9 @@ eve_update <- function(dt) {
     syncCarVisual(carPose);
     syncPlaneVisual(planePose);
     followCamera(mode == "car" ? carPose : planePose,
-                 mode == "car" ? 6.0 : 10.0,
-                 mode == "car" ? 5.5 : 4.0,
-                 mode == "car" ? 12.0 : 16.0,
+                 mode == "car" ? 1.0 : 0.0,
+                 mode == "car" ? 5.0 : 7.0,
+                 mode == "car" ? 10.0 : 10.0,
                  dt);
 };
 
@@ -242,6 +286,7 @@ eve_render <- function() {
     gfx.clear();
     gfx.render3D();
     if (hudFont == null) return;
+    gfx.drawSolidRect(10.0, 10.0, 480.0, 132.0, 0.025, 0.045, 0.065, 0.94);
     local carPose = carCtrl.pose();
     local planePose = flyCtrl.pose();
     local line1 = mode == "car" ? "MODE  CAR  (VehicleController)" : "MODE  PLANE  (FlyingController)";
@@ -250,5 +295,5 @@ eve_render <- function() {
     gfx.drawText(hudFont, line1, 18.0, 18.0, 1.0, 1.0, 1.0, 1.0, 1.0);
     gfx.drawText(hudFont, line2, 18.0, 46.0, 0.75, 0.9, 1.0, 1.0, 0.9);
     gfx.drawText(hudFont, line3, 18.0, 74.0, 0.9, 0.85, 0.7, 1.0, 0.9);
-    gfx.drawText(hudFont, "Tab switch  R reset", 18.0, 108.0, 0.7, 0.75, 0.8, 1.0, 0.8);
+    gfx.drawText(hudFont, "Tab switch  R reset  C close view", 18.0, 108.0, 0.7, 0.75, 0.8, 1.0, 0.8);
 };

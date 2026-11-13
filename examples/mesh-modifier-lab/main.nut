@@ -1,3 +1,4 @@
+persist modifierMaterials=[]
 // Mesh Modifier Lab — source mesh plus graph-compiled and interactive deformation variants.
 
 persist modifierObjects = []
@@ -44,8 +45,10 @@ function modifierAdd(mesh, x, tintR, tintG, tintB) {
     local uploaded = modifierRequire(procgen.uploadMesh(mesh, gfx), "upload mesh").value;
     local object = eve.Renderable3D();
     object.setMesh(uploaded);
-    object.setPosition(x, -2.0, 0.0);
-    object.setTint(tintR, tintG, tintB, 1.0);
+    local i=modifierObjects.len();
+    object.setPosition(10.0-(i%5)*5.0, 4.0-(i/5).tointeger()*6.0, 0.0);
+    local mat=gfx.newMaterial();mat.setTint(tintR,tintG,tintB,1.0);mat.setRoughness(0.72);
+    modifierMaterials.append(mat);object.setMaterial(mat);
     object.setRoughness(0.72);
     object.setMetallic(0.04);
     object.setCastShadow(true);
@@ -228,10 +231,11 @@ function modifierBuildShowcase() {
 
 if (modifierCamera == null) {
     modifierCamera = eve.Camera3D();
-    modifierCamera.setEye(12.0, 5.8, -43.0);
-    modifierCamera.setTarget(12.0, 0.2, 0.0);
+    modifierCamera.setEye(0.0, 0.0, -30.0);
+    modifierCamera.setTarget(0.0, 0.0, 0.0);
     modifierCamera.setUp(0.0, 1.0, 0.0);
-    modifierCamera.setFov(48.0);
+    modifierCamera.setFov(40.0);
+    modifierCamera.setExposure(0.78);
     modifierCamera.setAmbient(0.24, 0.27, 0.32);
     modifierCamera.setActive(true);
     gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.35, 1.25, 1.10);
@@ -241,11 +245,26 @@ if (modifierObjects.len() == 0) modifierBuildShowcase();
 
 function eve_update(dt) {
     modifierFrame += 1;
-    foreach (object in modifierObjects) object.setYaw(8.0);
+    foreach (object in modifierObjects) object.setYaw(0.25);
     if (!modifierScreenshotSaved && modifierFrame > 12 && gfx.saveFramePng("mesh-modifier-lab.png")) {
         modifierScreenshotSaved = true;
         print("mesh-modifier-lab: screenshot saved\n");
     }
 }
 
-function eve_render() { gfx.clear(); gfx.render3D(); }
+persist labelOwner=null
+persist labelFont=null
+if(labelFont==null) {
+    labelOwner=eve.Font();
+    local data=labelOwner.newFontDataFromFile("assets/DejaVuSans-Bold.ttf",18);
+    labelFont=gfx.newFont(data," ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/|:+-");
+}
+function eve_render() {
+    gfx.clear();gfx.render3D();
+    gfx.drawText(labelFont,"MESH MODIFIER LAB / 13 real mesh outputs",26.0,16.0,0.9,0.94,1.0,1.0,1.0);
+    local names=["01 Source","02 Bend + twist","03 Noise + sphere","04 FFD cage","05 Plane cut","06 Spline path","07 Sculpt + impact","08 Effector","09 Surface contact","10 Slime","11 Mesh fit","12 Vertex edit","13 Sound react"];
+    foreach(i,name in names) {
+        local x=225.0+(i%5)*165.0,y=239.0+(i/5).tointeger()*198.0;
+        gfx.drawText(labelFont,name,x,y,0.72,0.82,0.88,1.0,0.76);
+    }
+}

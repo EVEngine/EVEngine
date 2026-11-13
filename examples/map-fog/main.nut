@@ -29,7 +29,9 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.96
+persist fogAlpha = 0.88
+persist mapFont = null
+persist fontOwner = null
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -150,7 +152,10 @@ function screenToCell(mx, my) {
 eve_init = function() {
     // Neutral stand-in only: MapFog remains an overlay and does not own the
     // revealed scene. Avoid a black clear color that reads as a second mask.
-    gfx.setBackgroundColor(0.55, 0.60, 0.66, 1.0);
+    gfx.setBackgroundColor(0.045, 0.075, 0.10, 1.0);
+    fontOwner = eve.Font();
+    local data = fontOwner.newFontDataFromFile("assets/DejaVuSans-Bold.ttf", 20);
+    mapFont = gfx.newFont(data, " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/|:.,()-[]");
     mapW = (config.width - 80).tofloat();
     mapH = (config.height - 120).tofloat();
     cellW = mapW / gridW.tofloat();
@@ -173,7 +178,7 @@ eve_init = function() {
     fog.setCloudMix(0.30);
     fog.setDistort(0.085);
     fog.setDistortFix(-0.006, 0.004);
-    fog.setFogColor(0.98, 0.99, 1.00);
+    fog.setFogColor(0.60, 0.72, 0.80);
     fog.setFogAlpha(fogAlpha);
     // Soft approach for gradual rim sparseness; clearCore keeps hole clean.
     fog.setEdgeSoftness(0.16);
@@ -189,6 +194,19 @@ eve_init = function() {
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };
 
+function selectFogCell(x,y) {
+    if(x<0 || y<0 || x>=gridW || y>=gridH)return;
+    selectedX=x;selectedY=y;status="selected ("+x+","+y+")";rebuildMask();
+}
+function revealSelectedCell() {
+    if(selectedX<0 || selectedY<0)return;
+    local idx=cellIndex(selectedX,selectedY);
+    if(!unlocked[idx] && dissolving[idx]<0.0) {
+        unlocked[idx]=true;dissolving[idx]=0.0;
+        status="unlocking ("+selectedX+","+selectedY+")";rebuildMask();
+    }
+}
+
 eve_update = function(dt) {
     if (fog == null) return;
     fog.update(dt);
@@ -197,24 +215,13 @@ eve_update = function(dt) {
     if (left && !prevLeft) {
         local cell = screenToCell(mouse.getX().tofloat(), mouse.getY().tofloat());
         if (cell != null) {
-            selectedX = cell[0];
-            selectedY = cell[1];
-            status = "selected (" + selectedX + "," + selectedY + ")";
-            rebuildMask();
+            selectFogCell(cell[0],cell[1]);
         }
     }
     prevLeft = left;
 
     if (key_just_pressed("space") || key_just_pressed("Space")) {
-        if (selectedX >= 0 && selectedY >= 0) {
-            local idx = cellIndex(selectedX, selectedY);
-            if (!unlocked[idx] && dissolving[idx] < 0.0) {
-                unlocked[idx] = true;
-                dissolving[idx] = 0.0;
-                status = "unlocking (" + selectedX + "," + selectedY + ")";
-                rebuildMask();
-            }
-        }
+        revealSelectedCell();
     }
 
     if (key_just_pressed("r") || key_just_pressed("R")) {
@@ -249,7 +256,37 @@ eve_update = function(dt) {
 
 eve_render = function() {
     gfx.clear();
-    // MapFog is overlay-only.  A real game draws its map/scene before this
-    // call; the example deliberately does not invent a green "revealed" layer.
+    // Deterministic strategy terrain beneath the real RGBA fog overlay.
+    for (local y = 0; y < gridH; ++y) for (local x = 0; x < gridW; ++x) {
+        local river = abs(x - (5 + (sin(y * 0.45) * 2.0).tointeger())) <= 1;
+        local forest = (x * 13 + y * 7) % 9 < 4;
+        local shade = ((x * 7 + y * 11) % 5) * 0.012;
+        local px = mapX + x * cellW, py = mapY + y * cellH;
+        gfx.drawSolidRect(px, py, cellW, cellH, river ? 0.10 : 0.22 + shade,
+            river ? 0.33 : 0.34 + shade, river ? 0.43 : 0.24 + shade, 1.0);
+        if (forest && !river) {
+            for (local i = 0; i < 3; ++i) {
+                local tx = px + 8.0 + i * 12.0, ty = py + 8.0 + (i % 2) * 11.0;
+                gfx.drawSolidRect(tx + 3.0, ty + 7.0, 3.0, 8.0, 0.28, 0.20, 0.13, 1.0);
+                gfx.drawSolidRect(tx, ty, 10.0, 11.0, 0.10, 0.25, 0.18, 1.0);
+            }
+        }
+        if (y == 8 && !river) gfx.drawSolidRect(px, py + cellH * 0.4, cellW, 7.0, 0.57, 0.47, 0.30, 1.0);
+        if ((x == 2 && y == 6) || (x == 15 && y == 8)) {
+            gfx.drawSolidRect(px + 6.0, py + 5.0, 30.0, 25.0, 0.12, 0.17, 0.19, 1.0);
+            gfx.drawSolidRect(px + 8.0, py + 5.0, 26.0, 8.0, 0.76, 0.42, 0.24, 1.0);
+            gfx.drawSolidRect(px + 18.0, py + 18.0, 7.0, 12.0, 0.90, 0.76, 0.45, 1.0);
+        }
+    }
     fog.draw(mapX, mapY, mapW, mapH);
+    if (selectedX >= 0) {
+        local x = mapX + selectedX * cellW, y = mapY + selectedY * cellH;
+        gfx.drawSolidRect(x, y, cellW, 3.0, 1.0, 0.76, 0.30, 1.0);
+        gfx.drawSolidRect(x, y + cellH - 3.0, cellW, 3.0, 1.0, 0.76, 0.30, 1.0);
+        gfx.drawSolidRect(x, y, 3.0, cellH, 1.0, 0.76, 0.30, 1.0);
+        gfx.drawSolidRect(x + cellW - 3.0, y, 3.0, cellH, 1.0, 0.76, 0.30, 1.0);
+    }
+    gfx.drawText(mapFont, "FRONTIER / EXPLORATION", 40.0, 18.0, 0.89, 0.94, 0.94, 1.0, 1.0);
+    gfx.drawText(mapFont, "LMB select | Space reveal | R reset | [ ] opacity", 40.0, config.height - 42.0, 0.70, 0.82, 0.84, 1.0, 0.8);
+    gfx.drawText(mapFont, status, 760.0, 23.0, 0.96, 0.76, 0.42, 1.0, 0.7);
 };

@@ -35,3 +35,9 @@ T             = 坦克开始/停止巡逻
 - [Kenney — Racing Pack](https://kenney.nl/assets/racing-pack)
 
 设计文档：[docs/dev/通用载具系统设计.md](../../docs/dev/通用载具系统设计.md)
+
+## 2026-11-13 画面复查
+
+收紧帮助面板并删除重复说明，事件日志限制为两条；训练场道路与铺地沿用原世界坐标，碰撞、载具、武器和 RTS 命令路径保留。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。

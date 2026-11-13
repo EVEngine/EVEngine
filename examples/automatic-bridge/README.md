@@ -114,3 +114,9 @@ local cpu = generated.value;
   未实现碰撞、导航、实时地形采样、力学计算；没有修改渲染器生命周期。
 
 完整提示词与参考图片保留在 `references/`，导出网格在 `generated/`，引擎截图在 `renders/`。
+
+## 2026-11-13 画面复查
+
+保留十种真实桥型生成与语义材质分组；改善河水、岸坡材质、岸边树木和景观底座，调整镜头并标注当前桥型。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。
