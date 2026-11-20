@@ -45,6 +45,57 @@
           "why": "Generate six CPU maps once, upload separately, reuse the owning result."
         }
       ]
+    },
+    {
+      "id": "procgen-vessel-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/mesh/Vessel*",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-PROCGEN-VESSELS",
+      "reason": "Declare the new CPU vessel recipe boundary and its existing script/upload composition path.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/mesh/VesselGenerator.h",
+        "src/modules/procgen/texture/PotteryTextures.h",
+        "docs/usr/modules/procgen/pottery.md",
+        "examples/pottery/main.nut"
+      ],
+      "tests": [
+        "test/unit/procgen/procgen_vessel.cpp",
+        "test/unit/procgen/procgen_pottery_materials.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "Procgen",
+          "methods": [
+            "buildMesh",
+            "generateMesh",
+            "generatePbrMaterial",
+            "applyPbrRecipeDefaults"
+          ],
+          "via": "Existing recipe registry; no new VM object or ownership model"
+        }
+      ],
+      "protocol": [],
+      "ecs_link_data": [],
+      "hot_path": [],
+      "thread_affinity": "Pure generation reentrant with immutable inputs; registry initialization on owner thread; upload on render thread.",
+      "trim": {
+        "level": "L1",
+        "absent_profile": "procgen-core-only",
+        "evidence": "VesselGenerator.cpp and VesselRecipes.cpp included in EVProcgenCoreCheck; direct CPU test links without graphics. No L2/L3/L4 whole-module trim claim."
+      },
+      "cost_notes": [
+        {
+          "api": "revolveVesselSection",
+          "shape": "owned-result",
+          "why": "CPU mesh is generated once, with separate optional GPU upload; no per-frame registry lookups."
+        }
+      ]
     }
   ]
 }
