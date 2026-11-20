@@ -1,0 +1,344 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/PotteryTextures.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PotteryTextures.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PotteryTextures_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PotteryTextures_8h.html">procgen/texture/PotteryTextures.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="namespaceeve_1_1fluids_1_1ocean__detail.html#a270b8b5b1e36d3a3b303b84945ca0d16">tau</a> = 6.283185307179586f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">enum class</span> Finish { Clay, Glaze, Porcelain, Celadon, Stoneware };</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>NoiseField <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<span class="keyword">const</span> NoiseField&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <span class="keywordtype">int</span> frequency, uint32_t stream) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">auto</span> noise = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    noise.seed ^= stream;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="comment">// Scale the lattice period with frequency, preserving the complete UV tile</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="comment">// instead of repeating a tiny noise cell many times around the vessel.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    noise.periodX *= frequency;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    noise.periodY *= frequency;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> noise;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keywordtype">float</span> <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(<span class="keyword">const</span> NoiseField&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> frequency, uint32_t stream) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">const</span> <span class="keyword">auto</span> noise = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, frequency, stream);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> noise.valueNoise(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> * frequency, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> * frequency);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">float</span> smooth(<span class="keywordtype">float</span> low, <span class="keywordtype">float</span> high, <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp((<a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a> - low) / (high - low), 0.f, 1.f);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * (3.f - 2.f * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">struct </span>Cells {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a>  = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="PotteryTextures_8cpp.html#a192d32b6754b4e54b47f879e6fee79f5">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="PotteryTextures_8cpp.html#a192d32b6754b4e54b47f879e6fee79f5">crack</a> = 0.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>Cells <a class="code hl_variable" href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a>(<span class="keyword">const</span> NoiseField&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> frequency) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <span class="keyword">auto</span>  noise = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, frequency, 0xa511e9b3u);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a> = <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> * frequency, <a class="code hl_variable" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a> = <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> * frequency;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   ix = int(std::floor(<a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>)), iy = int(std::floor(<a class="code hl_variable" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>));</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a> = 100.f, <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a> = 100.f, <a class="code hl_variable" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a> = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = -1; j &lt;= 1; ++j) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = -1; i &lt;= 1; ++i) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">const</span> <span class="keywordtype">int</span>   <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = ix + i, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = iy + j;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> + 0.2f + 0.6f * noise.hash01(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>   = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, frequency, 0x63d83595u);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>       = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> + 0.2f + 0.6f * <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>.hash01(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> = std::hypot(<a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a> - <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a>, <a class="code hl_variable" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a> - <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> &lt; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a> = <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>  = <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a> = std::min(<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a>, <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keyword">const</span> <span class="keyword">auto</span>  pits      = <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, frequency, 0xb5297a4du);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> selection = pits.hash01(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">if</span> (selection &gt; 0.58f) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a> = 0.07f + 0.10f * selection;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <a class="code hl_variable" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a>               = std::max(<a class="code hl_variable" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a>, 1.f - smooth(<a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a> * 0.25f, <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> {<a class="code hl_variable" href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a>, 1.f - smooth(0.012f, 0.055f, <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a> - <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>)};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keywordtype">float</span> surfaceHeight(Finish finish, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> NoiseField&amp; noise) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> broad = 0.65f * <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 1, 0x9e3779b9u) + 0.35f * <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 3, 0x68e31da4u);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> fine  = <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 24, 0x1b56c4e9u) - 0.5f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> wave  = <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 2, 0x7f4a7c15u) - 0.5f;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> rings = std::sin(tau * (<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> * 12.f + wave * 0.12f + noise.hash01(0, 0)));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (finish == Finish::Celadon) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = <a class="code hl_variable" href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> + wave * 0.035f, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> + wave * 0.035f, 4);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> std::clamp(0.63f + 0.18f * (broad - 0.5f) + 0.045f * fine - 0.31f * <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>.crack + 0.007f * rings, 0.f,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                          1.f);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = <a class="code hl_variable" href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 12);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">switch</span> (finish) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">case</span> Finish::Clay:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">return</span> std::clamp(0.55f + 0.34f * (broad - 0.5f) + 0.23f * fine - 0.30f * <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>.pore + 0.008f * rings, 0.f,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                              1.f);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">case</span> Finish::Glaze: {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> flow = <a class="code hl_variable" href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a>(noise, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> + wave * 0.08f, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 6, 0x94d049bbu);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">return</span> std::clamp(0.53f + 0.55f * (broad - 0.5f) + 0.20f * (flow - 0.5f) + 0.09f * fine -</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                  0.055f * <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>.pore + 0.01f * rings,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                              0.f, 1.f);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">case</span> Finish::Porcelain:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">return</span> std::clamp(0.60f + 0.12f * (broad - 0.5f) + 0.07f * fine - 0.04f * <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>.pore + 0.004f * rings, 0.f,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                              1.f);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">case</span> Finish::Stoneware:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">return</span> std::clamp(0.54f + 0.55f * (broad - 0.5f) + 0.26f * fine - 0.25f * <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>.pore + 0.012f * rings, 0.f,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                              1.f);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">case</span> Finish::Celadon: <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> 0.5f;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a4eb2b6c60067f5a8a005ddd830ab5bda">   93</a></span>std::vector&lt;TextureRecipeDef&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#a4eb2b6c60067f5a8a005ddd830ab5bda">potteryTextureDefinitions</a>() {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">struct </span>Surface {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        Finish      finish;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1Rgba8.html">Rgba8</a>       low, high;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordtype">float</span>       roughLow, roughHigh, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, <a class="code hl_variable" href="TreeMesh_8cpp.html#a4f93a5431f2bee5a810adf6a9b5774be">relief</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    };</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> Surface <a class="code hl_variable" href="ForceBindings_8cpp.html#aa09594c59363994ed447192fa2d1c43f">surfaces</a>[] = {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        {<span class="stringliteral">&quot;tex.terracotta&quot;</span>, Finish::Clay, {74, 30, 17, 255}, {218, 137, 83, 255}, 0.95f, 0.72f, 1.3f, 0.16f},</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        {<span class="stringliteral">&quot;tex.glazed_ceramic&quot;</span>, Finish::Glaze, {8, 23, 55, 255}, {53, 135, 177, 255}, 0.28f, 0.12f, 0.7f, 0.025f},</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        {<span class="stringliteral">&quot;tex.porcelain&quot;</span>, Finish::Porcelain, {210, 211, 204, 255}, {255, 252, 240, 255}, 0.19f, 0.11f, 0.8f, 0.08f},</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        {<span class="stringliteral">&quot;tex.celadon&quot;</span>, Finish::Celadon, {67, 69, 51, 255}, {166, 201, 169, 255}, 0.40f, 0.15f, 0.9f, 0.025f},</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        {<span class="stringliteral">&quot;tex.stoneware&quot;</span>, Finish::Stoneware, {37, 22, 13, 255}, {181, 137, 87, 255}, 0.76f, 0.40f, 1.1f, 0.12f}};</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::vector&lt;TextureRecipeDef&gt; <a class="code hl_variable" href="LDrawImporter_8cpp.html#af1613b56f799b26b8262891a5efbc851">definitions</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; surface : <a class="code hl_variable" href="ForceBindings_8cpp.html#aa09594c59363994ed447192fa2d1c43f">surfaces</a>) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureRecipeDef.html">TextureRecipeDef</a> def;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">id</a> = surface.id;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(0.f, surface.low.r, surface.low.g, surface.low.b);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(1.f, surface.high.r, surface.high.g, surface.high.b);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keyword">auto</span> finish = surface.finish;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">height</a> = [finish](<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a>&amp; noise) { <span class="keywordflow">return</span> surfaceHeight(finish, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, noise); };</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">roughnessLow</a>   = surface.roughLow;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">roughnessHigh</a>  = surface.roughHigh;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">normalStrength</a> = surface.normal;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a177d2c4a6ca54301de7196e039ea7e8a">heightStrength</a> = surface.relief;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">aoStrength</a>     = surface.finish == Finish::Clay || surface.finish == Finish::Stoneware ? 0.8f : 0.2f;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">metallic</a>       = 0.f;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <a class="code hl_variable" href="LDrawImporter_8cpp.html#af1613b56f799b26b8262891a5efbc851">definitions</a>.push_back(std::move(def));</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="LDrawImporter_8cpp.html#af1613b56f799b26b8262891a5efbc851">definitions</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aActionGuidePack_8cpp_html_ab927965981178aa1fba979a37168db2a"><div class="ttname"><a href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8cpp_source.html#l00377">ActionGuidePack.cpp:377</a></div></div>
+<div class="ttc" id="aActionGuidePack_8cpp_html_af88b946fb90d5f08b5fb740c70e98c10"><div class="ttname"><a href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8cpp_source.html#l00377">ActionGuidePack.cpp:377</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00036">CardTypes.cpp:36</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00037">CardTypes.cpp:37</a></div></div>
+<div class="ttc" id="aFloorTextures_8cpp_html_a72c89524082930314d69dc1127e25c5b"><div class="ttname"><a href="FloorTextures_8cpp.html#a72c89524082930314d69dc1127e25c5b">grain</a></div><div class="ttdeci">float grain</div><div class="ttdef"><b>Definition</b> <a href="FloorTextures_8cpp_source.html#l00211">FloorTextures.cpp:211</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_aa09594c59363994ed447192fa2d1c43f"><div class="ttname"><a href="ForceBindings_8cpp.html#aa09594c59363994ed447192fa2d1c43f">surfaces</a></div><div class="ttdeci">std::vector&lt; WingSurface &gt; surfaces</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00253">ForceBindings.cpp:253</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a1d0c825b660865150899766db0ec7361"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a></div><div class="ttdeci">std::int32_t second</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00089">HexSphereTopology.cpp:89</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a9ebd1b92d5226e25efef9e2af5ca8a34"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a></div><div class="ttdeci">std::int32_t first</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00088">HexSphereTopology.cpp:88</a></div></div>
+<div class="ttc" id="aLDrawImporter_8cpp_html_af1613b56f799b26b8262891a5efbc851"><div class="ttname"><a href="LDrawImporter_8cpp.html#af1613b56f799b26b8262891a5efbc851">definitions</a></div><div class="ttdeci">std::map&lt; unsigned, Colour &gt; definitions</div><div class="ttdef"><b>Definition</b> <a href="LDrawImporter_8cpp_source.html#l00074">LDrawImporter.cpp:74</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00018">McpArchitectureTools.cpp:18</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a3f67c53b80389c5f53961936edba04c9"><div class="ttname"><a href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00042">MeleeHit.cpp:42</a></div></div>
+<div class="ttc" id="aMeshContactBlend_8cpp_html_a06f14a9abd47b91465f895d5259cdc1b"><div class="ttname"><a href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="MeshContactBlend_8cpp_source.html#l00043">MeshContactBlend.cpp:43</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00162">ModelRenderer.cpp:162</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00151">Pathfinder.cpp:151</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_afd5d8ae03d127bc059a76d4629cf7f6b"><div class="ttname"><a href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a></div><div class="ttdeci">std::array&lt; PixelCell, kPixelChunkSize *kPixelChunkSize &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00052">PixelWorld.cpp:52</a></div></div>
+<div class="ttc" id="aPotteryTextures_8cpp_html_a192d32b6754b4e54b47f879e6fee79f5"><div class="ttname"><a href="PotteryTextures_8cpp.html#a192d32b6754b4e54b47f879e6fee79f5">crack</a></div><div class="ttdeci">float crack</div><div class="ttdef"><b>Definition</b> <a href="PotteryTextures_8cpp_source.html#l00031">PotteryTextures.cpp:31</a></div></div>
+<div class="ttc" id="aPotteryTextures_8cpp_html_accc6e2f3ac52c5270556d32bf89b2f01"><div class="ttname"><a href="PotteryTextures_8cpp.html#accc6e2f3ac52c5270556d32bf89b2f01">pore</a></div><div class="ttdeci">float pore</div><div class="ttdef"><b>Definition</b> <a href="PotteryTextures_8cpp_source.html#l00030">PotteryTextures.cpp:30</a></div></div>
+<div class="ttc" id="aPotteryTextures_8h_html"><div class="ttname"><a href="PotteryTextures_8h.html">PotteryTextures.h</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_a45a3b372c24413308bf197591146bde9"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#a45a3b372c24413308bf197591146bde9">sy</a></div><div class="ttdeci">float sy</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00040">PrefabActionCapabilities.cpp:40</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_ae5a7fb9ce69778fd8de7ed7ca3d501ee"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#ae5a7fb9ce69778fd8de7ed7ca3d501ee">sx</a></div><div class="ttdeci">float sx</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00039">PrefabActionCapabilities.cpp:39</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00016">TacticsPath.cpp:16</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a4f93a5431f2bee5a810adf6a9b5774be"><div class="ttname"><a href="TreeMesh_8cpp.html#a4f93a5431f2bee5a810adf6a9b5774be">relief</a></div><div class="ttdeci">float relief</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00274">TreeMesh.cpp:274</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_1_1ocean__detail_html_a270b8b5b1e36d3a3b303b84945ca0d16"><div class="ttname"><a href="namespaceeve_1_1fluids_1_1ocean__detail.html#a270b8b5b1e36d3a3b303b84945ca0d16">eve::fluids::ocean_detail::tau</a></div><div class="ttdeci">constexpr double tau</div><div class="ttdef"><b>Definition</b> <a href="OceanFourierInternal_8h_source.html#l00009">OceanFourierInternal.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a4eb2b6c60067f5a8a005ddd830ab5bda"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a4eb2b6c60067f5a8a005ddd830ab5bda">eve::procgen::potteryTextureDefinitions</a></div><div class="ttdeci">std::vector&lt; TextureRecipeDef &gt; potteryTextureDefinitions()</div><div class="ttdoc">Create terracotta, glazed ceramic, porcelain, celadon and stoneware CPU texture definitions.</div><div class="ttdef"><b>Definition</b> <a href="PotteryTextures_8cpp_source.html#l00093">PotteryTextures.cpp:93</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ColorRamp_html_ac787a6fa5176585317d6b1a85e039f18"><div class="ttname"><a href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">eve::procgen::ColorRamp::add</a></div><div class="ttdeci">void add(float t, uint8_t r, uint8_t g, uint8_t b, uint8_t a=255)</div><div class="ttdoc">Adds .</div><div class="ttdef"><b>Definition</b> <a href="ColorRamp_8cpp_source.html#l00008">ColorRamp.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1NoiseField_html"><div class="ttname"><a href="structeve_1_1procgen_1_1NoiseField.html">eve::procgen::NoiseField</a></div><div class="ttdoc">Deterministic 2D noise helpers for pixel textures and masks.</div><div class="ttdef"><b>Definition</b> <a href="NoiseField_8h_source.html#l00024">NoiseField.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a0df9f69a858d27461975d1bb18580364"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">eve::procgen::PbrParams::aoStrength</a></div><div class="ttdeci">float aoStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00110">TextureRecipe.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a177d2c4a6ca54301de7196e039ea7e8a"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a177d2c4a6ca54301de7196e039ea7e8a">eve::procgen::PbrParams::heightStrength</a></div><div class="ttdeci">float heightStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00111">TextureRecipe.h:111</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a536546a71db1f3e6b48b095c99cb5819"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">eve::procgen::PbrParams::metallic</a></div><div class="ttdeci">float metallic</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00108">TextureRecipe.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a668db6ffebb9a0ee1b13f049cb63e3ad"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">eve::procgen::PbrParams::normalStrength</a></div><div class="ttdeci">float normalStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00109">TextureRecipe.h:109</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_aa57684dadcb5b44283636fc02cc6707f"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">eve::procgen::PbrParams::roughnessHigh</a></div><div class="ttdeci">float roughnessHigh</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00107">TextureRecipe.h:107</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_abba32247e91c9ceb9ab6f5622ed37023"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">eve::procgen::PbrParams::roughnessLow</a></div><div class="ttdeci">float roughnessLow</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00106">TextureRecipe.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Rgba8_html"><div class="ttname"><a href="structeve_1_1procgen_1_1Rgba8.html">eve::procgen::Rgba8</a></div><div class="ttdoc">Rgba8 public API.</div><div class="ttdef"><b>Definition</b> <a href="ColorRamp_8h_source.html#l00011">ColorRamp.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html">eve::procgen::TextureRecipeDef</a></div><div class="ttdoc">A procedural texture is described by an albedo ramp, displacement, optional independent PBR pigment f...</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00122">TextureRecipe.h:122</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a3e1d7266f1ed5644afcc8499aa0b0dfb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">eve::procgen::TextureRecipeDef::height</a></div><div class="ttdeci">std::function&lt; float(float, float, const NoiseField &amp;)&gt; height</div><div class="ttdoc">Float.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00126">TextureRecipe.h:126</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a4f059397109a138aea4eb0259edbc2bb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">eve::procgen::TextureRecipeDef::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00123">TextureRecipe.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a6e04e728e3378cea3f1fb071005f001f"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">eve::procgen::TextureRecipeDef::albedo</a></div><div class="ttdeci">ColorRamp albedo</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00124">TextureRecipe.h:124</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_ae1239ec4e580915f5017adf58f7c2718"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">eve::procgen::TextureRecipeDef::pbr</a></div><div class="ttdeci">PbrParams pbr</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00127">TextureRecipe.h:127</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

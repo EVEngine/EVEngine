@@ -1,0 +1,368 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/towerdefense/WaveDirector.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6464414c896f85f0ab117999aa02dd7e.html">towerdefense</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WaveDirector.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WaveDirector_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1towerdefense.html">eve::towerdefense</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveEntry.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveEntry.html">WaveEntry</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveEntry.html#aa7d18703fd92e5aa87359e9e68be1a34">   16</a></span>    std::string <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveEntry.html#aa7d18703fd92e5aa87359e9e68be1a34">archetypeId</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveEntry.html#a30a370f91f6bbf794a1769b7e6b3be19">   17</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveEntry.html#a30a370f91f6bbf794a1769b7e6b3be19">count</a>           = 1;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveEntry.html#ab516be5bb60990400df6cc6af2a4582e">   18</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveEntry.html#ab516be5bb60990400df6cc6af2a4582e">intervalSeconds</a> = 0.5;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveEntry.html#a0380b7f217f9798ab5ad54c14cdc0291">   19</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveEntry.html#a0380b7f217f9798ab5ad54c14cdc0291">delaySeconds</a>    = 0.0; </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveDefinition.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveDefinition.html">WaveDefinition</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ad50df11295d19c68bdf35226478ae152">   24</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ad50df11295d19c68bdf35226478ae152">id</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveDefinition.html#a31bfa2d906c5b7bf4dedc070f0d0318c">   25</a></span>    <span class="keywordtype">double</span>                 <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveDefinition.html#a31bfa2d906c5b7bf4dedc070f0d0318c">prepSeconds</a> = 3.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ac515398b7bd87a89bb3235bd1ed3fb05">   26</a></span>    <span class="keywordtype">int</span>                    <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ac515398b7bd87a89bb3235bd1ed3fb05">rewardGold</a>  = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ade118da7e387fcaea5337387efba189b">   27</a></span>    std::vector&lt;WaveEntry&gt; <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveDefinition.html#ade118da7e387fcaea5337387efba189b">entries</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">   31</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">WavePhase</a> : std::uint8_t {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13cae599161956d626eda4cb0a5ffb85271c">Idle</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13caad866f19a13c5386d2ec6df246dcbfac">Preparing</a>,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13caabd8b51005b5a27c7aacebb8e08f6d6a">Spawning</a>,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13ca55bd7ea2ea9661fa4010718f1e2152ad">BetweenWaves</a>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13ca07ca5050e697392c9ed47e6453f1453f">Completed</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13cad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html">WaveSpawnEvent</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#ae2720963438c7e50c148bc1cf893f556">   42</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#ae2720963438c7e50c148bc1cf893f556">sequence</a> = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a8858f0cb45b41d335d4ccf3a02d82513">   43</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a8858f0cb45b41d335d4ccf3a02d82513">waveId</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#aee92668bcf334a82d7d92d0c27e61cea">   44</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#aee92668bcf334a82d7d92d0c27e61cea">waveIndex</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a3049978d15d63ac96fcac8117369a25e">   45</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a3049978d15d63ac96fcac8117369a25e">archetypeId</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a31021e61efb14c9e1ecb46f6f5d2a6af">   46</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a31021e61efb14c9e1ecb46f6f5d2a6af">entryIndex</a> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a9c0350182441607484825bb1bb8b089a">   47</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a9c0350182441607484825bb1bb8b089a">spawnIndex</a> = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html">   51</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html">WaveLifecycleEvent</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a4e516d069dcd6d21f81b487686672217">   52</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a4e516d069dcd6d21f81b487686672217">sequence</a> = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a320fe03d4d002d79cd15bc353fdcdf47">   53</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a320fe03d4d002d79cd15bc353fdcdf47">kind</a>; </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#aee1f833f6470eda8a4fc2bce93362c7c">   54</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#aee1f833f6470eda8a4fc2bce93362c7c">waveId</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a0729202b0b99c8a0d85249693d9d5af1">   55</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a0729202b0b99c8a0d85249693d9d5af1">waveIndex</a>  = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ae8facb320112a46d04e69ab28eb85016">   56</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ae8facb320112a46d04e69ab28eb85016">rewardGold</a> = 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ad8bb5f4b2ee5663387eb0f7548017802">   57</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ad8bb5f4b2ee5663387eb0f7548017802">reason</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html">   61</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html">WaveAdvanceResult</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a07aa4e1eabece896270e2b7dc39255e5">   62</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">WavePhase</a>                       <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a07aa4e1eabece896270e2b7dc39255e5">phase</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13cae599161956d626eda4cb0a5ffb85271c">WavePhase::Idle</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a59d13f011f34e4e64e39dda27760f85a">   63</a></span>    std::vector&lt;WaveSpawnEvent&gt;     <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a59d13f011f34e4e64e39dda27760f85a">spawns</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a8850b74eab08d9ce116e41639340c82a">   64</a></span>    std::vector&lt;WaveLifecycleEvent&gt; <a class="code hl_variable" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a8850b74eab08d9ce116e41639340c82a">events</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="};">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1WaveDirector.html">   73</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1towerdefense_1_1WaveDirector.html">WaveDirector</a> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> clear();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> registerWave(<a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveDefinition.html">WaveDefinition</a> <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> loadScheduleJson(std::string_view json);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1WaveDirector.html#a4eee4a91b2cda51694703e14647b728a">   82</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1towerdefense_1_1WaveDirector.html#a4eee4a91b2cda51694703e14647b728a">waveCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(waves_.size()); }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] std::string phaseName() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1WaveDirector.html#a40b37bcaaceee05c0d84eafce3c690a2">   86</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">WavePhase</a> <a class="code hl_function" href="classeve_1_1towerdefense_1_1WaveDirector.html#a40b37bcaaceee05c0d84eafce3c690a2">phase</a>() const noexcept { <span class="keywordflow">return</span> phase_; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1WaveDirector.html#a6af4b25ecf95aa9a0a1c760894ab7d11">   88</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1towerdefense_1_1WaveDirector.html#a6af4b25ecf95aa9a0a1c760894ab7d11">waveIndex</a>() const noexcept { <span class="keywordflow">return</span> waveIndex_; }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1WaveDirector.html#acf28eeae9eb967026fd8e2458c7e4d81">   90</a></span>    [[nodiscard]] <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1towerdefense_1_1WaveDirector.html#acf28eeae9eb967026fd8e2458c7e4d81">remainingPrepSeconds</a>() const noexcept { <span class="keywordflow">return</span> remainingPrep_; }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> reset();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;WaveAdvanceResult&gt;</a> advance(std::uint64_t <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> beginWave(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html">WaveAdvanceResult</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> emitLifecycle(<a class="code hl_struct" href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html">WaveAdvanceResult</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>, std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>, std::string waveId, <span class="keywordtype">int</span> waveIndex, <span class="keywordtype">int</span> rewardGold,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                       std::string reason);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::vector&lt;WaveDefinition&gt; waves_;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_enumeration" href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">WavePhase</a>                   phase_          = WavePhase::Idle;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">int</span>                         waveIndex_      = 0;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">int</span>                         entryIndex_     = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">int</span>                         spawnedInEntry_ = 0;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">double</span>                      remainingPrep_  = 0.0;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">double</span>                      spawnCooldown_  = 0.0;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::uint64_t               lastTick_       = 0;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">bool</span>                        hasTick_        = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::uint64_t               eventSequence_  = 0;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="};">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1DefenseBase.html">  120</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1towerdefense_1_1DefenseBase.html">DefenseBase</a> {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1towerdefense_1_1DefenseBase.html">DefenseBase</a>(<span class="keywordtype">int</span> lives = 20);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1DefenseBase.html#ae079d10dc03287864321b82eae1bd16a">  124</a></span>    [[nodiscard]] <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1towerdefense_1_1DefenseBase.html#ae079d10dc03287864321b82eae1bd16a">lives</a>() const noexcept { <span class="keywordflow">return</span> lives_; }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1DefenseBase.html#ae8a521eeb5a95dd59042b991041339a9">  125</a></span>    [[nodiscard]] <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1towerdefense_1_1DefenseBase.html#ae8a521eeb5a95dd59042b991041339a9">leaks</a>() const noexcept { <span class="keywordflow">return</span> leaks_; }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1DefenseBase.html#a080905f0c6813da8be3358edfe768ee8">  126</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1towerdefense_1_1DefenseBase.html#a080905f0c6813da8be3358edfe768ee8">isDefeated</a>() const noexcept { <span class="keywordflow">return</span> lives_ &lt;= 0; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> leak(<span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> = 1);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> reset(<span class="keywordtype">int</span> lives);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">int</span> lives_ = 20;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">int</span> leaks_ = 0;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>};</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="};">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1TowerDefense.html">  138</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1towerdefense_1_1TowerDefense.html">TowerDefense</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1TowerDefense.html#a478b3eee09429c1f4d63a95f1dbf79a5">  140</a></span>    <a class="code hl_function" href="classeve_1_1towerdefense_1_1TowerDefense.html#a478b3eee09429c1f4d63a95f1dbf79a5">Module_REG</a>(<a class="code hl_class" href="classeve_1_1towerdefense_1_1TowerDefense.html">TowerDefense</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1TowerDefense.html#add8c939ab2bb77c58c982abc63f34e5e">  141</a></span>    <a class="code hl_function" href="classeve_1_1towerdefense_1_1TowerDefense.html#add8c939ab2bb77c58c982abc63f34e5e">TowerDefense</a>()           = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classeve_1_1towerdefense_1_1TowerDefense.html#a57eb9aa60a4329c47005a6d79b3eb7c3">  142</a></span>    <a class="code hl_function" href="classeve_1_1towerdefense_1_1TowerDefense.html#a57eb9aa60a4329c47005a6d79b3eb7c3">~TowerDefense</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>};</div>
+</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}  <span class="comment">// namespace eve::towerdefense</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aEnvironmentQuery_8cpp_html_a6b991c4d1663f888502f923764395e62"><div class="ttname"><a href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a></div><div class="ttdeci">EnvironmentTest definition</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentQuery_8cpp_source.html#l00035">EnvironmentQuery.cpp:35</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00033">SquirrelBinding.cpp:33</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00048">Module.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1DefenseBase_html"><div class="ttname"><a href="classeve_1_1towerdefense_1_1DefenseBase.html">eve::towerdefense::DefenseBase</a></div><div class="ttdoc">Lives / leak counter for a defended base.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00120">WaveDirector.h:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1DefenseBase_html_a080905f0c6813da8be3358edfe768ee8"><div class="ttname"><a href="classeve_1_1towerdefense_1_1DefenseBase.html#a080905f0c6813da8be3358edfe768ee8">eve::towerdefense::DefenseBase::isDefeated</a></div><div class="ttdeci">bool isDefeated() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00126">WaveDirector.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1DefenseBase_html_ae079d10dc03287864321b82eae1bd16a"><div class="ttname"><a href="classeve_1_1towerdefense_1_1DefenseBase.html#ae079d10dc03287864321b82eae1bd16a">eve::towerdefense::DefenseBase::lives</a></div><div class="ttdeci">int lives() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00124">WaveDirector.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1DefenseBase_html_ae8a521eeb5a95dd59042b991041339a9"><div class="ttname"><a href="classeve_1_1towerdefense_1_1DefenseBase.html#ae8a521eeb5a95dd59042b991041339a9">eve::towerdefense::DefenseBase::leaks</a></div><div class="ttdeci">int leaks() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00125">WaveDirector.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1TowerDefense_html"><div class="ttname"><a href="classeve_1_1towerdefense_1_1TowerDefense.html">eve::towerdefense::TowerDefense</a></div><div class="ttdoc">Script module factory for tower-defense schedule helpers.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00138">WaveDirector.h:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1TowerDefense_html_a478b3eee09429c1f4d63a95f1dbf79a5"><div class="ttname"><a href="classeve_1_1towerdefense_1_1TowerDefense.html#a478b3eee09429c1f4d63a95f1dbf79a5">eve::towerdefense::TowerDefense::Module_REG</a></div><div class="ttdeci">Module_REG(TowerDefense)</div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1TowerDefense_html_a57eb9aa60a4329c47005a6d79b3eb7c3"><div class="ttname"><a href="classeve_1_1towerdefense_1_1TowerDefense.html#a57eb9aa60a4329c47005a6d79b3eb7c3">eve::towerdefense::TowerDefense::~TowerDefense</a></div><div class="ttdeci">~TowerDefense() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1TowerDefense_html_add8c939ab2bb77c58c982abc63f34e5e"><div class="ttname"><a href="classeve_1_1towerdefense_1_1TowerDefense.html#add8c939ab2bb77c58c982abc63f34e5e">eve::towerdefense::TowerDefense::TowerDefense</a></div><div class="ttdeci">TowerDefense()=default</div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1WaveDirector_html"><div class="ttname"><a href="classeve_1_1towerdefense_1_1WaveDirector.html">eve::towerdefense::WaveDirector</a></div><div class="ttdoc">Deterministic wave / creep spawn schedule.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00073">WaveDirector.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1WaveDirector_html_a40b37bcaaceee05c0d84eafce3c690a2"><div class="ttname"><a href="classeve_1_1towerdefense_1_1WaveDirector.html#a40b37bcaaceee05c0d84eafce3c690a2">eve::towerdefense::WaveDirector::phase</a></div><div class="ttdeci">WavePhase phase() const noexcept</div><div class="ttdoc">Current phase.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00086">WaveDirector.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1WaveDirector_html_a4eee4a91b2cda51694703e14647b728a"><div class="ttname"><a href="classeve_1_1towerdefense_1_1WaveDirector.html#a4eee4a91b2cda51694703e14647b728a">eve::towerdefense::WaveDirector::waveCount</a></div><div class="ttdeci">int waveCount() const noexcept</div><div class="ttdoc">Number of registered waves in schedule order.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00082">WaveDirector.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1WaveDirector_html_a6af4b25ecf95aa9a0a1c760894ab7d11"><div class="ttname"><a href="classeve_1_1towerdefense_1_1WaveDirector.html#a6af4b25ecf95aa9a0a1c760894ab7d11">eve::towerdefense::WaveDirector::waveIndex</a></div><div class="ttdeci">int waveIndex() const noexcept</div><div class="ttdoc">Index of the active/next wave, or waveCount when completed.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00088">WaveDirector.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1towerdefense_1_1WaveDirector_html_acf28eeae9eb967026fd8e2458c7e4d81"><div class="ttname"><a href="classeve_1_1towerdefense_1_1WaveDirector.html#acf28eeae9eb967026fd8e2458c7e4d81">eve::towerdefense::WaveDirector::remainingPrepSeconds</a></div><div class="ttdeci">double remainingPrepSeconds() const noexcept</div><div class="ttdoc">Remaining preparation/between-wave seconds.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00090">WaveDirector.h:90</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html">eve::towerdefense</a></div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8cpp_source.html#l00013">WaveDirector.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13c"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13c">eve::towerdefense::WavePhase</a></div><div class="ttdeci">WavePhase</div><div class="ttdoc">Lifecycle phase of a WaveDirector.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00031">WaveDirector.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13ca07ca5050e697392c9ed47e6453f1453f"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13ca07ca5050e697392c9ed47e6453f1453f">eve::towerdefense::WavePhase::Completed</a></div><div class="ttdeci">@ Completed</div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13ca55bd7ea2ea9661fa4010718f1e2152ad"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13ca55bd7ea2ea9661fa4010718f1e2152ad">eve::towerdefense::WavePhase::BetweenWaves</a></div><div class="ttdeci">@ BetweenWaves</div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13caabd8b51005b5a27c7aacebb8e08f6d6a"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13caabd8b51005b5a27c7aacebb8e08f6d6a">eve::towerdefense::WavePhase::Spawning</a></div><div class="ttdeci">@ Spawning</div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13caad866f19a13c5386d2ec6df246dcbfac"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13caad866f19a13c5386d2ec6df246dcbfac">eve::towerdefense::WavePhase::Preparing</a></div><div class="ttdeci">@ Preparing</div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13cad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13cad7c8c85bf79bbe1b7188497c32c3b0ca">eve::towerdefense::WavePhase::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_1_1towerdefense_html_a2f0bd7008a4ed1e047f6c348b689a13cae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1towerdefense.html#a2f0bd7008a4ed1e047f6c348b689a13cae599161956d626eda4cb0a5ffb85271c">eve::towerdefense::WavePhase::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveAdvanceResult_html"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html">eve::towerdefense::WaveAdvanceResult</a></div><div class="ttdoc">Owning result of one advance step.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00061">WaveDirector.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveAdvanceResult_html_a07aa4e1eabece896270e2b7dc39255e5"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a07aa4e1eabece896270e2b7dc39255e5">eve::towerdefense::WaveAdvanceResult::phase</a></div><div class="ttdeci">WavePhase phase</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00062">WaveDirector.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveAdvanceResult_html_a59d13f011f34e4e64e39dda27760f85a"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a59d13f011f34e4e64e39dda27760f85a">eve::towerdefense::WaveAdvanceResult::spawns</a></div><div class="ttdeci">std::vector&lt; WaveSpawnEvent &gt; spawns</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00063">WaveDirector.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveAdvanceResult_html_a8850b74eab08d9ce116e41639340c82a"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveAdvanceResult.html#a8850b74eab08d9ce116e41639340c82a">eve::towerdefense::WaveAdvanceResult::events</a></div><div class="ttdeci">std::vector&lt; WaveLifecycleEvent &gt; events</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00064">WaveDirector.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveDefinition_html"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveDefinition.html">eve::towerdefense::WaveDefinition</a></div><div class="ttdoc">Data-driven wave definition.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00023">WaveDirector.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveDefinition_html_a31bfa2d906c5b7bf4dedc070f0d0318c"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveDefinition.html#a31bfa2d906c5b7bf4dedc070f0d0318c">eve::towerdefense::WaveDefinition::prepSeconds</a></div><div class="ttdeci">double prepSeconds</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00025">WaveDirector.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveDefinition_html_ac515398b7bd87a89bb3235bd1ed3fb05"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveDefinition.html#ac515398b7bd87a89bb3235bd1ed3fb05">eve::towerdefense::WaveDefinition::rewardGold</a></div><div class="ttdeci">int rewardGold</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00026">WaveDirector.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveDefinition_html_ad50df11295d19c68bdf35226478ae152"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveDefinition.html#ad50df11295d19c68bdf35226478ae152">eve::towerdefense::WaveDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00024">WaveDirector.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveDefinition_html_ade118da7e387fcaea5337387efba189b"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveDefinition.html#ade118da7e387fcaea5337387efba189b">eve::towerdefense::WaveDefinition::entries</a></div><div class="ttdeci">std::vector&lt; WaveEntry &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00027">WaveDirector.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveEntry_html"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveEntry.html">eve::towerdefense::WaveEntry</a></div><div class="ttdoc">One spawn group inside a wave.</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00015">WaveDirector.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveEntry_html_a0380b7f217f9798ab5ad54c14cdc0291"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveEntry.html#a0380b7f217f9798ab5ad54c14cdc0291">eve::towerdefense::WaveEntry::delaySeconds</a></div><div class="ttdeci">double delaySeconds</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00019">WaveDirector.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveEntry_html_a30a370f91f6bbf794a1769b7e6b3be19"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveEntry.html#a30a370f91f6bbf794a1769b7e6b3be19">eve::towerdefense::WaveEntry::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00017">WaveDirector.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveEntry_html_aa7d18703fd92e5aa87359e9e68be1a34"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveEntry.html#aa7d18703fd92e5aa87359e9e68be1a34">eve::towerdefense::WaveEntry::archetypeId</a></div><div class="ttdeci">std::string archetypeId</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00016">WaveDirector.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveEntry_html_ab516be5bb60990400df6cc6af2a4582e"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveEntry.html#ab516be5bb60990400df6cc6af2a4582e">eve::towerdefense::WaveEntry::intervalSeconds</a></div><div class="ttdeci">double intervalSeconds</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00018">WaveDirector.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html">eve::towerdefense::WaveLifecycleEvent</a></div><div class="ttdoc">One phase/reward event emitted by advance().</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00051">WaveDirector.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_a0729202b0b99c8a0d85249693d9d5af1"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a0729202b0b99c8a0d85249693d9d5af1">eve::towerdefense::WaveLifecycleEvent::waveIndex</a></div><div class="ttdeci">int waveIndex</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00055">WaveDirector.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_a320fe03d4d002d79cd15bc353fdcdf47"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a320fe03d4d002d79cd15bc353fdcdf47">eve::towerdefense::WaveLifecycleEvent::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00053">WaveDirector.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_a4e516d069dcd6d21f81b487686672217"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#a4e516d069dcd6d21f81b487686672217">eve::towerdefense::WaveLifecycleEvent::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00052">WaveDirector.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_ad8bb5f4b2ee5663387eb0f7548017802"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ad8bb5f4b2ee5663387eb0f7548017802">eve::towerdefense::WaveLifecycleEvent::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00057">WaveDirector.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_ae8facb320112a46d04e69ab28eb85016"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#ae8facb320112a46d04e69ab28eb85016">eve::towerdefense::WaveLifecycleEvent::rewardGold</a></div><div class="ttdeci">int rewardGold</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00056">WaveDirector.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveLifecycleEvent_html_aee1f833f6470eda8a4fc2bce93362c7c"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveLifecycleEvent.html#aee1f833f6470eda8a4fc2bce93362c7c">eve::towerdefense::WaveLifecycleEvent::waveId</a></div><div class="ttdeci">std::string waveId</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00054">WaveDirector.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html">eve::towerdefense::WaveSpawnEvent</a></div><div class="ttdoc">One deterministic spawn request emitted by advance().</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00041">WaveDirector.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_a3049978d15d63ac96fcac8117369a25e"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a3049978d15d63ac96fcac8117369a25e">eve::towerdefense::WaveSpawnEvent::archetypeId</a></div><div class="ttdeci">std::string archetypeId</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00045">WaveDirector.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_a31021e61efb14c9e1ecb46f6f5d2a6af"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a31021e61efb14c9e1ecb46f6f5d2a6af">eve::towerdefense::WaveSpawnEvent::entryIndex</a></div><div class="ttdeci">int entryIndex</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00046">WaveDirector.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_a8858f0cb45b41d335d4ccf3a02d82513"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a8858f0cb45b41d335d4ccf3a02d82513">eve::towerdefense::WaveSpawnEvent::waveId</a></div><div class="ttdeci">std::string waveId</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00043">WaveDirector.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_a9c0350182441607484825bb1bb8b089a"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#a9c0350182441607484825bb1bb8b089a">eve::towerdefense::WaveSpawnEvent::spawnIndex</a></div><div class="ttdeci">int spawnIndex</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00047">WaveDirector.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_ae2720963438c7e50c148bc1cf893f556"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#ae2720963438c7e50c148bc1cf893f556">eve::towerdefense::WaveSpawnEvent::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00042">WaveDirector.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1towerdefense_1_1WaveSpawnEvent_html_aee92668bcf334a82d7d92d0c27e61cea"><div class="ttname"><a href="structeve_1_1towerdefense_1_1WaveSpawnEvent.html#aee92668bcf334a82d7d92d0c27e61cea">eve::towerdefense::WaveSpawnEvent::waveIndex</a></div><div class="ttdeci">int waveIndex</div><div class="ttdef"><b>Definition</b> <a href="WaveDirector_8h_source.html#l00044">WaveDirector.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

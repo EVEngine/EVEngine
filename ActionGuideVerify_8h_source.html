@@ -1,0 +1,325 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ActionGuideVerify.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionGuideVerify.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionGuideVerify_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="ActionGuidePack_8h.html">common/ActionGuidePack.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve.html#a2310d7c23893477dac1306af74980adb">   25</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="namespaceeve.html#a2310d7c23893477dac1306af74980adb">kActionGuideVerifyReportSchemaId</a>      = <span class="stringliteral">&quot;eve.action.guide-verify-report&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve.html#a54041854a925090d1e6ffd614a07b04e">   26</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> std::uint64_t    <a class="code hl_variable" href="namespaceeve.html#a54041854a925090d1e6ffd614a07b04e">kActionGuideVerifyReportSchemaVersion</a> = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideSilhouetteMetrics.html">ActionGuideSilhouetteMetrics</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a5896a9143d6f160786ca3dee79436958">   30</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a5896a9143d6f160786ca3dee79436958">iou</a>                 = 0.0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a3dc956d34f9189dd7459758c274ced97">   31</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a3dc956d34f9189dd7459758c274ced97">intersection</a>        = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html#aaa9d4cefd852196d015e7749c91eba64">   32</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideSilhouetteMetrics.html#aaa9d4cefd852196d015e7749c91eba64">unionCount</a>          = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html#af8060f4ae814a9c0ec5f655533f2c5a1">   33</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideSilhouetteMetrics.html#af8060f4ae814a9c0ec5f655533f2c5a1">guideForeground</a>     = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a58c69072e8604bc8a96716bc595d2fd9">   34</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideSilhouetteMetrics.html#a58c69072e8604bc8a96716bc595d2fd9">candidateForeground</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideJointMetrics.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideJointMetrics.html">ActionGuideJointMetrics</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideJointMetrics.html#a2aca71299f847f33fcd85a6cea6c95ea">   39</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_variable" href="structeve_1_1ActionGuideJointMetrics.html#a2aca71299f847f33fcd85a6cea6c95ea">evaluated</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideJointMetrics.html#ab51e36fbc1be6ef4ca9898192b9a8577">   40</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1ActionGuideJointMetrics.html#ab51e36fbc1be6ef4ca9898192b9a8577">maxErrorPx</a>   = 0.0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideJointMetrics.html#af472fee667a69879ef82880fe256188e">   41</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideJointMetrics.html#af472fee667a69879ef82880fe256188e">matchedBones</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideJointMetrics.html#a31ac5b77d3ed729d2b9eba90bd9ffb55">   42</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1ActionGuideJointMetrics.html#a31ac5b77d3ed729d2b9eba90bd9ffb55">missingBones</a> = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html">   46</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideShotVerifyResult.html">ActionGuideShotVerifyResult</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#ab444477d452a08f9e5a03813b20e8cfb">   47</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#ab444477d452a08f9e5a03813b20e8cfb">shotId</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#a22dc9fdceedaea47a6b7ab0dbf39c215">   48</a></span>    std::int64_t                 <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#a22dc9fdceedaea47a6b7ab0dbf39c215">shotIndex</a> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#ac52a2f28ce209e4bc79df15b91bf06bb">   49</a></span>    <span class="keywordtype">bool</span>                         <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#ac52a2f28ce209e4bc79df15b91bf06bb">passed</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#a30e3242304435538f8435d13d4b9d12d">   50</a></span>    <a class="code hl_struct" href="structeve_1_1ActionGuideSilhouetteMetrics.html">ActionGuideSilhouetteMetrics</a> <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#a30e3242304435538f8435d13d4b9d12d">silhouette</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#a8af5d6d26a28470b890f90d86267ffa2">   51</a></span>    <a class="code hl_struct" href="structeve_1_1ActionGuideJointMetrics.html">ActionGuideJointMetrics</a>      <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#a8af5d6d26a28470b890f90d86267ffa2">joints</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideShotVerifyResult.html#a7511e4331a13436fb0d8c22d2c3bf12d">   52</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1ActionGuideShotVerifyResult.html#a7511e4331a13436fb0d8c22d2c3bf12d">reason</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideVerifyReport.html">ActionGuideVerifyReport</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#a40e537bddaa901fa31a8dd8967baab40">   60</a></span>    std::uint64_t                            <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#a40e537bddaa901fa31a8dd8967baab40">sourceGuideRevision</a> = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#a1b1a0eb9804b8ecdb037e577f11cf3f1">   61</a></span>    <span class="keywordtype">bool</span>                                     <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#a1b1a0eb9804b8ecdb037e577f11cf3f1">passed</a>              = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#a34c1b2eb31aa47e7f60890c1ba0e7ea2">   62</a></span>    <span class="keywordtype">double</span>                                   <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#a34c1b2eb31aa47e7f60890c1ba0e7ea2">minSilhouetteIoU</a>    = 0.0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#ab7d85a2f7e43b339dc66b61dbb35122c">   63</a></span>    <span class="keywordtype">double</span>                                   <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#ab7d85a2f7e43b339dc66b61dbb35122c">maxJointErrorPx</a>     = 0.0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#a9733ace23032e5f0482512f5eb1c04cb">   64</a></span>    std::vector&lt;ActionGuideShotVerifyResult&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#a9733ace23032e5f0482512f5eb1c04cb">shots</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyReport.html#a011743c0ba1877f67a4d660ebe4e93dd">   65</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>                                    <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyReport.html#a011743c0ba1877f67a4d660ebe4e93dd">evidence</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html">   69</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideVerifyShotInput.html">ActionGuideVerifyShotInput</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a68d3eb1c3aa4d5fc5f2b8adefeb9d816">   70</a></span>    std::string                                      <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a68d3eb1c3aa4d5fc5f2b8adefeb9d816">shotId</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#afc46f2bfea6fddfa581140a8d3647fd8">   71</a></span>    std::uint32_t                                    <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#afc46f2bfea6fddfa581140a8d3647fd8">width</a>  = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a1703fcd85b6a66de7ca05731ba61d467">   72</a></span>    std::uint32_t                                    <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a1703fcd85b6a66de7ca05731ba61d467">height</a> = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a1a98b8d8ade3d6a51a9474b85e8c9456">   73</a></span>    std::shared_ptr&lt;const std::vector&lt;std::uint8_t&gt;&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a1a98b8d8ade3d6a51a9474b85e8c9456">guideSilhouetteRgba8</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a56b130a77065b02c64d4a20602b9e057">   74</a></span>    std::shared_ptr&lt;const std::vector&lt;std::uint8_t&gt;&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a56b130a77065b02c64d4a20602b9e057">candidateRgba8</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a38371d4c6febc99f1289004c248eb631">   76</a></span>    std::vector&lt;ActionGuideLandmark&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a38371d4c6febc99f1289004c248eb631">expectedJoints</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyShotInput.html#a56e72a6a96e9d86923649bdc8e6e406b">   78</a></span>    std::vector&lt;ActionGuideLandmark&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyShotInput.html#a56e72a6a96e9d86923649bdc8e6e406b">observedJoints</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="};">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyRequest.html">   82</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ActionGuideVerifyRequest.html">ActionGuideVerifyRequest</a> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyRequest.html#a1ab06f36125fa2568552bf469079f780">   83</a></span>    <a class="code hl_struct" href="structeve_1_1ActionGuidePack.html">ActionGuidePack</a>                         <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyRequest.html#a1ab06f36125fa2568552bf469079f780">pack</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyRequest.html#a9df9a4f50d902b629c26af2cdbc64816">   84</a></span>    std::vector&lt;ActionGuideVerifyShotInput&gt; <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyRequest.html#a9df9a4f50d902b629c26af2cdbc64816">shots</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyRequest.html#a5a5b0371baaa680f6803930725ae474b">   85</a></span>    std::uint8_t                            <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyRequest.html#a5a5b0371baaa680f6803930725ae474b">guideLuminanceThreshold</a> = 200;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1ActionGuideVerifyRequest.html#a31731a93e7a92761713f58b3e71362e7">   86</a></span>    std::uint8_t                            <a class="code hl_variable" href="structeve_1_1ActionGuideVerifyRequest.html#a31731a93e7a92761713f58b3e71362e7">candidateAlphaThreshold</a> = 8;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionGuideSilhouetteMetrics&gt;</a> <a class="code hl_function" href="namespaceeve.html#ae4bd9757fb7fda93d2ebbdc73e1540b1">compareActionGuideSilhouetteIoU</a>(</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    std::span&lt;const std::uint8_t&gt; guideRgba8, std::span&lt;const std::uint8_t&gt; candidateRgba8, std::uint32_t <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    std::uint32_t <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, std::uint8_t guideLuminanceThreshold = 200, std::uint8_t candidateAlphaThreshold = 8);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionGuideJointMetrics&gt;</a> <a class="code hl_function" href="namespaceeve.html#aa010626b90bcca106dea1d60859b0cd2">compareActionGuideJointError</a>(</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::span&lt;const ActionGuideLandmark&gt; expected, std::span&lt;const ActionGuideLandmark&gt; observed);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionGuideVerifyReport&gt;</a> <a class="code hl_function" href="namespaceeve.html#a60aba8c8899bb0bfd8013714c99b85b3">verifyActionGuideCandidates</a>(</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ActionGuideVerifyRequest.html">ActionGuideVerifyRequest</a>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="namespaceeve.html#aeea2bc740bd724b5e35ec801f22a611e">encodeActionGuideVerifyReport</a>(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ActionGuideVerifyReport.html">ActionGuideVerifyReport</a>&amp; report);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aActionGuidePack_8h_html"><div class="ttname"><a href="ActionGuidePack_8h.html">ActionGuidePack.h</a></div><div class="ttdoc">Versioned eve.action.guide-pack document codec and CPU landmark projection.</div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a2310d7c23893477dac1306af74980adb"><div class="ttname"><a href="namespaceeve.html#a2310d7c23893477dac1306af74980adb">eve::kActionGuideVerifyReportSchemaId</a></div><div class="ttdeci">constexpr std::string_view kActionGuideVerifyReportSchemaId</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00025">ActionGuideVerify.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a54041854a925090d1e6ffd614a07b04e"><div class="ttname"><a href="namespaceeve.html#a54041854a925090d1e6ffd614a07b04e">eve::kActionGuideVerifyReportSchemaVersion</a></div><div class="ttdeci">constexpr std::uint64_t kActionGuideVerifyReportSchemaVersion</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00026">ActionGuideVerify.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a60aba8c8899bb0bfd8013714c99b85b3"><div class="ttname"><a href="namespaceeve.html#a60aba8c8899bb0bfd8013714c99b85b3">eve::verifyActionGuideCandidates</a></div><div class="ttdeci">Result&lt; ActionGuideVerifyReport &gt; verifyActionGuideCandidates(const ActionGuideVerifyRequest &amp;request)</div><div class="ttdoc">Evaluate every shot against pack.qc; returns a report even when some shots fail.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8cpp_source.html#l00088">ActionGuideVerify.cpp:88</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aa010626b90bcca106dea1d60859b0cd2"><div class="ttname"><a href="namespaceeve.html#aa010626b90bcca106dea1d60859b0cd2">eve::compareActionGuideJointError</a></div><div class="ttdeci">Result&lt; ActionGuideJointMetrics &gt; compareActionGuideJointError(std::span&lt; const ActionGuideLandmark &gt; expected, std::span&lt; const ActionGuideLandmark &gt; observed)</div><div class="ttdoc">Max L2 pixel error across bones present in both landmark lists (matched by boneId)....</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8cpp_source.html#l00051">ActionGuideVerify.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ae4bd9757fb7fda93d2ebbdc73e1540b1"><div class="ttname"><a href="namespaceeve.html#ae4bd9757fb7fda93d2ebbdc73e1540b1">eve::compareActionGuideSilhouetteIoU</a></div><div class="ttdeci">Result&lt; ActionGuideSilhouetteMetrics &gt; compareActionGuideSilhouetteIoU(std::span&lt; const std::uint8_t &gt; guideRgba8, std::span&lt; const std::uint8_t &gt; candidateRgba8, std::uint32_t width, std::uint32_t height, std::uint8_t guideLuminanceThreshold, std::uint8_t candidateAlphaThreshold)</div><div class="ttdoc">Compute silhouette IoU between guide luminance mask and candidate alpha mask.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8cpp_source.html#l00024">ActionGuideVerify.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aeea2bc740bd724b5e35ec801f22a611e"><div class="ttname"><a href="namespaceeve.html#aeea2bc740bd724b5e35ec801f22a611e">eve::encodeActionGuideVerifyReport</a></div><div class="ttdeci">Result&lt; Value &gt; encodeActionGuideVerifyReport(const ActionGuideVerifyReport &amp;report)</div><div class="ttdoc">Encode a verify report as a durable evidence Value.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8cpp_source.html#l00157">ActionGuideVerify.cpp:157</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideJointMetrics_html"><div class="ttname"><a href="structeve_1_1ActionGuideJointMetrics.html">eve::ActionGuideJointMetrics</a></div><div class="ttdoc">Measured joint L2 error for one shot (optional when joints absent).</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00038">ActionGuideVerify.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideJointMetrics_html_a2aca71299f847f33fcd85a6cea6c95ea"><div class="ttname"><a href="structeve_1_1ActionGuideJointMetrics.html#a2aca71299f847f33fcd85a6cea6c95ea">eve::ActionGuideJointMetrics::evaluated</a></div><div class="ttdeci">bool evaluated</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00039">ActionGuideVerify.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideJointMetrics_html_a31ac5b77d3ed729d2b9eba90bd9ffb55"><div class="ttname"><a href="structeve_1_1ActionGuideJointMetrics.html#a31ac5b77d3ed729d2b9eba90bd9ffb55">eve::ActionGuideJointMetrics::missingBones</a></div><div class="ttdeci">std::uint64_t missingBones</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00042">ActionGuideVerify.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideJointMetrics_html_ab51e36fbc1be6ef4ca9898192b9a8577"><div class="ttname"><a href="structeve_1_1ActionGuideJointMetrics.html#ab51e36fbc1be6ef4ca9898192b9a8577">eve::ActionGuideJointMetrics::maxErrorPx</a></div><div class="ttdeci">double maxErrorPx</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00040">ActionGuideVerify.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideJointMetrics_html_af472fee667a69879ef82880fe256188e"><div class="ttname"><a href="structeve_1_1ActionGuideJointMetrics.html#af472fee667a69879ef82880fe256188e">eve::ActionGuideJointMetrics::matchedBones</a></div><div class="ttdeci">std::uint64_t matchedBones</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00041">ActionGuideVerify.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuidePack_html"><div class="ttname"><a href="structeve_1_1ActionGuidePack.html">eve::ActionGuidePack</a></div><div class="ttdoc">Authoritative guide-pack document (no pointers, GPU tokens, or ECS slots). @ownership Caller-owned va...</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8h_source.html#l00101">ActionGuidePack.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html">eve::ActionGuideShotVerifyResult</a></div><div class="ttdoc">Per-shot verify outcome.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00046">ActionGuideVerify.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_a22dc9fdceedaea47a6b7ab0dbf39c215"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#a22dc9fdceedaea47a6b7ab0dbf39c215">eve::ActionGuideShotVerifyResult::shotIndex</a></div><div class="ttdeci">std::int64_t shotIndex</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00048">ActionGuideVerify.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_a30e3242304435538f8435d13d4b9d12d"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#a30e3242304435538f8435d13d4b9d12d">eve::ActionGuideShotVerifyResult::silhouette</a></div><div class="ttdeci">ActionGuideSilhouetteMetrics silhouette</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00050">ActionGuideVerify.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_a7511e4331a13436fb0d8c22d2c3bf12d"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#a7511e4331a13436fb0d8c22d2c3bf12d">eve::ActionGuideShotVerifyResult::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00052">ActionGuideVerify.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_a8af5d6d26a28470b890f90d86267ffa2"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#a8af5d6d26a28470b890f90d86267ffa2">eve::ActionGuideShotVerifyResult::joints</a></div><div class="ttdeci">ActionGuideJointMetrics joints</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00051">ActionGuideVerify.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_ab444477d452a08f9e5a03813b20e8cfb"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#ab444477d452a08f9e5a03813b20e8cfb">eve::ActionGuideShotVerifyResult::shotId</a></div><div class="ttdeci">std::string shotId</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00047">ActionGuideVerify.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideShotVerifyResult_html_ac52a2f28ce209e4bc79df15b91bf06bb"><div class="ttname"><a href="structeve_1_1ActionGuideShotVerifyResult.html#ac52a2f28ce209e4bc79df15b91bf06bb">eve::ActionGuideShotVerifyResult::passed</a></div><div class="ttdeci">bool passed</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00049">ActionGuideVerify.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html">eve::ActionGuideSilhouetteMetrics</a></div><div class="ttdoc">Measured silhouette overlap for one shot.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00029">ActionGuideVerify.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html_a3dc956d34f9189dd7459758c274ced97"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html#a3dc956d34f9189dd7459758c274ced97">eve::ActionGuideSilhouetteMetrics::intersection</a></div><div class="ttdeci">std::uint64_t intersection</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00031">ActionGuideVerify.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html_a5896a9143d6f160786ca3dee79436958"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html#a5896a9143d6f160786ca3dee79436958">eve::ActionGuideSilhouetteMetrics::iou</a></div><div class="ttdeci">double iou</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00030">ActionGuideVerify.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html_a58c69072e8604bc8a96716bc595d2fd9"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html#a58c69072e8604bc8a96716bc595d2fd9">eve::ActionGuideSilhouetteMetrics::candidateForeground</a></div><div class="ttdeci">std::uint64_t candidateForeground</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00034">ActionGuideVerify.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html_aaa9d4cefd852196d015e7749c91eba64"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html#aaa9d4cefd852196d015e7749c91eba64">eve::ActionGuideSilhouetteMetrics::unionCount</a></div><div class="ttdeci">std::uint64_t unionCount</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00032">ActionGuideVerify.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideSilhouetteMetrics_html_af8060f4ae814a9c0ec5f655533f2c5a1"><div class="ttname"><a href="structeve_1_1ActionGuideSilhouetteMetrics.html#af8060f4ae814a9c0ec5f655533f2c5a1">eve::ActionGuideSilhouetteMetrics::guideForeground</a></div><div class="ttdeci">std::uint64_t guideForeground</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00033">ActionGuideVerify.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html">eve::ActionGuideVerifyReport</a></div><div class="ttdoc">Aggregate verify report for one GuidePack revision. @ownership Caller-owned; Values are independent c...</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00059">ActionGuideVerify.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_a011743c0ba1877f67a4d660ebe4e93dd"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#a011743c0ba1877f67a4d660ebe4e93dd">eve::ActionGuideVerifyReport::evidence</a></div><div class="ttdeci">Value evidence</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00065">ActionGuideVerify.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_a1b1a0eb9804b8ecdb037e577f11cf3f1"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#a1b1a0eb9804b8ecdb037e577f11cf3f1">eve::ActionGuideVerifyReport::passed</a></div><div class="ttdeci">bool passed</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00061">ActionGuideVerify.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_a34c1b2eb31aa47e7f60890c1ba0e7ea2"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#a34c1b2eb31aa47e7f60890c1ba0e7ea2">eve::ActionGuideVerifyReport::minSilhouetteIoU</a></div><div class="ttdeci">double minSilhouetteIoU</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00062">ActionGuideVerify.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_a40e537bddaa901fa31a8dd8967baab40"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#a40e537bddaa901fa31a8dd8967baab40">eve::ActionGuideVerifyReport::sourceGuideRevision</a></div><div class="ttdeci">std::uint64_t sourceGuideRevision</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00060">ActionGuideVerify.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_a9733ace23032e5f0482512f5eb1c04cb"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#a9733ace23032e5f0482512f5eb1c04cb">eve::ActionGuideVerifyReport::shots</a></div><div class="ttdeci">std::vector&lt; ActionGuideShotVerifyResult &gt; shots</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00064">ActionGuideVerify.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyReport_html_ab7d85a2f7e43b339dc66b61dbb35122c"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyReport.html#ab7d85a2f7e43b339dc66b61dbb35122c">eve::ActionGuideVerifyReport::maxJointErrorPx</a></div><div class="ttdeci">double maxJointErrorPx</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00063">ActionGuideVerify.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyRequest_html"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyRequest.html">eve::ActionGuideVerifyRequest</a></div><div class="ttdoc">In-memory verify request.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00082">ActionGuideVerify.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyRequest_html_a1ab06f36125fa2568552bf469079f780"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyRequest.html#a1ab06f36125fa2568552bf469079f780">eve::ActionGuideVerifyRequest::pack</a></div><div class="ttdeci">ActionGuidePack pack</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00083">ActionGuideVerify.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyRequest_html_a31731a93e7a92761713f58b3e71362e7"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyRequest.html#a31731a93e7a92761713f58b3e71362e7">eve::ActionGuideVerifyRequest::candidateAlphaThreshold</a></div><div class="ttdeci">std::uint8_t candidateAlphaThreshold</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00086">ActionGuideVerify.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyRequest_html_a5a5b0371baaa680f6803930725ae474b"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyRequest.html#a5a5b0371baaa680f6803930725ae474b">eve::ActionGuideVerifyRequest::guideLuminanceThreshold</a></div><div class="ttdeci">std::uint8_t guideLuminanceThreshold</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00085">ActionGuideVerify.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyRequest_html_a9df9a4f50d902b629c26af2cdbc64816"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyRequest.html#a9df9a4f50d902b629c26af2cdbc64816">eve::ActionGuideVerifyRequest::shots</a></div><div class="ttdeci">std::vector&lt; ActionGuideVerifyShotInput &gt; shots</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00084">ActionGuideVerify.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html">eve::ActionGuideVerifyShotInput</a></div><div class="ttdoc">One shot of RGBA inputs for geometric verify (lease-owned buffers).</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00069">ActionGuideVerify.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a1703fcd85b6a66de7ca05731ba61d467"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a1703fcd85b6a66de7ca05731ba61d467">eve::ActionGuideVerifyShotInput::height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00072">ActionGuideVerify.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a1a98b8d8ade3d6a51a9474b85e8c9456"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a1a98b8d8ade3d6a51a9474b85e8c9456">eve::ActionGuideVerifyShotInput::guideSilhouetteRgba8</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; std::uint8_t &gt; &gt; guideSilhouetteRgba8</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00073">ActionGuideVerify.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a38371d4c6febc99f1289004c248eb631"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a38371d4c6febc99f1289004c248eb631">eve::ActionGuideVerifyShotInput::expectedJoints</a></div><div class="ttdeci">std::vector&lt; ActionGuideLandmark &gt; expectedJoints</div><div class="ttdoc">Expected landmarks from the guide pack (authoritative).</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00076">ActionGuideVerify.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a56b130a77065b02c64d4a20602b9e057"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a56b130a77065b02c64d4a20602b9e057">eve::ActionGuideVerifyShotInput::candidateRgba8</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; std::uint8_t &gt; &gt; candidateRgba8</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00074">ActionGuideVerify.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a56e72a6a96e9d86923649bdc8e6e406b"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a56e72a6a96e9d86923649bdc8e6e406b">eve::ActionGuideVerifyShotInput::observedJoints</a></div><div class="ttdeci">std::vector&lt; ActionGuideLandmark &gt; observedJoints</div><div class="ttdoc">Optional agent-reported / estimated joints; empty skips joint gate.</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00078">ActionGuideVerify.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_a68d3eb1c3aa4d5fc5f2b8adefeb9d816"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#a68d3eb1c3aa4d5fc5f2b8adefeb9d816">eve::ActionGuideVerifyShotInput::shotId</a></div><div class="ttdeci">std::string shotId</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00070">ActionGuideVerify.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1ActionGuideVerifyShotInput_html_afc46f2bfea6fddfa581140a8d3647fd8"><div class="ttname"><a href="structeve_1_1ActionGuideVerifyShotInput.html#afc46f2bfea6fddfa581140a8d3647fd8">eve::ActionGuideVerifyShotInput::width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ActionGuideVerify_8h_source.html#l00071">ActionGuideVerify.h:71</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

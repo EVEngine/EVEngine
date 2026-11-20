@@ -1,0 +1,377 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::MissionRegionMonitor结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html">MissionRegionMonitor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1MissionRegionMonitor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::MissionRegionMonitor结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Axis-aligned world region that emits enter/exit events for live subjects.  
+ <a href="structeve_1_1rts_1_1MissionRegionMonitor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ac57adf6789d3e18809b045bb2320fd3a" id="r_ac57adf6789d3e18809b045bb2320fd3a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#ac57adf6789d3e18809b045bb2320fd3a">id</a></td></tr>
+<tr class="separator:ac57adf6789d3e18809b045bb2320fd3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a38f40838b507e92ff932b28a3a65da" id="r_a2a38f40838b507e92ff932b28a3a65da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#a2a38f40838b507e92ff932b28a3a65da">enabled</a> = true</td></tr>
+<tr class="separator:a2a38f40838b507e92ff932b28a3a65da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8449de73f5683a57bd6d84a582b3f011" id="r_a8449de73f5683a57bd6d84a582b3f011"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#a8449de73f5683a57bd6d84a582b3f011">minX</a> = 0.0f</td></tr>
+<tr class="separator:a8449de73f5683a57bd6d84a582b3f011"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a998be9b0b1735da9a5448cd2f504ed62" id="r_a998be9b0b1735da9a5448cd2f504ed62"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#a998be9b0b1735da9a5448cd2f504ed62">minY</a> = 0.0f</td></tr>
+<tr class="separator:a998be9b0b1735da9a5448cd2f504ed62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90c839dc73b87f085c1ef8bbde5a3522" id="r_a90c839dc73b87f085c1ef8bbde5a3522"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#a90c839dc73b87f085c1ef8bbde5a3522">maxX</a> = 0.0f</td></tr>
+<tr class="separator:a90c839dc73b87f085c1ef8bbde5a3522"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa8e1a6b7327c126ad4fa00b330a85f" id="r_aafa8e1a6b7327c126ad4fa00b330a85f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#aafa8e1a6b7327c126ad4fa00b330a85f">maxY</a> = 0.0f</td></tr>
+<tr class="separator:aafa8e1a6b7327c126ad4fa00b330a85f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab77887109b7883d306c549fef20fded" id="r_aab77887109b7883d306c549fef20fded"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#aab77887109b7883d306c549fef20fded">faction</a></td></tr>
+<tr class="separator:aab77887109b7883d306c549fef20fded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfd2459cdcfd34f4b161c292437394f" id="r_afcfd2459cdcfd34f4b161c292437394f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#afcfd2459cdcfd34f4b161c292437394f">subjects</a></td></tr>
+<tr class="separator:afcfd2459cdcfd34f4b161c292437394f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67bfe5f00bb8896d61b591b530e90e04" id="r_a67bfe5f00bb8896d61b591b530e90e04"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionRegionMonitor.html#a67bfe5f00bb8896d61b591b530e90e04">occupants</a></td></tr>
+<tr class="memdesc:a67bfe5f00bb8896d61b591b530e90e04"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> occupants discovered on the previous step.  <br /></td></tr>
+<tr class="separator:a67bfe5f00bb8896d61b591b530e90e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Axis-aligned world region that emits enter/exit events for live subjects. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01426">1426</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a2a38f40838b507e92ff932b28a3a65da" name="a2a38f40838b507e92ff932b28a3a65da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a38f40838b507e92ff932b28a3a65da">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::MissionRegionMonitor::enabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01428">1428</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="aab77887109b7883d306c549fef20fded" name="aab77887109b7883d306c549fef20fded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab77887109b7883d306c549fef20fded">&#9670;&#160;</a></span>faction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::MissionRegionMonitor::faction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01433">1433</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="ac57adf6789d3e18809b045bb2320fd3a" name="ac57adf6789d3e18809b045bb2320fd3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57adf6789d3e18809b045bb2320fd3a">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::MissionRegionMonitor::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01427">1427</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="a90c839dc73b87f085c1ef8bbde5a3522" name="a90c839dc73b87f085c1ef8bbde5a3522"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90c839dc73b87f085c1ef8bbde5a3522">&#9670;&#160;</a></span>maxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::MissionRegionMonitor::maxX = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01431">1431</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="aafa8e1a6b7327c126ad4fa00b330a85f" name="aafa8e1a6b7327c126ad4fa00b330a85f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa8e1a6b7327c126ad4fa00b330a85f">&#9670;&#160;</a></span>maxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::MissionRegionMonitor::maxY = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01432">1432</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8449de73f5683a57bd6d84a582b3f011" name="a8449de73f5683a57bd6d84a582b3f011"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8449de73f5683a57bd6d84a582b3f011">&#9670;&#160;</a></span>minX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::MissionRegionMonitor::minX = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01429">1429</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="a998be9b0b1735da9a5448cd2f504ed62" name="a998be9b0b1735da9a5448cd2f504ed62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998be9b0b1735da9a5448cd2f504ed62">&#9670;&#160;</a></span>minY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::MissionRegionMonitor::minY = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01430">1430</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<a id="a67bfe5f00bb8896d61b591b530e90e04" name="a67bfe5f00bb8896d61b591b530e90e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67bfe5f00bb8896d61b591b530e90e04">&#9670;&#160;</a></span>occupants</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::MissionRegionMonitor::occupants</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> occupants discovered on the previous step. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01436">1436</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a>.</p>
+
+</div>
+</div>
+<a id="afcfd2459cdcfd34f4b161c292437394f" name="afcfd2459cdcfd34f4b161c292437394f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcfd2459cdcfd34f4b161c292437394f">&#9670;&#160;</a></span>subjects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::MissionRegionMonitor::subjects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01434">1434</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMission_8cpp_source.html#l00479">eve::rts::MissionScriptSystem::addMonitor()</a> , 以及 <a class="el" href="RTSMission_8cpp_source.html#l00774">eve::rts::MissionScriptSystem::parseMonitorJson()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

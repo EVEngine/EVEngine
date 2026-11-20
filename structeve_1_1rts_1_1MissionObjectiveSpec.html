@@ -1,0 +1,418 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::MissionObjectiveSpec结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html">MissionObjectiveSpec</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1MissionObjectiveSpec-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::MissionObjectiveSpec结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Persistent mission objective definition using stable subjects and team ids.  
+ <a href="structeve_1_1rts_1_1MissionObjectiveSpec.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ac3353fd28aa5e741677f78494044472e" id="r_ac3353fd28aa5e741677f78494044472e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#ac3353fd28aa5e741677f78494044472e">id</a></td></tr>
+<tr class="separator:ac3353fd28aa5e741677f78494044472e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fee1d9d7c021192a5ce2fc179dc0d46" id="r_a3fee1d9d7c021192a5ce2fc179dc0d46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1rts.html#a166de424a768edfd072bc7d3c84adfff">MissionObjectiveKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a3fee1d9d7c021192a5ce2fc179dc0d46">kind</a> = <a class="el" href="namespaceeve_1_1rts.html#a166de424a768edfd072bc7d3c84adfffa906eda36579fc99851155f815cc4c3ba">MissionObjectiveKind::EliminateFaction</a></td></tr>
+<tr class="separator:a3fee1d9d7c021192a5ce2fc179dc0d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae71d68de3d6fef6bbc46cc1b6adcf012" id="r_ae71d68de3d6fef6bbc46cc1b6adcf012"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#ae71d68de3d6fef6bbc46cc1b6adcf012">beneficiaryTeam</a> = 0</td></tr>
+<tr class="separator:ae71d68de3d6fef6bbc46cc1b6adcf012"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90adb46635296d56c077a37190a63721" id="r_a90adb46635296d56c077a37190a63721"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a90adb46635296d56c077a37190a63721">targetFaction</a></td></tr>
+<tr class="separator:a90adb46635296d56c077a37190a63721"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75bc43977903ed0bcb613930a7ed2a69" id="r_a75bc43977903ed0bcb613930a7ed2a69"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a75bc43977903ed0bcb613930a7ed2a69">targetSubject</a></td></tr>
+<tr class="separator:a75bc43977903ed0bcb613930a7ed2a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd180eba8277d2b1a506d7670b3d3eae" id="r_abd180eba8277d2b1a506d7670b3d3eae"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#abd180eba8277d2b1a506d7670b3d3eae">archetype</a></td></tr>
+<tr class="separator:abd180eba8277d2b1a506d7670b3d3eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca253828b625286e87e0c3a2fd9868bb" id="r_aca253828b625286e87e0c3a2fd9868bb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#aca253828b625286e87e0c3a2fd9868bb">resourceType</a></td></tr>
+<tr class="separator:aca253828b625286e87e0c3a2fd9868bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b21d16e94917a0a2924fb245c01aabc" id="r_a7b21d16e94917a0a2924fb245c01aabc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a7b21d16e94917a0a2924fb245c01aabc">requiredDuration</a> {}</td></tr>
+<tr class="separator:a7b21d16e94917a0a2924fb245c01aabc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb57c31281cfced6a5f83ae3418b643d" id="r_acb57c31281cfced6a5f83ae3418b643d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#acb57c31281cfced6a5f83ae3418b643d">targetValue</a> = 0.0</td></tr>
+<tr class="separator:acb57c31281cfced6a5f83ae3418b643d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39af71a6ca690290f04166c108af38b3" id="r_a39af71a6ca690290f04166c108af38b3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a39af71a6ca690290f04166c108af38b3">requiredSubjects</a></td></tr>
+<tr class="separator:a39af71a6ca690290f04166c108af38b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a51b3f840f1168535e93d103853b645" id="r_a5a51b3f840f1168535e93d103853b645"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a5a51b3f840f1168535e93d103853b645">endsMatch</a> = true</td></tr>
+<tr class="memdesc:a5a51b3f840f1168535e93d103853b645"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completing this objective finishes the match for the beneficiary team.  <br /></td></tr>
+<tr class="separator:a5a51b3f840f1168535e93d103853b645"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a52631e3a715af29d42d2d201ef8bcc" id="r_a6a52631e3a715af29d42d2d201ef8bcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1MissionObjectiveSpec.html#a6a52631e3a715af29d42d2d201ef8bcc">failsMatch</a> = true</td></tr>
+<tr class="memdesc:a6a52631e3a715af29d42d2d201ef8bcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Failing this objective finishes the match as a mission failure (winningTeam = -1).  <br /></td></tr>
+<tr class="separator:a6a52631e3a715af29d42d2d201ef8bcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Persistent mission objective definition using stable subjects and team ids. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01332">1332</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="abd180eba8277d2b1a506d7670b3d3eae" name="abd180eba8277d2b1a506d7670b3d3eae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd180eba8277d2b1a506d7670b3d3eae">&#9670;&#160;</a></span>archetype</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::MissionObjectiveSpec::archetype</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01338">1338</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae71d68de3d6fef6bbc46cc1b6adcf012" name="ae71d68de3d6fef6bbc46cc1b6adcf012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae71d68de3d6fef6bbc46cc1b6adcf012">&#9670;&#160;</a></span>beneficiaryTeam</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::MissionObjectiveSpec::beneficiaryTeam = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01335">1335</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a51b3f840f1168535e93d103853b645" name="a5a51b3f840f1168535e93d103853b645"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a51b3f840f1168535e93d103853b645">&#9670;&#160;</a></span>endsMatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::MissionObjectiveSpec::endsMatch = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Completing this objective finishes the match for the beneficiary team. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01344">1344</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a52631e3a715af29d42d2d201ef8bcc" name="a6a52631e3a715af29d42d2d201ef8bcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a52631e3a715af29d42d2d201ef8bcc">&#9670;&#160;</a></span>failsMatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::MissionObjectiveSpec::failsMatch = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Failing this objective finishes the match as a mission failure (winningTeam = -1). </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01346">1346</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3353fd28aa5e741677f78494044472e" name="ac3353fd28aa5e741677f78494044472e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3353fd28aa5e741677f78494044472e">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::MissionObjectiveSpec::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01333">1333</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3fee1d9d7c021192a5ce2fc179dc0d46" name="a3fee1d9d7c021192a5ce2fc179dc0d46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fee1d9d7c021192a5ce2fc179dc0d46">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1rts.html#a166de424a768edfd072bc7d3c84adfff">MissionObjectiveKind</a> eve::rts::MissionObjectiveSpec::kind = <a class="el" href="namespaceeve_1_1rts.html#a166de424a768edfd072bc7d3c84adfffa906eda36579fc99851155f815cc4c3ba">MissionObjectiveKind::EliminateFaction</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01334">1334</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b21d16e94917a0a2924fb245c01aabc" name="a7b21d16e94917a0a2924fb245c01aabc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b21d16e94917a0a2924fb245c01aabc">&#9670;&#160;</a></span>requiredDuration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::rts::MissionObjectiveSpec::requiredDuration {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01340">1340</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39af71a6ca690290f04166c108af38b3" name="a39af71a6ca690290f04166c108af38b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39af71a6ca690290f04166c108af38b3">&#9670;&#160;</a></span>requiredSubjects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::MissionObjectiveSpec::requiredSubjects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01342">1342</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSMatch_8cpp_source.html#l00510">eve::rts::MatchSystem::addObjective()</a>.</p>
+
+</div>
+</div>
+<a id="aca253828b625286e87e0c3a2fd9868bb" name="aca253828b625286e87e0c3a2fd9868bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca253828b625286e87e0c3a2fd9868bb">&#9670;&#160;</a></span>resourceType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::MissionObjectiveSpec::resourceType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01339">1339</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90adb46635296d56c077a37190a63721" name="a90adb46635296d56c077a37190a63721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90adb46635296d56c077a37190a63721">&#9670;&#160;</a></span>targetFaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::MissionObjectiveSpec::targetFaction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01336">1336</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75bc43977903ed0bcb613930a7ed2a69" name="a75bc43977903ed0bcb613930a7ed2a69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75bc43977903ed0bcb613930a7ed2a69">&#9670;&#160;</a></span>targetSubject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::MissionObjectiveSpec::targetSubject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01337">1337</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb57c31281cfced6a5f83ae3418b643d" name="acb57c31281cfced6a5f83ae3418b643d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb57c31281cfced6a5f83ae3418b643d">&#9670;&#160;</a></span>targetValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rts::MissionObjectiveSpec::targetValue = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l01341">1341</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

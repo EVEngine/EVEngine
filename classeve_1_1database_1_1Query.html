@@ -1,0 +1,1258 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::database::Query类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1database.html">database</a></li><li class="navelem"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1database_1_1Query-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::database::Query类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Composable filtered/sorted/paged query shared by C++ and scripts.  
+ <a href="classeve_1_1database_1_1Query.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Database_8h_source.html">Database.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1b636142eaad98710d1196413c0d95a2" id="r_a1b636142eaad98710d1196413c0d95a2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a1b636142eaad98710d1196413c0d95a2">Query</a> (<a class="el" href="classeve_1_1database_1_1Connection.html">Connection</a> *connection, std::string table)</td></tr>
+<tr class="memdesc:a1b636142eaad98710d1196413c0d95a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a>.  <br /></td></tr>
+<tr class="separator:a1b636142eaad98710d1196413c0d95a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0d71612a8b85c00b5d659a5e5653c5e" id="r_ad0d71612a8b85c00b5d659a5e5653c5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ad0d71612a8b85c00b5d659a5e5653c5e">select</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>)</td></tr>
+<tr class="memdesc:ad0d71612a8b85c00b5d659a5e5653c5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a quoted projection column (default remains SELECT *). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ad0d71612a8b85c00b5d659a5e5653c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29be8683beddbdefd7aecd384cbbe886" id="r_a29be8683beddbdefd7aecd384cbbe886"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a29be8683beddbdefd7aecd384cbbe886">selectAs</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;alias)</td></tr>
+<tr class="memdesc:a29be8683beddbdefd7aecd384cbbe886"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a quoted projection column with AS alias. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a29be8683beddbdefd7aecd384cbbe886"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8570004449b292081cb756d944917bae" id="r_a8570004449b292081cb756d944917bae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a8570004449b292081cb756d944917bae">selectExpr</a> (const std::string &amp;expression, const std::string &amp;alias={})</td></tr>
+<tr class="memdesc:a8570004449b292081cb756d944917bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a validated aggregate/expression projection with optional alias. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a8570004449b292081cb756d944917bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f649167fd22c35cd5aed8c32e5a7a1" id="r_a28f649167fd22c35cd5aed8c32e5a7a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a28f649167fd22c35cd5aed8c32e5a7a1">selectJson</a> (const std::string &amp;columnsJson)</td></tr>
+<tr class="memdesc:a28f649167fd22c35cd5aed8c32e5a7a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script helper: JSON array of names, {column,as}, or {expr,as}. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a28f649167fd22c35cd5aed8c32e5a7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae87cc355645a08058df8a6682b29d521" id="r_ae87cc355645a08058df8a6682b29d521"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ae87cc355645a08058df8a6682b29d521">distinct</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ae87cc355645a08058df8a6682b29d521"><td class="mdescLeft">&#160;</td><td class="mdescRight">SELECT DISTINCT … @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ae87cc355645a08058df8a6682b29d521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0052dda6ab2304ee6b74a9a92076f2e" id="r_ad0052dda6ab2304ee6b74a9a92076f2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ad0052dda6ab2304ee6b74a9a92076f2e">innerJoin</a> (const std::string &amp;table, const std::string &amp;leftColumn, const std::string &amp;rightColumn)</td></tr>
+<tr class="memdesc:ad0052dda6ab2304ee6b74a9a92076f2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">INNER JOIN table ON leftColumn = rightColumn (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ad0052dda6ab2304ee6b74a9a92076f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a872358db12dedf09d64c062496b0c71d" id="r_a872358db12dedf09d64c062496b0c71d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a872358db12dedf09d64c062496b0c71d">leftJoin</a> (const std::string &amp;table, const std::string &amp;leftColumn, const std::string &amp;rightColumn)</td></tr>
+<tr class="memdesc:a872358db12dedf09d64c062496b0c71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">LEFT JOIN table ON leftColumn = rightColumn (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a872358db12dedf09d64c062496b0c71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace5158441f28a5f90268636c3788c17e" id="r_ace5158441f28a5f90268636c3788c17e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ace5158441f28a5f90268636c3788c17e">where</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;op, <a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:ace5158441f28a5f90268636c3788c17e"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND-combined comparison predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ace5158441f28a5f90268636c3788c17e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee238a42654c60bf312989ae6f4a7dd0" id="r_aee238a42654c60bf312989ae6f4a7dd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#aee238a42654c60bf312989ae6f4a7dd0">whereJson</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;op, const std::string &amp;valueJson)</td></tr>
+<tr class="memdesc:aee238a42654c60bf312989ae6f4a7dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script AND where; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:aee238a42654c60bf312989ae6f4a7dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac77ef50bb176ee40472b0904b2d269aa" id="r_ac77ef50bb176ee40472b0904b2d269aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ac77ef50bb176ee40472b0904b2d269aa">orWhere</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;op, <a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:ac77ef50bb176ee40472b0904b2d269aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">OR-combined comparison predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ac77ef50bb176ee40472b0904b2d269aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059b297227b418a589a28ea865572c6f" id="r_a059b297227b418a589a28ea865572c6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a059b297227b418a589a28ea865572c6f">orWhereJson</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;op, const std::string &amp;valueJson)</td></tr>
+<tr class="memdesc:a059b297227b418a589a28ea865572c6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script OR where; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a059b297227b418a589a28ea865572c6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7916d0150c8a4fe3217641ba79ffe0a1" id="r_a7916d0150c8a4fe3217641ba79ffe0a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a7916d0150c8a4fe3217641ba79ffe0a1">whereIn</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;valuesJson)</td></tr>
+<tr class="memdesc:a7916d0150c8a4fe3217641ba79ffe0a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND column IN (…); valuesJson is a JSON array of scalars. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a7916d0150c8a4fe3217641ba79ffe0a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c6eb6b26fdd927df6ab35971e787076" id="r_a8c6eb6b26fdd927df6ab35971e787076"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a8c6eb6b26fdd927df6ab35971e787076">whereNotIn</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;valuesJson)</td></tr>
+<tr class="memdesc:a8c6eb6b26fdd927df6ab35971e787076"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND column NOT IN (…). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a8c6eb6b26fdd927df6ab35971e787076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad597bcf6ccd222774283da32d2ab876f" id="r_ad597bcf6ccd222774283da32d2ab876f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ad597bcf6ccd222774283da32d2ab876f">whereBetween</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, <a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> low, <a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> high)</td></tr>
+<tr class="memdesc:ad597bcf6ccd222774283da32d2ab876f"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND column BETWEEN lo AND hi. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ad597bcf6ccd222774283da32d2ab876f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94b9bd5ba858dbf4c23cb4adc70e41c2" id="r_a94b9bd5ba858dbf4c23cb4adc70e41c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a94b9bd5ba858dbf4c23cb4adc70e41c2">whereBetweenJson</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, const std::string &amp;lowJson, const std::string &amp;highJson)</td></tr>
+<tr class="memdesc:a94b9bd5ba858dbf4c23cb4adc70e41c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script BETWEEN; lowJson/highJson are JSON scalars. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a94b9bd5ba858dbf4c23cb4adc70e41c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a562f65fe2fcb986e6c3d7851f41b109e" id="r_a562f65fe2fcb986e6c3d7851f41b109e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a562f65fe2fcb986e6c3d7851f41b109e">whereNull</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>)</td></tr>
+<tr class="memdesc:a562f65fe2fcb986e6c3d7851f41b109e"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND column IS NULL. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a562f65fe2fcb986e6c3d7851f41b109e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa708ebf532c0f1271acb8e60af39ee46" id="r_aa708ebf532c0f1271acb8e60af39ee46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#aa708ebf532c0f1271acb8e60af39ee46">whereNotNull</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>)</td></tr>
+<tr class="memdesc:aa708ebf532c0f1271acb8e60af39ee46"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND column IS NOT NULL. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:aa708ebf532c0f1271acb8e60af39ee46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a678bcb09ca56b8b6e17cd03423c797b3" id="r_a678bcb09ca56b8b6e17cd03423c797b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a678bcb09ca56b8b6e17cd03423c797b3">whereAnyJson</a> (const std::string &amp;predicatesJson)</td></tr>
+<tr class="memdesc:a678bcb09ca56b8b6e17cd03423c797b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND (p0 OR p1 OR …); predicatesJson is [{column,op,value}, …]. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a678bcb09ca56b8b6e17cd03423c797b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adae7f28493d45b3604f83b505264eb98" id="r_adae7f28493d45b3604f83b505264eb98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#adae7f28493d45b3604f83b505264eb98">orWhereAnyJson</a> (const std::string &amp;predicatesJson)</td></tr>
+<tr class="memdesc:adae7f28493d45b3604f83b505264eb98"><td class="mdescLeft">&#160;</td><td class="mdescRight">OR (p0 OR p1 OR …) against the previous predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:adae7f28493d45b3604f83b505264eb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4dbbcdb5e2b23e666abe722eca96fa8" id="r_ab4dbbcdb5e2b23e666abe722eca96fa8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ab4dbbcdb5e2b23e666abe722eca96fa8">groupBy</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>)</td></tr>
+<tr class="memdesc:ab4dbbcdb5e2b23e666abe722eca96fa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a GROUP BY column (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ab4dbbcdb5e2b23e666abe722eca96fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7248e123feaf5f819b1446d0c180660" id="r_ad7248e123feaf5f819b1446d0c180660"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ad7248e123feaf5f819b1446d0c180660">groupByJson</a> (const std::string &amp;columnsJson)</td></tr>
+<tr class="memdesc:ad7248e123feaf5f819b1446d0c180660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script GROUP BY from a JSON array of column names. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ad7248e123feaf5f819b1446d0c180660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27f2bb56c2d3455d9c4cdaf26ecfa15a" id="r_a27f2bb56c2d3455d9c4cdaf26ecfa15a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a27f2bb56c2d3455d9c4cdaf26ecfa15a">having</a> (const std::string &amp;columnOrExpr, const std::string &amp;op, <a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a27f2bb56c2d3455d9c4cdaf26ecfa15a"><td class="mdescLeft">&#160;</td><td class="mdescRight">AND-style HAVING comparison (after GROUP BY). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a27f2bb56c2d3455d9c4cdaf26ecfa15a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad248cfa4821f05ede16c9d0be9acd615" id="r_ad248cfa4821f05ede16c9d0be9acd615"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#ad248cfa4821f05ede16c9d0be9acd615">havingJson</a> (const std::string &amp;columnOrExpr, const std::string &amp;op, const std::string &amp;valueJson)</td></tr>
+<tr class="memdesc:ad248cfa4821f05ede16c9d0be9acd615"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script HAVING; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:ad248cfa4821f05ede16c9d0be9acd615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac2e67e1f51469f6454972f601bdc4a7" id="r_aac2e67e1f51469f6454972f601bdc4a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#aac2e67e1f51469f6454972f601bdc4a7">orderBy</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>, bool ascending=true)</td></tr>
+<tr class="memdesc:aac2e67e1f51469f6454972f601bdc4a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order by. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:aac2e67e1f51469f6454972f601bdc4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512a3a1fca9d7f3648b381d2a35a2989" id="r_a512a3a1fca9d7f3648b381d2a35a2989"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a512a3a1fca9d7f3648b381d2a35a2989">limit</a> (int <a class="el" href="classeve_1_1database_1_1Query.html#acf8de82ccb74526cee35a774d6925be2">count</a>)</td></tr>
+<tr class="memdesc:a512a3a1fca9d7f3648b381d2a35a2989"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limit. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a512a3a1fca9d7f3648b381d2a35a2989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b7335e88fcf04f73c9ee203450512d0" id="r_a7b7335e88fcf04f73c9ee203450512d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a7b7335e88fcf04f73c9ee203450512d0">offset</a> (int <a class="el" href="classeve_1_1database_1_1Query.html#acf8de82ccb74526cee35a774d6925be2">count</a>)</td></tr>
+<tr class="memdesc:a7b7335e88fcf04f73c9ee203450512d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed.  <br /></td></tr>
+<tr class="separator:a7b7335e88fcf04f73c9ee203450512d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36138a95a9c223cbb4e39f62a011d58a" id="r_a36138a95a9c223cbb4e39f62a011d58a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1database.html#a063fc2f1d764c37e9eb476cfe185e514">Row</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a36138a95a9c223cbb4e39f62a011d58a">all</a> ()</td></tr>
+<tr class="memdesc:a36138a95a9c223cbb4e39f62a011d58a"><td class="mdescLeft">&#160;</td><td class="mdescRight">All.  <br /></td></tr>
+<tr class="separator:a36138a95a9c223cbb4e39f62a011d58a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af39c12a41e7e255577f9d268e1634ecf" id="r_af39c12a41e7e255577f9d268e1634ecf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#af39c12a41e7e255577f9d268e1634ecf">allJson</a> ()</td></tr>
+<tr class="memdesc:af39c12a41e7e255577f9d268e1634ecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">All json.  <br /></td></tr>
+<tr class="separator:af39c12a41e7e255577f9d268e1634ecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27841ea3d1fb8b302ee83d2014e022a6" id="r_a27841ea3d1fb8b302ee83d2014e022a6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#a27841ea3d1fb8b302ee83d2014e022a6">firstJson</a> ()</td></tr>
+<tr class="memdesc:a27841ea3d1fb8b302ee83d2014e022a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">First json.  <br /></td></tr>
+<tr class="separator:a27841ea3d1fb8b302ee83d2014e022a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8de82ccb74526cee35a774d6925be2" id="r_acf8de82ccb74526cee35a774d6925be2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1database_1_1Query.html#acf8de82ccb74526cee35a774d6925be2">count</a> ()</td></tr>
+<tr class="memdesc:acf8de82ccb74526cee35a774d6925be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns matching row count (or number of groups when GROUP BY is set).  <br /></td></tr>
+<tr class="separator:acf8de82ccb74526cee35a774d6925be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Composable filtered/sorted/paged query shared by C++ and scripts. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8h_source.html">Database.h</a> 第 <a class="el" href="Database_8h_source.html#l00178">178</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1b636142eaad98710d1196413c0d95a2" name="a1b636142eaad98710d1196413c0d95a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b636142eaad98710d1196413c0d95a2">&#9670;&#160;</a></span>Query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::database::Query::Query </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1database_1_1Connection.html">Connection</a> *&#160;</td>
+          <td class="paramname"><em>connection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>table</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a36138a95a9c223cbb4e39f62a011d58a" name="a36138a95a9c223cbb4e39f62a011d58a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36138a95a9c223cbb4e39f62a011d58a">&#9670;&#160;</a></span>all()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1database.html#a063fc2f1d764c37e9eb476cfe185e514">Row</a> &gt; eve::database::Query::all </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>All. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00600">600</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00243">eve::database::Connection::query()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00601">allJson()</a>.</p>
+
+</div>
+</div>
+<a id="af39c12a41e7e255577f9d268e1634ecf" name="af39c12a41e7e255577f9d268e1634ecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af39c12a41e7e255577f9d268e1634ecf">&#9670;&#160;</a></span>allJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::database::Query::allJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>All json. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00601">601</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00600">all()</a>.</p>
+
+</div>
+</div>
+<a id="acf8de82ccb74526cee35a774d6925be2" name="acf8de82ccb74526cee35a774d6925be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8de82ccb74526cee35a774d6925be2">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::database::Query::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns matching row count (or number of groups when GROUP BY is set). </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00603">603</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="Database_8cpp_source.html#l00243">eve::database::Connection::query()</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00208">rows</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00521">limit()</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00527">offset()</a>.</p>
+
+</div>
+</div>
+<a id="ae87cc355645a08058df8a6682b29d521" name="ae87cc355645a08058df8a6682b29d521"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae87cc355645a08058df8a6682b29d521">&#9670;&#160;</a></span>distinct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::distinct </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>SELECT DISTINCT … @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a27841ea3d1fb8b302ee83d2014e022a6" name="a27841ea3d1fb8b302ee83d2014e022a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27841ea3d1fb8b302ee83d2014e022a6">&#9670;&#160;</a></span>firstJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::database::Query::firstJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>First json. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00602">602</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00243">eve::database::Connection::query()</a>.</p>
+
+</div>
+</div>
+<a id="ab4dbbcdb5e2b23e666abe722eca96fa8" name="ab4dbbcdb5e2b23e666abe722eca96fa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4dbbcdb5e2b23e666abe722eca96fa8">&#9670;&#160;</a></span>groupBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::groupBy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a GROUP BY column (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00489">489</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00494">groupByJson()</a>.</p>
+
+</div>
+</div>
+<a id="ad7248e123feaf5f819b1446d0c180660" name="ad7248e123feaf5f819b1446d0c180660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7248e123feaf5f819b1446d0c180660">&#9670;&#160;</a></span>groupByJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::groupByJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>columnsJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script GROUP BY from a JSON array of column names. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00489">groupBy()</a>.</p>
+
+</div>
+</div>
+<a id="a27f2bb56c2d3455d9c4cdaf26ecfa15a" name="a27f2bb56c2d3455d9c4cdaf26ecfa15a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27f2bb56c2d3455d9c4cdaf26ecfa15a">&#9670;&#160;</a></span>having()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::having </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>columnOrExpr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND-style HAVING comparison (after GROUP BY). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SettlementRules_8cpp_source.html#l00056">literal</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00510">havingJson()</a>.</p>
+
+</div>
+</div>
+<a id="ad248cfa4821f05ede16c9d0be9acd615" name="ad248cfa4821f05ede16c9d0be9acd615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad248cfa4821f05ede16c9d0be9acd615">&#9670;&#160;</a></span>havingJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::havingJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>columnOrExpr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>valueJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script HAVING; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00510">510</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00505">having()</a>.</p>
+
+</div>
+</div>
+<a id="ad0052dda6ab2304ee6b74a9a92076f2e" name="ad0052dda6ab2304ee6b74a9a92076f2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0052dda6ab2304ee6b74a9a92076f2e">&#9670;&#160;</a></span>innerJoin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::innerJoin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>leftColumn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rightColumn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>INNER JOIN table ON leftColumn = rightColumn (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a872358db12dedf09d64c062496b0c71d" name="a872358db12dedf09d64c062496b0c71d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a872358db12dedf09d64c062496b0c71d">&#9670;&#160;</a></span>leftJoin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::leftJoin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>leftColumn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rightColumn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>LEFT JOIN table ON leftColumn = rightColumn (dotted names allowed). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a512a3a1fca9d7f3648b381d2a35a2989" name="a512a3a1fca9d7f3648b381d2a35a2989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512a3a1fca9d7f3648b381d2a35a2989">&#9670;&#160;</a></span>limit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::limit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limit. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00603">count()</a>.</p>
+
+</div>
+</div>
+<a id="a7b7335e88fcf04f73c9ee203450512d0" name="a7b7335e88fcf04f73c9ee203450512d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b7335e88fcf04f73c9ee203450512d0">&#9670;&#160;</a></span>offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::offset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Offset. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Database_8cpp_source.html#l00603">count()</a>.</p>
+
+</div>
+</div>
+<a id="aac2e67e1f51469f6454972f601bdc4a7" name="aac2e67e1f51469f6454972f601bdc4a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2e67e1f51469f6454972f601bdc4a7">&#9670;&#160;</a></span>orderBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::orderBy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ascending</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Order by. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<a id="ac77ef50bb176ee40472b0904b2d269aa" name="ac77ef50bb176ee40472b0904b2d269aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac77ef50bb176ee40472b0904b2d269aa">&#9670;&#160;</a></span>orWhere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::orWhere </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>OR-combined comparison predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00422">orWhereJson()</a>.</p>
+
+</div>
+</div>
+<a id="adae7f28493d45b3604f83b505264eb98" name="adae7f28493d45b3604f83b505264eb98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae7f28493d45b3604f83b505264eb98">&#9670;&#160;</a></span>orWhereAnyJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::orWhereAnyJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>predicatesJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>OR (p0 OR p1 OR …) against the previous predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a059b297227b418a589a28ea865572c6f" name="a059b297227b418a589a28ea865572c6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059b297227b418a589a28ea865572c6f">&#9670;&#160;</a></span>orWhereJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::orWhereJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>valueJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script OR where; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00418">orWhere()</a>.</p>
+
+</div>
+</div>
+<a id="ad0d71612a8b85c00b5d659a5e5653c5e" name="ad0d71612a8b85c00b5d659a5e5653c5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0d71612a8b85c00b5d659a5e5653c5e">&#9670;&#160;</a></span>select()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::select </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a quoted projection column (default remains SELECT *). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00357">selectJson()</a>.</p>
+
+</div>
+</div>
+<a id="a29be8683beddbdefd7aecd384cbbe886" name="a29be8683beddbdefd7aecd384cbbe886"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29be8683beddbdefd7aecd384cbbe886">&#9670;&#160;</a></span>selectAs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::selectAs </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>alias</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a quoted projection column with AS alias. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00357">selectJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8570004449b292081cb756d944917bae" name="a8570004449b292081cb756d944917bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8570004449b292081cb756d944917bae">&#9670;&#160;</a></span>selectExpr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::selectExpr </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>alias</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a validated aggregate/expression projection with optional alias. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00357">selectJson()</a>.</p>
+
+</div>
+</div>
+<a id="a28f649167fd22c35cd5aed8c32e5a7a1" name="a28f649167fd22c35cd5aed8c32e5a7a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f649167fd22c35cd5aed8c32e5a7a1">&#9670;&#160;</a></span>selectJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::selectJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>columnsJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script helper: JSON array of names, {column,as}, or {expr,as}. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00784">object</a>, <a class="el" href="Database_8cpp_source.html#l00336">select()</a>, <a class="el" href="Database_8cpp_source.html#l00341">selectAs()</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00347">selectExpr()</a>.</p>
+
+</div>
+</div>
+<a id="ace5158441f28a5f90268636c3788c17e" name="ace5158441f28a5f90268636c3788c17e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace5158441f28a5f90268636c3788c17e">&#9670;&#160;</a></span>where()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::where </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND-combined comparison predicate. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00414">whereJson()</a>.</p>
+
+</div>
+</div>
+<a id="a678bcb09ca56b8b6e17cd03423c797b3" name="a678bcb09ca56b8b6e17cd03423c797b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a678bcb09ca56b8b6e17cd03423c797b3">&#9670;&#160;</a></span>whereAnyJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereAnyJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>predicatesJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND (p0 OR p1 OR …); predicatesJson is [{column,op,value}, …]. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00485">485</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad597bcf6ccd222774283da32d2ab876f" name="ad597bcf6ccd222774283da32d2ab876f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad597bcf6ccd222774283da32d2ab876f">&#9670;&#160;</a></span>whereBetween()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereBetween </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>&#160;</td>
+          <td class="paramname"><em>low</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>&#160;</td>
+          <td class="paramname"><em>high</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND column BETWEEN lo AND hi. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="SettlementRules_8cpp_source.html#l00056">literal</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Database_8cpp_source.html#l00452">whereBetweenJson()</a>.</p>
+
+</div>
+</div>
+<a id="a94b9bd5ba858dbf4c23cb4adc70e41c2" name="a94b9bd5ba858dbf4c23cb4adc70e41c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94b9bd5ba858dbf4c23cb4adc70e41c2">&#9670;&#160;</a></span>whereBetweenJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereBetweenJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>lowJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>highJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script BETWEEN; lowJson/highJson are JSON scalars. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00446">whereBetween()</a>.</p>
+
+</div>
+</div>
+<a id="a7916d0150c8a4fe3217641ba79ffe0a1" name="a7916d0150c8a4fe3217641ba79ffe0a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7916d0150c8a4fe3217641ba79ffe0a1">&#9670;&#160;</a></span>whereIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereIn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>valuesJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND column IN (…); valuesJson is a JSON array of scalars. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+</div>
+</div>
+<a id="aee238a42654c60bf312989ae6f4a7dd0" name="aee238a42654c60bf312989ae6f4a7dd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee238a42654c60bf312989ae6f4a7dd0">&#9670;&#160;</a></span>whereJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>valueJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script AND where; valueJson is one JSON scalar. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a> , 以及 <a class="el" href="Database_8cpp_source.html#l00410">where()</a>.</p>
+
+</div>
+</div>
+<a id="a8c6eb6b26fdd927df6ab35971e787076" name="a8c6eb6b26fdd927df6ab35971e787076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c6eb6b26fdd927df6ab35971e787076">&#9670;&#160;</a></span>whereNotIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereNotIn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>valuesJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND column NOT IN (…). @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+</div>
+</div>
+<a id="aa708ebf532c0f1271acb8e60af39ee46" name="aa708ebf532c0f1271acb8e60af39ee46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa708ebf532c0f1271acb8e60af39ee46">&#9670;&#160;</a></span>whereNotNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereNotNull </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND column IS NOT NULL. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+</div>
+</div>
+<a id="a562f65fe2fcb986e6c3d7851f41b109e" name="a562f65fe2fcb986e6c3d7851f41b109e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a562f65fe2fcb986e6c3d7851f41b109e">&#9670;&#160;</a></span>whereNull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1database_1_1Query.html">Query</a> * eve::database::Query::whereNull </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>column</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>AND column IS NULL. @ownership Borrowed; returns this for chaining. @lifetime Valid until this <a class="el" href="classeve_1_1database_1_1Query.html" title="Composable filtered/sorted/paged query shared by C++ and scripts.">Query</a> is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Database_8cpp_source.html">Database.cpp</a> 第 <a class="el" href="Database_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/database/<a class="el" href="Database_8h_source.html">Database.h</a></li>
+<li>src/modules/database/<a class="el" href="Database_8cpp_source.html">Database.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

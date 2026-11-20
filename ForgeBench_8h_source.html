@@ -1,0 +1,296 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/ForgeBench.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ForgeBench.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ForgeBench_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="InventoryResourceAccount_8h.html">inventory/InventoryResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Production_8h.html">production/Production.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Crafting_8h.html">rpg/Crafting.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="EquipmentUpgrade_8h.html">rpg/EquipmentUpgrade.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">Bag</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>EquipmentSet;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}  <span class="comment">// namespace eve::inventory</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ForgeBench.html">   37</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a> final {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">~ForgeBench</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ForgeBench.html#a7e87bf16e0bb9984d1e00c8c6d33fa6a">   42</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1ForgeBench.html#a7e87bf16e0bb9984d1e00c8c6d33fa6a">ForgeBench</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ForgeBench.html#a6799c6c1726eaa151ef2bea9c9e80902">   43</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1ForgeBench.html#a6799c6c1726eaa151ef2bea9c9e80902">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1rpg_1_1ForgeBench.html">ForgeBench</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; bind(inventory::Bag* bag, inventory::EquipmentSet* equipment = <span class="keywordtype">nullptr</span>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                         <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor = <span class="keywordtype">nullptr</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> unbind();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ForgeBench.html#a329440429bca00bf7d6905ea82171804">   58</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> isBound()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> bag_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CraftingReceipt&gt;</a> craft(<a class="code hl_struct" href="structeve_1_1rpg_1_1CraftingRecipe.html">CraftingRecipe</a> <a class="code hl_variable" href="ParticleBakeRecording_8cpp.html#ab641a5e13bdc1be37aacbc14c3d4235a">recipe</a>, std::uint32_t batchSize = 1,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                     <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CraftingReceipt&gt;</a> craftFromJson(<span class="keyword">const</span> std::string&amp; json, std::uint32_t batchSize = 1,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                             <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EquipmentUpgradeReceipt&gt;</a> upgrade(<a class="code hl_struct" href="structeve_1_1rpg_1_1EquipmentUpgradeRecipe.html">EquipmentUpgradeRecipe</a> <a class="code hl_variable" href="ParticleBakeRecording_8cpp.html#ab641a5e13bdc1be37aacbc14c3d4235a">recipe</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="EquipmentUpgrade_8cpp.html#aaa7e1796ba568b8538a4fd9f0e5050f9">bagSlot</a>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                               <span class="keywordtype">int</span> expectedInstanceId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EquipmentUpgradeReceipt&gt;</a> upgradeFromJson(<span class="keyword">const</span> std::string&amp; json, <span class="keywordtype">int</span> <a class="code hl_variable" href="EquipmentUpgrade_8cpp.html#aaa7e1796ba568b8538a4fd9f0e5050f9">bagSlot</a>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                                                       <span class="keywordtype">int</span> expectedInstanceId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> advance(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="code hl_class" href="classeve_1_1Duration.html">eve::Duration</a> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> settle(std::string_view <a class="code hl_variable" href="ProductionBindings_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> settleReady();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] std::uint64_t queueHandle() const noexcept;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ForgeBench.html#a3bd4f5255f944dc13003a1306c25d30a">   98</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>() const noexcept { <span class="keywordflow">return</span> tick_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <span class="keywordtype">int</span> taskCount() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] std::string taskIdAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] std::string taskStateAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] std::string taskKindAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <span class="keywordtype">float</span> taskProgressAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard]] <span class="keywordtype">float</span> taskDurationAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <span class="keywordtype">int</span> syncEquipment() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::ResultRef&lt;production::WorkQueue&gt;</a> queue() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">production::WorkQueueHandleRef</a> queueRef_{};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a>*                bag_       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_class" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a>*       equipment_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    RPGActor*                      actor_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>            tick_      = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>};</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aCrafting_8h_html"><div class="ttname"><a href="Crafting_8h.html">Crafting.h</a></div><div class="ttdoc">RPG recipe adapter over the shared production and inventory protocols.</div></div>
+<div class="ttc" id="aEquipmentUpgrade_8cpp_html_aaa7e1796ba568b8538a4fd9f0e5050f9"><div class="ttname"><a href="EquipmentUpgrade_8cpp.html#aaa7e1796ba568b8538a4fd9f0e5050f9">bagSlot</a></div><div class="ttdeci">int bagSlot</div><div class="ttdef"><b>Definition</b> <a href="EquipmentUpgrade_8cpp_source.html#l00040">EquipmentUpgrade.cpp:40</a></div></div>
+<div class="ttc" id="aEquipmentUpgrade_8h_html"><div class="ttname"><a href="EquipmentUpgrade_8h.html">EquipmentUpgrade.h</a></div><div class="ttdoc">RPG adapter that pays materials and upgrades one inventory item instance.</div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ae0f3ddf34dc12c944c03445c0bc3fee6"><div class="ttname"><a href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a></div><div class="ttdeci">#define EVENGINE_API_PLATFORM</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00107">Export.h:107</a></div></div>
+<div class="ttc" id="aInventoryResourceAccount_8h_html"><div class="ttname"><a href="InventoryResourceAccount_8h.html">InventoryResourceAccount.h</a></div><div class="ttdoc">Resource-account and cost adapters backed by Bag item stacks.</div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aParticleBakeRecording_8cpp_html_ab641a5e13bdc1be37aacbc14c3d4235a"><div class="ttname"><a href="ParticleBakeRecording_8cpp.html#ab641a5e13bdc1be37aacbc14c3d4235a">recipe</a></div><div class="ttdeci">BakeRecipe recipe</div><div class="ttdef"><b>Definition</b> <a href="ParticleBakeRecording_8cpp_source.html#l00029">ParticleBakeRecording.cpp:29</a></div></div>
+<div class="ttc" id="aProductionBindings_8cpp_html_af7530e9222ed55ae78fe956969b66bef"><div class="ttname"><a href="ProductionBindings_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a></div><div class="ttdeci">std::string taskId</div><div class="ttdef"><b>Definition</b> <a href="ProductionBindings_8cpp_source.html#l00024">ProductionBindings.cpp:24</a></div></div>
+<div class="ttc" id="aProduction_8h_html"><div class="ttname"><a href="Production_8h.html">Production.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00043">Time.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00024">StrongUint64.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1Bag_html"><div class="ttname"><a href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a></div><div class="ttdoc">格子型物品容器（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8h_source.html#l00022">Bag.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1EquipmentSet_html"><div class="ttname"><a href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Equipment_8h_source.html#l00019">Equipment.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ForgeBench_html"><div class="ttname"><a href="classeve_1_1rpg_1_1ForgeBench.html">eve::rpg::ForgeBench</a></div><div class="ttdoc">Owns a production WorkQueue and borrows bag / optional equipment+actor.</div><div class="ttdef"><b>Definition</b> <a href="ForgeBench_8h_source.html#l00037">ForgeBench.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ForgeBench_html_a6799c6c1726eaa151ef2bea9c9e80902"><div class="ttname"><a href="classeve_1_1rpg_1_1ForgeBench.html#a6799c6c1726eaa151ef2bea9c9e80902">eve::rpg::ForgeBench::operator=</a></div><div class="ttdeci">ForgeBench &amp; operator=(const ForgeBench &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ForgeBench_html_a7e87bf16e0bb9984d1e00c8c6d33fa6a"><div class="ttname"><a href="classeve_1_1rpg_1_1ForgeBench.html#a7e87bf16e0bb9984d1e00c8c6d33fa6a">eve::rpg::ForgeBench::ForgeBench</a></div><div class="ttdeci">ForgeBench(const ForgeBench &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00034">RPGActor.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00038">AvatarInstance.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html_aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca"><div class="ttname"><a href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">eve::inventory::InventoryContainerKind::Bag</a></div><div class="ttdeci">@ Bag</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="rpg_2ActionDamageSink_8cpp_source.html#l00011">ActionDamageSink.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1CraftingRecipe_html"><div class="ttname"><a href="structeve_1_1rpg_1_1CraftingRecipe.html">eve::rpg::CraftingRecipe</a></div><div class="ttdoc">Validated recipe projection used by crafting, alchemy, brewing and cooking.</div><div class="ttdef"><b>Definition</b> <a href="Crafting_8h_source.html#l00028">Crafting.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentUpgradeRecipe_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentUpgradeRecipe.html">eve::rpg::EquipmentUpgradeRecipe</a></div><div class="ttdoc">Validated upgrade ladder step for one equipment instance.</div><div class="ttdef"><b>Definition</b> <a href="EquipmentUpgrade_8h_source.html#l00035">EquipmentUpgrade.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef&lt; WorkQueueHandleTag &gt;</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

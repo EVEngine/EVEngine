@@ -1,0 +1,557 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::growth::SpeciesDef结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1growth.html">growth</a></li><li class="navelem"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1growth_1_1SpeciesDef-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::growth::SpeciesDef结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Static species definition — fully data-driven life cycle.  
+ <a href="structeve_1_1growth_1_1SpeciesDef.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Species_8h_source.html">Species.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8b64f2d60940655c68892e1b8f32b919" id="r_a8b64f2d60940655c68892e1b8f32b919"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a8b64f2d60940655c68892e1b8f32b919">hasNeed</a> (std::string_view needId) const</td></tr>
+<tr class="memdesc:a8b64f2d60940655c68892e1b8f32b919"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the species declares a need meter with this id.  <br /></td></tr>
+<tr class="separator:a8b64f2d60940655c68892e1b8f32b919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce2692c6882d8d26042afc7f3ab3f6a" id="r_a1ce2692c6882d8d26042afc7f3ab3f6a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1growth_1_1NeedMeterDef.html">NeedMeterDef</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a1ce2692c6882d8d26042afc7f3ab3f6a">findNeed</a> (std::string_view needId) const</td></tr>
+<tr class="memdesc:a1ce2692c6882d8d26042afc7f3ab3f6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up a need meter; nullptr when absent. @ownership Borrowed from this <a class="el" href="structeve_1_1growth_1_1SpeciesDef.html" title="Static species definition — fully data-driven life cycle.">SpeciesDef</a>; caller must not free it. @lifetime Valid while this <a class="el" href="structeve_1_1growth_1_1SpeciesDef.html" title="Static species definition — fully data-driven life cycle.">SpeciesDef</a> remains alive / registered. @nullable Yes when the id is unknown.  <br /></td></tr>
+<tr class="separator:a1ce2692c6882d8d26042afc7f3ab3f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab2bd2b2b6dee16cc11fc95e515e41f67" id="r_ab2bd2b2b6dee16cc11fc95e515e41f67"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#ab2bd2b2b6dee16cc11fc95e515e41f67">id</a></td></tr>
+<tr class="separator:ab2bd2b2b6dee16cc11fc95e515e41f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abed58867c6d479d64c31556b65a051af" id="r_abed58867c6d479d64c31556b65a051af"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#abed58867c6d479d64c31556b65a051af">displayName</a></td></tr>
+<tr class="separator:abed58867c6d479d64c31556b65a051af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f10abd54b546efae3a53af9f6dabc57" id="r_a6f10abd54b546efae3a53af9f6dabc57"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a6f10abd54b546efae3a53af9f6dabc57">kindId</a> = &quot;organism&quot;</td></tr>
+<tr class="memdesc:a6f10abd54b546efae3a53af9f6dabc57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free-form lifeform tag (<code>plant</code>, <code>animal</code>, <code>xeno.crystal</code>, …).  <br /></td></tr>
+<tr class="separator:a6f10abd54b546efae3a53af9f6dabc57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66cc1d2580e2982b184bc91d9d06e685" id="r_a66cc1d2580e2982b184bc91d9d06e685"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1growth.html#af8d14a7c2940d693dc10ecb81ede9078">OrganismKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a66cc1d2580e2982b184bc91d9d06e685">kind</a> = <a class="el" href="namespaceeve_1_1growth.html#af8d14a7c2940d693dc10ecb81ede9078a90589c47f06eb971d548591f23c285af">OrganismKind::Custom</a></td></tr>
+<tr class="memdesc:a66cc1d2580e2982b184bc91d9d06e685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience label derived from kindId when plant/animal; else Custom.  <br /></td></tr>
+<tr class="separator:a66cc1d2580e2982b184bc91d9d06e685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320b05edf951aa46ca99f35bc19ab9da" id="r_a320b05edf951aa46ca99f35bc19ab9da"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1growth_1_1GrowthStageDef.html">GrowthStageDef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a320b05edf951aa46ca99f35bc19ab9da">stages</a></td></tr>
+<tr class="separator:a320b05edf951aa46ca99f35bc19ab9da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a1778803c3da599cac4d5420413bcfb" id="r_a1a1778803c3da599cac4d5420413bcfb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1growth_1_1NeedMeterDef.html">NeedMeterDef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a1a1778803c3da599cac4d5420413bcfb">needs</a></td></tr>
+<tr class="separator:a1a1778803c3da599cac4d5420413bcfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5a9f40a1eef51fc3f03774f0acf05d4" id="r_ad5a9f40a1eef51fc3f03774f0acf05d4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#ad5a9f40a1eef51fc3f03774f0acf05d4">seasonMul</a> = {1.0, 1.0, 1.0, 1.0}</td></tr>
+<tr class="memdesc:ad5a9f40a1eef51fc3f03774f0acf05d4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1growth_1_1Growth.html" title="Farm growth module facade (eve.Growth): species registry + world step.">Growth</a> multipliers indexed by calendar season order.  <br /></td></tr>
+<tr class="separator:ad5a9f40a1eef51fc3f03774f0acf05d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5246d0ae52ea1aa8b3f09eb4c09f98fa" id="r_a5246d0ae52ea1aa8b3f09eb4c09f98fa"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a5246d0ae52ea1aa8b3f09eb4c09f98fa">seasonMulById</a></td></tr>
+<tr class="memdesc:a5246d0ae52ea1aa8b3f09eb4c09f98fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional multipliers keyed by calendar season id (preferred when set).  <br /></td></tr>
+<tr class="separator:a5246d0ae52ea1aa8b3f09eb4c09f98fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3585ffdb4394554674427b2bf05cfe2e" id="r_a3585ffdb4394554674427b2bf05cfe2e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1growth_1_1YieldDef.html">YieldDef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a3585ffdb4394554674427b2bf05cfe2e">harvestYield</a></td></tr>
+<tr class="separator:a3585ffdb4394554674427b2bf05cfe2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d277fb9d2e8ccb9096fa2dab5b11a10" id="r_a4d277fb9d2e8ccb9096fa2dab5b11a10"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1growth_1_1YieldDef.html">YieldDef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a4d277fb9d2e8ccb9096fa2dab5b11a10">produceYield</a></td></tr>
+<tr class="separator:a4d277fb9d2e8ccb9096fa2dab5b11a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdeecd3bbb6c181be74dccb632c02a93" id="r_abdeecd3bbb6c181be74dccb632c02a93"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#abdeecd3bbb6c181be74dccb632c02a93">produceIntervalDays</a> = 0.0</td></tr>
+<tr class="separator:abdeecd3bbb6c181be74dccb632c02a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411516bdac2628bc23edaaf7a259f5c8" id="r_a411516bdac2628bc23edaaf7a259f5c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1growth_1_1ReproductionDef.html">ReproductionDef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a411516bdac2628bc23edaaf7a259f5c8">reproduction</a></td></tr>
+<tr class="separator:a411516bdac2628bc23edaaf7a259f5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae10d55aa265a771290e53305b5aa5e17" id="r_ae10d55aa265a771290e53305b5aa5e17"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1growth_1_1DiseaseSusceptibility.html">DiseaseSusceptibility</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#ae10d55aa265a771290e53305b5aa5e17">diseases</a></td></tr>
+<tr class="separator:ae10d55aa265a771290e53305b5aa5e17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58eadb5f5b0babc8f58fd754a82b16e9" id="r_a58eadb5f5b0babc8f58fd754a82b16e9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1growth_1_1SpeciesDef.html#a58eadb5f5b0babc8f58fd754a82b16e9">baseDiseaseResist</a> = 0.5</td></tr>
+<tr class="separator:a58eadb5f5b0babc8f58fd754a82b16e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Static species definition — fully data-driven life cycle. </p>
+<dl class="section remark"><dt>备注</dt><dd>Definitions are not ECS entities. Register via <a class="el" href="classeve_1_1growth_1_1SpeciesRegistry.html" title="Process-wide species table used by GrowthWorld and Organism factories.">SpeciesRegistry</a>. Legacy plant/animal JSON fields still parse and normalize into needs/reproduction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00081">81</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a1ce2692c6882d8d26042afc7f3ab3f6a" name="a1ce2692c6882d8d26042afc7f3ab3f6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce2692c6882d8d26042afc7f3ab3f6a">&#9670;&#160;</a></span>findNeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1growth_1_1NeedMeterDef.html">NeedMeterDef</a> * eve::growth::SpeciesDef::findNeed </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>needId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Looks up a need meter; nullptr when absent. @ownership Borrowed from this <a class="el" href="structeve_1_1growth_1_1SpeciesDef.html" title="Static species definition — fully data-driven life cycle.">SpeciesDef</a>; caller must not free it. @lifetime Valid while this <a class="el" href="structeve_1_1growth_1_1SpeciesDef.html" title="Static species definition — fully data-driven life cycle.">SpeciesDef</a> remains alive / registered. @nullable Yes when the id is unknown. </p>
+<dl class="section remark"><dt>备注</dt><dd>Inline so SHARED Windows consumers do not need a DLL export. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8h_source.html#l00089">needs</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Species_8h_source.html#l00112">hasNeed()</a>.</p>
+
+</div>
+</div>
+<a id="a8b64f2d60940655c68892e1b8f32b919" name="a8b64f2d60940655c68892e1b8f32b919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b64f2d60940655c68892e1b8f32b919">&#9670;&#160;</a></span>hasNeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::growth::SpeciesDef::hasNeed </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>needId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the species declares a need meter with this id. </p>
+<dl class="section remark"><dt>备注</dt><dd>Inline so SHARED Windows consumers do not need a DLL export. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8h_source.html#l00120">findNeed()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00098">eve::growth::Organism::refillNeed()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a58eadb5f5b0babc8f58fd754a82b16e9" name="a58eadb5f5b0babc8f58fd754a82b16e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58eadb5f5b0babc8f58fd754a82b16e9">&#9670;&#160;</a></span>baseDiseaseResist</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::growth::SpeciesDef::baseDiseaseResist = 0.5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae10d55aa265a771290e53305b5aa5e17" name="ae10d55aa265a771290e53305b5aa5e17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10d55aa265a771290e53305b5aa5e17">&#9670;&#160;</a></span>diseases</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1growth_1_1DiseaseSusceptibility.html">DiseaseSusceptibility</a>&gt; eve::growth::SpeciesDef::diseases</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abed58867c6d479d64c31556b65a051af" name="abed58867c6d479d64c31556b65a051af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abed58867c6d479d64c31556b65a051af">&#9670;&#160;</a></span>displayName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::SpeciesDef::displayName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3585ffdb4394554674427b2bf05cfe2e" name="a3585ffdb4394554674427b2bf05cfe2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3585ffdb4394554674427b2bf05cfe2e">&#9670;&#160;</a></span>harvestYield</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1growth_1_1YieldDef.html">YieldDef</a>&gt; eve::growth::SpeciesDef::harvestYield</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00137">eve::growth::Organism::harvest()</a>.</p>
+
+</div>
+</div>
+<a id="ab2bd2b2b6dee16cc11fc95e515e41f67" name="ab2bd2b2b6dee16cc11fc95e515e41f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2bd2b2b6dee16cc11fc95e515e41f67">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::SpeciesDef::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a> , 以及 <a class="el" href="Species_8cpp_source.html#l00481">eve::growth::SpeciesRegistry::registerSpecies()</a>.</p>
+
+</div>
+</div>
+<a id="a66cc1d2580e2982b184bc91d9d06e685" name="a66cc1d2580e2982b184bc91d9d06e685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66cc1d2580e2982b184bc91d9d06e685">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1growth.html#af8d14a7c2940d693dc10ecb81ede9078">OrganismKind</a> eve::growth::SpeciesDef::kind = <a class="el" href="namespaceeve_1_1growth.html#af8d14a7c2940d693dc10ecb81ede9078a90589c47f06eb971d548591f23c285af">OrganismKind::Custom</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience label derived from kindId when plant/animal; else Custom. </p>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a> , 以及 <a class="el" href="Species_8cpp_source.html#l00481">eve::growth::SpeciesRegistry::registerSpecies()</a>.</p>
+
+</div>
+</div>
+<a id="a6f10abd54b546efae3a53af9f6dabc57" name="a6f10abd54b546efae3a53af9f6dabc57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f10abd54b546efae3a53af9f6dabc57">&#9670;&#160;</a></span>kindId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::SpeciesDef::kindId = &quot;organism&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Free-form lifeform tag (<code>plant</code>, <code>animal</code>, <code>xeno.crystal</code>, …). </p>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00363">eve::growth::GrowthWorld::tryReproduce()</a>.</p>
+
+</div>
+</div>
+<a id="a1a1778803c3da599cac4d5420413bcfb" name="a1a1778803c3da599cac4d5420413bcfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1778803c3da599cac4d5420413bcfb">&#9670;&#160;</a></span>needs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1growth_1_1NeedMeterDef.html">NeedMeterDef</a>&gt; eve::growth::SpeciesDef::needs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Species_8h_source.html#l00120">findNeed()</a>, <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a> , 以及 <a class="el" href="Species_8cpp_source.html#l00481">eve::growth::SpeciesRegistry::registerSpecies()</a>.</p>
+
+</div>
+</div>
+<a id="abdeecd3bbb6c181be74dccb632c02a93" name="abdeecd3bbb6c181be74dccb632c02a93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdeecd3bbb6c181be74dccb632c02a93">&#9670;&#160;</a></span>produceIntervalDays</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::growth::SpeciesDef::produceIntervalDays = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d277fb9d2e8ccb9096fa2dab5b11a10" name="a4d277fb9d2e8ccb9096fa2dab5b11a10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d277fb9d2e8ccb9096fa2dab5b11a10">&#9670;&#160;</a></span>produceYield</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1growth_1_1YieldDef.html">YieldDef</a>&gt; eve::growth::SpeciesDef::produceYield</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a411516bdac2628bc23edaaf7a259f5c8" name="a411516bdac2628bc23edaaf7a259f5c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411516bdac2628bc23edaaf7a259f5c8">&#9670;&#160;</a></span>reproduction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1growth_1_1ReproductionDef.html">ReproductionDef</a> eve::growth::SpeciesDef::reproduction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00318">eve::growth::GrowthWorld::tryBreed()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00363">eve::growth::GrowthWorld::tryReproduce()</a>.</p>
+
+</div>
+</div>
+<a id="ad5a9f40a1eef51fc3f03774f0acf05d4" name="ad5a9f40a1eef51fc3f03774f0acf05d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5a9f40a1eef51fc3f03774f0acf05d4">&#9670;&#160;</a></span>seasonMul</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eve::growth::SpeciesDef::seasonMul = {1.0, 1.0, 1.0, 1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1growth_1_1Growth.html" title="Farm growth module facade (eve.Growth): species registry + world step.">Growth</a> multipliers indexed by calendar season order. </p>
+<dl class="section remark"><dt>备注</dt><dd>Empty means 1.0 for every season. Length need not be 4. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Species_8cpp_source.html#l00428">eve::growth::normalizeSpeciesDef()</a>.</p>
+
+</div>
+</div>
+<a id="a5246d0ae52ea1aa8b3f09eb4c09f98fa" name="a5246d0ae52ea1aa8b3f09eb4c09f98fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5246d0ae52ea1aa8b3f09eb4c09f98fa">&#9670;&#160;</a></span>seasonMulById</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, double&gt; eve::growth::SpeciesDef::seasonMulById</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional multipliers keyed by calendar season id (preferred when set). </p>
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a320b05edf951aa46ca99f35bc19ab9da" name="a320b05edf951aa46ca99f35bc19ab9da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a320b05edf951aa46ca99f35bc19ab9da">&#9670;&#160;</a></span>stages</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1growth_1_1GrowthStageDef.html">GrowthStageDef</a>&gt; eve::growth::SpeciesDef::stages</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Species_8h_source.html">Species.h</a> 第 <a class="el" href="Species_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Species_8cpp_source.html#l00481">eve::growth::SpeciesRegistry::registerSpecies()</a> , 以及 <a class="el" href="Organism_8cpp_source.html#l00068">eve::growth::Organism::stageId()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/growth/<a class="el" href="Species_8h_source.html">Species.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

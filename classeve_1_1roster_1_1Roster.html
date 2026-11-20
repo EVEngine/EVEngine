@@ -1,0 +1,1369 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::roster::Roster类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1roster.html">roster</a></li><li class="navelem"><a class="el" href="classeve_1_1roster_1_1Roster.html">Roster</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1roster_1_1Roster-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::roster::Roster类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative squad membership, post occupancy, and reinforce spawn requests.  
+ <a href="classeve_1_1roster_1_1Roster.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Roster_8h_source.html">Roster.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::roster::Roster 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1roster_1_1Roster.png" usemap="#eve::roster::Roster_map" alt=""/>
+  <map id="eve::roster::Roster_map" name="eve::roster::Roster_map">
+<area href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API." alt="eve::Module" shape="rect" coords="0,0,114,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8beb93fa9233792a2238c4498a9e8957" id="r_a8beb93fa9233792a2238c4498a9e8957"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a8beb93fa9233792a2238c4498a9e8957">Module_REG</a> (<a class="el" href="classeve_1_1roster_1_1Roster.html">Roster</a>)</td></tr>
+<tr class="separator:a8beb93fa9233792a2238c4498a9e8957"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b9223c75fdbee2b141613a1a2a6efc" id="r_aa9b9223c75fdbee2b141613a1a2a6efc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#aa9b9223c75fdbee2b141613a1a2a6efc">Roster</a> ()</td></tr>
+<tr class="memdesc:aa9b9223c75fdbee2b141613a1a2a6efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty roster world.  <br /></td></tr>
+<tr class="separator:aa9b9223c75fdbee2b141613a1a2a6efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae054adc7389a970527ff7e07129c42e7" id="r_ae054adc7389a970527ff7e07129c42e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ae054adc7389a970527ff7e07129c42e7">~Roster</a> () override</td></tr>
+<tr class="memdesc:ae054adc7389a970527ff7e07129c42e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys roster storage.  <br /></td></tr>
+<tr class="separator:ae054adc7389a970527ff7e07129c42e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9591fa0e8240c14c55760b8a30afaea7" id="r_a9591fa0e8240c14c55760b8a30afaea7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a9591fa0e8240c14c55760b8a30afaea7">clear</a> ()</td></tr>
+<tr class="memdesc:a9591fa0e8240c14c55760b8a30afaea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears every post, squad, policy, vacancy and spawn request.  <br /></td></tr>
+<tr class="separator:a9591fa0e8240c14c55760b8a30afaea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac42be5fea1de4efb9416e448f0ed0b30" id="r_ac42be5fea1de4efb9416e448f0ed0b30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ac42be5fea1de4efb9416e448f0ed0b30">registerPost</a> (std::string postId, int <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>, std::string defaultRole=&quot;guard&quot;)</td></tr>
+<tr class="memdesc:ac42be5fea1de4efb9416e448f0ed0b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a named post with a fixed seat capacity.  <br /></td></tr>
+<tr class="separator:ac42be5fea1de4efb9416e448f0ed0b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace292d82d7a435c6357c350348aef086" id="r_ace292d82d7a435c6357c350348aef086"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ace292d82d7a435c6357c350348aef086">removePost</a> (std::string_view postId, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:ace292d82d7a435c6357c350348aef086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a post and emits vacancies for every remaining occupant.  <br /></td></tr>
+<tr class="separator:ace292d82d7a435c6357c350348aef086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae1444ca7af315b2ded703c25562aa33" id="r_aae1444ca7af315b2ded703c25562aa33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#aae1444ca7af315b2ded703c25562aa33">assignPost</a> (std::string_view postId, std::string <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string role={})</td></tr>
+<tr class="memdesc:aae1444ca7af315b2ded703c25562aa33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occupies one post seat with a subject.  <br /></td></tr>
+<tr class="separator:aae1444ca7af315b2ded703c25562aa33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83547e5c2d47a5ba5af9336297c49f51" id="r_a83547e5c2d47a5ba5af9336297c49f51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a83547e5c2d47a5ba5af9336297c49f51">releasePost</a> (std::string_view postId, std::string_view <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a83547e5c2d47a5ba5af9336297c49f51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases one subject's seat on a post and records a vacancy.  <br /></td></tr>
+<tr class="separator:a83547e5c2d47a5ba5af9336297c49f51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf561bb1d929aa3d131908ecfe2611eb" id="r_abf561bb1d929aa3d131908ecfe2611eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#abf561bb1d929aa3d131908ecfe2611eb">postOccupancy</a> (std::string_view postId) const</td></tr>
+<tr class="memdesc:abf561bb1d929aa3d131908ecfe2611eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current occupants for a post, or NotFound.  <br /></td></tr>
+<tr class="separator:abf561bb1d929aa3d131908ecfe2611eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9245defde522c8b37bf2c8127e7048c" id="r_af9245defde522c8b37bf2c8127e7048c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#af9245defde522c8b37bf2c8127e7048c">postCapacity</a> (std::string_view postId) const</td></tr>
+<tr class="memdesc:af9245defde522c8b37bf2c8127e7048c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configured capacity for a post, or NotFound.  <br /></td></tr>
+<tr class="separator:af9245defde522c8b37bf2c8127e7048c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ced668b425aa5c7012ba12f58e31dbb" id="r_a2ced668b425aa5c7012ba12f58e31dbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a2ced668b425aa5c7012ba12f58e31dbb">postAssigneeAt</a> (std::string_view postId, int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a2ced668b425aa5c7012ba12f58e31dbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignee at a stable index (sorted by subject id), or empty / failure.  <br /></td></tr>
+<tr class="separator:a2ced668b425aa5c7012ba12f58e31dbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a022baf1fe6d25bae18a782df63666949" id="r_a022baf1fe6d25bae18a782df63666949"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a022baf1fe6d25bae18a782df63666949">postRole</a> (std::string_view postId, std::string_view <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const</td></tr>
+<tr class="memdesc:a022baf1fe6d25bae18a782df63666949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Role for an assignee on a post, or NotFound.  <br /></td></tr>
+<tr class="separator:a022baf1fe6d25bae18a782df63666949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a351889f18fbde21d155f7e12fed709" id="r_a2a351889f18fbde21d155f7e12fed709"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a2a351889f18fbde21d155f7e12fed709">createSquad</a> (std::string squadId, int <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>, std::string <a class="el" href="classeve_1_1roster_1_1Roster.html#a51a94d27a6f1bd254cf35b3c9172e9bb">intent</a>={})</td></tr>
+<tr class="memdesc:a2a351889f18fbde21d155f7e12fed709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a squad with a membership cap and optional initial intent.  <br /></td></tr>
+<tr class="separator:a2a351889f18fbde21d155f7e12fed709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a558dbe9639c34a697a64fb1b21e3c5fa" id="r_a558dbe9639c34a697a64fb1b21e3c5fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a558dbe9639c34a697a64fb1b21e3c5fa">destroySquad</a> (std::string_view squadId, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a558dbe9639c34a697a64fb1b21e3c5fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a squad and emits vacancies for every remaining member.  <br /></td></tr>
+<tr class="separator:a558dbe9639c34a697a64fb1b21e3c5fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a441040e2e85167740f4e3b41a47d65aa" id="r_a441040e2e85167740f4e3b41a47d65aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a441040e2e85167740f4e3b41a47d65aa">addMember</a> (std::string_view squadId, std::string <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string role=&quot;member&quot;)</td></tr>
+<tr class="memdesc:a441040e2e85167740f4e3b41a47d65aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a member with a role; rejects duplicates and capacity overflow.  <br /></td></tr>
+<tr class="separator:a441040e2e85167740f4e3b41a47d65aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9ae8f525825b2a7bd22532618716a04" id="r_aa9ae8f525825b2a7bd22532618716a04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#aa9ae8f525825b2a7bd22532618716a04">removeMember</a> (std::string_view squadId, std::string_view <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:aa9ae8f525825b2a7bd22532618716a04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a member and records a squad vacancy.  <br /></td></tr>
+<tr class="separator:aa9ae8f525825b2a7bd22532618716a04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1cba073e76b0988e329f57c6c51567" id="r_abc1cba073e76b0988e329f57c6c51567"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#abc1cba073e76b0988e329f57c6c51567">setIntent</a> (std::string_view squadId, std::string <a class="el" href="classeve_1_1roster_1_1Roster.html#a51a94d27a6f1bd254cf35b3c9172e9bb">intent</a>)</td></tr>
+<tr class="memdesc:abc1cba073e76b0988e329f57c6c51567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the squad's shared intent string.  <br /></td></tr>
+<tr class="separator:abc1cba073e76b0988e329f57c6c51567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a94d27a6f1bd254cf35b3c9172e9bb" id="r_a51a94d27a6f1bd254cf35b3c9172e9bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a51a94d27a6f1bd254cf35b3c9172e9bb">intent</a> (std::string_view squadId) const</td></tr>
+<tr class="memdesc:a51a94d27a6f1bd254cf35b3c9172e9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the squad intent, or NotFound.  <br /></td></tr>
+<tr class="separator:a51a94d27a6f1bd254cf35b3c9172e9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70dee0c51d89fd7516364d2086d737c4" id="r_a70dee0c51d89fd7516364d2086d737c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a70dee0c51d89fd7516364d2086d737c4">memberCount</a> (std::string_view squadId) const</td></tr>
+<tr class="memdesc:a70dee0c51d89fd7516364d2086d737c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current member count, or NotFound.  <br /></td></tr>
+<tr class="separator:a70dee0c51d89fd7516364d2086d737c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c227779d670be179d17a38f5aabbbe" id="r_aa0c227779d670be179d17a38f5aabbbe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#aa0c227779d670be179d17a38f5aabbbe">memberAt</a> (std::string_view squadId, int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:aa0c227779d670be179d17a38f5aabbbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Member subject at a stable index, or failure.  <br /></td></tr>
+<tr class="separator:aa0c227779d670be179d17a38f5aabbbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57ea9f6dd85b2c56d507bf48121b737" id="r_ac57ea9f6dd85b2c56d507bf48121b737"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ac57ea9f6dd85b2c56d507bf48121b737">memberRole</a> (std::string_view squadId, std::string_view <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) const</td></tr>
+<tr class="memdesc:ac57ea9f6dd85b2c56d507bf48121b737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Role for a squad member, or NotFound.  <br /></td></tr>
+<tr class="separator:ac57ea9f6dd85b2c56d507bf48121b737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e805e95162989fc1afd9cb56c420808" id="r_a7e805e95162989fc1afd9cb56c420808"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a7e805e95162989fc1afd9cb56c420808">releaseSubject</a> (std::string_view <a class="el" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a7e805e95162989fc1afd9cb56c420808"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a subject from every post and squad, emitting one vacancy per seat.  <br /></td></tr>
+<tr class="separator:a7e805e95162989fc1afd9cb56c420808"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3032548d5c5b75211d047303e31f5624" id="r_a3032548d5c5b75211d047303e31f5624"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a3032548d5c5b75211d047303e31f5624">vacancyCount</a> () const</td></tr>
+<tr class="memdesc:a3032548d5c5b75211d047303e31f5624"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queued vacancy count (stable insertion order).  <br /></td></tr>
+<tr class="separator:a3032548d5c5b75211d047303e31f5624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59f84f7e0fad001e3b43a32dd9008b1f" id="r_a59f84f7e0fad001e3b43a32dd9008b1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1roster_1_1Vacancy.html">Vacancy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a59f84f7e0fad001e3b43a32dd9008b1f">vacancyAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a59f84f7e0fad001e3b43a32dd9008b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1roster_1_1Vacancy.html" title="One open post/squad seat after a subject left.">Vacancy</a> at index, or InvalidArgument when out of range.  <br /></td></tr>
+<tr class="separator:a59f84f7e0fad001e3b43a32dd9008b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a488806527a6533f5154238490991445c" id="r_a488806527a6533f5154238490991445c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a488806527a6533f5154238490991445c">clearVacancies</a> ()</td></tr>
+<tr class="memdesc:a488806527a6533f5154238490991445c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the vacancy queue without changing occupancy.  <br /></td></tr>
+<tr class="separator:a488806527a6533f5154238490991445c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a240e9383a940d71f864219c16e6a771b" id="r_a240e9383a940d71f864219c16e6a771b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a240e9383a940d71f864219c16e6a771b">setPolicy</a> (std::string <a class="el" href="TacticsPersistence_8cpp.html#ac7a76a552902ea55b003f1b8e74da429">policyId</a>, std::string preferredDef, int delayTicks, int budget, std::string postId={}, std::string squadId={}, std::string role={})</td></tr>
+<tr class="memdesc:a240e9383a940d71f864219c16e6a771b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upserts a reinforce policy that turns matching vacancies into spawn requests.  <br /></td></tr>
+<tr class="separator:a240e9383a940d71f864219c16e6a771b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67b929858704a4ef16f71142ddf75ef8" id="r_a67b929858704a4ef16f71142ddf75ef8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a67b929858704a4ef16f71142ddf75ef8">setFallback</a> (std::string_view <a class="el" href="TacticsPersistence_8cpp.html#ac7a76a552902ea55b003f1b8e74da429">policyId</a>, std::string preferredDef, std::string fallbackDef)</td></tr>
+<tr class="memdesc:a67b929858704a4ef16f71142ddf75ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds or replaces a preferred→fallback definition edge for a policy.  <br /></td></tr>
+<tr class="separator:a67b929858704a4ef16f71142ddf75ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91aaf6f89eb6e1566a6a926c59d93fb6" id="r_a91aaf6f89eb6e1566a6a926c59d93fb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a91aaf6f89eb6e1566a6a926c59d93fb6">clearPolicy</a> (std::string_view <a class="el" href="TacticsPersistence_8cpp.html#ac7a76a552902ea55b003f1b8e74da429">policyId</a>)</td></tr>
+<tr class="memdesc:a91aaf6f89eb6e1566a6a926c59d93fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a policy; pending requests for it remain until acked/failed.  <br /></td></tr>
+<tr class="separator:a91aaf6f89eb6e1566a6a926c59d93fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756bf271184c32ecb26c0d351dbbc36d" id="r_a756bf271184c32ecb26c0d351dbbc36d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a756bf271184c32ecb26c0d351dbbc36d">step</a> (std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a756bf271184c32ecb26c0d351dbbc36d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances reinforce matching for vacancies ready at or before <code>tick</code>.  <br /></td></tr>
+<tr class="separator:a756bf271184c32ecb26c0d351dbbc36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad89401937ab687a9f8c413e6ad2d1117" id="r_ad89401937ab687a9f8c413e6ad2d1117"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ad89401937ab687a9f8c413e6ad2d1117">spawnRequestCount</a> () const</td></tr>
+<tr class="memdesc:ad89401937ab687a9f8c413e6ad2d1117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pending spawn request count.  <br /></td></tr>
+<tr class="separator:ad89401937ab687a9f8c413e6ad2d1117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63b5bb8703be3cf27f08be513f701ea3" id="r_a63b5bb8703be3cf27f08be513f701ea3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1roster_1_1SpawnRequest.html">SpawnRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a63b5bb8703be3cf27f08be513f701ea3">spawnRequestAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a63b5bb8703be3cf27f08be513f701ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn request at index, or InvalidArgument.  <br /></td></tr>
+<tr class="separator:a63b5bb8703be3cf27f08be513f701ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac20c1ab9bc1d71bba0ed8e17ce10d6e5" id="r_ac20c1ab9bc1d71bba0ed8e17ce10d6e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#ac20c1ab9bc1d71bba0ed8e17ce10d6e5">ackSpawnRequest</a> (std::string_view requestId)</td></tr>
+<tr class="memdesc:ac20c1ab9bc1d71bba0ed8e17ce10d6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks a spawn request fulfilled and consumes one budget unit when limited.  <br /></td></tr>
+<tr class="separator:ac20c1ab9bc1d71bba0ed8e17ce10d6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c0c77d710f638aaa8f3f8018517a76c" id="r_a9c0c77d710f638aaa8f3f8018517a76c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1roster_1_1Roster.html#a9c0c77d710f638aaa8f3f8018517a76c">failSpawnRequest</a> (std::string_view requestId, std::uint64_t <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a9c0c77d710f638aaa8f3f8018517a76c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fails a spawn request; enqueues a fallback definition when configured, else drops it.  <br /></td></tr>
+<tr class="separator:a9c0c77d710f638aaa8f3f8018517a76c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="memdesc:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API.">Module</a>.  <br /></td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="memdesc:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name.  <br /></td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative squad membership, post occupancy, and reinforce spawn requests. </p>
+<p>Owns only roster facts (who belongs where, which seats are empty, which spawn requests are pending). Does not own HP, navigation, production queues, or NPC behavior trees — games inject subject ids and fulfill spawn requests via their own Production / ISpawnProvider path.</p>
+<p>@thread Simulation owner thread only. @reentrancy No callbacks; no graphics includes. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8h_source.html">Roster.h</a> 第 <a class="el" href="Roster_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa9b9223c75fdbee2b141613a1a2a6efc" name="aa9b9223c75fdbee2b141613a1a2a6efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b9223c75fdbee2b141613a1a2a6efc">&#9670;&#160;</a></span>Roster()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::roster::Roster::Roster </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty roster world. </p>
+
+</div>
+</div>
+<a id="ae054adc7389a970527ff7e07129c42e7" name="ae054adc7389a970527ff7e07129c42e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae054adc7389a970527ff7e07129c42e7">&#9670;&#160;</a></span>~Roster()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::roster::Roster::~Roster </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroys roster storage. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac20c1ab9bc1d71bba0ed8e17ce10d6e5" name="ac20c1ab9bc1d71bba0ed8e17ce10d6e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac20c1ab9bc1d71bba0ed8e17ce10d6e5">&#9670;&#160;</a></span>ackSpawnRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::ackSpawnRequest </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>requestId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Marks a spawn request fulfilled and consumes one budget unit when limited. </p>
+<dl class="section remark"><dt>备注</dt><dd>Does not assign the new subject; the game calls assignPost/addMember after spawn. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a441040e2e85167740f4e3b41a47d65aa" name="a441040e2e85167740f4e3b41a47d65aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a441040e2e85167740f4e3b41a47d65aa">&#9670;&#160;</a></span>addMember()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::addMember </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>role</em> = <code>&quot;member&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a member with a role; rejects duplicates and capacity overflow. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aae1444ca7af315b2ded703c25562aa33" name="aae1444ca7af315b2ded703c25562aa33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae1444ca7af315b2ded703c25562aa33">&#9670;&#160;</a></span>assignPost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::assignPost </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>role</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occupies one post seat with a subject. </p>
+<dl class="section remark"><dt>备注</dt><dd>Rejects when the post is full, the subject already holds any post seat, or ids are empty. Role defaults to the post's defaultRole when empty. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a9591fa0e8240c14c55760b8a30afaea7" name="a9591fa0e8240c14c55760b8a30afaea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9591fa0e8240c14c55760b8a30afaea7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::roster::Roster::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears every post, squad, policy, vacancy and spawn request. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91aaf6f89eb6e1566a6a926c59d93fb6" name="a91aaf6f89eb6e1566a6a926c59d93fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91aaf6f89eb6e1566a6a926c59d93fb6">&#9670;&#160;</a></span>clearPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::clearPolicy </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>policyId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a policy; pending requests for it remain until acked/failed. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00157">policyId</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a488806527a6533f5154238490991445c" name="a488806527a6533f5154238490991445c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a488806527a6533f5154238490991445c">&#9670;&#160;</a></span>clearVacancies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::roster::Roster::clearVacancies </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the vacancy queue without changing occupancy. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a351889f18fbde21d155f7e12fed709" name="a2a351889f18fbde21d155f7e12fed709"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a351889f18fbde21d155f7e12fed709">&#9670;&#160;</a></span>createSquad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::createSquad </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>intent</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a squad with a membership cap and optional initial intent. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">intent</td><td>Shared collective intent id (e.g. "patrol", "hold"); may be empty. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00037">capacity</a>, <a class="el" href="Roster_8cpp_source.html#l00172">intent()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a558dbe9639c34a697a64fb1b21e3c5fa" name="a558dbe9639c34a697a64fb1b21e3c5fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a558dbe9639c34a697a64fb1b21e3c5fa">&#9670;&#160;</a></span>destroySquad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::destroySquad </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys a squad and emits vacancies for every remaining member. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a9c0c77d710f638aaa8f3f8018517a76c" name="a9c0c77d710f638aaa8f3f8018517a76c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c0c77d710f638aaa8f3f8018517a76c">&#9670;&#160;</a></span>failSpawnRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::failSpawnRequest </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>requestId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fails a spawn request; enqueues a fallback definition when configured, else drops it. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Roster_8h_source.html#l00028">eve::roster::SpawnRequest::preferredDef</a>, <a class="el" href="Roster_8h_source.html#l00032">eve::roster::SpawnRequest::readyAtTick</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Roster_8h_source.html#l00026">eve::roster::SpawnRequest::requestId</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a51a94d27a6f1bd254cf35b3c9172e9bb" name="a51a94d27a6f1bd254cf35b3c9172e9bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51a94d27a6f1bd254cf35b3c9172e9bb">&#9670;&#160;</a></span>intent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::roster::Roster::intent </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads the squad intent, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Roster_8cpp_source.html#l00123">createSquad()</a> , 以及 <a class="el" href="Roster_8cpp_source.html#l00165">setIntent()</a>.</p>
+
+</div>
+</div>
+<a id="aa0c227779d670be179d17a38f5aabbbe" name="aa0c227779d670be179d17a38f5aabbbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c227779d670be179d17a38f5aabbbe">&#9670;&#160;</a></span>memberAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::roster::Roster::memberAt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Member subject at a stable index, or failure. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a70dee0c51d89fd7516364d2086d737c4" name="a70dee0c51d89fd7516364d2086d737c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70dee0c51d89fd7516364d2086d737c4">&#9670;&#160;</a></span>memberCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::roster::Roster::memberCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current member count, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac57ea9f6dd85b2c56d507bf48121b737" name="ac57ea9f6dd85b2c56d507bf48121b737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57ea9f6dd85b2c56d507bf48121b737">&#9670;&#160;</a></span>memberRole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::roster::Roster::memberRole </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Role for a squad member, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8beb93fa9233792a2238c4498a9e8957" name="a8beb93fa9233792a2238c4498a9e8957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8beb93fa9233792a2238c4498a9e8957">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::roster::Roster::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1roster_1_1Roster.html">Roster</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ced668b425aa5c7012ba12f58e31dbb" name="a2ced668b425aa5c7012ba12f58e31dbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ced668b425aa5c7012ba12f58e31dbb">&#9670;&#160;</a></span>postAssigneeAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::roster::Roster::postAssigneeAt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assignee at a stable index (sorted by subject id), or empty / failure. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af9245defde522c8b37bf2c8127e7048c" name="af9245defde522c8b37bf2c8127e7048c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9245defde522c8b37bf2c8127e7048c">&#9670;&#160;</a></span>postCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::roster::Roster::postCapacity </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configured capacity for a post, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abf561bb1d929aa3d131908ecfe2611eb" name="abf561bb1d929aa3d131908ecfe2611eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf561bb1d929aa3d131908ecfe2611eb">&#9670;&#160;</a></span>postOccupancy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::roster::Roster::postOccupancy </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current occupants for a post, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a022baf1fe6d25bae18a782df63666949" name="a022baf1fe6d25bae18a782df63666949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a022baf1fe6d25bae18a782df63666949">&#9670;&#160;</a></span>postRole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::roster::Roster::postRole </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Role for an assignee on a post, or NotFound. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac42be5fea1de4efb9416e448f0ed0b30" name="ac42be5fea1de4efb9416e448f0ed0b30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac42be5fea1de4efb9416e448f0ed0b30">&#9670;&#160;</a></span>registerPost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::registerPost </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>defaultRole</em> = <code>&quot;guard&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a named post with a fixed seat capacity. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">postId</td><td>Stable logical id (non-empty, unique among posts). </td></tr>
+    <tr><td class="paramname">capacity</td><td>Maximum simultaneous occupants (&gt;=1). </td></tr>
+    <tr><td class="paramname">defaultRole</td><td>Role written on assign when caller passes an empty role. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, AlreadyExists, or InvalidArgument. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00037">capacity</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a83547e5c2d47a5ba5af9336297c49f51" name="a83547e5c2d47a5ba5af9336297c49f51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83547e5c2d47a5ba5af9336297c49f51">&#9670;&#160;</a></span>releasePost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::releasePost </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases one subject's seat on a post and records a vacancy. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a7e805e95162989fc1afd9cb56c420808" name="a7e805e95162989fc1afd9cb56c420808"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e805e95162989fc1afd9cb56c420808">&#9670;&#160;</a></span>releaseSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::roster::Roster::releaseSubject </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a subject from every post and squad, emitting one vacancy per seat. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of seats released. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="aa9ae8f525825b2a7bd22532618716a04" name="aa9ae8f525825b2a7bd22532618716a04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9ae8f525825b2a7bd22532618716a04">&#9670;&#160;</a></span>removeMember()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::removeMember </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a member and records a squad vacancy. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="ace292d82d7a435c6357c350348aef086" name="ace292d82d7a435c6357c350348aef086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace292d82d7a435c6357c350348aef086">&#9670;&#160;</a></span>removePost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::removePost </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>postId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a post and emits vacancies for every remaining occupant. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a67b929858704a4ef16f71142ddf75ef8" name="a67b929858704a4ef16f71142ddf75ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67b929858704a4ef16f71142ddf75ef8">&#9670;&#160;</a></span>setFallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::setFallback </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>policyId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>preferredDef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>fallbackDef</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds or replaces a preferred→fallback definition edge for a policy. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00157">policyId</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="abc1cba073e76b0988e329f57c6c51567" name="abc1cba073e76b0988e329f57c6c51567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc1cba073e76b0988e329f57c6c51567">&#9670;&#160;</a></span>setIntent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::setIntent </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>squadId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>intent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the squad's shared intent string. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Roster_8cpp_source.html#l00172">intent()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a240e9383a940d71f864219c16e6a771b" name="a240e9383a940d71f864219c16e6a771b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a240e9383a940d71f864219c16e6a771b">&#9670;&#160;</a></span>setPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::roster::Roster::setPolicy </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>policyId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>preferredDef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>delayTicks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>budget</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>postId</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>squadId</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>role</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upserts a reinforce policy that turns matching vacancies into spawn requests. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">policyId</td><td>Stable id. </td></tr>
+    <tr><td class="paramname">preferredDef</td><td>Definition/archetype the game should spawn first. </td></tr>
+    <tr><td class="paramname">delayTicks</td><td>Ticks to wait after a vacancy before enqueueing a request (&gt;=0). </td></tr>
+    <tr><td class="paramname">budget</td><td>Maximum successful acks this policy may produce (0 = unlimited). </td></tr>
+    <tr><td class="paramname">postId</td><td>When non-empty, only vacancies for this post match. </td></tr>
+    <tr><td class="paramname">squadId</td><td>When non-empty, only vacancies for this squad match. </td></tr>
+    <tr><td class="paramname">role</td><td>When non-empty, only vacancies with this role match. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00157">policyId</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a63b5bb8703be3cf27f08be513f701ea3" name="a63b5bb8703be3cf27f08be513f701ea3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63b5bb8703be3cf27f08be513f701ea3">&#9670;&#160;</a></span>spawnRequestAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1roster_1_1SpawnRequest.html">SpawnRequest</a> &gt; eve::roster::Roster::spawnRequestAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn request at index, or InvalidArgument. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad89401937ab687a9f8c413e6ad2d1117" name="ad89401937ab687a9f8c413e6ad2d1117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad89401937ab687a9f8c413e6ad2d1117">&#9670;&#160;</a></span>spawnRequestCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::roster::Roster::spawnRequestCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pending spawn request count. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a756bf271184c32ecb26c0d351dbbc36d" name="a756bf271184c32ecb26c0d351dbbc36d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756bf271184c32ecb26c0d351dbbc36d">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::roster::Roster::step </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances reinforce matching for vacancies ready at or before <code>tick</code>. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of newly enqueued spawn requests. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Does not invent subjects. The game must ack or fail each request. @cost Linear in vacancy×policy counts; amortize once per simulation tick. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00669">created</a>, <a class="el" href="Roster_8h_source.html#l00017">eve::roster::Vacancy::kind</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00157">policyId</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="Roster_8h_source.html#l00026">eve::roster::SpawnRequest::requestId</a>, <a class="el" href="Roster_8h_source.html#l00019">eve::roster::Vacancy::role</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Roster_8h_source.html#l00018">eve::roster::Vacancy::targetId</a>, <a class="el" href="Roster_8h_source.html#l00021">eve::roster::Vacancy::tick</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="a59f84f7e0fad001e3b43a32dd9008b1f" name="a59f84f7e0fad001e3b43a32dd9008b1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f84f7e0fad001e3b43a32dd9008b1f">&#9670;&#160;</a></span>vacancyAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1roster_1_1Vacancy.html">Vacancy</a> &gt; eve::roster::Roster::vacancyAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structeve_1_1roster_1_1Vacancy.html" title="One open post/squad seat after a subject left.">Vacancy</a> at index, or InvalidArgument when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3032548d5c5b75211d047303e31f5624" name="a3032548d5c5b75211d047303e31f5624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3032548d5c5b75211d047303e31f5624">&#9670;&#160;</a></span>vacancyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::roster::Roster::vacancyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queued vacancy count (stable insertion order). </p>
+
+<p class="definition">在文件 <a class="el" href="Roster_8cpp_source.html">Roster.cpp</a> 第 <a class="el" href="Roster_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/roster/<a class="el" href="Roster_8h_source.html">Roster.h</a></li>
+<li>src/modules/roster/<a class="el" href="Roster_8cpp_source.html">Roster.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
