@@ -91,6 +91,21 @@ function bridgeBuildEnvironment(span, deckHeight) {
         foreach (f in faces) rockIndices.append(first + f);
     }
     bridgeEnvironmentPart(gfx.newMeshFromArrays(rockPos, rockNormals, rockUv, rockPos.len() / 3, rockIndices, rockIndices.len()), "gravel", candidate);
+    // Finish the terrain as a deliberate landscape model, with a grounded edge.
+    local basePart=bridgeEnvironmentPart(gfx.newMeshCube(1.0),"earth",candidate);
+    basePart.setPosition(0.0,-1.15,0.0);basePart.setScale(extentX*2.0,1.0,extentZ*2.1);
+    local trunkMesh=gfx.newMeshCube(1.0),crownMesh=gfx.newMeshSphere(10,6);
+    for(local i=0;i<28;++i) {
+        local side=i%2==0?-1.0:1.0;
+        local x=side*span*(0.53+0.22*((i*7)%11)/11.0);
+        local z=extentZ*(-0.85+1.7*((i*13)%17)/17.0);
+        if(abs(z)<4.0)continue; // leave the bridge approach clear
+        local y=bridgeBankHeight(x,z,span,deckHeight),h=2.2+(i%4)*0.45;
+        local trunk=bridgeEnvironmentPart(trunkMesh,"bark",candidate);
+        trunk.setPosition(x,y+h*0.45,z);trunk.setScale(0.30,h,0.30);
+        local crown=bridgeEnvironmentPart(crownMesh,"foliage",candidate);
+        crown.setPosition(x,y+h,z);crown.setScale(1.3,h*0.55,1.3);
+    }
     foreach (old in bridgeEnvironment) old.setVisible(false);
     bridgeEnvironmentCache[key] <- { parts = candidate };
     bridgeEnvironment = candidate;

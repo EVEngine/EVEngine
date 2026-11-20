@@ -816,3 +816,6 @@ if(TARGET EVScene_editor AND TARGET EVGraphics AND NOT EVENGINE_ANDROID_TEST_APP
   zeroerr_discover_tests(scene_authoring_contract_test LABEL "scene_authoring_contract_test"
     NAME_PREFIX "authoring-contract/")
 endif()
+if(TARGET EVNetwork)
+  eve_network_external_test_headers()
+endif()

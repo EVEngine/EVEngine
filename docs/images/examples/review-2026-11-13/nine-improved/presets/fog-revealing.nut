@@ -1,0 +1,1 @@
+selectFogCell(12,8);revealSelectedCell();if(!unlocked[cellIndex(12,8)])throw "Reveal command did not unlock cell";

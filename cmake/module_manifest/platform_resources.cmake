@@ -35,4 +35,4 @@ eve_declare_module(NAME sound LAYER 1 SCRIPT Sound SLOT sound
                    GROUP 2d 3d web)
 eve_declare_module(NAME network LAYER 1 SCRIPT Network
                    DEPS data platform_event
-                   THIRDPARTY poco)
+                   THIRDPARTY poco_ssl poco)

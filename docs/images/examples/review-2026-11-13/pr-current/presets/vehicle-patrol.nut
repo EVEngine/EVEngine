@@ -1,0 +1,1 @@
+patrol=true;vehicle.moveTo(rtsTank,760.0,500.0);

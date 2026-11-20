@@ -240,7 +240,7 @@ make build/win32-debug
 python scripts/third_party_package.py win32 --configuration Debug
 ```
 
-Packages cover Windows x64 Release/Debug, Linux x86_64 Release, macOS arm64 and
+Packages cover Windows x64/ARM64 Release/Debug, Linux x86_64/ARM64 Release, macOS arm64 and
 x86_64 Release, Android arm64-v8a Release, and iOS arm64 device Release.
 Non-Windows Debug engines use Release dependency libraries, matching source builds.
 Downloads verify SHA256, schema version, release tag, source commit, target platform,
@@ -253,6 +253,12 @@ To build dependencies locally instead, select `SOURCE`:
 ```powershell
 make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
 ```
+
+Windows source builds require native Windows Perl for OpenSSL (for example,
+Strawberry Perl); Git/MSYS Perl cannot build the MSVC libraries. A portable Perl
+can be selected explicitly with
+`CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE -DPERL_EXECUTABLE=C:/tools/perl/bin/perl.exe"`.
+The engine forwards that host-tool path to the canonical dependency build.
 
 `AUTO` is the default. It selects source builds for unpackaged targets such as
 Emscripten, iOS simulator, other Android ABIs, universal macOS and custom sanitizer/
@@ -268,7 +274,7 @@ These are complete library install trees with headers, static/shared libraries,
 runtime binaries, metadata and license notices. You still need platform build tools,
 Vulkan SDK, system development libraries and engine submodules. CMake fetches pinned
 sources for vendored code compiled directly into the engine, such as ImGui.
-ABI baselines are MSVC x64 dynamic CRT, Ubuntu 24.04/GCC, macOS 13+ (matching CPU),
+ABI baselines are MSVC x64/ARM64 dynamic CRT, Ubuntu 24.04/GCC, macOS 13+ (matching CPU),
 NDK 27.3.13750724 / Android API 24 / c++_shared, and iOS 13+ arm64 device SDK.
 Use source mode for toolchains incompatible with those baselines.
 

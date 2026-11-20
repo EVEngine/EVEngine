@@ -387,6 +387,7 @@ endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/filesystem/BuildSettings.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/network/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
 if(_has_ik)

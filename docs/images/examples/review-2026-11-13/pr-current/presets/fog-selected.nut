@@ -1,0 +1,1 @@
+selectFogCell(12,8);

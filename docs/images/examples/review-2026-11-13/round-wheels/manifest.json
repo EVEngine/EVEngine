@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-13",
+  "head": "f62b22ba459c01507b50fde7915aae8350ffd77f",
+  "capture": "Current-source Windows Vulkan engine; original gfx.saveFramePng PNG files.",
+  "runtime": {
+    "exe": "4cd85b1d4b698195cabc8f31a79c497be67eeabb98bbe10e3a53f5ed6db21d31",
+    "dlls": {
+      "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+      "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+      "EVBackends.dll": "6e546e8f12a7a5fcb83b71f7a39dc255a5a9d62ddb32a3f7a8d19d743a639033",
+      "EVDomains.dll": "c21cb8fa01fa81842ddca03504e9ad456b0d1440467b42404c658b4d909c5395",
+      "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+      "EVEditors.dll": "44e9f5d58534363091ce32a7da508b76aa46fcdb4984f8a2759e2892fd920182",
+      "EVFoundation.dll": "146ec1541e3f770621a9b6702fa985c2934edcd95f9f670239e64f28e176ec8d",
+      "EVOrchestration.dll": "d971b083620591b1aa9acd46d5cefe5a99ff3468e15c53dcf779a568a45c814b",
+      "EVPlatform.dll": "8b6e142d340ffe627d052218466886ca81a54e77a60ddf21bde21b3f1ad09db2",
+      "EVWorld.dll": "c50719713019d39b1b464a3db7fd2c8a3e308822c58ac359363ac69831083d64",
+      "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+    }
+  },
+  "images": [
+    {
+      "image": "default.png",
+      "sha256": "e381001db9efadb4450faf37d5ed28635f3bde02b825af06f9a5b96a40fcc9cc",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "image": "close.png",
+      "sha256": "309704dd3daa4345fd3fe79dc75919a933fc43f6aaf76c87b8c3981ca1b6223e",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "image": "driving.png",
+      "sha256": "45c7f261a215beab49d30484727a058785fbbb54445891fa54ddbe016df57cad",
+      "size": [
+        1280,
+        720
+      ]
+    }
+  ],
+  "inputs": {
+    "examples/flight-vehicle-controllers/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/flight-vehicle-controllers/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/flight-vehicle-controllers/config.nut": "41395a82e7efc6d017c8b15ca8f747f0cb61590b80903859f5dfbe31d20df3be",
+    "examples/flight-vehicle-controllers/flying_controller.nut": "1a161f8392cdc989aa01d69047fbabb02c6114e872305a1d83d31bd88429c426",
+    "examples/flight-vehicle-controllers/main.nut": "0dbe993b946f90691078def74ee6918bc01b5094214d32cc8477af6c369f513b",
+    "examples/flight-vehicle-controllers/vehicle_controller.nut": "e59d76b52212380101f29f53867acffc183b4dd07cd5edf428dda3332259815e"
+  },
+  "verification": "Current-source eve build passed. Default, close and controller-driven frames captured and visually checked. Driving preset supplies throttle to VehicleController.setDrive, which retains fixed-step vehicle/physics authority; it is not physical keyboard validation. No eve_eval, direct pose manipulation or engine API changes."
+}

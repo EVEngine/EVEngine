@@ -34,7 +34,7 @@ function(eve_thirdparty_libs out_var)
     # Asking for these groups on WASM must resolve to nothing, not to a missing
     # archive.
     set(_skip_on_emscripten
-        assimp medialoader_model medialoader_sound audio_codecs freetype poco poco_data)
+        assimp medialoader_model medialoader_sound audio_codecs freetype poco poco_data poco_ssl)
 
     set(_libs "")
     foreach(g IN LISTS ARGN)
@@ -239,6 +239,20 @@ function(eve_thirdparty_libs out_var)
                 list(APPEND _libs PocoDataSQLitemd PocoDatamd)
             else()
                 list(APPEND _libs PocoDataSQLite PocoData)
+            endif()
+
+        elseif(g STREQUAL "poco_ssl")
+            if(_win_debug)
+                list(APPEND _libs PocoNetSSLmdd PocoCryptomdd PocoUtilmdd)
+            elseif(WIN32)
+                list(APPEND _libs PocoNetSSLmd PocoCryptomd PocoUtilmd)
+            else()
+                list(APPEND _libs PocoNetSSL PocoCrypto PocoUtil)
+            endif()
+            if(WIN32)
+                list(APPEND _libs libssl libcrypto ws2_32 crypt32 advapi32 user32 gdi32)
+            else()
+                list(APPEND _libs ssl crypto ${CMAKE_DL_LIBS})
             endif()
 
         elseif(g STREQUAL "poco")

@@ -24,3 +24,9 @@ Success markers:
 - `archspace-floorplan.png` is written after a few frames
 
 Design notes: [`docs/dev/2026-10-15-archspace-multi-topology-projection.md`](../../docs/dev/2026-10-15-archspace-multi-topology-projection.md).
+
+## 2026-11-13 画面复查
+
+保留 ArchSpace 文档烘焙、开口和目录家具；按完整几何块分材质，展开三角面法线以明确硬边，增加分区地板、板缝、展示底座和 W 墙体显隐。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。

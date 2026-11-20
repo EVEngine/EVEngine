@@ -1,5 +1,9 @@
 # Example Render Gallery
 
+**PR validation:** Rebuilt after merging current dev; nine default frames and thirteen state frames reviewed. [Current-source evidence](review-2026-11-13/pr-current/README.md).
+
+**Nov 13:** Nine more examples improved; cardgame is reserved for separate user work. [Before/after frames and state review](review-2026-11-13/nine-improved/README.md).
+
 **Nov 12:** Nine more examples improved; tree-generator is unchanged. [Before/after and runtime states](review-2026-11-12/nine-improved/README.md).
 
 Wall follow-up fixes infill gaps, window frames and gables: [latest native frame](review-2026-11-11/watermill-walls/exterior.png).

@@ -330,3 +330,4 @@ coverage, water animation differences, and grid semantic-color matching.
 - [laser-weapon](laser-weapon/README.md) — HELIOS 激光武器：蓄能、光束与命中火花。
 
 | [pottery](pottery/README.md) | 截面旋转花盆、缸、碗、盘碟，五套程序化陶瓷 PBR 材质与高度混合 shader |
+| [cabinet-generator](cabinet-generator/README.md) | 参数化柜子：四种 PBR 风格、柜门、抽屉、层板与柜脚 |

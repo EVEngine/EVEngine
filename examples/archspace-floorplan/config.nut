@@ -4,5 +4,5 @@ config = {
     height = 720,
     debug = true,
     hotReload = true,
-    modules = ["archspace", "gfx"],
+    modules = ["keyboard", "archspace", "gfx"],
 };
