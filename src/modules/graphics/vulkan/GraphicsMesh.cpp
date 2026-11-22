@@ -1,3 +1,4 @@
+// eve-hot-path
 // Vulkan backend implementation — mesh creation and drawing.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
@@ -686,7 +687,48 @@ void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, co
 
 void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                               Shader *shader) {
-    drawMeshShaderRange(mesh, model, texture, tint, shader, 0, 1);
+    drawMeshShaderRange(mesh, model, texture, tint, shader, 0, 1, {});
+}
+
+Result<void> Graphics::drawMeshInstances(Mesh &mesh, std::span<const glm::mat4> models, OptionalRef<Texture> texture,
+                                         const Color &tint) {
+    const auto invalid = [](const char *message) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, message, "graphics.meshInstances"));
+    };
+    if (!initialized || !mesh.gpuHandle ||
+        std::none_of(ownedMeshes.begin(), ownedMeshes.end(), [&](const auto &owned) { return owned.get() == &mesh; }) ||
+        (!swapchainPassOpen && !offscreen3DPassOpen))
+        return invalid("Expected an owned mesh inside an open 3D pass");
+    if (texture &&
+        (!texture->get().gpuHandle || std::none_of(ownedTextures.begin(), ownedTextures.end(),
+                                                   [&](const auto &owned) { return owned.get() == &texture->get(); })))
+        return invalid("Albedo texture belongs to another provider");
+    if (mesh.hasGpuSkinning() || pbrSurface_ || mesh3dClusteredActive || mesh3dSurfaceMode != SurfaceMode::Opaque)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Ordinary instancing requires a static opaque nonclustered material",
+            "graphics.meshInstances"));
+    if (models.size() > UINT32_MAX ||
+        models.size_bytes() > device.physical_device.properties.limits.maxStorageBufferRange)
+        return invalid("Transform batch exceeds device storage range");
+    for (const auto &model : models)
+        for (int column = 0; column < 4; ++column)
+            for (int row = 0; row < 4; ++row)
+                if (!std::isfinite(model[column][row])) return invalid("Nonfinite instance transform");
+    for (int i = 0; i < 4; ++i)
+        if (!std::isfinite(tint[i])) return invalid("Nonfinite instance tint");
+    if (models.empty()) return Result<void>::success();
+    const auto &slots = currentMesh3dFrameSlots();
+    if (slots.drawIndex >= slots.capacity)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "Ordinary mesh uniform ring exhausted",
+                                                       "graphics.meshInstances"));
+    try {
+        drawMeshShaderRange(&mesh, glm::mat4(1.f), texture ? &texture->get() : nullptr, tint, nullptr, 0,
+                            uint32_t(models.size()), models);
+        return Result<void>::success();
+    } catch (const std::exception &error) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "graphics.meshInstances"));
+    }
 }
 
 Result<void> Graphics::drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model, const Color &tint,
@@ -712,7 +754,7 @@ Result<void> Graphics::drawMeshShaderInstances(Mesh &mesh, Shader &shader, const
         if (!std::isfinite(tint[i])) return fail("Nonfinite instance tint");
     if (!count) return Result<void>::success();
     try {
-        drawMeshShaderRange(&mesh, model, nullptr, tint, &shader, first, count);
+        drawMeshShaderRange(&mesh, model, nullptr, tint, &shader, first, count, {});
         return Result<void>::success();
     } catch (const std::exception &error) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "graphics.instances"));
@@ -720,7 +762,8 @@ Result<void> Graphics::drawMeshShaderInstances(Mesh &mesh, Shader &shader, const
 }
 
 void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
-                                   Shader *shader, uint32_t firstInstance, uint32_t instanceCount) {
+                                   Shader *shader, uint32_t firstInstance, uint32_t instanceCount,
+                                   std::span<const glm::mat4> models) {
     ASSERT(initialized);
     ASSERT(mesh != nullptr);
     if (!initialized) throw Exception("drawMesh: graphics not initialized");
@@ -869,6 +912,7 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
     Mesh3DUBO ubo = mesh3dFrameUbo;
     ubo.model = model;
     ubo.mvp = mesh3dFrameUbo.mvp * model;
+    ubo.skinInfo.z       = models.empty() ? 0.f : 1.f;
     ubo.tint = glm::vec4(tint.r, tint.g, tint.b, tint.a);
     ubo.ambient = glm::vec4(glm::vec3(mesh3dLighting.ambient), mesh3dMetallic);
     const int lightCount = std::max(0, std::min(mesh3dLighting.count, Lighting3DPack::kMaxLights));
@@ -926,7 +970,24 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
                      fslots.capacity);
         return;
     }
-    uploadSkinPalette(mesh, fslots);
+    if (models.empty()) {
+        uploadSkinPalette(mesh, fslots);
+    } else {
+        // Binding 21 is an exclusive vertex-transform stream: a skin palette OR
+        // world matrices, selected by skinInfo.z. It adds no sampler bindings.
+        // Every draw owns a separate slot until the frame fence, exactly as skin palettes do.
+        const size_t matrixSlot = fslots.drawIndex + 1;
+        if (fslots.palettes.size() <= matrixSlot) fslots.palettes.resize(matrixSlot + 1);
+        auto &buffer = fslots.palettes[matrixSlot];
+        if (!buffer.buffer || buffer.capacity < models.size_bytes()) {
+            buffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eStorageBuffer, models.size_bytes(),
+                            kHostVisibleCoherent);
+            fslots.sets.clear();
+            fslots.skinSets.clear();
+        }
+        updateRingLocal(buffer, 0, models.data(), models.size_bytes());
+        fslots.activePalette = matrixSlot;
+    }
     const size_t slot = fslots.drawIndex++;
     ensureMesh3dStrides();
     const uint32_t uboOffset = uint32_t(slot) * mesh3dUboStride;

@@ -1,5 +1,6 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/algorithms/BushMesh.h"
+#include "procgen/algorithms/Cabinet.h"
 #include "procgen/algorithms/CableChainRope.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/CaveMesh.h"
@@ -13,6 +14,7 @@
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/WaterSplashMesh.h"
+#include "procgen/mesh/VesselGenerator.h"
 #include "procgen/road/BridgeGenerator.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/urban/UrbanOutput.h"
@@ -508,7 +510,9 @@ std::vector<std::string> MeshRecipeRegistry::list() const {
 
 void MeshRecipeRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
+    registerVesselRecipes(*this);
     registerPrototypePieceRecipes(*this);
+    registerCabinetRecipe(*this);
     registerMeshDeformationGeometryRecipes(*this);
     auto mesh = [](std::string id, std::string name) {
         RecipeDescriptor schema{std::move(id), std::move(name), "Mesh", {}};
@@ -587,6 +591,16 @@ void MeshRecipeRegistry::registerBuiltins() {
                                                   {"weberPenn", "spaceColonization"}));
     tree.params.push_back(ParamDescriptor::floating("height", "Height", 6.f, 0.5f, 100.f, 0.1f));
     tree.params.push_back(ParamDescriptor::floating("trunkRadius", "Trunk Radius", 0.33f, 0.02f, 10.f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("trunkTipRatio", "Trunk Tip Radius Ratio", 0.10f, 0.03f, 0.4f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("trunkTaper", "Trunk Taper Profile", 0.85f, 0.5f, 2.f, 0.05f));
+    addAdvanced(tree, ParamDescriptor::floating("rootFlare", "Root Flare", 0.70f, 0.f, 1.5f, 0.05f));
+    addAdvanced(tree, ParamDescriptor::floating("rootFlareHeight", "Root Flare Height", 0.10f, 0.03f, 0.25f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("barkRelief", "Bark Relief", 0.04f, 0.f, 0.12f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("trunkNoise", "Trunk Surface Noise", 0.18f, 0.f, 0.35f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::floating("trunkNoiseScale", "Trunk Noise Wavelength", 3.f, 1.f, 8.f, 0.1f));
+    addAdvanced(tree, ParamDescriptor::integer("trunkKnots", "Trunk Knots", 3, 0, 8));
+    addAdvanced(tree, ParamDescriptor::floating("trunkKnotStrength", "Trunk Knot Strength", 0.35f, 0.f, 0.6f, 0.01f));
+    addAdvanced(tree, ParamDescriptor::integer("surfaceSegments", "Stem Surface Segments", 64, 8, 192));
     tree.params.push_back(ParamDescriptor::floating("crownRadius", "Crown Radius", 2.04f, 0.1f, 50.f, 0.05f));
     tree.params.push_back(ParamDescriptor::floating("leafDensity", "Leaf Density", 0.65f, 0.f, 1.f, 0.01f));
     tree.params.push_back(ParamDescriptor::integer("branchLevels", "Branch Levels", 2, 1, 5));
@@ -652,10 +666,10 @@ void MeshRecipeRegistry::registerBuiltins() {
     RecipeDescriptor bush = mesh("mesh.bush", "Bush");
     bush.params.push_back(ParamDescriptor::choice("style", "Style", "mound", {"mound", "sphere"}));
     bush.params.push_back(
-        ParamDescriptor::choice("leafMode", "Leaf Mode", "mixed", {"mixed", "cards", "blobs", "none"}));
+        ParamDescriptor::choice("leafMode", "Leaf Mode", "mixed", {"mixed", "cards", "clusters", "blobs", "none"}));
     bush.params.push_back(ParamDescriptor::floating("height", "Height", 1.4f, 0.3f, 30.f, 0.05f));
     bush.params.push_back(ParamDescriptor::floating("width", "Width", 2.2f, 0.4f, 30.f, 0.05f));
-    bush.params.push_back(ParamDescriptor::integer("blobs", "Foliage Blobs", 9, 1, 40));
+    bush.params.push_back(ParamDescriptor::integer("blobs", "Foliage Patches", 24, 1, 96));
     bush.params.push_back(ParamDescriptor::floating("leafDensity", "Leaf Density", 0.62f, 0.f, 1.f, 0.01f));
     bush.params.push_back(ParamDescriptor::floating("lobeScale", "Lobe Scale", 0.68f, 0.35f, 1.25f, 0.01f));
     bush.params.push_back(
@@ -665,8 +679,21 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(bush,
                 ParamDescriptor::floating("leafSize", "Leaf Size", 0.224f, 0.02f, 10.f, 0.01f));
     addAdvanced(bush, ParamDescriptor::integer("twigs", "Twigs", 4, 0, 16));
+    addAdvanced(bush, ParamDescriptor::floating("twigRadius", "Twig Radius", 0.0264f, 0.001f, 2.4f, 0.001f));
     addAdvanced(bush,
                 ParamDescriptor::floating("twigLength", "Twig Length", 0.42f, 0.05f, 10.f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::floating("stemSpread", "Basal Stem Spread", 0.22f, 0.02f, 0.45f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::floating("branchingStart", "Branching Start", 0.14f, 0.08f, 0.55f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::floating("branchCurve", "Branch Curve", 0.3f, 0.f, 0.6f, 0.01f));
+    addAdvanced(bush,
+                ParamDescriptor::floating("branchRadiusFalloff", "Branch Radius Falloff", 0.5f, 0.3f, 0.7f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::integer("branchCount", "Side Branches Per Stem", 4, 2, 6));
+    addAdvanced(bush, ParamDescriptor::floating("foliageStart", "Foliage Start", 0.10f, 0.05f, 0.5f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::integer("branchLevels", "Branch Levels", 3, 1, 3));
+    addAdvanced(bush, ParamDescriptor::integer("branchSegments", "Branch Segments", 12, 4, 24));
+    addAdvanced(bush, ParamDescriptor::floating("canopyNormalBlend", "Canopy Normal Blend", 0.45f, 0.f, 0.8f, 0.01f));
+    addAdvanced(bush, ParamDescriptor::integer("clusterPlanes", "Cluster Planes", 10, 1, 24));
+    addAdvanced(bush, ParamDescriptor::integer("clusterLeaves", "Cluster Leaves Per Plane", 48, 1, 256));
     registerRecipe(std::move(bush), generateBushMesh);
 
     // Clay-sheet crowns only: look (noise lip, foam, transparency) is material-side.

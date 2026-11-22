@@ -1,6 +1,7 @@
 // Deferred shadow/G-buffer graph ownership and recording.
 #include <algorithm>
 #include <array>
+#include <cstring>
 #include <memory>
 #include <string>
 #include "common/Profile.h"
@@ -185,6 +186,7 @@ void Graphics::recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint3
 }
 
 void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
+    EV_PROFILE_MODULE("graphics", "GBuffer.RecordDraws");
     // Runs inside the FrameGraph's "gbuffer" render-pass instance (already
     // begun with the planned clear values); only draw commands go here. The
     // pass may be recorded on a JobSystem worker, so everything below must be
@@ -195,7 +197,26 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
     const uint32_t     h      = extent.height ? extent.height : uint32_t(gbufferHeight);
     setViewportAndScissor(cb, w, h);
     vk::Pipeline boundPipeline{};
-    for (const auto &d : gbufferPassDraws) {
+    size_t       batchIndex = 0;
+    for (size_t drawIndex = 0; drawIndex < gbufferPassDraws.size();) {
+        const auto& d = gbufferPassDraws[drawIndex];
+        if (batchIndex < gbufferInstancedBatches.size() && gbufferInstancedBatches[batchIndex].first == drawIndex) {
+            const auto& batch   = gbufferInstancedBatches[batchIndex++];
+            auto*       gpuMesh = static_cast<GpuMesh*>(d.mesh->gpuHandle);
+            if (gbufferInstancedPipeline != boundPipeline) {
+                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferInstancedPipeline);
+                boundPipeline = gbufferInstancedPipeline;
+            }
+            Texture* alb    = d.albedo ? d.albedo : whiteTexture;
+            auto*    gpuTex = static_cast<GpuTexture*>(alb->gpuHandle);
+            cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, gbufferPipelineLayout, 0, 1,
+                                  gpuTex->descriptorSet.ptr(), 0, nullptr);
+            cb.bindVertexBuffers(1, 1, &batch.buffer, &batch.offset);
+            drawIndexedMesh(cb, *gpuMesh, batch.count);
+            drawIndex += batch.count;
+            continue;
+        }
+        ++drawIndex;
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         if (d.pbrPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, d.pbrPipeline);
@@ -231,6 +252,51 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
                              sizeof(GBufferPush), &d.push);
         drawIndexedMesh(cb, *gpuMesh);
     }
+}
+
+void Graphics::prepareGBufferInstanceBatches() {
+    EV_PROFILE_MODULE("graphics", "GBuffer.PrepareInstances");
+    gbufferInstancedBatches.clear();
+    if (!gbufferPending || !gbufferInstancedPipeline || gbufferSlots.empty()) return;
+    size_t total = 0;
+    for (size_t i = 0; i < gbufferPassDraws.size();) {
+        const auto& first = gbufferPassDraws[i];
+        if (!first.mesh || !first.mesh->gpuHandle || first.mesh->hasGpuSkinning() || first.alphaTest || first.skinSet ||
+            first.pbrPipeline) {
+            ++i;
+            continue;
+        }
+        size_t end = i + 1;
+        while (end < gbufferPassDraws.size()) {
+            const auto& next = gbufferPassDraws[end];
+            if (next.mesh != first.mesh || next.albedo != first.albedo || next.alphaTest || next.skinSet ||
+                next.pbrPipeline)
+                break;
+            ++end;
+        }
+        if (end - i >= 128) {
+            gbufferInstancedBatches.push_back({i, uint32_t(end - i), {}, vk::DeviceSize(total * sizeof(GBufferPush))});
+            total += end - i;
+        }
+        i = end;
+    }
+    if (total == 0) return;
+    auto& slot = *currentGBufferSlot();
+    if (slot.instanceCapacity < total) {
+        const size_t capacity = std::max(total, slot.instanceCapacity * 2);
+        slot.instanceBuffer =
+            vkb::GenericBuffer(device, vk::BufferUsageFlagBits::eVertexBuffer, capacity * sizeof(GBufferPush),
+                               vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.instanceCapacity = capacity;
+    }
+    auto*  mapped = static_cast<GBufferPush*>(slot.instanceBuffer.map());
+    size_t cursor = 0;
+    for (auto& batch : gbufferInstancedBatches) {
+        batch.buffer = slot.instanceBuffer.buffer;
+        batch.offset = vk::DeviceSize(cursor * sizeof(GBufferPush));
+        for (uint32_t j = 0; j < batch.count; ++j) mapped[cursor++] = gbufferPassDraws[batch.first + j].push;
+    }
+    slot.instanceBuffer.unmap();
 }
 
 void Graphics::recordDeferredFrameGraph() {
@@ -271,6 +337,7 @@ void Graphics::recordDeferredFrameGraph() {
                                                  &targets->normalTex, &targets->albedoTex, &targets->depthTex,
                                                  &targets->pbrParamsTex, &targets->emissiveTex);
     }
+    prepareGBufferInstanceBatches();
     // Record the selected deferred plan (G-buffer, plus shadow layers only
     // when updates are pending) with the JobSystem executor, then submit on the
     // graphics queue before the swapchain pass begins. Layout transitions and
@@ -306,6 +373,7 @@ void Graphics::recordDeferredFrameGraph() {
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPassDraws.clear();
+    gbufferInstancedBatches.clear();
     shadowPendingMask          = 0;
     gbufferPending             = false;
     deferredGraphRecorded_     = true;

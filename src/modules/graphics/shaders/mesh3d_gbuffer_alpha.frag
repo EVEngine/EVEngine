@@ -4,7 +4,6 @@
 // depth/normal buffers follow the silhouette instead of the full quad.
 
 layout(location = 0) in vec3 vWorldNormal;
-layout(location = 1) in float vNdcZ;
 layout(location = 2) in vec2 vUV;
 layout(location = 3) in vec4 vColor;
 

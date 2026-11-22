@@ -1,6 +1,6 @@
 # 物理机械约束、场效果、空气动力学与轮胎实施计划
 
-状态：用户已批准实施；本清单记录尚未完成的工作，不以探索代码代表交付。
+状态：用户已批准实施；2026-11-11 对照源码与本文件后续记录修订顶部清单。已实现与完整宿主/跨后端验收分开，历史日志保留当时语境，本轮未重跑原生测试。
 基线：开始实施前刷新 origin/dev。2D 后端为仓库固定版本 Box2D，3D 为 Box3D。
 
 ## 目标与边界
@@ -54,18 +54,22 @@ solver 固定步推进 -> 提交轮速/观察结果。
 - [x] 2D owning Joint2D/Result 工厂、统一读取和类型化配置。
 - [x] 2D 转轴/滑轨/距离/滑轮/齿轮/车轮/焊接封装。
 - [x] 齿轮源关节、body/world 两种销毁顺序和错误 world 测试。
-- [ ] 3D 齿轮和滑轮：显式 Jacobian/有效质量，冲量施加包含角分量；测试传动比和绳长约束。
-- [ ] 2D/3D 机械约束参数、拓扑和状态的版本化保存/恢复；未知字段拒绝，旧版迁移，失败不部分修改。
-- [ ] 脚本 Result/所有权与 C++ 一致，示例证明转轴、齿轮和滑轮传动。
+- [x] 3D 齿轮和滑轮（Box3D）：`Coupling3D` 显式 Jacobian/有效质量与角分量；`physics_coupling3d.cpp` 覆盖多圈传动、绳长和偏心力矩。
+- [ ] 复杂电机/接触/多约束闭环精度验收及其他后端支持；Jolt coupling 仍明确 Unsupported。
+- [x] 2D/Box3D 机械参数、拓扑与 coupling 相位的版本化恢复、迁移与失败隔离：`WorldSnapshot.cpp`、`snapshot/JointSnapshotCodec.cpp`、`snapshot/Coupling3DSnapshot.cpp`；对应 joint2d/snapshot3d 测试覆盖。范围边界：solver warm-start/待积分状态不在当前格式完整恢复声明内，原计划仅要求容差合同，不新增逐位重放承诺。
+- [x] 机械脚本 Result/owning wrapper、类型校验与双方销毁路径：`Joint2DBindings` / `Coupling3DBindings`；真实 VM 测试位于 `physics_coupling3d_script.cpp`。
+- [ ] 正式转轴、齿轮与滑轮示例的宿主运行/交互验收。
 
 ### B. 力与场
 
-- [ ] typed force batch 与 2D/3D SI 适配、偏心力矩和失败原子性。
+- [x] typed ForceBatch、2D/3D SI 适配、偏心力矩、prepare/commit 原子性与步进回执（`ForceBatch` / `ForceReceipt`；`physics_force_application.cpp` / `physics_force_receipt.cpp`）。
+- [ ] 同一物理步内多批外力累加的有限性与失败原子性边界测试；正常力按物理语义叠加，不预设统一限幅或新增预算机制，先根据复现决定是否需要修复。
 - [x] 方向场明确区分恒力/恒加速度。
 - [x] 径向场支持符号、核心软化、衰减和加速度/力上限。
 - [x] 全局、圆/球、矩形/盒范围、边缘衰减和对象过滤；固定顺序叠加。
 - [x] 浮力支持调用者排水量/浮心；另提供规则几何浸没与浮心计算，2D 厚度显式。
-- [ ] 重力平衡、单位比例、中心/边界连续性、多个场叠加和能量方向测试。
+- [x] 已有重力平衡、单位比例、场过滤/顺序叠加及耗散测试：`physics_buoyancy_geometry.cpp`、`physics_force_application.cpp`、`physics_field_set.cpp` 与 `test/unit/physics/physics_tests.cpp`。
+- [ ] 对照原定范围汇总中心/边界连续性与能量方向的完整验收矩阵；本轮未执行数值回归。
 
 ### C. 气动
 
@@ -76,11 +80,14 @@ solver 固定步推进 -> 提交轮速/观察结果。
 
 ### D. 摩擦和轮胎
 
-- [ ] 静摩擦/动摩擦/滑动转换与接触切平面约定；明确不重复计算 solver 接触摩擦。
+- [x] 静/动 Coulomb 摩擦公式：`ForceModels::friction` 接收切向速度/需求与法向载荷，基础限幅测试已存在。
+- [ ] 组合使用时明确切平面输入与 solver 摩擦分工，并补齐不重复施加的端到端验收；独立公式不自动接管全部接触。
 - [x] 轮转动惯量、驱动、制动、滚阻、锁止、倒车和离地。
-- [ ] 纵向滑移、侧偏、联合滑移摩擦圆/椭圆及低速稳定化。
-- [ ] 接入现有 Vehicle、悬架载荷/接触点；2D/3D 车身反作用力与轮速一致提交。
-- [ ] 起步、制动、转弯、坡道、离地及固定步长收敛/耗散测试。
+- [x] 纵向滑移、侧偏、联合滑移摩擦圆和低速隐式稳定化（`TireDynamics.cpp`；`minimumSlipSpeed`、轮/车身共享冲量与制动锁止）。当前采用摩擦圆，未实现独立轴摩擦椭圆，也不声称实测轮胎标定；原计划的“圆/椭圆”由圆满足。
+- [x] Vehicle 2D/Box3D 轮胎与悬架载荷/接触点接线、反作用力及回执后轮速提交：`VehicleTires2D.cpp` / `VehicleTires3D.cpp`，测试覆盖动态地面、Pending/失败和销毁。
+- [ ] 轮胎运行态存档及 Jolt 射线轮胎支持；2D 为顶视虚拟承重，不声称侧视悬架。
+- [x] 已有驱动/转向、制动/坡道驻车、离地、偏心联合滑移耗散与多尺度测试（`physics_vehicle_tires.cpp` / `physics_vehicle_tires3d.cpp`）。
+- [ ] 完整场景与固定步长收敛验收汇总、原合并记录中的基线失败复核；保留最后一次集成结果的非全绿边界。
 
 ### E. 系统验收
 
@@ -92,10 +99,7 @@ solver 固定步推进 -> 提交轮速/观察结果。
 
 ## 持久化与裁剪
 
-当前 world snapshot v2 对 2D 只有 body/fixture；增加关节不能静默丢失。
-先显式拒绝无法表示的 snapshot 以防数据损坏，再在交付前完成版本升级/迁移和恢复。
-新格式必须记录种类、稳定拓扑标识、参数与状态，不保存 backend 地址或运行时 handle。
-恢复在 detached candidate 中验证，成功后才替换；旧 handle 失效并通过持久 ID 重建。
+当前 2D/Box3D v3 已记录机械关节和耦合拓扑、参数及持久编号，在 detached candidate 中解析/验证后发布；旧 handle 失效并通过持久 ID 重建。`WorldSnapshot.cpp` 保留旧版迁移、未知字段/版本拒绝及失败保留旧世界的路径；Jolt 沿用 portable v2，不能泛化 v3 支持范围。solver warm-start 与待积分状态不属于当前完整恢复声明。历史段落中的“v2 仅 body/fixture”及“coupling 尚未接入”仅描述当时状态。
 
 裁剪声明分别提供 L1 编译、L2 链接、L3 运行、L4 可观察证据；include 图只证明依赖方向。
 现有 physics-core-only 是 object 编译边界，必须另有实际 solver 链接/运行测试。

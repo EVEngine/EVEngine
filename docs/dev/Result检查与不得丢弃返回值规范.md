@@ -23,13 +23,11 @@ template<class T>
 class [[nodiscard("Result must be checked or explicitly ignored")]] Result;
 ```
 
-建议 Debug-only 状态：
+当前实现采用跨断言策略保持布局一致的 observation 状态；仅断言检查按构建策略消失（`common/Result.h`）：
 
 ```cpp
-#if EVENGINE_ENABLE_ASSERTS
 mutable bool observed_ = false;
 bool mustObserve_ = true;
-#endif
 ```
 
 析构规则：
@@ -68,9 +66,7 @@ bool mustObserve_ = true;
 
 ```cpp
 void observe() const noexcept {
-#if EVENGINE_ENABLE_ASSERTS
     observed_ = true;
-#endif
 }
 ```
 
@@ -111,12 +107,10 @@ Result& operator=(const Result&) = delete;
 
 ```cpp
 Result(Result&& other) noexcept {
-    // move payload
-#if EVENGINE_ENABLE_ASSERTS
+    // move payload; observation flags are also updated in assertion-disabled builds
     observed_ = other.observed_;
     mustObserve_ = other.mustObserve_;
     other.mustObserve_ = false;
-#endif
 }
 ```
 
@@ -287,18 +281,21 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 
 不要使用一个宏同时隐藏 `[[nodiscard]]` 和完全不同的运行时行为；Result 自身负责 Debug observation，函数注解只负责 API 意图。
 
-## 测试清单
+## 实现与测试清单
 
-- [ ] 直接丢弃 Result 产生编译器 warning（CI 增加独立 compile-fail/diagnostic fixture，不污染正常 build）。
-- [ ] 保存到局部变量但未读取，Debug 析构断言。
-- [ ] `ok/status/value/error/diagnostics` 均标记 observed。
-- [ ] `ignore()` 不断言；失败的 `expect()` 会报告原始 diagnostics。
-- [ ] 移动后仅目标承担检查责任，moved-from 不断言。
-- [ ] 移动赋值覆盖未检查目标时断言。
-- [ ] 从函数多层返回/转发后最终消费者承担责任。
-- [ ] Release 与断言启用的消费者保留相同 observation 字段和移动/观察更新；只有断言检查按构建策略消失。
-- [ ] 绑定层投影后 C++ Result 不产生未检查断言。
-- [ ] 组合条件用 `everyResultValid` 或逐个观察，不用 `!a || !b` 短路链（见“多个 Result 的组合条件”）。
+2026-11-11 对照源码更新：勾选表示实现和所引测试/夹具存在，不声明本轮运行了原生 Debug/Release 全套。旧清单的全未勾选状态不能继续表示 Result 机制尚未落地。
+
+- [x] 直接丢弃 Result 的编译器诊断夹具：`scripts/check_nodiscard.py`，CTest `common.nodiscard_compile_diagnostics`。
+- [x] 未读取局部 Result 的 Debug 析构断言：`common.result.spec.successFailureAndConsumption`。
+- [x] `ok/status/value/error/diagnostics` 访问器调用 observation 标记；`common/Result.h` 的 `Result<T>` / `Result<void>` 为实际实现。
+- [x] `ignore()` 显式消费，失败 `expect()` 保留诊断：`common_tests.cpp` 的 consumption 与 assertion location/diagnostic 子用例。
+- [x] 移动转移责任、moved-from 解除责任：`common.result.spec.moveCompositionAndConstConversion`。
+- [x] 移动赋值拒绝覆盖未观察目标：同上 unchecked target 子用例。
+- [x] 断言禁用 producer 与启用 consumer 之间返回/移动责任：`test/profile/result_policy_producer.cpp` / `result_policy_consumer.cpp`，`profile.result.assertionPolicyInterop`。
+- [x] 跨断言策略保留相同 observation 字段及移动/观察更新；运行期检查可关闭，字段不条件编译。
+- [x] Squirrel 投影消费原生 Result：`squirrel_binding.result_projection_and_explicit_ignore_are_uniform`。
+- [x] `everyResultValid` 已提供非短路观察 helper（`common/Result.h`）。
+- [ ] 全部消费方的组合条件审计及独立 helper 回归覆盖；helper 存在不能证明仓库已无短路遗漏。
 
 ## 迁移顺序
 

@@ -73,6 +73,20 @@ enum class PathTracingFrameState { Disabled, Active, Unavailable, SceneRejected 
  */
 class EVENGINE_API_BACKENDS RenderControl {
 public:
+    /** @brief Automatic opaque batching route; explicit gpuDriven requests retain priority. */
+    enum class AutoInstancingPath { Auto, Ordinary };
+
+    /** @brief Select automatic opaque instancing without changing lighting or explicit gpuDriven requests.
+     * @param path Auto retains backend selection; Ordinary uses ordinary material batching when supported,
+     * otherwise individual draws. It never requests bindless auto-instancing.
+     * @return Success, or InvalidArgument without mutation for an unknown enum value.
+     * @thread Render-thread affine; copies the value, retains no references and invokes no callbacks.
+     * @lifetime Effective on the next render3D call; no compile or resource preparation is needed.
+     */
+    [[nodiscard]] Result<void> setAutoInstancingPath(AutoInstancingPath path);
+    /** @brief Return the automatic instancing selection; render-thread affine, no callbacks. */
+    [[nodiscard]] AutoInstancingPath autoInstancingPath() const { return autoInstancingPath_; }
+
     /** @brief Renders control. */
     RenderControl();
     /** @brief Renders control. */
@@ -223,6 +237,7 @@ private:
     std::vector<std::string> passes_;
     std::string reflectionQuality_ = "high";
     GBuffer gbuffer_;
+    AutoInstancingPath                    autoInstancingPath_     = AutoInstancingPath::Auto;
     LightingMode                          lightingMode_           = LightingMode::ForwardPlus;
     LightingMode                          effectiveLightingMode_  = LightingMode::ForwardPlus;
     LightingPreset                        lightingPreset_         = LightingPreset::Desktop;

@@ -1445,15 +1445,18 @@ TEST_CASE("procgen.cave.spec.floodPlucking") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_foliage_clusters)
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <string>
 #include <vector>
 #include "PrivateTestScope.h"
+#include "image/ImageData.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "procgen/algorithms/FoliageCluster.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/texture/TextureRecipe.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 namespace test_procgen_foliage_clusters_unit {
@@ -1509,6 +1512,371 @@ namespace {
 
 }  // namespace
 
+TEST_CASE("procgen.tree.spec.continuousOutwardBarkAndRootFlare") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    SUB_CASE("both skeletons -> outward bark faces, closed UV seam and unit normals") {
+        for (const char* algorithm : {"weberPenn", "spaceColonization"}) {
+            Params p;
+            p.setSeed(31415);
+            p.setString("leafMode", "none");
+            p.setString("branchAlgorithm", algorithm);
+            p.setInt("radialSegments", 12);
+            MeshBuild   mesh;
+            std::string error;
+            REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, error));
+            CHECK(meshIndicesInRange(mesh));
+            CHECK(meshNormalsFiniteUnit(mesh));
+            CHECK(meshPositionsFinite(mesh));
+            CHECK_EQ(mesh.getPositionX(0), mesh.getPositionX(12));
+            CHECK_EQ(mesh.getNormalX(0), mesh.getNormalX(12));
+            CHECK_GT(mesh.getUvV(13), mesh.getUvV(0));
+            for (int i = 0; i < mesh.getIndexCount(); i += 3) {
+                const int   a = mesh.getIndex(i), b = mesh.getIndex(i + 1), c = mesh.getIndex(i + 2);
+                const float ux = mesh.getPositionX(b) - mesh.getPositionX(a);
+                const float uy = mesh.getPositionY(b) - mesh.getPositionY(a);
+                const float uz = mesh.getPositionZ(b) - mesh.getPositionZ(a);
+                const float vx = mesh.getPositionX(c) - mesh.getPositionX(a);
+                const float vy = mesh.getPositionY(c) - mesh.getPositionY(a);
+                const float vz = mesh.getPositionZ(c) - mesh.getPositionZ(a);
+                const float nx = mesh.getNormalX(a) + mesh.getNormalX(b) + mesh.getNormalX(c);
+                const float ny = mesh.getNormalY(a) + mesh.getNormalY(b) + mesh.getNormalY(c);
+                const float nz = mesh.getNormalZ(a) + mesh.getNormalZ(b) + mesh.getNormalZ(c);
+                CHECK_GE((uy * vz - uz * vy) * nx + (uz * vx - ux * vz) * ny + (ux * vy - uy * vx) * nz, -1e-8f);
+            }
+        }
+    };
+    SUB_CASE("root flare -> widened base and deterministic geometry") {
+        Params p;
+        p.setSeed(11);
+        p.setString("leafMode", "none");
+        p.setFloat("rootFlare", 0.f);
+        MeshBuild   straight, flared, repeated;
+        std::string error;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, straight, error));
+        p.setFloat("rootFlare", 1.f);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, flared, error));
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, repeated, error));
+        const float narrow = std::hypot(straight.getPositionX(0), straight.getPositionZ(0));
+        const float wide   = std::hypot(flared.getPositionX(0), flared.getPositionZ(0));
+        CHECK_GT(wide, narrow * 1.4f);
+        CHECK(flared.positions() == repeated.positions());
+        CHECK(flared.normals() == repeated.normals());
+    };
+}
+
+TEST_CASE("procgen.tree.spec.seededSurfaceNoiseAndLocalizedKnots") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(31415);
+    p.setString("leafMode", "none");
+    p.setInt("radialSegments", 12);
+    p.setInt("surfaceSegments", 64);
+    p.setFloat("trunkNoise", 0.f);
+    p.setFloat("barkRelief", 0.f);
+    p.setInt("trunkKnots", 0);
+    MeshBuild   smooth;
+    std::string error;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, smooth, error));
+    SUB_CASE("surface noise -> reproducible displacement without topology or seam changes") {
+        p.setFloat("trunkNoise", 0.28f);
+        MeshBuild noisy, repeated;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, noisy, error));
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, repeated, error));
+        CHECK(noisy.positions() != smooth.positions());
+        CHECK(noisy.indices() == smooth.indices());
+        CHECK(noisy.positions() == repeated.positions());
+        CHECK(noisy.normals() == repeated.normals());
+        CHECK(meshNormalsFiniteUnit(noisy));
+        for (int ring = 0; ring <= 64; ++ring) {
+            const int a = ring * 13, b = a + 12;
+            CHECK_EQ(noisy.getPositionX(a), noisy.getPositionX(b));
+            CHECK_EQ(noisy.getPositionY(a), noisy.getPositionY(b));
+            CHECK_EQ(noisy.getPositionZ(a), noisy.getPositionZ(b));
+            CHECK_EQ(noisy.getNormalX(a), noisy.getNormalX(b));
+            CHECK_EQ(noisy.getNormalY(a), noisy.getNormalY(b));
+            CHECK_EQ(noisy.getNormalZ(a), noisy.getNormalZ(b));
+        }
+    };
+    SUB_CASE("one knot -> bounded local deformation rather than a full circumference ridge") {
+        p.setInt("trunkKnots", 1);
+        p.setFloat("trunkKnotStrength", 0.55f);
+        MeshBuild knotted;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, knotted, error));
+        int changed = 0;
+        for (int i = 0; i < 65 * 13; ++i) {
+            const float d = std::fabs(knotted.getPositionX(i) - smooth.getPositionX(i)) +
+                            std::fabs(knotted.getPositionY(i) - smooth.getPositionY(i)) +
+                            std::fabs(knotted.getPositionZ(i) - smooth.getPositionZ(i));
+            if (d > 1e-6f) ++changed;
+        }
+        CHECK_GT(changed, 0);
+        CHECK_LT(changed, 65 * 13 / 3);
+        CHECK(knotted.indices() == smooth.indices());
+        CHECK(meshPositionsFinite(knotted));
+        CHECK(meshNormalsFiniteUnit(knotted));
+    };
+    SUB_CASE("new surface controls -> discoverable defaults and bounded sampling cost") {
+        const auto* recipe = MeshRecipeRegistry::instance().descriptor("mesh.tree");
+        REQUIRE(recipe != nullptr);
+        for (const char* key : {"trunkNoise", "trunkNoiseScale", "trunkKnots", "trunkKnotStrength", "surfaceSegments"})
+            REQUIRE(recipe->find(key) != nullptr);
+        Params defaults;
+        recipe->applyDefaults(defaults);
+        CHECK_EQ(defaults.getFloat("trunkNoise", -1.f), 0.18f);
+        CHECK_EQ(defaults.getInt("trunkKnots", -1), 3);
+        CHECK_EQ(defaults.getInt("surfaceSegments", -1), 64);
+        p.setInt("surfaceSegments", 99999);
+        MeshBuild clamped, maximum;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, clamped, error));
+        p.setInt("surfaceSegments", 192);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.tree", p, maximum, error));
+        CHECK(clamped.positions() == maximum.positions());
+    };
+}
+
+TEST_CASE("procgen.foliage.spec.barkMaterialAtlas") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    for (const char* id : {"tex.tree_atlas", "tex.foliage"}) {
+        Params p;
+        p.setSeed(71);
+        p.setSize(128, 128);
+        p.setString("leafLayout", "single");
+        std::string error;
+        SUB_CASE("atlas normal -> deterministic unit vectors, varied bark and neutral foliage") {
+            p.setString("map", "normal");
+            auto normal   = TextureRecipeRegistry::instance().generate(id, p, error);
+            auto repeated = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(normal));
+            REQUIRE(static_cast<bool>(repeated));
+            CHECK(std::memcmp(normal->getData(), repeated->getData(), normal->getSize()) == 0);
+            int perturbed = 0;
+            for (int y = 0; y < 128; ++y) {
+                for (int x = 0; x < 128; ++x) {
+                    const auto  c  = normal->getPixel(x, y);
+                    const float nx = c.r * 2.f - 1.f, ny = c.g * 2.f - 1.f, nz = c.b * 2.f - 1.f;
+                    CHECK_LT(std::fabs(nx * nx + ny * ny + nz * nz - 1.f), 0.025f);
+                    CHECK_GT(nz, 0.f);
+                    if (x < 20 && std::fabs(nx) + std::fabs(ny) > 0.1f) ++perturbed;
+                    if (x >= 64) {
+                        CHECK_LT(std::fabs(nx) + std::fabs(ny), 0.01f);
+                        CHECK_EQ(c.b, 1.f);
+                    }
+                }
+            }
+            CHECK_GT(perturbed, 100);
+            p.setSeed(72);
+            auto changed = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(changed));
+            CHECK(std::memcmp(normal->getData(), changed->getData(), normal->getSize()) != 0);
+        };
+        SUB_CASE("packed surface -> reconstructed normal, cavity AO and roughness with isolated foliage") {
+            p.setString("map", "surface");
+            auto surface = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(surface));
+            float     minAo = 1.f, minSmooth = 1.f, maxSmooth = 0.f;
+            const int bw = int(std::ceil((std::string(id) == "tex.tree_atlas" ? 0.48f : 0.22f) * 127.f));
+            for (int y = 0; y < 128; ++y) {
+                const auto left = surface->getPixel(0, y), right = surface->getPixel(bw - 1, y);
+                CHECK_EQ(left.r, right.r);
+                CHECK_EQ(left.g, right.g);
+                for (int x = 0; x < 20; ++x) {
+                    const auto  c  = surface->getPixel(x, y);
+                    const float nx = c.r * 2.f - 1.f, ny = c.g * 2.f - 1.f;
+                    CHECK_LT(nx * nx + ny * ny, 1.02f);
+                    minAo     = std::min(minAo, c.b);
+                    minSmooth = std::min(minSmooth, c.a);
+                    maxSmooth = std::max(maxSmooth, c.a);
+                }
+                CHECK_EQ(surface->getPixel(100, y).b, 1.f);
+            }
+            CHECK_LT(minAo, 0.95f);
+            CHECK_GT(maxSmooth - minSmooth, 0.01f);
+            p.setFloat("barkNormalStrength", 0.f);
+            auto flat = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(flat));
+            CHECK_LT(std::fabs(flat->getPixel(4, 4).r - 0.5f), 0.005f);
+            p.setString("map", "invalid");
+            auto invalid = TextureRecipeRegistry::instance().generate(id, p, error);
+            CHECK(!invalid);
+        };
+    }
+}
+
+TEST_CASE("procgen.bush.spec.curvedMultiStemBranches") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setString("leafMode", "none");
+    p.setInt("twigs", 3);
+    p.setInt("blobs", 9);
+    std::string error;
+    SUB_CASE("both forms and several seeds -> outward woody surfaces and finite unit normals") {
+        for (const char* style : {"mound", "sphere"}) {
+            p.setString("style", style);
+            for (int seed : {1, 71, 31415}) {
+                p.setSeed(seed);
+                MeshBuild mesh;
+                REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, error));
+                CHECK(meshPositionsFinite(mesh));
+                CHECK(meshNormalsFiniteUnit(mesh, 0.02f));
+                CHECK(meshIndicesInRange(mesh));
+                for (int i = 0; i < mesh.getIndexCount(); i += 3) {
+                    const int   a = mesh.getIndex(i), b = mesh.getIndex(i + 1), c = mesh.getIndex(i + 2);
+                    const float ux = mesh.getPositionX(b) - mesh.getPositionX(a),
+                                uy = mesh.getPositionY(b) - mesh.getPositionY(a),
+                                uz = mesh.getPositionZ(b) - mesh.getPositionZ(a);
+                    const float vx = mesh.getPositionX(c) - mesh.getPositionX(a),
+                                vy = mesh.getPositionY(c) - mesh.getPositionY(a),
+                                vz = mesh.getPositionZ(c) - mesh.getPositionZ(a);
+                    const float nx = mesh.getNormalX(a) + mesh.getNormalX(b) + mesh.getNormalX(c),
+                                ny = mesh.getNormalY(a) + mesh.getNormalY(b) + mesh.getNormalY(c),
+                                nz = mesh.getNormalZ(a) + mesh.getNormalZ(b) + mesh.getNormalZ(c);
+                    CHECK_GT((uy * vz - uz * vy) * nx + (uz * vx - ux * vz) * ny + (ux * vy - uy * vx) * nz, 0.f);
+                }
+            }
+        }
+    };
+    SUB_CASE("leaf controls -> unchanged woody mesh; seed and branch hierarchy -> observable changes") {
+        MeshBuild first, repeated, changed;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, first, error));
+        p.setFloat("leafDensity", 0.f);
+        p.setFloat("leafSize", 0.5f);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, repeated, error));
+        CHECK(first.positions() == repeated.positions());
+        CHECK(first.normals() == repeated.normals());
+        p.setSeed(999);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, changed, error));
+        CHECK(first.positions() != changed.positions());
+        p.setInt("branchLevels", 1);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, changed, error));
+        CHECK_LT(changed.getVertexCount(), first.getVertexCount());
+    };
+    SUB_CASE("basal roots -> spread rather than a single origin; sweep has a closed UV seam") {
+        p.setInt("radialSegments", 10);
+        p.setInt("branchSegments", 16);
+        p.setInt("branchLevels", 1);
+        p.setFloat("stemSpread", 0.3f);
+        MeshBuild mesh;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, error));
+        // One sweep contains shared side rings plus separate cap vertices.
+        const int stride = 17 * 11 + 2 * 11;
+        float     rootX[3]{}, rootZ[3]{};
+        for (int stem = 0; stem < 3; ++stem) {
+            const int base = stem * stride;
+            for (int j = 0; j < 10; ++j) {
+                rootX[stem] += mesh.getPositionX(base + j) / 10.f;
+                rootZ[stem] += mesh.getPositionZ(base + j) / 10.f;
+            }
+            for (int ring = 0; ring < 17; ++ring) {
+                const int a = base + ring * 11, b = a + 10;
+                CHECK_EQ(mesh.getPositionX(a), mesh.getPositionX(b));
+                CHECK_EQ(mesh.getNormalZ(a), mesh.getNormalZ(b));
+                CHECK_LT(mesh.getUvU(a), mesh.getUvU(b));
+            }
+        }
+        CHECK_GT(std::hypot(rootX[0] - rootX[1], rootZ[0] - rootZ[1]), 0.01f);
+    };
+}
+
+TEST_CASE("procgen.bush.spec.compactShootFoliage") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(31415);
+    p.setFloat("height", 1.35f);
+    p.setFloat("width", 2.4f);
+    p.setInt("twigs", 9);
+    p.setInt("branchCount", 5);
+    p.setFloat("branchingStart", 0.12f);
+    p.setInt("blobs", 80);
+    p.setInt("clusterPlanes", 12);
+    p.setInt("clusterLeaves", 40);
+    p.setFloat("leafSize", 0.065f);
+    p.setFloat("lobeScale", 1.05f);
+    p.setString("leafMode", "none");
+    MeshBuild   wood;
+    std::string error;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, wood, error));
+    SUB_CASE("patch budget -> same wood rather than changing branch count") {
+        p.setInt("blobs", 4);
+        MeshBuild sparse;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, sparse, error));
+        CHECK(wood.positions() == sparse.positions());
+        CHECK(wood.indices() == sparse.indices());
+        p.setInt("branchCount", 2);
+        MeshBuild fewer;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, fewer, error));
+        CHECK_LT(fewer.getVertexCount(), wood.getVertexCount());
+    };
+    SUB_CASE("leaf cards -> cover low and middle shoots with deterministic bounded geometry") {
+        p.setString("leafMode", "clusters");
+        MeshBuild leaves, repeated;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, leaves, error));
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, repeated, error));
+        CHECK(leaves.positions() == repeated.positions());
+        CHECK(meshIndicesInRange(leaves));
+        CHECK(meshPositionsFinite(leaves));
+        CHECK(meshNormalsFiniteUnit(leaves));
+        for (int i = 0; i < wood.getVertexCount(); ++i) {
+            CHECK_EQ(wood.getPositionX(i), leaves.getPositionX(i));
+            CHECK_EQ(wood.getPositionY(i), leaves.getPositionY(i));
+            CHECK_EQ(wood.getPositionZ(i), leaves.getPositionZ(i));
+        }
+        const int count = (leaves.getVertexCount() - wood.getVertexCount()) / 4;
+        int       low = 0, middle = 0;
+        for (int i = wood.getVertexCount(); i < leaves.getVertexCount(); i += 4) {
+            float y = 0.f;
+            for (int j = 0; j < 4; ++j) y += leaves.getPositionY(i + j) * 0.25f;
+            if (y < 1.35f * 0.35f) ++low;
+            if (y >= 1.35f * 0.35f && y < 1.35f * 0.65f) ++middle;
+        }
+        CHECK_GT(count, 500);
+        CHECK_GT(low, count / 10);
+        CHECK_GT(middle, count / 5);
+        CHECK_LE(count, 80 * (12 + 2) * 40);
+    };
+}
+
+TEST_CASE("procgen.foliage.spec.singleLeafAtlasLayout") {
+    SUB_CASE("single leaf atlas layout -> rounded cutouts, padding and preserved card layout") {
+        TextureRecipeRegistry::instance().registerBuiltins();
+        for (const char* id : {"tex.tree_atlas", "tex.foliage"}) {
+            Params p;
+            p.setSeed(71);
+            p.setSize(64, 64);
+            p.setString("leafLayout", "single");
+            std::string error;
+            auto        single   = TextureRecipeRegistry::instance().generate(id, p, error);
+            auto        repeated = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(single));
+            REQUIRE(static_cast<bool>(repeated));
+            CHECK(std::memcmp(single->getData(), repeated->getData(), single->getSize()) == 0);
+            int opaque = 0, clear = 0;
+            for (int y = 0; y < 64; ++y)
+                for (int x = 34; x < 64; ++x) {
+                    const float alpha = single->getPixel(x, y).a;
+                    if (alpha > 0.9f) ++opaque;
+                    if (alpha < 0.1f) ++clear;
+                }
+            CHECK_GT(opaque, 300);
+            CHECK_GT(clear, 500);
+            for (int row = 0; row < 3; ++row)
+                for (int col = 0; col < 2; ++col) {
+                    CHECK_LT(single->getPixel(34 + col * 15, row * 21 + 1).a, 0.1f);
+                    CHECK_GT(single->getPixel(40 + col * 15, row * 21 + 10).a, 0.9f);
+                }
+            p.setString("leafLayout", "cards");
+            auto cards = TextureRecipeRegistry::instance().generate(id, p, error);
+            REQUIRE(static_cast<bool>(cards));
+            bool transparent = false;
+            for (int y = 0; y < 64; ++y)
+                for (int x = 34; x < 64; ++x) transparent = transparent || cards->getPixel(x, y).a < 0.5f;
+            CHECK(transparent);
+            p.setString("leafLayout", "invalid");
+            auto invalid = TextureRecipeRegistry::instance().generate(id, p, error);
+            CHECK(!invalid);
+        }
+    };
+}
+
 TEST_CASE("procgen.foliage.spec.clusterDistributionAndTreeInputs") {
     SUB_CASE("blue-noise foliage sampling -> spaced cluster and sphere normals") {
         const FoliageClusterDesc desc = singlePlaneDesc();
@@ -1527,29 +1895,25 @@ TEST_CASE("procgen.foliage.spec.clusterDistributionAndTreeInputs") {
         CHECK(meshPositionsFinite(first));
         CHECK(meshNormalsFiniteUnit(first));
 
-        // Six vertices per petal, four front triangles plus the four back-facing
-        // ones the default two-sided emission adds.
-        CHECK_EQ(first.getVertexCount(), leaves * 6);
-        CHECK_EQ(first.getIndexCount(), leaves * 8 * 3);
-
-        // Petal centroids sit 0.06 * leafSize off the sampled centre because the
-        // lanceolate outline is not symmetric about its own mid-line.
-        constexpr float    kCentroidOffset = 0.06f;
+        // Rectangular cards retain their sampled centre and emit two triangles
+        // per side. Texture alpha, rather than extra vertices, defines the leaf.
+        CHECK_EQ(first.getVertexCount(), leaves * 4);
+        CHECK_EQ(first.getIndexCount(), leaves * 4 * 3);
         const float        minDistance     = desc.leafSize * desc.leafSpacing;
         std::vector<float> cx, cy, cz;
         for (int leaf = 0; leaf < leaves; ++leaf) {
             float x = 0.f, y = 0.f, z = 0.f;
-            for (int v = 0; v < 6; ++v) {
-                const int i = leaf * 6 + v;
+            for (int v = 0; v < 4; ++v) {
+                const int i = leaf * 4 + v;
                 x += first.getPositionX(i);
                 y += first.getPositionY(i);
                 z += first.getPositionZ(i);
             }
-            cx.push_back(x / 6.f);
-            cy.push_back(y / 6.f);
-            cz.push_back(z / 6.f);
+            cx.push_back(x / 4.f);
+            cy.push_back(y / 4.f);
+            cz.push_back(z / 4.f);
         }
-        const float allowed = minDistance - 2.f * kCentroidOffset * desc.leafSize;
+        const float allowed = minDistance - 1e-5f;
         float       closest = std::numeric_limits<float>::max();
         for (size_t i = 0; i < cx.size(); ++i) {
             for (size_t j = i + 1; j < cx.size(); ++j) {
@@ -1609,6 +1973,38 @@ TEST_CASE("procgen.foliage.spec.clusterDistributionAndTreeInputs") {
         MeshBuild full;
         const int fullCount = addFoliageCluster(full, many);
         CHECK(fullCount > leaves);
+    };
+    SUB_CASE("bush geometric clusters -> deterministic rounded leaves without opaque blobs") {
+        MeshRecipeRegistry::instance().registerBuiltins();
+        Params p;
+        p.setSeed(31415);
+        p.setString("leafMode", "clusters");
+        p.setInt("twigs", 0);
+        p.setInt("blobs", 6);
+        MeshBuild   a, b;
+        std::string error;
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, a, error));
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, b, error));
+        CHECK(a.positions() == b.positions());
+        CHECK(a.normals() == b.normals());
+        CHECK(a.indices() == b.indices());
+        CHECK(meshIndicesInRange(a));
+        CHECK(meshNormalsFiniteUnit(a));
+        CHECK(meshPositionsFinite(a));
+        // Every leaf is a rectangular card; there are no blob faces.
+        CHECK_EQ(a.getVertexCount() % 4, 0);
+        CHECK_EQ(a.getIndexCount(), a.getVertexCount() * 3);
+        for (int i = 0; i < a.getVertexCount(); ++i) CHECK_GE(a.getUvU(i), 0.52f);
+        // Rounded normals vary over each flat petal, rather than using its face normal.
+        bool varied = false;
+        for (int i = 1; i < 6; ++i)
+            varied = varied || std::fabs(a.getNormalX(i) - a.getNormalX(0)) > 1e-4f ||
+                     std::fabs(a.getNormalY(i) - a.getNormalY(0)) > 1e-4f;
+        CHECK(varied);
+        p.setFloat("leafDensity", 0.f);
+        p.setInt("twigs", 4);
+        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, b, error));
+        for (int i = 0; i < b.getVertexCount(); ++i) CHECK_LE(b.getUvU(i), 0.22f);
     };
     SUB_CASE("tree cluster settings -> authored foliage mesh") {
         MeshRecipeRegistry::instance().registerBuiltins();

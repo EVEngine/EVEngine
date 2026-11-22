@@ -84,6 +84,9 @@ function(set_include)
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Foundation/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/JSON/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Net/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/NetSSL_OpenSSL/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Crypto/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Util/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/XML/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/include
             ${CMAKE_CURRENT_SOURCE_DIR}/third-party/poco/Data/SQLite/include)

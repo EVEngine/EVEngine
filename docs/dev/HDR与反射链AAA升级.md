@@ -100,11 +100,12 @@
 - [x] 每个 probe face 在 draw-list 收集阶段对实际 LOD/part mesh 执行 world-space bounding sphere vs 90° capture frustum 裁剪；未知 bounds 保守保留。part material backup、hair 判定及透明 sort priority 与主 forward 收集规则对齐，face budget 不再为视锥外对象提交 draw。
 - [x] Probe capture 提供 `[0.25,4]` LOD distance scale（小于 1 延后降级）与 transparent/hair capture 开关；两者进入 capture-input snapshot，质量档在六面 revision 中保持一致，支持静态高质量和实时低预算探针采用不同内容预算。
 - [x] Probe capture 可选 per-face clustered lighting：当可见灯数超过 legacy pack 上限时，按该 face 的 view/clip/90° FOV 和目标分辨率构建 clustered table；unlit draw 临时关闭、后续 lit draw 恢复，选项进入 revision snapshot。低预算实时探针可显式关闭。
-- [ ] Vulkan/WebGPU 已接入真实 timestamp query：Vulkan 同步读取 offscreen face render、六面 copy 与 GGX/irradiance compute filter，WebGPU 使用可选 feature 与三槽异步 readback 测量 face render 及完整 filter，并自动回传调度器。WebGPU 标准 timestamp 只能写在 pass 边界，纯 `CopyTextureToTexture` 尚未单独计时；Vulkan filter 也需 embedded SPIR-V 生成后才会实际执行，因此仍不宣称双后端 capture/copy/filter 全链闭环。
+- [ ] Vulkan/WebGPU 已接入真实 timestamp query：Vulkan 同步读取 offscreen face render、六面 copy 与 GGX/irradiance compute filter，WebGPU 使用可选 feature 与三槽异步 readback 测量 face render 及完整 filter，并自动回传调度器。WebGPU 标准 timestamp 只能写在 pass 边界，纯 `CopyTextureToTexture` 尚未单独计时；Vulkan embedded SPIR-V 已入库并被后端引用；双后端完整计时与图像闭环仍需实际执行验收，不能从源码存在推导通过。
 - [x] Vulkan 不再等待 VKBuilder cubemap 封装：使用原生 Vulkan-Hpp `RGBA16F` cube-compatible image 与逐 layer GPU copy。
-- [ ] Vulkan 补齐 staging cubemap、GGX specular mip、diffuse irradiance 与同样的 active revision 交换；未完成的 capture/staged revision 不得对光照可见。
-- [x] Vulkan 已使用原生 Vulkan-Hpp `vk::UniqueImage/Memory/ImageView` 分配 RGBA16F cube-compatible 全 mip image，并支持 HDR Canvas base mip 到指定 cubemap face 的 GPU copy、逐 subresource layout barrier、sampler 与 bindless cube 注册；GGX/irradiance filter 未完成前 staging 仍不会发布。
-- [ ] Vulkan compute filter 源码与后端录制已完成：base-mip-only `samplerCube` -> 逐 mip `rgba16f image2DArray`，Hammersley GGX + 最末 mip cosine irradiance、6 face dispatch 与逐 subresource barrier。当前环境同时缺少 `glslc`/`glslangValidator`，embedded SPIR-V 尚未生成；代码以 `__has_include` 守卫，资产缺失时明确返回 unsupported 并禁止 staging publish，不能标记 Vulkan filter 完成。
+- [x] Vulkan staging cubemap、GGX specular mip、diffuse irradiance 和 active revision 交换已有实现：`ReflectionProbeCapture::stageCapturedFaces/filterAndPublish` 仅在 filter 成功后交换 active/staging，Vulkan `GraphicsTexture.cpp` 提供原生 copy/filter。
+- [ ] Vulkan/WebGPU capture → copy → filter → published lighting 的完整跨后端图像、失败路径与计时验收（2026-11-11 仅核验源码）。
+- [x] Vulkan 已使用原生 Vulkan-Hpp `vk::UniqueImage/Memory/ImageView` 分配 RGBA16F cube-compatible 全 mip image，并支持 HDR Canvas base mip 到指定 cubemap face 的 GPU copy、逐 subresource layout barrier、sampler 与 bindless cube 注册；GGX/irradiance filter 失败时 staging 不发布，沿用旧 active revision。
+- [x] Vulkan compute filter 与预编译资产：base-mip-only `samplerCube` → 逐 mip `rgba16f image2DArray`，Hammersley GGX + 最末 mip cosine irradiance、6 face dispatch 与逐 subresource barrier。`graphics/shaders/reflection_probe_filter_comp_spv.inc` 已入库，`vulkan/GraphicsTexture.cpp` 实际引用并创建 pipeline；“尚未生成 SPIR-V”是过时阻塞说明。`__has_include` 缺资产时仍明确 unsupported，不允许发布。
 - [x] DayNight 逐 texel 天空面会作为 capture far-plane background 写入 HDR face，保留大气渐变、太阳盘、星空与天气方向性；六张纹理进入 revision snapshot，time-sliced capture 不混用不同时刻天空，单色 HDR face 仅作为无纹理 backup。
 - [x] DayNight 的逐 texel face 虽以 RGBA8 缓存，capture 会根据每面中心的线性大气 radiance / tone-mapped texture luminance 自动恢复 HDR 能量；每面 scale 与纹理共同进入 revision snapshot，并可由自定义天空脚本覆盖。
 

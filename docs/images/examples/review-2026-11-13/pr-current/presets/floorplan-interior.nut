@@ -1,0 +1,1 @@
+showWalls=false;plan.object[1].setVisible(false);

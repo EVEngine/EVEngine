@@ -176,5 +176,5 @@ Solver 同时采样当前位置 \(p\) 与外推位置 \(p + v\cdot t_{pred}\)：
 - [x] 花瓣：落地后进入 Settling；软边界内回收
 - [x] `ARCHITECTURE_BASE=HEAD make check/architecture-contracts`（源码契约）
 - [x] P2：editing schema/undo、preview scrub、SurfaceCapture、LifeField RGBA pack
-- [ ] P1：GPU 路径与 CPU 对照（未做）
-- [ ] P2：Graphics depth-texture surface capture（CPU 三角正交投影已落地；深度纹理路径延后）
+- [ ] P1：GPU simulation 与 CPU parity；2026-11-11 核验 `GpuAgentSimulation` 仍配置 CPU solver 与双 vector 状态，`AgentInstanceRenderer` 的渲染上传不能充当 GPU solver 证据。
+- [ ] P2：Graphics depth-texture surface capture；`SurfaceCapture::captureFromTriangles` 明确为 CPU 正交高度场投影，不能勾选深度纹理路径（2026-11-11 源码核验）。

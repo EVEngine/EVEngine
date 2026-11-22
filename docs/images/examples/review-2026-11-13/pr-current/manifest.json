@@ -1,0 +1,365 @@
+{
+  "date": "2026-11-13",
+  "head": "6d8d84cdeb02bac1d3b7eb35f7723f6b338a1523",
+  "base": "2a31765d46088011ee8c1d850cc7bff8259fa2d0",
+  "capture": "After merging current dev: current-source Windows Vulkan build, original gfx.saveFramePng PNGs. Source fingerprints include nine examples and assets.",
+  "runtime": {
+    "exe": "71a589beb972994af431199555e9f5a45043569dbb51c8744317094aac431e27",
+    "dlls": {
+      "Box2D-dynamic.dll": "64c15bd7168d3e4f5c04bae9fc32e53fe9d86a8b4e6413a2e6dcc1e99dade452",
+      "box3d-dynamic.dll": "bc4a4bda326798ccd12dea00eaf631bfbb9173a1c308e61fac992e9a94d9ddb4",
+      "EVBackends.dll": "90aa6492c686fa015542fff12d7e57d6b5664627ad8229933f683c6a4269fa5b",
+      "EVDomains.dll": "04e7078d2730cc39f94b0f7c503276be686335ad91e6ce4694710c7f119e33df",
+      "eve_imgui.dll": "5e2126e7fcd5e8c3533aed27cbfc54b6a04895f13bce9e6309378d504c51f471",
+      "EVEditors.dll": "a559d9e3368ebd011c61a893c11e684e724fb715970caf3ca5d557f940d95178",
+      "EVFoundation.dll": "ab0a3096cab10fa838baa689cb8ba607094d770f88e85bea07360882568a415d",
+      "EVOrchestration.dll": "f5672db339df269c3d17ca93bbc26cadb503f727494ec37b1c228124a679d6b9",
+      "EVPlatform.dll": "7e3791646d1fc2b85727d64dcae867904ac408fc95011273bc57590dd8f7de1e",
+      "EVWorld.dll": "a8225e41ba811286b52d64e923e08d8bda85b665b64d4875378b37db7bd5690b",
+      "SDL2d.dll": "035a361a7ee1742f566cc5361f3bad06cc4d85429d6ff1ad697f07f3e0a58b52"
+    }
+  },
+  "defaults": [
+    {
+      "example": "map-fog",
+      "captured": true,
+      "frames": 120,
+      "image": "map-fog.png",
+      "sha256": "9a167c43ef330c732e90ad8161056eb5ca5caa8321aebd94ac297400ecc4116f",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "vehicle",
+      "captured": true,
+      "frames": 120,
+      "image": "vehicle.png",
+      "sha256": "3b2465e971da5e207ee57655b1d383aa6c3e98b87308bbb2b7413bcad22625e4",
+      "size": [
+        900,
+        640
+      ]
+    },
+    {
+      "example": "flight-vehicle-controllers",
+      "captured": true,
+      "frames": 120,
+      "image": "flight-vehicle-controllers.png",
+      "sha256": "904f95dda436329e6525e6fd6a5a4420473669115f4f3a7e7545121c46694933",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "archspace-floorplan",
+      "captured": true,
+      "frames": 120,
+      "image": "archspace-floorplan.png",
+      "sha256": "ca5eff1db13b72bad8c10e0cbb26e4868381e5fe069b0d490af5c4af6dcf1c8f",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "automatic-bridge",
+      "captured": true,
+      "frames": 120,
+      "image": "automatic-bridge.png",
+      "sha256": "9ea768301e939147095c2a23f9a81ecd9f58fc6109883dc2dbc3faeb0556307a",
+      "size": [
+        1600,
+        900
+      ]
+    },
+    {
+      "example": "archspace-editor",
+      "captured": true,
+      "frames": 120,
+      "image": "archspace-editor.png",
+      "sha256": "e97e170fa3bf89c02cb547222a1d9302c7724dff1827ebe122423352fac38930",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "hud-gallery",
+      "captured": true,
+      "frames": 120,
+      "image": "hud-gallery.png",
+      "sha256": "91fcc009941cade4e15370627a4f70cd651aaf1763de968de35abe877555f263",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "mesh-modifier-lab",
+      "captured": true,
+      "frames": 120,
+      "image": "mesh-modifier-lab.png",
+      "sha256": "cbb40b3cdb241801ad69503351a05df03911c1b72ee076b59d378000d2a13be2",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "example": "ik-spider",
+      "captured": true,
+      "frames": 120,
+      "image": "ik-spider.png",
+      "sha256": "e95a816d42faad29988b7fd84c27da8464ff45a6c3acd112bdf12234d587758c",
+      "size": [
+        1100,
+        720
+      ]
+    }
+  ],
+  "states": [
+    {
+      "example": "map-fog",
+      "label": "fog-selected",
+      "setup": "selectFogCell(12,8);",
+      "frames": 120,
+      "captured": true,
+      "image": "fog-selected.png",
+      "sha256": "27e51791db3e20e5137e1f1efc1bf7c0661a1d78edad52a085d8cb2ab1d07195",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/fog-selected.nut",
+      "presetSha256": "3d94fd022367b1c786042db222b607ed108e86b4ef31d91d2e138ecec5a52aa2"
+    },
+    {
+      "example": "map-fog",
+      "label": "fog-revealing",
+      "setup": "selectFogCell(12,8);revealSelectedCell();if(!unlocked[cellIndex(12,8)])throw \"Reveal command did not unlock cell\";",
+      "frames": 75,
+      "captured": true,
+      "image": "fog-revealing.png",
+      "sha256": "5bd368f634031348e40fcb996ea271c3d4bc093654e87937abf226cd88f733ab",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/fog-revealing.nut",
+      "presetSha256": "7c9b2cf19e740900ee03a8c969a72f860f6299f7c27482dfe5d643d8586b0425"
+    },
+    {
+      "example": "map-fog",
+      "label": "fog-revealed",
+      "setup": "selectFogCell(12,8);revealSelectedCell();",
+      "frames": 260,
+      "captured": true,
+      "image": "fog-revealed.png",
+      "sha256": "63cd94ff2c424386b25bd58b5eaedfde229a63a18c38d6ff9da553827a58c917",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/fog-revealed.nut",
+      "presetSha256": "0c857229f92550370b4f915eee4473f5e122c805573f629fa53a6667a6297673"
+    },
+    {
+      "example": "archspace-floorplan",
+      "label": "floorplan-interior",
+      "setup": "showWalls=false;plan.object[1].setVisible(false);",
+      "frames": 120,
+      "captured": true,
+      "image": "floorplan-interior.png",
+      "sha256": "a575844d2992f2279a4beb81644a0925d914112a3a67f8e1be04fce30d7ae3ea",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/floorplan-interior.nut",
+      "presetSha256": "bca8af51c28a3fb3939c1aa1eb7e5b3c2bbacf1fff4c6dfb717f944279bd5f98"
+    },
+    {
+      "example": "archspace-editor",
+      "label": "editor-interior",
+      "setup": "showWalls=false;arch.object[1].setVisible(false);",
+      "frames": 120,
+      "captured": true,
+      "image": "editor-interior.png",
+      "sha256": "032bab3f02b293019e8f34a7972c0c080f1345bf509d86f5aee7f49ccc7a61c6",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/editor-interior.nut",
+      "presetSha256": "08a4fed4a3a59d6d534de9816210c15ee8cb82a7b775583ecb906e162a46ed8a"
+    },
+    {
+      "example": "automatic-bridge",
+      "label": "bridge-arch",
+      "setup": "bridgeBuild(2);",
+      "frames": 120,
+      "captured": true,
+      "image": "bridge-arch.png",
+      "sha256": "c332650dfdda64031e202d965948c73be7670dee2a7ece1b48896f8247bacf14",
+      "size": [
+        1600,
+        900
+      ],
+      "preset": "presets/bridge-arch.nut",
+      "presetSha256": "367d31ea52e1fa27e0a6ede1243947b420724eead3a980db3602ab8f1cfb67c4"
+    },
+    {
+      "example": "automatic-bridge",
+      "label": "bridge-cable",
+      "setup": "bridgeBuild(7);",
+      "frames": 120,
+      "captured": true,
+      "image": "bridge-cable.png",
+      "sha256": "cdd8a970574e5449f585f9a2719728fa81301189f7739a94b4e6745f6d987e01",
+      "size": [
+        1600,
+        900
+      ],
+      "preset": "presets/bridge-cable.nut",
+      "presetSha256": "c3939b06f7d6dae1f02d2df498093f822b07742fa99693abe645f907b8336e3c"
+    },
+    {
+      "example": "flight-vehicle-controllers",
+      "label": "flight-plane",
+      "setup": "toggleMode();",
+      "frames": 120,
+      "captured": true,
+      "image": "flight-plane.png",
+      "sha256": "dbd76c184b7ecc45f8932eab7cb33403071d50e3fa96b67b68a36f3719edca16",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/flight-plane.nut",
+      "presetSha256": "1a26618668a4f26455a5870207dcd170a38f2e91cb9f3ca41154397ebfadcd98"
+    },
+    {
+      "example": "hud-gallery",
+      "label": "hud-hit-cooldown",
+      "setup": "qaOld<-eve_update;qaFrame<-0;eve_update=function(dt){qaOld(dt);qaFrame++;if(qaFrame==90){takeDamage();cast();if(hudState.hp>0.64 || hudState.cooldown<=0.0)throw \"HUD damage/cast command failed\";}};",
+      "frames": 120,
+      "captured": true,
+      "image": "hud-hit-cooldown.png",
+      "sha256": "f19d757be6fa0aeb3f090b810341ce2414a6708da67a588ab8a5932c6cac5732",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/hud-hit-cooldown.nut",
+      "presetSha256": "b84307673ed5c434a2a0bc76d4f35b62ba1abce9c947a72eae058bad1eac29e6"
+    },
+    {
+      "example": "ik-spider",
+      "label": "spider-stride",
+      "setup": "// normal FABRIK gait continues, no simulation overrides",
+      "frames": 300,
+      "captured": true,
+      "image": "spider-stride.png",
+      "sha256": "c2a512d2fba0ba225f377440af50236cb29b40016f3f09574b654c54b79455b8",
+      "size": [
+        1100,
+        720
+      ],
+      "preset": "presets/spider-stride.nut",
+      "presetSha256": "46b2af51a2f413264c3011b75318a91b9bf1c03a11ca460ff0483ca9eae23559"
+    },
+    {
+      "example": "vehicle",
+      "label": "vehicle-patrol",
+      "setup": "patrol=true;vehicle.moveTo(rtsTank,760.0,500.0);",
+      "frames": 200,
+      "captured": true,
+      "image": "vehicle-patrol.png",
+      "sha256": "08db81df26bee2604eba2d330360986184efd778c5fdec614fd37abb45eb6ec9",
+      "size": [
+        900,
+        640
+      ],
+      "preset": "presets/vehicle-patrol.nut",
+      "presetSha256": "0e5271503b48c0eb52ec226d6cf188ae931b38b717c2a8a0a0c9133e3fb90bd9"
+    },
+    {
+      "example": "flight-vehicle-controllers",
+      "label": "wheel-close",
+      "setup": "toggleCloseView();",
+      "frames": 120,
+      "captured": true,
+      "image": "wheel-close.png",
+      "sha256": "bd295142f033bb25e809f2c43304b17bebc5ed3a070ccbe36c76883221f403f4",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/wheel-close.nut",
+      "presetSha256": "d9fcef95ebc1f7431e503977cda2f4595a08f9092f5db7746ad3fdd4f6353270"
+    },
+    {
+      "example": "flight-vehicle-controllers",
+      "label": "wheel-driving",
+      "setup": "toggleCloseView();readCarInput=function(controller){controller.setDrive(0.6,0.0,0.0);};",
+      "frames": 180,
+      "captured": true,
+      "image": "wheel-driving.png",
+      "sha256": "aba2c2043356705e4666e01455134d5c351af38e841882ac5e5c0761b41f3ef9",
+      "size": [
+        1280,
+        720
+      ],
+      "preset": "presets/wheel-driving.nut",
+      "presetSha256": "3ce4a6e1fcb04d1e67f58b95b041efdeffef4750ae4772990af594b6e953832b"
+    }
+  ],
+  "inputs": {
+    "examples/map-fog/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/map-fog/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/map-fog/config.nut": "4d2016d9120c4d9355cc530aab1b16f80e3abbb973d720e8c8a107e9f8616c76",
+    "examples/map-fog/main.nut": "6133a4732529ba66ec92d1a5fa3ff5ad01fe25253e31f1e37119d37ea88cdd39",
+    "examples/vehicle/config.nut": "4d63204fbb29a57be788a385252c4565fba3e5f22d86822939435fff1709a4c3",
+    "examples/vehicle/main.nut": "81c46a58724807f05678d839aa0f5477fea5fe40b15a331f60d10767bcb14552",
+    "examples/flight-vehicle-controllers/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/flight-vehicle-controllers/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/flight-vehicle-controllers/config.nut": "41395a82e7efc6d017c8b15ca8f747f0cb61590b80903859f5dfbe31d20df3be",
+    "examples/flight-vehicle-controllers/flying_controller.nut": "1a161f8392cdc989aa01d69047fbabb02c6114e872305a1d83d31bd88429c426",
+    "examples/flight-vehicle-controllers/main.nut": "0dbe993b946f90691078def74ee6918bc01b5094214d32cc8477af6c369f513b",
+    "examples/flight-vehicle-controllers/vehicle_controller.nut": "e59d76b52212380101f29f53867acffc183b4dd07cd5edf428dda3332259815e",
+    "examples/archspace-floorplan/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/archspace-floorplan/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/archspace-floorplan/config.nut": "e0bed208b56625d6f8b316517df51a4f3459c104cc08163f1a11d1b600092d8e",
+    "examples/archspace-floorplan/main.nut": "60cc6c966e418dd786277c4d1b9bd9e9a6e2078dffe0415dc286b4c50b70b060",
+    "examples/automatic-bridge/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/automatic-bridge/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/automatic-bridge/config.nut": "619d59a276fee8c3850a84b039a0a7b86324d88d150e10a2cc3bda17a2c61ee2",
+    "examples/automatic-bridge/environment.nut": "fae40804351b6dfe83f04acf59bf6eca0c30d62e807afba104fda2cf9349886e",
+    "examples/automatic-bridge/main.nut": "c2596386662addf2f83ba360b8b122fe443cdcf87d97f393ec3837e27a489caf",
+    "examples/automatic-bridge/materials.nut": "ef3623023f32a15e8713d35a4a98b7d89fe499ec61d69122579a66d73a245e4e",
+    "examples/archspace-editor/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/archspace-editor/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/archspace-editor/config.nut": "4626306fbda26dea3c27ec5df5f45a512a618d155c949c6860a4d1a4204ca5a7",
+    "examples/archspace-editor/main.nut": "97524bc4d442169b20a21f9dcc2929e4a6bebaf6d17d250bb397f2534bfdfcd7",
+    "examples/hud-gallery/config.nut": "f3202b73bee04258fcc0b336b4c3356c5621f0c02dadfe31bdff801d91fcffaa",
+    "examples/hud-gallery/main.nut": "0ac9f71d15d716d3d1b28ddd8bd40b5734f9675c3b91deead7f7b10fc5cd7eea",
+    "examples/mesh-modifier-lab/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/mesh-modifier-lab/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/mesh-modifier-lab/config.nut": "dabab51e85af52c9e76f012d4074a0b72cf31102646711f1678bfcdf3091ac92",
+    "examples/mesh-modifier-lab/main.nut": "c61cfb005a40c61bfd6291ceed49aebce7c5f5701ce582c1b660378d41836969",
+    "examples/ik-spider/assets/DejaVuSans-Bold.ttf": "e1d733afbbfce842a1b43dced0c9885a76a4e67290dc7e690c4e9b76ebfc7d23",
+    "examples/ik-spider/assets/FONT-NOTICE.txt": "e0b064ffb25f664e43e30a2e38c1cab4e51032feee9b077b34af1c961f8005e9",
+    "examples/ik-spider/config.nut": "ea4c4974f9cc1b8da15e7907935976d74626cbd8fa54757379f1528752b5c0b2",
+    "examples/ik-spider/main.nut": "e626e760bfc76a65468c09caa0e8de338d564207d8ba949de11ff20b3990e7fb",
+    "examples/ik-spider/spider.nut": "f27552cbe5d4b5142d4041fbec28b57fc47a9f790fb28b14159bceac1878f8bc"
+  },
+  "verification": {
+    "build": "PASS: cmake/with-msvc.cmd cmake.exe --build build/win32-debug --target eve -j 8",
+    "sourceQuality": "PASS: make check (default origin/dev base after merging dev)",
+    "smoke": "PASS: 9/9 native smoke, MIN_RUN_SECONDS=2 RUN_SECONDS=2",
+    "limitations": "State presets select normal demo commands/views. Wheel-driving supplies throttle via VehicleController.setDrive and uses normal fixed-step physics. No physical keyboard/mouse claim; no eve_eval. No public engine API, ECS model, persistent format or module boundary changes. No exceptions."
+  }
+}

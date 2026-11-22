@@ -99,6 +99,15 @@ void RenderControl::attach(Graphics *gfx) {
 
 bool RenderControl::supports(const std::string &feature) const { return isKnownFeature(feature); }
 
+Result<void> RenderControl::setAutoInstancingPath(AutoInstancingPath path) {
+    if (path != AutoInstancingPath::Auto && path != AutoInstancingPath::Ordinary)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "unknown automatic instancing path",
+                                                       "graphics.RenderControl.autoInstancingPath"));
+    autoInstancingPath_ = path;
+    return Result<void>::success();
+}
+
 Result<void> RenderControl::setPathTracingSamples(uint32_t samples) {
     if (samples == 0 || samples > 16)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,

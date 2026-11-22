@@ -17,7 +17,7 @@ ctest --test-dir build/physics-bake-check -LE bundle --output-on-failure
 
 Windows uses the normal MSVC developer environment without the GCC overrides.
 The fixture has not yet been validated on Windows. The ordinary domain suite
-also discovers the same integration cases through test/test_levels.json.
+also discovers the same integration cases through the source-local test policies.
 Assertions/warnings fail CTest instead of silently accepting zeroerr's exit code.
 
 Cases exercise v1/v2 migration to v3, noncryptographic content validation,
@@ -80,7 +80,7 @@ The standalone link is still narrower than full module-manifest trimming.
 
 ## Whole manifest module profile
 
-`physics-bake-only` selects exactly `common`, `physics_bake` and `physics_bake_collapse` through the root
+`physics-bake-only` selects exactly `common` and `physics_backend` through the root
 module manifest. It compiles and links their complete module object sets, rather
 than the standalone fixture's curated source list. The engine foundation retains
 its declared Squirrel dependency; live physics, particles, graphics, capture and
@@ -97,6 +97,11 @@ Use `PROFILE_CMAKE_COMMAND='cmake -DEVENGINE_MODULE_LINKAGE=OBJECT'` at configur
 time to exercise whole-object linkage explicitly; SHARED follows the usual group
 library route. A prebuilt dependency directory can be supplied through the same
 command using `-DEVENGINE_THIRD_PARTY_BINARY_DIR=/path/to/install`.
+
+Release CI includes `physics-bake-only` in its existing profile matrix and runs the
+same configure/build/smoke steps. This validates the trimmed playback boundary;
+ordinary platform tests retain responsibility for the functional regression suite.
+No separate codec platform/configuration matrix is required for this boundary check.
 
 The smoke runner requires both capability probes and `eve_bake_playback_check`;
 missing executables or failed runs are errors. The playback check saves and reloads

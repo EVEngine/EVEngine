@@ -32,6 +32,7 @@ set(EVE_TP_ORDER
     openal
     freetype
     poco_data
+    poco_ssl
     poco
     xxhash
     CACHE INTERNAL "Third-party groups, in link order")

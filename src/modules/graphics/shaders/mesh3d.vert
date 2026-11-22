@@ -62,11 +62,19 @@ void main() {
         localPos = skin * localPos;
         localNormal = mat3(skin) * localNormal;
     }
+    // Static instances reuse the ordinary material and vertex-transform binding.
+    // Skin palettes and instance matrices are mutually exclusive snapshots.
+    mat4 worldModel = ubo.model;
     gl_Position = ubo.mvp * localPos;
-    vec4 world = ubo.model * localPos;
+    if (ubo.skinInfo.z > 0.5) {
+        mat4 instanceModel = skinPalette.bones[gl_InstanceIndex];
+        worldModel = ubo.model * instanceModel;
+        gl_Position = ubo.mvp * instanceModel * localPos;
+    }
+    vec4 world = worldModel * localPos;
     vWorldPos = world.xyz;
     vViewPos = (ubo.view * world).xyz;
-    mat3 normalMat = transpose(inverse(mat3(ubo.model)));
+    mat3 normalMat = transpose(inverse(mat3(worldModel)));
     vNormal = normalize(normalMat * localNormal);
     vUV = inUV;
     vTint = ubo.tint * inColor;

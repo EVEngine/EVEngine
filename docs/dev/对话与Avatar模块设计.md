@@ -193,7 +193,7 @@ test/integration/render-presentation/render_presentation_graphics_Xray_tests.cpp
 - [x] Avatar `bindTween`（x/y/sx/sy + 同名参数）
 - [x] Dialogue 口型：`setLipSync*` 在打字阶段驱动 speaker 参数 / Image 图层 alpha
 - [ ] 正式 Cubism Core 渲染实现（需自带 SDK，放在用户插件中）
-- [ ] 音频波形口型（当前为打字机正弦包络，不依赖 audio）
+- [ ] 真实音频包络到角色口型的桥接；DialogueVoice 的预置 envelope、音频 Source 时间与 audio editing RMS 已有，Dialogue::updateLipSync 仍是打字机正弦包络。与模块总览同一欠项，不重复计数。
 
 ## 程序化对话 v1：内容模型 / 变量 / 条件 / 台词池（2026-08-18）
 

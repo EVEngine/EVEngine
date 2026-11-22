@@ -485,7 +485,9 @@ sequenceDiagram
       反射层（`classes` / `classInfo` / `createInstance` / `classNameOf` /
       `inspect` / `read` / `write` / `readObject` / `array*` / `table*` /
       `scan` / `scripts`），脚本工具和编辑器可直接读写实例属性
-- [ ] 事件/对话编辑器（规划）：`dialogue` 数据已有，可视化编辑 UI 待做
+- [x] 对话图数据编译与运行桥：`dialogue/editing/DialogueGraph*`；测试覆盖节点/路由、非法连接、真实 ConversationDocument 与字幕预览。
+- [x] 项目级紧凑对话字段编辑示例：`examples/composable-editor/dialogue_component.nut` 选择 speaker/text 控件并验证后应用。
+- [ ] 完整事件/对话可视化图编辑 UI 与作者工作流；图编译器及字段示例不能代表完整节点编辑器交付。
 - 原始 ImGui 逃生舱仅限 C++ DevTools
 
 

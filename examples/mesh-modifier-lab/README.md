@@ -56,3 +56,9 @@ make run/<platform>-debug GAME=examples/mesh-modifier-lab
 
 本示例是可运行示例（`main.nut` + `config.nut`），参与 `scripts/smoke_examples.sh` 的
 帧循环契约：CI 在 Linux 上无头启动它，要求至少 2 秒仍然存活且日志中没有错误标记。
+
+## 2026-11-13 画面复查
+
+将十三个真实变形结果由细小横排改成三排展台，逐项标注名称，并保留原图编译、碰撞替换、雕刻、曲线路径和顶点编辑检查。
+
+[前后截图与运行验证](../../docs/images/examples/review-2026-11-13/nine-improved/README.md)。

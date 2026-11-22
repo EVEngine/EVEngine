@@ -12,6 +12,7 @@
 #include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
+#include "graphics/Material.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
@@ -22,6 +23,7 @@
 #include "procgen/Procgen.h"
 #include "procgen/algorithms/FoliageCluster.h"
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/texture/TextureRecipe.h"
 #include "window/Window.h"
 
 namespace {
@@ -60,21 +62,18 @@ struct V3 {
 /**
  * @brief Recover the sampled blue-noise centres from an emitted single-plane cluster.
  *
- * Every petal writes six consecutive vertices, so the mean of each group is the
- * sampled centre offset by a constant fraction of the leaf size along the
- * leaf's own long axis. That offset is small next to the blue-noise spacing and
- * irrelevant for a marker dot.
+ * Each rectangular leaf writes four vertices whose mean is its sampled centre.
  */
 [[maybe_unused]] std::vector<V3> recoverCentres(const MeshBuild &mesh) {
     std::vector<V3> centres;
-    for (int i = 0; i + 5 < mesh.getVertexCount(); i += 6) {
+    for (int i = 0; i + 3 < mesh.getVertexCount(); i += 4) {
         float x = 0.f, y = 0.f, z = 0.f;
-        for (int v = 0; v < 6; ++v) {
+        for (int v = 0; v < 4; ++v) {
             x += mesh.getPositionX(i + v);
             y += mesh.getPositionY(i + v);
             z += mesh.getPositionZ(i + v);
         }
-        centres.push_back({x / 6.f, y / 6.f, z / 6.f});
+        centres.push_back({x / 4.f, y / 4.f, z / 4.f});
     }
     return centres;
 }
@@ -100,17 +99,22 @@ struct Stage {
     settings.centered = true;
     if (!stage.win->setWindowSettings(settings)) return false;
 
-    // Left half of the atlas is bark, right half is foliage.
-    const uint8_t atlasPixels[] = {
-        111, 70, 42, 255, 128, 82, 47, 255, 64, 119, 57, 255, 82, 145, 67, 255,
-    };
-    stage.atlas = stage.gfx->newTexture(4, 1, atlasPixels);
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params params;
+    params.setSize(512, 512);
+    params.setString("leafLayout", "single");
+    std::string error;
+    auto        image = TextureRecipeRegistry::instance().generate("tex.tree_atlas", params, error);
+    if (!image) return false;
+    stage.atlas = stage.gfx->newTexture(image.get());
     if (!stage.atlas) return false;
-
+    auto *material = stage.gfx->newMaterial();
+    material->setAlbedoTexture(stage.atlas);
+    material->setSurfaceMode("masked");
+    material->setAlphaCutoff(0.4f);
+    material->setRoughness(0.88f);
     stage.object = Renderable3D::create();
-    stage.object->setTexture(stage.atlas);
-    stage.object->setTint(1.f, 1.f, 1.f, 1.f);
-    stage.object->setRoughness(0.88f);
+    stage.object->setMaterial(material);
 
     stage.camera = Camera3D::createCamera();
     stage.camera->setUp(0.f, 1.f, 0.f);
@@ -177,9 +181,8 @@ void renderStages(const char *directory) {
     checked(shoot(stage, plane, 0.f, 0.f, 3.4f, 0.f, 0.f, 0.f, 40.f, "step2_leaves_on_plane.png"));
 
     // ---- step 3: only the leaves carry geometry ----------------------------
-    // Seen from an angle the bundle is a flat card full of holes: the area
-    // between leaves is not drawn at all, which is how "leaves opaque, rest
-    // transparent" is expressed by a CPU mesh.
+    // Seen from an angle the bundle is made of rectangular cards. Alpha cutoff
+    // removes their transparent padding and preserves each rounded silhouette.
     checked(shoot(stage, plane, 2.9f, 0.35f, 1.9f, 0.f, 0.f, 0.f, 40.f, "step3_only_leaves_flat.png"));
 
     // ---- step 4: 1 / 4 / 10 planes fanned around the cluster's Y axis -------
