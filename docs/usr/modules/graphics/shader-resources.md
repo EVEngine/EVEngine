@@ -2,6 +2,27 @@
 
 [返回图形渲染模块](../graphics.md)
 
+### 自定义 mesh shader 的资源绑定校验
+
+先用普通 ABI 创建 mesh shader，再调用 `replaceMeshShaderResources` 同时建立自定义
+set 1 的 layout、资源绑定和专用管线。Vulkan 会保留引擎拥有的 set 0 Frame 前缀规则，
+并使用 VKBuilder 反射实际 SPIR-V，检查 set 1 在各 stage 中的声明和实际 descriptor layout。
+图像的 view 类型、格式和采样器属性来自实际创建记录；buffer 检查真实 usage、大小、
+offset/range 和设备限制。全部检查通过才统一更新 descriptor，Release 中同样生效。
+暂未被 shader 使用的输入资源也会初始化，允许后续热更新启用。
+
+`replaceShaderFromSpv` 和 `replaceShaderFromGlsl` 使用已上传字节的布局契约检查候选 shader。
+GLSL 先只编译 SPIR-V，不创建普通布局的临时 GPU shader。UBO/SSBO 成员类型、offset、
+数组 stride、矩阵 stride、行列主序不兼容会拒绝，即使总大小相同；移除声明再重新引入也
+不能改变原布局。只有候选管线全部创建成功才提交新契约，失败通过 Result 返回并保留旧 shader。
+VKBuilder 诊断附带 `set`、`binding`、`stages`、`expected`、`actual`。
+需要改变资源布局时，用 `replaceMeshShaderResources` 一并替换数据快照。
+
+原始 constants 字节不含 C++ 成员类型，因此首次上传只能确认字节范围足够，不能证明调用者
+按正确 std140 布局打包。当前不生成 C++ 类型，也不放宽现有 ABI 对 descriptor 数组、整数
+纹理或 storage image 的限制。缺少 SPIRV-Tools / SPIRV-Cross 时返回 Unsupported，不跳过校验。
+
+
 ### HDR、景深与反射探针绑定
 
 下列绑定用于 HDR 图像、反射探针采集/注册、天空环境、曝光、Bloom、Gaussian 景深（DOF）与反射链质量控制。

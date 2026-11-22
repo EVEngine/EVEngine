@@ -10,6 +10,7 @@
 #include "graphics/shaders/mesh3d_hair_vert_spv.inc"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/shaders/textured_vert_spv.inc"
+#include "graphics/vulkan/GlslCompiler.h"
 #include "graphics/vulkan/GraphicsInternal.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
 
@@ -50,8 +51,8 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
                                                    "graphics.vulkan.shader_reload"));
 
     auto *current = static_cast<GpuShader *>(shader.gpuHandle);
-    auto  resourceValidation = validateMeshResourceShaderReload(*current, vertSpv, fragSpv);
-    if (!resourceValidation) return resourceValidation;
+    auto  resourceValidation = prepareMeshResourceShaderReload(*current, vertSpv, fragSpv);
+    if (!resourceValidation) return Result<void>::failure(resourceValidation.status());
     auto gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),
                               [&](const std::unique_ptr<GpuShader> &owned) {
                                   return owned.get() == current;
@@ -146,6 +147,7 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
     current->hdrOffscreenOpaquePipeline = candidate.hdrOffscreenOpaquePipeline;
     current->mesh3dPipeline = candidate.mesh3dPipeline;
     current->mesh3dXrayPipeline = candidate.mesh3dXrayPipeline;
+    commitMeshResourceShaderReload(*current, std::move(resourceValidation).takeValue());
     shader.setSpirv(std::move(vert), fragSpv);
     return Result<void>::success();
 }
@@ -174,30 +176,20 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
                              "contract; publish SPIR-V stages instead", "shader.kind", {},
                                                    "graphics.vulkan.shader_reload"));
 
-    Shader *candidate = nullptr;
+    std::vector<uint32_t> vertex, fragment;
     try {
-        candidate = shader.getKind() == Shader::Kind::eMesh3D
-                        ? newMeshShader(vertGlsl, fragGlsl)
-                        : newShader(vertGlsl, fragGlsl);
-    } catch (const Exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, error.what(), "source", {},
-                                                   "graphics.vulkan.shader_reload"));
+        // Compilation must not create a temporary pipeline with the ordinary
+        // mesh layout: resource programs own a different descriptor-set ABI.
+        if (!vertGlsl.empty()) vertex = compileGlslToSpirv(vertGlsl, GlslStage::eVertex, "eve_reload.vert");
+        fragment = compileGlslToSpirv(fragGlsl, GlslStage::eFragment, "eve_reload.frag");
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "compiler", {},
-                                                   "graphics.vulkan.shader_reload"));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, error.what(), "source", {}, "graphics.vulkan.shader_reload"));
     } catch (...) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "GLSL compilation failed", "compiler", {},
-                                                   "graphics.vulkan.shader_reload"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "GLSL compilation failed", "compiler",
+                                                       {}, "graphics.vulkan.shader_reload"));
     }
-
-    auto replaced = replaceShaderFromSpv(shader, candidate->vertexSpirv(),
-                                         candidate->fragmentSpirv());
-    const bool released = releaseShader(candidate);
-    if (released) delete candidate;
-    if (!released && replaced.ok())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "temporary compiled shader could not be released", "candidate", {},
-                                                   "graphics.vulkan.shader_reload"));
-    return replaced;
+    return replaceShaderFromSpv(shader, vertex, fragment);
 }
 
 }  // namespace eve::graphics::vulkan

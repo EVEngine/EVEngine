@@ -5,6 +5,7 @@
 #include "graphics/ShaderResourceValidation.h"
 #include "graphics/shaders/mesh3d_vert_spv.inc"
 #include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/ShaderBindingValidation.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
 
 namespace eve::graphics::vulkan {
@@ -15,6 +16,7 @@ struct ResourceImage {
     vk::UniqueImageView       view;
     vk::UniqueSampler         sampler;
     ShaderImageInput          shape;
+    vkb::BindingImageInfo     bindingInfo;
     std::weak_ptr<const void> contentOwner;
 };
 vk::Format imageFormat(ShaderImageFormat value) {
@@ -52,6 +54,9 @@ struct MeshShaderResources {
     vk::UniqueDescriptorSetLayout               setLayout;
     vk::UniqueDescriptorPool                    pool;
     vk::UniquePipelineLayout                    pipelineLayout;
+    vkb::ShaderBindingContract                  bindingContract;
+    vk::PhysicalDeviceLimits                    bindingLimits;
+    std::vector<vk::DescriptorSetLayoutBinding> layout;
 };
 void MeshShaderResourcesDeleter::operator()(MeshShaderResources* resources) const noexcept { delete resources; }
 bool isMeshResourceImageShared(const GpuShader& first, std::uint32_t firstSlot, const GpuShader& second,
@@ -61,13 +66,36 @@ bool isMeshResourceImageShared(const GpuShader& first, std::uint32_t firstSlot, 
            first.resources->images[firstSlot] == second.resources->images[secondSlot];
 }
 
-Result<void> validateMeshResourceShaderReload(const GpuShader& shader, std::span<const uint32_t> vertex,
-                                              std::span<const uint32_t> fragment) {
-    if (!shader.resources) return Result<void>::success();
-    return detail::validateResourceShaderStages(
-        vertex, fragment,
-        ShaderResourceInputs{shader.resources->shapes, shader.resources->constantBytes,
-                             shader.resources->instanceBytes});
+Result<vkb::ShaderBindingContract> prepareMeshResourceShaderReload(const GpuShader&          shader,
+                                                                   std::span<const uint32_t> vertex,
+                                                                   std::span<const uint32_t> fragment) {
+    if (!shader.resources) return Result<vkb::ShaderBindingContract>::success({});
+    const auto& resources = *shader.resources;
+    auto        prepared  = prepareMeshResourceBindings(vertex, fragment,
+                                                        {resources.shapes, resources.constantBytes, resources.instanceBytes},
+                                                        resources.bindingContract);
+    if (!prepared) return Result<vkb::ShaderBindingContract>::failure(prepared.status());
+    auto plan = std::move(prepared).takeValue();
+    auto layout =
+        meshBindingValidationResult(plan.writes.validateLayout(1, resources.layout), DiagnosticCode::TypeMismatch);
+    if (!layout) return Result<vkb::ShaderBindingContract>::failure(layout.status());
+    // Inspect only: no descriptor write or publication occurs before GPU idle.
+    vkb::UnboundSet                  destination{shader.resourceSet};
+    vkb::CheckedDescriptorSetBuilder bindings(plan.writes, 1, destination, resources.bindingLimits);
+    for (size_t i = 0; i < resources.images.size(); ++i) {
+        const auto& image = *resources.images[i];
+        bindings.image(resources.shapes[i].binding,
+                       {*image.sampler, *image.view, vk::ImageLayout::eShaderReadOnlyOptimal}, image.bindingInfo);
+    }
+    if (resources.constants) bindings.buffer(32, *resources.constants);
+    if (resources.instances) bindings.buffer(33, *resources.instances);
+    auto checked = meshBindingValidationResult(bindings.validate(), DiagnosticCode::TypeMismatch);
+    if (!checked) return Result<vkb::ShaderBindingContract>::failure(checked.status());
+    return Result<vkb::ShaderBindingContract>::success(std::move(plan.shader));
+}
+
+void commitMeshResourceShaderReload(GpuShader& shader, vkb::ShaderBindingContract contract) noexcept {
+    if (shader.resources) shader.resources->bindingContract = std::move(contract);
 }
 
 std::uint32_t meshResourceInstanceCount(const GpuShader& shader) {
@@ -119,8 +147,9 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Device cannot sample the requested image format/filter", "shader.resources"));
         regions.push_back(std::move(layout).takeValue());
     }
-    auto admitted = detail::validateResourceShaderStages(vertSpv, fragSpv, inputs);
-    if (!admitted) return admitted;
+    auto prepared = prepareMeshResourceBindings(vertSpv, fragSpv, inputs, {});
+    if (!prepared) return Result<void>::failure(prepared.status());
+    auto plan           = std::move(prepared).takeValue();
     auto candidate      = std::make_unique<GpuShader>();
     candidate->isMesh3D = true;
     candidate->owner    = &shader;
@@ -131,13 +160,11 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
     if (vertex.empty()) vertex.assign(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);
     try {
         const auto stages = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
-        std::vector<vk::DescriptorSetLayoutBinding> layout;
-        for (const auto& image : inputs.images)
-            layout.emplace_back(image.binding, vk::DescriptorType::eCombinedImageSampler, 1, stages);
-        if (!inputs.constants.empty()) layout.emplace_back(32, vk::DescriptorType::eUniformBuffer, 1, stages);
-        if (!inputs.instanceMatrices.empty())
-            layout.emplace_back(33, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex);
-        resources.setLayout = device->createDescriptorSetLayoutUnique(vk::DescriptorSetLayoutCreateInfo{{}, layout});
+        resources.layout          = std::move(plan.layout);
+        resources.bindingContract = std::move(plan.shader);
+        resources.bindingLimits   = limits;
+        resources.setLayout =
+            device->createDescriptorSetLayoutUnique(vk::DescriptorSetLayoutCreateInfo{{}, resources.layout});
         std::vector<vk::DescriptorPoolSize> poolSizes;
         if (!inputs.images.empty())
             poolSizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, uint32_t(inputs.images.size()));
@@ -147,6 +174,8 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         const auto setLayout = *resources.setLayout;
         candidate->resourceSet =
             device->allocateDescriptorSets(vk::DescriptorSetAllocateInfo{*resources.pool, 1, &setLayout})[0];
+        vkb::UnboundSet                  destination{candidate->resourceSet};
+        vkb::CheckedDescriptorSetBuilder bindings(plan.writes, 1, destination, limits);
         // Resource programs admit only albedo/scene-color images from set 0.
         // Keep the two dynamic UBOs and default vertex skin palette ABI, without
         // charging these programs for eleven unrelated material samplers.
@@ -241,10 +270,12 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                                       : input.dimension == ShaderImageDimension::Array2D ? vk::ImageViewType::e2DArray
                                       : input.dimension == ShaderImageDimension::Image3D ? vk::ImageViewType::e3D
                                                                                          : vk::ImageViewType::e2D;
-                output->view        = device->createImageViewUnique(
-                    vk::ImageViewCreateInfo{{}, *output->image, viewType, info.format, {}, range});
+                const vk::ImageViewCreateInfo viewInfo{{}, *output->image, viewType, info.format, {}, range};
+                output->view = device->createImageViewUnique(viewInfo);
                 // A dedicated immutable sampler; use the same normalization as ordinary textures.
                 output->sampler = vk::UniqueSampler(createVkSampler(input.sampler, input.mipLevels), device.instance);
+                // createVkSampler uses the ordinary, non-comparison sampler contract.
+                output->bindingInfo = vkb::BindingImageInfo::from(info, viewInfo, vk::SamplerCreateInfo{});
                 size_t                           stagingSize = 0;
                 std::vector<vk::BufferImageCopy> copies;
                 for (const auto& region : regions[index]) {
@@ -294,11 +325,8 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                     });
                 if (pendingBytes >= 64ull * 1024 * 1024) flushUploads();
             }
-            const vk::DescriptorImageInfo descriptor{*output->sampler, *output->view,
-                                                     vk::ImageLayout::eShaderReadOnlyOptimal};
-            device->updateDescriptorSets(vk::WriteDescriptorSet{candidate->resourceSet, input.binding, 0, 1,
-                                                                vk::DescriptorType::eCombinedImageSampler, &descriptor},
-                                         {});
+            bindings.image(input.binding, {*output->sampler, *output->view, vk::ImageLayout::eShaderReadOnlyOptimal},
+                           output->bindingInfo);
             resources.images.push_back(std::move(output));
             resources.shapes.push_back(input);
             resources.shapes.back().bytes = {};
@@ -313,11 +341,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                                              inputs.constants.size());
             resources.constantSize = inputs.constants.size();
             resources.constantBytes.assign(inputs.constants.begin(), inputs.constants.end());
-            const vk::DescriptorBufferInfo descriptor{resources.constants->buffer, 0, inputs.constants.size()};
-            device->updateDescriptorSets(
-                vk::WriteDescriptorSet{candidate->resourceSet, 32, 0, 1, vk::DescriptorType::eUniformBuffer, nullptr,
-                                       &descriptor},
-                {});
+            bindings.buffer(32, *resources.constants);
         }
         if (!inputs.instanceMatrices.empty()) {
             resources.instances = std::make_unique<vkb::GenericBuffer>(
@@ -326,12 +350,10 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
             resources.instances->updateLocal(vkb::FrameSlot::gpuIdle(), inputs.instanceMatrices.data(),
                                              inputs.instanceMatrices.size());
             resources.instanceBytes.assign(inputs.instanceMatrices.begin(), inputs.instanceMatrices.end());
-            const vk::DescriptorBufferInfo descriptor{resources.instances->buffer, 0, inputs.instanceMatrices.size()};
-            device->updateDescriptorSets(
-                vk::WriteDescriptorSet{candidate->resourceSet, 33, 0, 1, vk::DescriptorType::eStorageBuffer, nullptr,
-                                       &descriptor},
-                {});
+            bindings.buffer(33, *resources.instances);
         }
+        auto written = meshBindingValidationResult(bindings.update(device.instance), DiagnosticCode::TypeMismatch);
+        if (!written) return written;
         candidate->mesh3dPipeline = createMesh3DStylePipeline(
             vertex, fragSpv, candidate->pipelineLayout, activeScenePass(), activeSceneSamples(), shader.meshBlend,
             shader.meshDepthWrite, shader.meshDoubleSided, shader.meshRasterState());

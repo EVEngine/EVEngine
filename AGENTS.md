@@ -323,8 +323,8 @@ versions.
   rule. Source builds, prebuilt packages and SDK consumers must use the same
   canonical dependency implementation.
 - **Keep dependency development ownership explicit.** Stable bundled dependencies
-  are managed by the `third-party` repository. ECS and zeroerr remain independently
-  developed submodules under `external/ECS.hpp` and `external/zeroerr`; do not move
+  are managed by the `third-party` repository. ECS, zeroerr and VKBuilder remain independently
+  developed submodules under `external/ECS.hpp`, `external/zeroerr` and `external/VKBuilder`; do not move
   them into the third-party aggregate or tie their updates to its release pin.
   Apply their fixes directly in their respective repositories and update their
   engine submodule revisions independently.

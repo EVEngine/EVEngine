@@ -357,6 +357,11 @@ install(CODE "
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/third-party/simplesquirrel/include/simplesquirrel"
     DESTINATION include)
 install(FILES "${CMAKE_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp" DESTINATION include OPTIONAL)
+if(NOT EVENGINE_VKBUILDER_INCLUDE_DIR OR
+   NOT EXISTS "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp")
+    message(FATAL_ERROR "SDK install requires the canonical VKBuilder source include directory")
+endif()
+install(DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}/" DESTINATION include)
 
 # ---- Marker files ----
 install(CODE "

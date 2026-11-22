@@ -784,7 +784,7 @@ jobs:
             libgl1-mesa-dev \
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
-            mesa-vulkan-drivers vulkan-tools \
+            mesa-vulkan-drivers vulkan-tools spirv-tools libspirv-cross-c-shared-dev \
             xvfb ffmpeg python3-pil
 
       - name: Setup C/C++ compilation cache
@@ -805,6 +805,13 @@ jobs:
       - name: Setup software Vulkan ICD (Lavapipe)
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Check shader binding contracts with and without validation provider
+        timeout-minutes: 10
+        run: |
+          cmake -S test/shader_bindings -B build/shader-bindings -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/shader-bindings --parallel 2
+          ctest --test-dir build/shader-bindings --output-on-failure
 
       - name: Identify third-party toolchain
         id: third-party-toolchain

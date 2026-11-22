@@ -100,7 +100,7 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
         source = self.root / "source"
         build = self.root / "build"
         for directory in (
-            "src/engine/common", "external/zeroerr/include/zeroerr", "examples/basic",
+            "src/engine/common", "external/zeroerr/include/zeroerr", "external/VKBuilder/include/vkbuilder", "examples/basic",
             "assets/styles", "tools/eve-mcp", ".cursor/skills/evescript", "cmake/sdk",
             "cmake/sdk/asset-kits",
         ):
@@ -120,6 +120,9 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("fixture", encoding="utf-8")
         (source / "third-party/simplesquirrel/include/simplesquirrel").mkdir(parents=True)
+        (source / "external/VKBuilder/include/vkbuilder.hpp").write_text("canonical VKBuilder", encoding="utf-8")
+        (source / "external/VKBuilder/include/vkbuilder/binding_validation.hpp").write_text(
+            "canonical binding validation", encoding="utf-8")
         (source / "main.cpp").write_text("int main() { return 0; }\n", encoding="utf-8")
         (source / "CMakeLists.txt").write_text(f"""
 cmake_minimum_required(VERSION 3.21)
@@ -133,6 +136,7 @@ set(EVENGINE_MAJOR_VERSION 1)
 set(EVENGINE_MINOR_VERSION 2)
 set(EVENGINE_PATCH_VERSION 3)
 set(EVE_ENABLED_MODULES "")
+include("{(ROOT / 'cmake/vkbuilder.cmake').as_posix()}")
 include("{(ROOT / 'cmake/install_sdk.cmake').as_posix()}")
 """, encoding="utf-8")
         dependency = self.root / "resolved x86_64 dependency prefix"
@@ -151,6 +155,9 @@ include("{(ROOT / 'cmake/install_sdk.cmake').as_posix()}")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((installed / "lib/libfixture.dylib").read_text(encoding="utf-8"), "x86_64")
         self.assertEqual((installed / "include/squirrel.h").read_text(encoding="utf-8"), "x86_64 header")
+        self.assertEqual((installed / "include/vkbuilder.hpp").read_text(encoding="utf-8"), "canonical VKBuilder")
+        self.assertEqual((installed / "include/vkbuilder/binding_validation.hpp").read_text(encoding="utf-8"),
+                         "canonical binding validation")
         self.assertEqual((installed / "share/eve/TARGET_ARCHITECTURE").read_text(encoding="utf-8").strip(), "x86_64")
 
     @unittest.skipIf(os.name == "nt", "POSIX SDK checker runs on macOS")
