@@ -6,6 +6,7 @@ persist biomeUi = {
     status = "Loading preview forest...",
     undoWas = false, redoWas = false,
     frame = 0, screenshotSaved = false,
+    region = null, schemeKind = "weather", schemeRevision = -1,
 };
 
 function requireResult(result, context) {
@@ -18,6 +19,8 @@ function buildWorkspace() {
     biomeUi.rules = requireResult(eve.BiomeEditorModule().create("asset.preview.forest"),
                                   "Create biome rules editor");
     requireResult(biomeUi.rules.configureWorkspace(biomeUi.workspace), "Compose workspace");
+    biomeUi.region = requireResult(biomeUi.rules.bindRegion("preview.south", "asset://preview/forest.spatial", 42),
+                                  "Bind preview region");
     biomeUi.status = "Seeded forest layer";
     biomeUi.workspace.setRegionSize("left", 220.0);
     biomeUi.workspace.setRegionSize("right", 280.0);
@@ -30,6 +33,16 @@ function panelLayers() {
     for (local i = 0; i < biomeUi.rules.getLayerCount(); ++i)
         ui.listItem(biomeUi.rules.getLayerName(i), "layer-" + biomeUi.rules.getLayerId(i));
     ui.text("", "layer-selection");
+    ui.separator("scheme-separator");
+    ui.text("Regional schemes", "scheme-title");
+    foreach (kind in ["monsters", "animals", "plants", "surface", "weather", "fog"])
+        ui.listItem(kind, "scheme-" + kind);
+    ui.text("", "scheme-selected");
+    ui.inputText("Scheme URI", "", "scheme-uri");
+    ui.button("Apply scheme", "scheme-apply");
+    ui.button("Clear scheme", "scheme-clear");
+    ui.text("", "bound-region");
+    ui.text("", "scheme-status");
 }
 
 function panelPreview() {
@@ -98,6 +111,20 @@ function handleUiEvents() {
     while (click != "") {
         local event = eventParts(click); local host = event[0]; local id = event[1];
         if (id == "undo" || id == "redo") applyHistory(id);
+        else if (id == "scheme-apply" || id == "scheme-clear") {
+            ui.select("biome.layers");
+            local uri = id == "scheme-clear" ? "" : ui.getValueText("scheme-uri");
+            local result = biomeUi.rules.setScheme(biomeUi.schemeKind, uri);
+            biomeUi.status = result.ok ? "Region follows " + biomeUi.schemeKind : result.status.summary;
+        }
+        else if (id.find("scheme-") == 0) {
+            local kind = id.slice(7);
+            if (kind == "monsters" || kind == "animals" || kind == "plants" ||
+                kind == "surface" || kind == "weather" || kind == "fog") {
+                biomeUi.schemeKind = kind;
+                biomeUi.schemeRevision = -1;
+            }
+        }
         else if (id == "add-exclusion") {
             local result = biomeUi.rules.addExclusion("asset://preview/clearing.spatial");
             biomeUi.status = result.ok ? "Clearing excluded · " + biomeUi.rules.getPointCount() + " points"
@@ -173,6 +200,16 @@ function updateLabels() {
     ui.setEnabled("redo", biomeUi.rules.canRedo());
     ui.select("biome.layers");
     ui.setText("layer-selection", "Active: " + biomeUi.rules.getSelectedId());
+    ui.setText("scheme-status", biomeUi.status);
+    if (biomeUi.schemeRevision != biomeUi.rules.getRevision()) {
+        local scheme = requireResult(biomeUi.rules.getScheme(biomeUi.schemeKind), "Read scheme");
+        local region = requireResult(biomeUi.region.configuration(), "Read bound region");
+        ui.setText("scheme-selected", "Editing: " + biomeUi.schemeKind);
+        ui.setValueText("scheme-uri", scheme);
+        ui.setText("bound-region", region.region + " follows rev " + region.revision + "\n" +
+                   region.schemes[biomeUi.schemeKind]);
+        biomeUi.schemeRevision = biomeUi.rules.getRevision();
+    }
     ui.select("biome.assets");
     if (biomeUi.rules.getAssetCount() > 0) {
         local assetIndex = 0;

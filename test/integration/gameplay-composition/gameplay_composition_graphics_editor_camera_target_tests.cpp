@@ -355,6 +355,132 @@ TEST_CASE("editor.biome.runtime_publishes_candidates_and_previews_deterministica
     CHECK_EQ(runtime.revision(), published);
 }
 
+TEST_CASE("editor.biome.scheme_document_roundtrip_migration_and_validation") {
+    BiomeDocumentTarget target("world.swamp");
+    for (std::size_t i = 0; i < biomeSchemeNames.size(); ++i)
+        apply(target, target.makeSetScheme(static_cast<BiomeSchemeKind>(i),
+                                           "project://swamp/" + std::string(biomeSchemeNames[i])));
+    const auto          saved = target.snapshotValue();
+    BiomeDocumentTarget restored("world.swamp");
+    REQUIRE(restored.loadSnapshot(saved).ok());
+    CHECK_EQ(restored.snapshotValue(), saved);
+    const auto selection = select(target, ObjectId("world.swamp"), "biome.document");
+    CHECK_EQ(target.schema(selection).properties.size(), 6U);
+    apply(target, target.makeSet(selection, PropertyPath("schemes.weather"), "project://swamp/storm",
+                                 PropertySetMode::Absolute));
+    CHECK_EQ(target.schemes()[4]->format(), std::string("project://swamp/storm"));
+    CHECK(!target.makeSetScheme(BiomeSchemeKind::Fog, "../invalid").ok());
+    CHECK(!target.makeSetScheme(static_cast<BiomeSchemeKind>(99), "").ok());
+    auto  invalid  = saved;
+    auto& root     = *invalid.getIf<EditorValue::Object>();
+    auto& content  = *root["content"].getIf<EditorValue::Object>();
+    auto& schemes  = *content["schemes"].getIf<EditorValue::Object>();
+    schemes["fog"] = "file://outside";
+    CHECK(!restored.loadSnapshot(invalid).ok());
+    CHECK_EQ(restored.snapshotValue(), saved);
+    schemes["fog"]     = "project://swamp/fog";
+    schemes["unknown"] = "project://unknown";
+    CHECK(!restored.loadSnapshot(invalid).ok());
+    CHECK_EQ(restored.snapshotValue(), saved);
+    root["schemaVersion"] = std::int64_t{3};
+    CHECK(!restored.loadSnapshot(invalid).ok());
+    EditorValue legacy = EditorValue::Object{
+        {"schemaVersion", std::int64_t{1}},
+        {"content", EditorValue::Object{{"layers", EditorValue::Array{}}, {"exclusions", EditorValue::Array{}}}}};
+    REQUIRE(restored.loadSnapshot(legacy).ok());
+    for (const auto& scheme : restored.schemes()) CHECK(!scheme.has_value());
+}
+
+TEST_CASE("editor.biome.bound_regions_follow_edits_undo_and_redo") {
+    BiomeRulesEditor editor("world.swamp");
+    auto             first  = editor.bindRegion("south", "project://regions/south", 42);
+    auto             second = editor.bindRegion("north", "project://regions/north", 93);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    for (const auto name : biomeSchemeNames)
+        REQUIRE(editor.setScheme(name, "project://swamp/" + std::string(name)).ok());
+    auto before = first.value().configuration();
+    REQUIRE(before.ok());
+    CHECK_EQ(before.value().region.value(), std::string("south"));
+    CHECK_EQ(before.value().seed, 42U);
+    for (std::size_t i = 0; i < biomeSchemeNames.size(); ++i)
+        CHECK_EQ(before.value().schemes[i]->format(), "project://swamp/" + std::string(biomeSchemeNames[i]));
+    REQUIRE(editor.setScheme("weather", "project://swamp/storm").ok());
+    auto north = second.value().configuration();
+    REQUIRE(north.ok());
+    CHECK_EQ(north.value().schemes[4]->format(), std::string("project://swamp/storm"));
+    CHECK_EQ(north.value().seed, 93U);
+    REQUIRE(editor.undo().ok());
+    auto undone = first.value().configuration();
+    REQUIRE(undone.ok());
+    CHECK_EQ(undone.value().schemes[4]->format(), std::string("project://swamp/weather"));
+    REQUIRE(editor.redo().ok());
+    auto redone = first.value().configuration();
+    REQUIRE(redone.ok());
+    CHECK_EQ(redone.value().schemes[4]->format(), std::string("project://swamp/storm"));
+    REQUIRE(editor.setLayerDensity(0.5).ok());
+    CHECK_EQ(editor.scheme("weather").value(), std::string("project://swamp/storm"));
+    REQUIRE(editor.setScheme("fog", "").ok());
+    auto cleared = first.value().configuration();
+    REQUIRE(cleared.ok());
+    CHECK(!cleared.value().schemes[5]);
+    CHECK(!editor.setScheme("typo", "project://swamp/rain").ok());
+    CHECK(!editor.setScheme("weather", "bad URI").ok());
+    CHECK_EQ(editor.scheme("weather").value(), std::string("project://swamp/storm"));
+}
+
+TEST_CASE("editor.biome.region_lifetime_restore_and_failed_publication") {
+    BiomeDocumentTarget document("world.forest");
+    apply(document, document.makeCreateLayer({ObjectId("forest"), "forest", "project://forest", 1, 1.f, {}}));
+    apply(document, document.makeCreateAsset(ObjectId("forest"), {ObjectId("oak"), "models/oak.prefab"}));
+    apply(document, document.makeSetScheme(BiomeSchemeKind::Weather, "project://clear"));
+    eve::procgen::SpatialData domain = eve::procgen::SpatialData::box(0.f, 0.f, 0.f, 4.f, 0.f, 4.f);
+    SpatialResolver           resolver;
+    resolver.assets["project://forest"] = &domain;
+    auto runtime                        = std::make_unique<BiomeDocumentRuntime>();
+    CHECK(!runtime->bindRegion(ObjectId("region"), "project://forest", 9).ok());
+    REQUIRE(runtime->publish(document, resolver).ok());
+    auto bound = runtime->bindRegion(ObjectId("region"), "project://forest", 9);
+    REQUIRE(bound.ok());
+    auto saved = bound.value().snapshotValue();
+    REQUIRE(saved.ok());
+    auto points = runtime->previewRegion(bound.value(), resolver, 2.f, 0.f);
+    REQUIRE(points.ok());
+    REQUIRE(points.value()->getCount() > 0);
+    apply(document, document.makeSetScheme(BiomeSchemeKind::Weather, "project://rain"));
+    SpatialResolver missing;
+    CHECK(!runtime->publish(document, missing).ok());
+    auto unchanged = bound.value().configuration();
+    REQUIRE(unchanged.ok());
+    CHECK_EQ(unchanged.value().schemes[4]->format(), std::string("project://clear"));
+    BiomeDocumentTarget wrong("another.biome");
+    CHECK(!runtime->publish(wrong, resolver).ok());
+    REQUIRE(runtime->publish(document, resolver).ok());
+    auto latest = bound.value().configuration();
+    REQUIRE(latest.ok());
+    CHECK_EQ(latest.value().schemes[4]->format(), std::string("project://rain"));
+    runtime.reset();
+    CHECK(!bound.value().configuration().ok());
+    CHECK(!bound.value().snapshotValue().ok());
+    // A new runtime cannot revive the old handle, even when the authored identity is identical.
+    BiomeDocumentRuntime replacement;
+    REQUIRE(replacement.publish(document, resolver).ok());
+    CHECK(!replacement.previewRegion(bound.value(), resolver, 2.f, 0.f).ok());
+    auto restored = replacement.restoreRegion(saved.value());
+    REQUIRE(restored.ok());
+    auto regenerated = replacement.previewRegion(restored.value(), resolver, 2.f, 0.f);
+    REQUIRE(regenerated.ok());
+    CHECK_EQ(regenerated.value()->getCount(), points.value()->getCount());
+    for (int i = 0; i < points.value()->getCount(); ++i)
+        CHECK_EQ(regenerated.value()->getPointSeed(i), points.value()->getPointSeed(i));
+    auto malformed                                    = saved.value();
+    (*malformed.getIf<EditorValue::Object>())["seed"] = std::int64_t{-1};
+    CHECK(!replacement.restoreRegion(malformed).ok());
+    (*malformed.getIf<EditorValue::Object>())["seed"]  = std::int64_t{9};
+    (*malformed.getIf<EditorValue::Object>())["biome"] = "another.biome";
+    CHECK(!replacement.restoreRegion(malformed).ok());
+}
+
 TEST_CASE("editor.biome.adapter_registers_commands_and_owns_automation_targets") {
     using eve::editor::Editor;
     Editor                               editor;

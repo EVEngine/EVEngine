@@ -48,6 +48,24 @@ public:
 
     [[nodiscard]] biome_editing::Result<void> selectLayer(std::string id);
     [[nodiscard]] biome_editing::Result<void> selectAsset(std::string id);
+    /** @brief Edit a domain scheme URI through the same document transaction and undo stack.
+     * @thread Owner thread; no callbacks; URI copied. Empty clears the association.
+     * @cost Document validation and preview rebuild per committed edit.
+     */
+    [[nodiscard]] biome_editing::Result<void> setScheme(std::string_view kind, std::string_view uri);
+    /** @brief Return an owning URI string for one known domain slot, or a structured invalid-kind error. */
+    [[nodiscard]] biome_editing::Result<std::string> scheme(std::string_view kind) const;
+    /** @brief Bind a region once; subsequent edits and undo/redo are visible through its configuration().
+     * @thread Owner thread; region binding is independent and expires when this editor is destroyed.
+     */
+    [[nodiscard]] biome_editing::Result<biome_editing::BiomeRegionBinding> bindRegion(std::string      id,
+                                                                                      std::string_view spatial,
+                                                                                      std::uint32_t    seed) const;
+    /** @brief Restore a saved region against this editor's published biome identity.
+     * @cost Bounded metadata parsing per explicit region load; no generated objects are spawned.
+     */
+    [[nodiscard]] biome_editing::Result<biome_editing::BiomeRegionBinding> restoreRegion(
+        const biome_editing::EditorValue&) const;
     [[nodiscard]] biome_editing::Result<void> setLayerDensity(double density);
     [[nodiscard]] biome_editing::Result<void> setLayerPriority(int priority);
     [[nodiscard]] biome_editing::Result<void> setAssetWeight(double weight);

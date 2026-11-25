@@ -114,7 +114,9 @@ bool BiomeDocumentTarget::matches(const SelectionSnapshot& s) const {
     for (const auto& i : s.items) {
         if (i.target != TargetId(id_) || i.type != type) return false;
         bool found = false;
-        if (type == "biome.layer")
+        if (type == "biome.document")
+            found = i.item.value() == id_;
+        else if (type == "biome.layer")
             found = std::any_of(layers_.begin(), layers_.end(),
                                 [&](const auto& v) { return v.id.value() == i.item.value(); });
         else if (type == "biome.asset")
@@ -135,7 +137,13 @@ eve::Result<eve::Revision> BiomeDocumentTarget::currentRevision(const SelectionS
 }
 PropertySchema BiomeDocumentTarget::schema(const SelectionSnapshot& s) const {
     PropertySchema schema;
-    if (!s.items.empty() && s.items.front().type == "biome.asset") {
+    if (!s.items.empty() && s.items.front().type == "biome.document") {
+        schema.typeId = "biome.document";
+        for (const auto name : biomeSchemeNames) {
+            auto descriptor = prop("schemes." + std::string(name), PropertyType::AssetRef, "", "schemes");
+            schema.properties.push_back(std::move(descriptor));
+        }
+    } else if (!s.items.empty() && s.items.front().type == "biome.asset") {
         schema.typeId     = "biome.asset";
         schema.properties = {prop("asset.ref", PropertyType::AssetRef, "", "asset"),
                              prop("asset.weight", PropertyType::Float, 1.0, "asset", .0001, 1e9),
@@ -156,7 +164,11 @@ PropertyReadResult BiomeDocumentTarget::read(const SelectionSnapshot& s, const P
     std::optional<EditorValue> common;
     for (const auto& i : s.items) {
         EditorValue value;
-        if (i.type == "biome.layer") {
+        if (i.type == "biome.document") {
+            for (std::size_t slot = 0; slot < biomeSchemeNames.size(); ++slot)
+                if (p.value() == "schemes." + std::string(biomeSchemeNames[slot]))
+                    value = schemes_[slot] ? schemes_[slot]->format() : std::string{};
+        } else if (i.type == "biome.layer") {
             const auto& v = *std::find_if(layers_.begin(), layers_.end(),
                                           [&](const auto& x) { return x.id.value() == i.item.value(); });
             if (p == PropertyPath("layer.spatial"))
@@ -192,7 +204,11 @@ EditorValue BiomeDocumentTarget::contentValue() const {
     EditorValue::Array layers, exclusions;
     for (const auto& v : layers_) layers.push_back(layerValue(v));
     for (const auto& v : exclusions_) exclusions.push_back(v);
-    return EditorValue::Object{{"layers", std::move(layers)}, {"exclusions", std::move(exclusions)}};
+    EditorValue::Object schemes;
+    for (std::size_t slot = 0; slot < biomeSchemeNames.size(); ++slot)
+        schemes[std::string(biomeSchemeNames[slot])] = schemes_[slot] ? schemes_[slot]->format() : std::string{};
+    return EditorValue::Object{
+        {"layers", std::move(layers)}, {"exclusions", std::move(exclusions)}, {"schemes", std::move(schemes)}};
 }
 Result<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, std::string p) const {
     DomainOperation op;
@@ -213,6 +229,11 @@ Result<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapshot& s,
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.set"),
                                                      "Biome property edit is invalid");
+    if (s.items.front().type == "biome.document") {
+        for (std::size_t slot = 0; slot < biomeSchemeNames.size(); ++slot)
+            if (p.value() == "schemes." + std::string(biomeSchemeNames[slot]))
+                return makeSetScheme(static_cast<BiomeSchemeKind>(slot), *value.getIf<std::string>());
+    }
     auto c = *this;
     for (const auto& i : s.items)
         if (i.type == "biome.layer") {
@@ -311,6 +332,21 @@ Result<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector<std::
                                                      "Biome exclusions are invalid");
     return replacement(c.contentValue(), "exclusions");
 }
+Result<DomainOperation> BiomeDocumentTarget::makeSetScheme(BiomeSchemeKind kind, std::string_view uri) const {
+    const auto slot = static_cast<std::size_t>(kind);
+    if (slot >= schemes_.size() || uri.size() > 4096)
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.scheme"),
+                                                     "Invalid biome scheme kind or URI length");
+    auto candidate = *this;
+    if (uri.empty()) {
+        candidate.schemes_[slot].reset();
+    } else {
+        auto parsed = eve::ResourceUri::parse(uri);
+        if (!parsed.ok()) return Result<DomainOperation>::failure(parsed.status());
+        candidate.schemes_[slot] = std::move(parsed).takeValue();
+    }
+    return replacement(candidate.contentValue(), "schemes." + std::string(biomeSchemeNames[slot]));
+}
 std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
     std::vector<EditorDiagnostic> d;
     if (layers_.size() > 256 || exclusions_.size() > 256)
@@ -361,6 +397,24 @@ Result<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.payload"),
                                           "Biome payload exceeds limits");
     BiomeDocumentTarget c(id_);
+    if (const auto* schemes = field(op.payload, "schemes")) {
+        const auto* entries = schemes->getIf<EditorValue::Object>();
+        if (!entries || entries->size() != biomeSchemeNames.size())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.schemes"),
+                                              "Biome schemes require exactly the six known domain slots");
+        for (std::size_t slot = 0; slot < biomeSchemeNames.size(); ++slot) {
+            const auto  it  = entries->find(std::string(biomeSchemeNames[slot]));
+            const auto* uri = it == entries->end() ? nullptr : it->second.getIf<std::string>();
+            if (!uri || uri->size() > 4096)
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.scheme"),
+                                                  "Biome scheme must be a bounded URI string");
+            if (!uri->empty()) {
+                auto parsed = eve::ResourceUri::parse(*uri);
+                if (!parsed.ok()) return Result<void>::failure(parsed.status());
+                c.schemes_[slot] = std::move(parsed).takeValue();
+            }
+        }
+    }
     for (const auto& v : *la) {
         auto parsed = parseLayer(v);
         if (!parsed.ok())
@@ -380,6 +434,7 @@ Result<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op
                                           "Biome document validation failed");
     layers_     = std::move(c.layers_);
     exclusions_ = std::move(c.exclusions_);
+    schemes_    = std::move(c.schemes_);
     bumpRevision();
     widenDirty(0, 0);
     return eve::editing::applied<void>();
@@ -396,14 +451,28 @@ Result<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomainOpera
     return eve::editing::applied<void>();
 }
 EditorValue BiomeDocumentTarget::snapshotValue() const {
-    return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
+    return EditorValue::Object{
+        {"schema", "eve.biome.rules"}, {"schemaVersion", int64_t{2}}, {"content", contentValue()}};
 }
 Result<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
-    if (!version || *version != 1 || !content)
+    if (!version || (*version != 1 && *version != 2) || !content)
         return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.biome.snapshot"),
                                           "Unsupported Biome snapshot");
+    const auto* root = s.getIf<EditorValue::Object>();
+    const auto* body = content->getIf<EditorValue::Object>();
+    if (*version == 2) {
+        const auto* schema = field(s, "schema");
+        const auto* name   = schema ? schema->getIf<std::string>() : nullptr;
+        if (!name || *name != "eve.biome.rules" || root->size() != 3 || !body || body->size() != 3 ||
+            !field(*content, "schemes"))
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.snapshot-fields"),
+                                              "Biome v2 requires schema, layers, exclusions and schemes only");
+    } else if (!body || body->size() != 2 || field(*content, "schemes")) {
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.migration"),
+                                          "Biome v1 migration accepts only layers and exclusions");
+    }
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "biome.document.replace.v1";

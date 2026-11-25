@@ -1,9 +1,12 @@
 #pragma once
 
+#include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 #include "common/Export.h"
+#include "common/Uri.h"
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -42,6 +45,49 @@ using SelectionSnapshot             = editing::SelectionSnapshot;
 using TargetDescriptor              = editing::TargetDescriptor;
 using TargetId                      = editing::TargetId;
 using editing::validatePropertyValue;
+/** @brief Fixed domain slots; each URI names a scheme owned by that domain. */
+enum class BiomeSchemeKind { Monsters, Animals, Plants, Surface, Weather, Fog };
+/** @brief Canonical codec/property names in BiomeSchemeKind order. */
+inline constexpr std::array<std::string_view, 6> biomeSchemeNames{"monsters", "animals", "plants",
+                                                                  "surface",  "weather", "fog"};
+/** @brief Owning references, not copies of mutable domain configurations; null means unassigned. */
+using BiomeSchemes = std::array<std::optional<eve::ResourceUri>, 6>;
+
+struct BiomePublication;
+/** @brief Owning region configuration at one published biome revision. */
+struct BiomeRegionConfiguration {
+    ObjectId         region;
+    TargetId         biome;
+    eve::ResourceUri spatial;
+    std::uint32_t    seed;
+    Revision         revision;
+    BiomeSchemes     schemes;
+};
+/**
+ * @brief Region-owned weak binding to one biome runtime, automatically following successful publications.
+ * @ownership Owns only region identity, spatial URI and seed; never keeps the biome runtime alive.
+ * @lifetime Runtime destruction invalidates the binding; recreating the runtime requires explicit restoration.
+ * @thread Owner thread only, including destruction; no callbacks or ECS mutations.
+ */
+class EVENGINE_API_ORCHESTRATION BiomeRegionBinding {
+public:
+    /** @brief Return an owning current configuration, or NotFound after runtime destruction.
+     * @cost Copies six optional URI values per explicit inspection, not a per-frame lookup.
+     */
+    [[nodiscard]] Result<BiomeRegionConfiguration> configuration() const;
+    /** @brief Save persistent binding data only; no runtime handle or duplicated scheme configuration.
+     * @cost Copies binding identity and URI once per save; fails if the source runtime has expired.
+     */
+    [[nodiscard]] Result<EditorValue> snapshotValue() const;
+
+private:
+    friend class BiomeDocumentRuntime;
+    BiomeRegionBinding(ObjectId, eve::ResourceUri, std::uint32_t, std::weak_ptr<BiomePublication>);
+    ObjectId                        region_;
+    eve::ResourceUri                spatial_;
+    std::uint32_t                   seed_;
+    std::weak_ptr<BiomePublication> publication_;
+};
 /** @brief Stable weighted asset entry in one biome layer. */ struct BiomeAssetValue {
     ObjectId    id;
     std::string asset;
@@ -108,6 +154,13 @@ public:
     Result<DomainOperation>           makeDeleteAsset(const ObjectId&) const;
     /** @brief Make set exclusions. */
     Result<DomainOperation>           makeSetExclusions(std::vector<std::string>) const;
+    /** @brief Plan a reversible scheme association; empty URI clears the slot.
+     * @thread Owner thread; input copied, no callbacks or resource loading.
+     * @cost Copies the document once per authored edit, amortized by the editing transaction.
+     */
+    [[nodiscard]] Result<DomainOperation> makeSetScheme(BiomeSchemeKind, std::string_view uri) const;
+    /** @brief Borrow scheme references until document mutation/destruction; owner thread only. */
+    const BiomeSchemes& schemes() const noexcept { return schemes_; }
     /** @brief Layers. */
     const std::vector<BiomeLayerValue>&     layers() const { return layers_; }
     /** @brief Exclusions. */
@@ -129,6 +182,7 @@ private:
     std::string                   id_;
     std::vector<BiomeLayerValue>  layers_;
     std::vector<std::string>      exclusions_;
+    BiomeSchemes                  schemes_;
 };
 /** @brief Resolves copied spatial domains for BiomeRules publication. */
 class IBiomeSpatialResolver {
@@ -150,8 +204,33 @@ public:
     BiomeDocumentRuntime();
     /** @brief Biome document runtime. */
     ~BiomeDocumentRuntime();
-    /** @brief Publish. */
-    Result<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
+    BiomeDocumentRuntime(const BiomeDocumentRuntime&)            = delete;
+    BiomeDocumentRuntime& operator=(const BiomeDocumentRuntime&) = delete;
+    /** @brief Bind an independently owned region to the published biome without copying its schemes.
+     * @thread Owner thread; no callbacks. Binding destruction has no effect on the runtime.
+     * @return Owning weak binding, or Rejected/NotFound for invalid identity/URI or unpublished runtime.
+     */
+    [[nodiscard]] Result<BiomeRegionBinding> bindRegion(ObjectId region, std::string_view spatial,
+                                                        std::uint32_t seed) const;
+    /** @brief Restore a saved binding against the same logical biome; unknown fields/versions are rejected.
+     * @thread Owner thread, no callbacks; input borrowed during call, failure changes nothing.
+     * @cost Parses bounded binding metadata once per region load.
+     */
+    [[nodiscard]] Result<BiomeRegionBinding> restoreRegion(const EditorValue&) const;
+    /** @brief Generate using the region's domain, seed and current published rules.
+     * @ownership Resolver and binding borrowed only during call; output belongs to caller.
+     * @thread Owner thread; resolver must not reenter/mutate this runtime.
+     * @cost Spatial sampling and asset selection per explicit generation, amortized per region rebuild.
+     */
+    [[nodiscard]] Result<std::unique_ptr<procgen::PointSet>> previewRegion(const BiomeRegionBinding&,
+                                                                           const IBiomeSpatialResolver&, float spacing,
+                                                                           float jitter);
+    /** @brief Publish rules and scheme references together; failure preserves all bound regions' previous state.
+     * @ownership Document and resolver borrowed during this call; only owning projections are retained.
+     * @thread Owner thread; resolver must not reenter or mutate the document/runtime.
+     * @cost Copies and resolves all authored layers once per explicit document publication.
+     */
+    [[nodiscard]] Result<void> publish(const BiomeDocumentTarget&, const IBiomeSpatialResolver&);
     /**
      * @brief Generate a PointSet from a previously published candidate.
      * @param domain Borrowed spatial query domain; must outlive this call.
@@ -174,5 +253,6 @@ public:
 private:
     std::unique_ptr<procgen::BiomeRules> rules_;
     Revision                             revision_ = 0;
+    std::shared_ptr<BiomePublication>    publication_;
 };
 }  // namespace eve::biome_editing
