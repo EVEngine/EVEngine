@@ -14,6 +14,7 @@
 #include "network/UdpLink.h"
 #include "network/UdpSocket.h"
 #include "network/detail/HttpRuntime.h"
+#include "network/multiplayer/PeerRoomBindings.h"
 #include "platform_event/PlatformEvent.h"
 
 #include <Poco/Net/StreamSocket.h>
@@ -153,8 +154,9 @@ void Network::bindUdpLink(UdpSocket* sock, UdpLink* link) {
     if (sock) udpLinks_[sock] = link;
 }
 
-void Network::unbindUdpLink(UdpSocket* sock) {
-    if (sock) udpLinks_.erase(sock);
+void Network::unbindUdpLink(UdpSocket* sock, UdpLink* expected) {
+    const auto it = udpLinks_.find(sock);
+    if (it != udpLinks_.end() && it->second == expected) udpLinks_.erase(it);
 }
 
 void Network::bindUdpHost(UdpSocket* sock, NetHost* host) {
@@ -459,6 +461,7 @@ void Network::pump() {
 void Network::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Network::create, false);
     expose(cls);
+    multiplayer::exposePeerRoomBindings(table);
 
     auto tcp = table.addClass<TcpSocket>(
         "TcpSocket", std::function<TcpSocket*()>([]() { return new TcpSocket(Network::create()); }), true);

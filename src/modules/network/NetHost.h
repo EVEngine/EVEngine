@@ -45,6 +45,8 @@ public:
     UdpLink* linkByPeerId(uint32_t peerId) const;
     /** @brief Peer count. */
     size_t peerCount() const { return byId_.size(); }
+    /** @brief Count unacknowledged reliable messages across live peers; owner thread, O(peer count). */
+    size_t pendingReliable() const;
 
     /** @brief Send to. */
     void sendTo(uint32_t peerId, UdpLink::MsgType type, uint8_t channel,

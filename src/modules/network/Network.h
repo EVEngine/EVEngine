@@ -127,6 +127,7 @@ private:
     friend class NetWorker;
     friend class TcpSocket;
     friend class UdpSocket;
+    friend class UdpLink;
 
     /** @brief Posts a completion to the worker queue (thread-safe). */
     void post(NetCompletion c);
@@ -153,7 +154,7 @@ private:
 
     /** @brief Main-thread-only UDP collaborator registration. */
     void bindUdpLink(UdpSocket* sock, UdpLink* link);
-    void unbindUdpLink(UdpSocket* sock);
+    void unbindUdpLink(UdpSocket* sock, UdpLink* expected);
     void bindUdpHost(UdpSocket* sock, NetHost* host);
     void unbindUdpHost(UdpSocket* sock);
 
