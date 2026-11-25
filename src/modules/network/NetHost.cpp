@@ -83,6 +83,12 @@ UdpLink* NetHost::linkByPeerId(uint32_t peerId) const {
     return it == byId_.end() ? nullptr : it->second;
 }
 
+size_t NetHost::pendingReliable() const {
+    size_t count = 0;
+    for (const auto& entry : byId_) count += entry.second->pendingReliable();
+    return count;
+}
+
 void NetHost::sendTo(uint32_t peerId, UdpLink::MsgType type, uint8_t channel, const void* data, size_t n) {
     UdpLink* link = linkByPeerId(peerId);
     if (link) link->send(type, channel, data, n);

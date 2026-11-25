@@ -5,6 +5,47 @@
 提供 HTTP 请求、TCP 客户端/服务端、UDP、UDP 可靠链路（UdpLink）、RPC（NetRpc）、
 多 peer 会话（NetHost）、类型化序列化（NetWriter/NetReader）和基础网络状态。
 
+## 房主 P2P 游戏房间
+
+`eve.PeerRoom()` 提供 2–16 人房主联机。房主也参与游戏，客户端只连接房主；
+支持直连 UDP 地址，不自动做 NAT 穿透、中继或房主迁移。
+
+```squirrel
+local room = eve.PeerRoom();
+// nonce 必须由游戏的命名 RNG 流生成并跨会话唯一；以下数值仅用于演示。
+local result = room.host(27015, 123456789, 4);
+// 客户端改用：room.join("192.168.1.10", 27015, 987654321)
+if (!result.ok) throw result.code;
+
+// 每个网络帧调用，并消费全部事件。
+function updateRoom() {
+    local r = room.pump();
+    if (!r.ok && r.code != "conflict") throw r.code;
+    local event = room.pollEvent();
+    while (event.hasEvent) {
+        // event.kind: joined / roster / started / message / closed / rejected
+        // message: room、player、tick、payload；room/tick 是十进制字符串。
+        // rejected: rejection == 1 满员，== 2 已开局；房间随后为 closed。
+        event = room.pollEvent();
+    }
+}
+```
+
+`setReady(true)` 请求准备；房主在全部成员准备后调用 `start()`。
+`members()` 返回 `{room, player, ready}` 数组，`localPlayer()` 返回自身身份，
+`state()` 返回 `idle/joining/lobby/playing/closed`。
+在 playing 状态用 `send(tick, payload)` 广播二进制字符串，最大 4096 字节。
+房主验证发送者身份并转发，包含给原发送者的回送；输入语义和世界同步由游戏负责。
+
+所有操作都返回结构化 Result，必须检查 `.ok`；Conflict 表示需要排空事件或等待
+可靠链路窗口释放，再重试操作。异步加入应等待 joined/rejected，而不是将 join 的
+成功入队当成已经连接。连接超时通过 closed 事件报告。
+
+退出时检查 `close()` 的结果，继续调用 pump，直到 `pendingSends() == 0` 或游戏
+设定的截止时间到达，再释放 room。适配器须先于 Network 销毁。
+关闭后重新创建房间对象，不能复用旧 nonce。房主断线会关闭房间。
+详细协议、边界和 C++ 入口见 [multiplayer 目录说明](../../../src/modules/network/multiplayer/README.md)。
+
 改进设计见 [`docs/dev/superpowers/specs/2026-08-18-network-module-improvement-design.md`](../../dev/superpowers/specs/2026-08-18-network-module-improvement-design.md)。
 
 ## 基本用法

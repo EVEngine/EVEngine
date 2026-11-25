@@ -124,6 +124,7 @@ inline bool after(uint32_t a, uint32_t b) {
 UdpLink::UdpLink(Network* net, UdpSocket* sock) : net_(net), sock_(sock) {}
 
 UdpLink::~UdpLink() {
+    if (net_) net_->unbindUdpLink(sock_, this);
     sendQueue_.clear();
     fragments_.clear();
     outOfOrder_.clear();
