@@ -342,6 +342,25 @@ diagnostics remain available if any different position or phase fails.
 
 ## Validation and review gates
 
+### Hybrid first-consumer texture readiness (2026-11-25)
+
+The head1c9c41877f release validation passed nine SDK producers and all consumer
+gates, but example smoke reported230 passes and two first-frame errors in
+`layered-animation` and `venom-transform`. The verified CI runtime reproduced both
+errors locally: Hybrid binds PBR file textures in the G-buffer pass before the
+forward frame realizes deferred file pixels. Both Vulkan and WebGPU now invoke
+the existing graphics-owned readiness operation at the G-buffer entry, preserving
+GPU-resource validation, public APIs, ownership and numerical contracts.
+
+The extended `graphics.deferredTargets.lateGbufferAndResize` case fails at PBR
+binding without the repair and passes54 assertions with it, retaining actual
+color/material/clear/resize checks. Three neighboring PBR, shadow/resize and file
+cache cases pass in isolated native processes. The official example smoke logic
+passes both original failures with repaired native SHARED and OBJECT runtimes.
+Fresh builds of both linkage routes and the final `make check` pass. Hosted
+validation is pending; previous-head CI success does not count as validation of
+the new repair. No new numerical tolerance is added.
+
 Run against the final PR base/head:
 
 1. `make check` for source quality, binding/example/API and architecture contracts.

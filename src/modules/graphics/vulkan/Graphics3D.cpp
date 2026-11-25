@@ -811,6 +811,8 @@ void Graphics::beginGBufferPass(int w, int h) {
     if (w <= 0 || h <= 0) throw Exception("beginGBufferPass: invalid size");
     if (!texSetLayout || !descriptorPool)
         throw Exception("beginGBufferPass: textured descriptor layout not ready");
+    // Hybrid binds PBR materials here, before the forward frame begins.
+    ensureFileTexturesReady();
     createGBufferResources(w, h);
     gbufferPassActive = true;
     gbufferPassDraws.clear();

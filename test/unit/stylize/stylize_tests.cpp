@@ -1524,7 +1524,7 @@ std::vector<uint32_t> copy(std::span<const uint32_t> s) { return {s.begin(), s.e
 bool                  any(std::span<const uint32_t> s) {
     return std::any_of(s.begin(), s.end(), [](uint32_t p) { return p != 0; });
 }
-void sample(PixelFx& fx, double seconds) {
+void sample(PixelFx &fx, double seconds) {
     if (!fx.isSimulated()) {
         fx.render(seconds);
         return;
@@ -1537,7 +1537,7 @@ void sample(PixelFx& fx, double seconds) {
 }
 }  // namespace
 TEST_CASE("stylize.pixelfx.seekAndLoop") {
-    for (const auto& info : PixelFx::catalogue()) {
+    for (const auto &info : PixelFx::catalogue()) {
         PixelFx fx(info.kind);
         // Source irises have empty covering planes at .125; sample their visible closing phase.
         double sampleTime = .125;
@@ -1574,7 +1574,7 @@ TEST_CASE("stylize.pixelfx.parametersAndAtomicRejection") {
     bool rejected = false;
     try {
         fx.configure(s);
-    } catch (const std::invalid_argument&) {
+    } catch (const std::invalid_argument &) {
         rejected = true;
     }
     REQUIRE(rejected);
@@ -1585,14 +1585,14 @@ TEST_CASE("stylize.pixelfx.parametersAndAtomicRejection") {
     rejected        = false;
     try {
         fx.configure(s);
-    } catch (const std::invalid_argument&) {
+    } catch (const std::invalid_argument &) {
         rejected = true;
     }
     REQUIRE(rejected);
     rejected = false;
     try {
         sample(fx, -1);
-    } catch (const std::invalid_argument&) {
+    } catch (const std::invalid_argument &) {
         rejected = true;
     }
     REQUIRE(rejected);
@@ -1716,7 +1716,7 @@ TEST_CASE("stylize.pixelfx.upstreamGoldenRasterStatistics") {
         },
     };
     size_t family = 0;
-    for (const auto& info : PixelFx::catalogue()) {
+    for (const auto &info : PixelFx::catalogue()) {
         if (family >= 4) break;
         PixelFx fx(info.kind);
         for (int i = 0; i < 8; ++i) {
@@ -1745,7 +1745,7 @@ TEST_CASE("stylize.pixelfx.preparedConfigurationAtomicPublication") {
     static_assert(!std::is_default_constructible_v<PixelFxPreparedConfig>);
     static_assert(!std::is_copy_constructible_v<PixelFxPreparedConfig>);
     static_assert(std::is_nothrow_move_constructible_v<PixelFxPreparedConfig>);
-    for (const auto& effectInfo : PixelFx::catalogue()) {
+    for (const auto &effectInfo : PixelFx::catalogue()) {
         PixelFx fx(effectInfo.kind);
         sample(fx, 0.3);
         const auto before = copy(fx.color());
@@ -1787,11 +1787,11 @@ TEST_CASE("stylize.pixelfx.preparedConfigurationDiagnosticsAndCancellation") {
     const auto defaults = fx.settings();
     struct Invalid {
         PixelFxKind kind;
-        double PixelFxFireSettings::* member;
-        double                        value;
-        const char*                   path;
+        double PixelFxFireSettings::*member;
+        double                       value;
+        const char                  *path;
     };
-    for (const auto& bad :
+    for (const auto &bad :
          std::array<Invalid, 5>{{{PixelFxKind::Torch, &PixelFxFireSettings::height, 0, "/options/height"},
                                  {PixelFxKind::Fireball, &PixelFxFireSettings::radius, 21, "/options/radius"},
                                  {PixelFxKind::Flamethrower, &PixelFxFireSettings::speed, 0, "/options/speed"},
@@ -1852,16 +1852,16 @@ TEST_CASE("stylize.pixelfx.preparedConfigurationMoveAndEffectIdentity") {
 }
 
 TEST_CASE("stylize.pixelfx.valueCodecRoundTripAndDescriptors") {
-    for (const auto& effectInfo : PixelFx::catalogue()) {
+    for (const auto &effectInfo : PixelFx::catalogue()) {
         PixelFx source(effectInfo.kind);
         auto    document = source.configurationValue();
         REQUIRE(document.find("schema")->asString() == "eve.pixelfx.configuration");
         auto described = PixelFx::describeParameters(effectInfo.kind);
         REQUIRE(described);
-        const auto* parameters = described.value().find("parameters");
+        const auto *parameters = described.value().find("parameters");
         REQUIRE(parameters->arraySize() == document.find("options")->keys().size());
-        for (const auto& parameter : *parameters->getIf<eve::Value::Array>()) {
-            const auto& name = parameter.find("name")->asString();
+        for (const auto &parameter : *parameters->getIf<eve::Value::Array>()) {
+            const auto &name = parameter.find("name")->asString();
             REQUIRE(parameter.find("default")->operator==(*document.find("options")->find(name)));
             if (name == "seed") {
                 REQUIRE(parameter.find("maximum")->isInt64());
@@ -1929,7 +1929,7 @@ TEST_CASE("stylize.pixelfx.actor.stockGeometryAndBody") {
             for (int x = 0; x < actor.width; ++x) {
                 const auto expected = actor.pixels[size_t(y) * size_t(actor.width) + size_t(x)];
                 const auto actual   = body[size_t(int(actor.y) + y + fx.info().originY) * size_t(fx.info().width) +
-                                           size_t(int(actor.x) + x + fx.info().originX)];
+                                         size_t(int(actor.x) + x + fx.info().originX)];
                 REQUIRE(actual == expected);
                 nonzero += expected != 0 ? 1u : 0u;
             }
@@ -1946,7 +1946,7 @@ TEST_CASE("stylize.pixelfx.actor.customOwnershipRoundTripAndBounds") {
     PixelFx fx(PixelFxKind::Halo);
     auto    settings = fx.settings();
     settings.actor   = {};
-    auto& a          = settings.actor;
+    auto &a          = settings.actor;
     a.source         = PixelFxActorSource::Custom;
     a.width          = 3;
     a.height         = 1;
@@ -2067,7 +2067,7 @@ TEST_CASE("stylize.pixelfx.valueCodecRejectsInvalidEnvelopeAndOptions") {
     PixelFx fx(PixelFxKind::Flamethrower);
     sample(fx, 0.6);
     const auto before = copy(fx.color()), defaults = copy(fx.light());
-    const auto check = [&](const eve::Value& value, const std::string& path) {
+    const auto check = [&](const eve::Value &value, const std::string &path) {
         auto rejected = PixelFx::prepareConfigurationValue(fx.info().kind, value);
         REQUIRE(!rejected);
         REQUIRE(rejected.status().diagnostics().front().path() == path);
@@ -2123,7 +2123,7 @@ TEST_CASE("stylize.pixelfx.valueCodecRejectsInvalidEnvelopeAndOptions") {
 }
 
 namespace {
-void step(PixelFx& fx, double delta) {
+void step(PixelFx &fx, double delta) {
     auto result = fx.advance(delta);
     if (!result) throw std::runtime_error(result.status().describe());
 }
@@ -2244,7 +2244,7 @@ TEST_CASE("stylize.pixelfx.playback.invalidDeltaStopAndRestart") {
     bool       oversized = false;
     try {
         fx.render(1e12);
-    } catch (const std::invalid_argument&) {
+    } catch (const std::invalid_argument &) {
         oversized = true;
     }
     REQUIRE(oversized);
@@ -2278,7 +2278,7 @@ TEST_CASE("stylize.pixelfx.playback.ownerDestructionAndTerminalClock") {
     bool       rejected = false;
     try {
         target.render(0.5);
-    } catch (const std::invalid_argument&) {
+    } catch (const std::invalid_argument &) {
         rejected = true;
     }
     REQUIRE(rejected);
@@ -2430,7 +2430,7 @@ TEST_CASE("stylize.pixelfx.core.simulationReference") {
             actual[9]  = rng.state;
             actual[10] = lands;
             actual[11] = landX;
-            for (const auto& q : ps.list) {
+            for (const auto &q : ps.list) {
                 const std::array<double, 8> values{q.x, q.y, q.vx, q.vy, q.life, q.max, q.size, q.seed};
                 for (size_t i = 0; i < values.size(); ++i) actual[i + 1] += values[i];
             }
@@ -2893,7 +2893,7 @@ TEST_CASE("stylize.pixelfx.core.rigPoseReferenceAndRaster") {
             {7.5688653694258825, -1.0999999999999992, -1.8657067883073069},
         },
     };
-    const char* documents[] = {
+    const char *documents[] = {
         R"pose({"schema": "eve.pixelfx.pose", "version": 1, "fields": {}})pose",
         R"pose({"schema": "eve.pixelfx.pose", "version": 1, "fields": {"turn": 1.1, "fx": -1, "fy": -26, "bx": 2, "by": -26, "armsFront": true, "hy": 1, "ffx": -3, "fbx": 4}})pose",
         R"pose({"schema": "eve.pixelfx.pose", "version": 1, "fields": {"crouch": 8, "lean": 3, "fx": -9, "fy": -8, "bx": 11, "by": -8, "ffx": -8, "fbx": 9}})pose",
@@ -2936,7 +2936,7 @@ TEST_CASE("stylize.pixelfx.core.rigPoseReferenceAndRaster") {
                 REQUIRE(std::abs(skeleton.value().joints[i][c] - joints[fixture][i][c]) < 1e-10);
         auto rendered = raster.render(pose.value());
         REQUIRE(rendered);
-        const auto& pixels = rendered.value();
+        const auto &pixels = rendered.value();
         REQUIRE(pixels.xs.size() == pixels.color.size());
         REQUIRE(pixels.ys.size() == pixels.color.size());
         REQUIRE(pixels.src.size() == pixels.color.size());
@@ -3032,7 +3032,7 @@ TEST_CASE("stylize.pixelfx.core.rigIndependentPartsAndRecovery") {
     REQUIRE(parts);
     REQUIRE(parts.value().size() == 22u);
     for (size_t i = 0; i < parts.value().size(); ++i) {
-        const auto& part = parts.value()[i];
+        const auto &part = parts.value()[i];
         REQUIRE(part.part == int(i) + 1);
         REQUIRE(!part.name.empty());
         REQUIRE(!part.pixels.color.empty());
@@ -3124,7 +3124,7 @@ TEST_CASE("stylize.pixelfx.core.poseTrackHeldLimbsSmoothFloorAndDuplicateKeys") 
 }
 TEST_CASE("stylize.pixelfx.core.poseTrackValidationAndSnapshotLifetime") {
     namespace rig = eve::stylize::pixelfx::rig;
-    auto parse    = [](const char* text) {
+    auto parse    = [](const char *text) {
         auto v = eve::Value::fromJson(text);
         if (!v) throw std::runtime_error(v.status().describe());
         return std::move(v).takeValue();
@@ -3134,7 +3134,7 @@ TEST_CASE("stylize.pixelfx.core.poseTrackValidationAndSnapshotLifetime") {
     REQUIRE(prepared);
     auto snapshot = prepared.value().sample(.2);
     REQUIRE(snapshot);
-    const auto reject = [&](eve::Value input, const char* path) {
+    const auto reject = [&](eve::Value input, const char *path) {
         auto bad = rig::PoseTrack::prepare(input);
         REQUIRE(!bad);
         REQUIRE(bad.status().diagnostics().front().path() == path);
@@ -3178,7 +3178,7 @@ TEST_CASE("stylize.pixelfx.core.poseTrackValidationAndSnapshotLifetime") {
 }
 
 TEST_CASE("stylize.pixelfx.core.canvasLayersOwnershipAndValidation") {
-    for (const auto& info : PixelFx::catalogue()) {
+    for (const auto &info : PixelFx::catalogue()) {
         PixelFx fx(info.kind);
         auto    seek = fx.prepareSeek(info.duration * .37);
         REQUIRE(seek);
@@ -3191,11 +3191,11 @@ TEST_CASE("stylize.pixelfx.core.canvasLayersOwnershipAndValidation") {
         const size_t                n     = originalColor.size();
         std::vector<uint32_t>       storage(n * 2);
         PixelFxCanvas               canvas{info.width,
-                                           info.height,
-                                           info.originX,
-                                           info.originY,
-                                           std::span<uint32_t>(storage.data(), n),
-                                           std::span<uint32_t>(storage.data() + n, n)};
+                             info.height,
+                             info.originX,
+                             info.originY,
+                             std::span<uint32_t>(storage.data(), n),
+                             std::span<uint32_t>(storage.data() + n, n)};
         REQUIRE(fx.drawToCanvas(canvas, PixelFxLayer::Both, {}));
         REQUIRE(std::vector<uint32_t>(canvas.color.begin(), canvas.color.end()) == originalColor);
         REQUIRE(std::vector<uint32_t>(canvas.light.begin(), canvas.light.end()) == originalLight);
@@ -3758,7 +3758,7 @@ TEST_CASE("stylize.pixelfx.core.artilleryRocketAndHomingReference") {
         fx.draw();
         const std::vector<uint32_t> before(fx.color().begin(), fx.color().end());
         auto                        document = fx.configurationValue();
-        auto*                       options  = document.find("options");
+        auto                       *options  = document.find("options");
         options->set("seed", eve::Value(int64_t(123)));
         options->set("smoke", eve::Value::array({eve::Value(int64_t(0xff403020)), eve::Value(int64_t(0xffd0b090))}));
         if (e == 0) {
@@ -3873,7 +3873,7 @@ TEST_CASE("stylize.pixelfx.core.flareAndGroundExplosionReference") {
         fx.draw();
         const std::vector<uint32_t> before(fx.color().begin(), fx.color().end());
         auto                        config  = fx.configurationValue();
-        auto*                       options = config.find("options");
+        auto                       *options = config.find("options");
         options->set("seed", eve::Value(int64_t(123)));
         if (e == 0) {
             options->set("height", eve::Value(110.0));
@@ -4275,7 +4275,7 @@ TEST_CASE("stylize.pixelfx.core.fireworksReferenceAndMaterials") {
         REQUIRE(fx.commitSeek(std::move(reset).takeValue()));
         fx.draw();
         const std::vector<uint32_t> original(fx.color().begin(), fx.color().end());
-        const char*                 ramp   = e == 0 ? "core" : "tips";
+        const char                 *ramp   = e == 0 ? "core" : "tips";
         auto                        config = fx.configurationValue();
         config.find("options")->set("seed", eve::Value(int64_t(123)));
         config.find("options")->set(
@@ -4402,7 +4402,7 @@ TEST_CASE("stylize.pixelfx.core.cartoonTextUtf8BoundsAndOwnership") {
     auto metadata = PixelFx::describeParameters(PixelFxKind::CartoonPow);
     REQUIRE(metadata);
     bool found = false;
-    for (const auto& p : *metadata.value().find("parameters")->getIf<eve::Value::Array>())
+    for (const auto &p : *metadata.value().find("parameters")->getIf<eve::Value::Array>())
         if (p.find("name")->asString() == "text") {
             found = true;
             REQUIRE(p.find("type")->asString() == "string");
@@ -4436,7 +4436,7 @@ TEST_CASE("stylize.pixelfx.core.cartoonTextUtf8BoundsAndOwnership") {
     REQUIRE(PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
     settings.explosion.text += "!";
     REQUIRE(!PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
-    for (const std::string& bad : {std::string("\xc0\xaf"), std::string("\xed\xa0\x80"),
+    for (const std::string &bad : {std::string("\xc0\xaf"), std::string("\xed\xa0\x80"),
                                    std::string("\xf4\x90\x80\x80"), std::string("\xf0\x9f")}) {
         settings.explosion.text = bad;
         REQUIRE(!PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
@@ -4478,7 +4478,7 @@ TEST_CASE("stylize.pixelfx.core.grenadeAndSmokeReferenceAndMaterials") {
         REQUIRE(fx.commitSeek(std::move(reset).takeValue()));
         fx.draw();
         const std::vector<uint32_t> original(fx.color().begin(), fx.color().end());
-        const char*                 ramp   = e == 0 ? "body" : "canister";
+        const char                 *ramp   = e == 0 ? "body" : "canister";
         auto                        config = fx.configurationValue();
         config.find("options")->set("seed", eve::Value(int64_t(123)));
         config.find("options")->set(
@@ -4531,7 +4531,7 @@ TEST_CASE("stylize.pixelfx.core.smokeSparkRampResolvesSourceOptions") {
     auto metadata = PixelFx::describeParameters(PixelFxKind::SmokeBomb);
     REQUIRE(metadata);
     bool found = false;
-    for (const auto& p : *metadata.value().find("parameters")->getIf<eve::Value::Array>())
+    for (const auto &p : *metadata.value().find("parameters")->getIf<eve::Value::Array>())
         if (p.find("name")->asString() == "sparks") {
             found = true;
             REQUIRE(p.find("rampSteps")->asInt() == 4);

@@ -2858,6 +2858,8 @@ TEST_CASE("graphics.lighting.boundedFrameSlotSubmission") {
 #include <memory>
 #include <vector>
 #include "PrivateTestScope.h"
+#include "common/Resource.h"
+#include "filesystem/Filesystem.h"
 #include "graphics/Mesh.h"
 
 // graphics_deferred_targets.cpp
@@ -2878,15 +2880,29 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
     const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
     auto          *mesh        = graphics->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
     REQUIRE(mesh != nullptr);
-    const uint8_t red[]   = {255, 0, 0, 255};
-    auto         *texture = graphics->newTexture(1, 1, red);
+    // The first Hybrid pass consumes file textures before begin3DFrame.
+    // Keep the facade deferred until that pass, matching imported PBR models.
+    TempDir files;
+    auto   *filesystem = eve::filesystem::Filesystem::create();
+    filesystem->allowMountingForPath(files.path().string());
+    REQUIRE(filesystem->mount(files.path().string(), "", false));
+    const std::string texturePath = "eve-deferred-gbuffer.png";
+    std::filesystem::copy_file("test/assets/resource_reuse.png", files.path() / texturePath);
+    auto *texture = graphics->newTextureFromFile(texturePath);
     REQUIRE(texture != nullptr);
+    REQUIRE(texture->hasDeferredFilePixels());
+    REQUIRE(texture->gpuHandle == nullptr);
+    eve::graphics::PbrSurface surface;
+    surface.cullMode                                                           = eve::graphics::PbrCullMode::None;
+    surface.textures[size_t(eve::graphics::PbrTextureSlot::BaseColor)].texture = texture;
     for (int size : {64, 96}) {
         graphics->beginGBufferPass(size, size);
+        REQUIRE(graphics->setMesh3DPbrSurface(&surface).ok());
         graphics->drawMeshGBuffer(mesh, glm::mat4(1), glm::mat4(1), 0.1f, 100.f, texture,
                                   /*tint*/ 1.f, 1.f, 1.f, /*motion*/ 0.f, 0.f,
                                   /*roughness*/ 0.25f, /*metallic*/ 0.75f);
         graphics->endGBufferPass();
+        REQUIRE(graphics->setMesh3DPbrSurface(nullptr).ok());
         auto *gb = graphics->getRenderControl()->getGBuffer();
         REQUIRE(gb != nullptr);
         REQUIRE(gb->hasBuffer("pbrParams"));
@@ -2930,6 +2946,10 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         graphics->begin3DFrame();
         graphics->present();
     }
+    REQUIRE(graphics->releaseTexture(texture));
+    delete texture;
+    eve::ResourceManager::getInstance().unload(texturePath);
+    REQUIRE(filesystem->unmount(files.path().string()));
 }
 
 TEST_CASE("graphics.deferredTargets.pbrTextureEvaluation") {
