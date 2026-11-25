@@ -116,6 +116,31 @@ k.CloseHandle(h)
                 self.assertEqual(child.wait(timeout=10), 0)
 
     @unittest.skipUnless(os.name == "nt", "requires Windows file-sharing semantics")
+    def test_real_publisher_owned_handle_fails_without_waiting(self):
+        import ctypes
+        from ctypes import wintypes as w
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True, winmode=0x00000800)
+        kernel.CreateFileW.argtypes = [w.LPCWSTR, w.DWORD, w.DWORD, ctypes.c_void_p, w.DWORD, w.DWORD, w.HANDLE]
+        kernel.CreateFileW.restype = w.HANDLE
+        kernel.CloseHandle.argtypes = [w.HANDLE]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / cleaner.MARKER).touch()
+            target = root / "eve.exe"
+            target.write_bytes(b"publisher-owned test fixture")
+            handle = kernel.CreateFileW(str(target), 0x80000000, 3, None, 3, 0, None)
+            self.assertNotEqual(handle, w.HANDLE(-1).value)
+            try:
+                with patch.object(cleaner.time, "sleep") as sleep:
+                    with self.assertRaisesRegex(RuntimeError, "publisher-owned"):
+                        cleaner.cleanup(root)
+                    sleep.assert_not_called()
+                self.assertTrue(target.exists())
+            finally:
+                kernel.CloseHandle(handle)
+
+    @unittest.skipUnless(os.name == "nt", "requires Windows file-sharing semantics")
     def test_persistent_external_borrow_fails_without_stopping_its_owner(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

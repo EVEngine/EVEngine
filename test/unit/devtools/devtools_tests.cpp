@@ -165,6 +165,59 @@ TEST_CASE("devtools.CallGraph event ring: capacity keeps newest IDs without stal
     REQUIRE(graph.event(graph.events().back().id) != nullptr);
     CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 20);
 }
+TEST_CASE("devtools.CallGraph returned aliases release index scopes and retain historical slices") {
+    eve::dev::CallGraph graph;
+    graph.setMaxEvents(32);
+    for (int iteration = 0; iteration < 5000; ++iteration) {
+        graph.onCall(location("alias.nut", 1, "outer"), "outer");
+        graph.onDef(location("alias.nut", 2, "outer"), "health");
+        graph.onCall(location("alias.nut", 3, "inner"), "inner");
+        const auto definition = graph.onDef(location("alias.nut", 4, "inner"), "health");
+        graph.onReturn(location("alias.nut", 5, "inner"), "inner");
+        REQUIRE_EQ(graph.definitionScopeCount(), 1u);
+        const auto use = graph.onUse(location("alias.nut", 6, "outer"), "health");
+        graph.onReturn(location("alias.nut", 7, "outer"), "outer");
+        REQUIRE_EQ(graph.definitionScopeCount(), 0u);
+        REQUIRE(graph.eventCount() <= graph.maxEvents());
+        eve::dev::SliceCriterion criterion;
+        criterion.eventId  = use;
+        const auto slice   = graph.sliceBackward(criterion);
+        bool       reaches = false;
+        for (const auto& edge : slice.dataFlow)
+            if (edge.fromEventId == definition && edge.toEventId == use) reaches = true;
+        REQUIRE(reaches);
+        REQUIRE_EQ(graph.stackAt(use).size(), 1u);
+        graph.onCall(location("alias.nut", 8, "closure"), "closure");
+        const auto capturedUse = graph.onUse(location("alias.nut", 9, "closure"), "health");
+        graph.onReturn(location("alias.nut", 10, "closure"), "closure");
+        criterion.eventId = capturedUse;
+        bool captured     = false;
+        for (const auto& edge : graph.sliceBackward(criterion).dataFlow)
+            if (edge.fromEventId == definition && edge.toEventId == capturedUse) captured = true;
+        REQUIRE(captured);
+        REQUIRE_EQ(graph.definitionScopeCount(), 0u);
+    }
+}
+TEST_CASE("devtools.CallGraph active alias eviction and reset keep definitions bounded") {
+    eve::dev::CallGraph graph;
+    graph.setMaxEvents(16);
+    graph.onCall(location("alias.nut", 1, "outer"), "outer");
+    graph.onDef(location("alias.nut", 2, "outer"), "health");
+    graph.onCall(location("alias.nut", 3, "inner"), "inner");
+    const auto definition = graph.onDef(location("alias.nut", 4, "inner"), "health");
+    graph.onReturn(location("alias.nut", 5, "inner"), "inner");
+    for (int i = 0; i < 64; ++i) graph.onLine(location("alias.nut", 6, "outer"));
+    REQUIRE(graph.event(definition) == nullptr);
+    REQUIRE_EQ(graph.definitionScopeCount(), 1u);
+    graph.onReturn(location("alias.nut", 7, "outer"), "outer");
+    REQUIRE_EQ(graph.definitionScopeCount(), 0u);
+    graph.clear();
+    REQUIRE_EQ(graph.definitionScopeCount(), 0u);
+    const auto               use = graph.onUse(location("alias.nut", 8), "health");
+    eve::dev::SliceCriterion criterion;
+    criterion.eventId = use;
+    REQUIRE(graph.sliceBackward(criterion).dataFlow.empty());
+}
 }  // namespace test_callgraph_contract
 #endif
 

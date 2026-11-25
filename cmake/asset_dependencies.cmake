@@ -6,6 +6,10 @@ include_guard(GLOBAL)
 # second chance. Prefetch into CMAKE_BINARY_DIR with retries, then point
 # FetchContent at the local archive.
 function(eve_download_archive_with_retries url outfile expected_sha256)
+    # Optional trailing URLs must identify byte-identical canonical archives.
+    # Keep one total attempt budget, independent of the number of routes.
+    set(_eve_urls "${url}" ${ARGN})
+    list(LENGTH _eve_urls _eve_url_count)
     get_filename_component(_eve_dl_dir "${outfile}" DIRECTORY)
     file(MAKE_DIRECTORY "${_eve_dl_dir}")
 
@@ -19,10 +23,14 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
 
     set(_eve_max_attempts 5)
     foreach(_eve_attempt RANGE 1 ${_eve_max_attempts})
+        math(EXPR _eve_url_index "(${_eve_attempt} - 1) % ${_eve_url_count}")
+        list(GET _eve_urls ${_eve_url_index} _eve_url)
         message(STATUS
-            "Downloading ${url} (attempt ${_eve_attempt}/${_eve_max_attempts})")
-        file(DOWNLOAD "${url}" "${outfile}"
+            "Downloading ${_eve_url} (attempt ${_eve_attempt}/${_eve_max_attempts})")
+        file(DOWNLOAD "${_eve_url}" "${outfile}"
+            HTTPHEADER "Accept: application/octet-stream"
             STATUS _eve_dl_status
+            LOG _eve_dl_log
             TIMEOUT 120
             TLS_VERIFY ON
             SHOW_PROGRESS)
@@ -36,7 +44,22 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
                 "Hash mismatch for ${outfile}: got ${_eve_got_hash}, "
                 "expected ${expected_sha256}")
         else()
-            message(WARNING "Download failed for ${url}: ${_eve_dl_status}")
+            # Report status lines only, never redirect URLs or authorization data.
+            string(REGEX MATCHALL "HTTP/[0-9.]+ [0-9]+" _eve_http_status "${_eve_dl_log}")
+            message(WARNING
+                "Download failed for ${_eve_url}: ${_eve_dl_status}; HTTP: ${_eve_http_status}")
+            if(_eve_http_status MATCHES "HTTP/[0-9.]+ (401|403|429)")
+                file(REMOVE "${outfile}")
+                # Publish only non-secret reset metadata, never signed redirect
+                # URLs, cookies, authorization headers or response bodies.
+                string(TOLOWER "${_eve_dl_log}" _eve_dl_log_lower)
+                string(REGEX MATCHALL
+                    "(x-ratelimit-(remaining|reset)|retry-after):[^\r\n]+"
+                    _eve_reset_headers "${_eve_dl_log_lower}")
+                message(FATAL_ERROR
+                    "Access or rate-limit response; stopping without retrying or changing routes. "
+                    "Server reset metadata: ${_eve_reset_headers}")
+            endif()
         endif()
         if(EXISTS "${outfile}")
             file(REMOVE "${outfile}")
@@ -66,10 +89,14 @@ function(load_asset_zstd)
         eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3)
     set(_eve_zstd_url
         https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz)
+    # Use the normal public release route first to avoid needless API quota use.
+    # The Release Asset API serves the same v1.5.7 tarball after transient 5xx.
+    # The archive SHA256 above remains the authority for downloaded content.
     set(_eve_zstd_archive
         "${CMAKE_BINARY_DIR}/_eve_downloads/zstd-1.5.7.tar.gz")
     eve_download_archive_with_retries(
-        "${_eve_zstd_url}" "${_eve_zstd_archive}" "${_eve_zstd_sha256}")
+        "${_eve_zstd_url}" "${_eve_zstd_archive}" "${_eve_zstd_sha256}"
+        "https://api.github.com/repos/facebook/zstd/releases/assets/230758919")
 
     include(FetchContent)
     set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)

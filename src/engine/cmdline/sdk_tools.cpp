@@ -622,8 +622,7 @@ const char* kAndroidBuildTools = "build-tools;34.0.0";
 const char* kGradleVersion = "8.5";
 
 std::string gradleUrl() {
-    return std::string("https://services.gradle.org/distributions/gradle-") + kGradleVersion +
-           "-bin.zip";
+    return std::string("https://downloads.gradle.org/distributions/gradle-") + kGradleVersion + "-bin.zip";
 }
 
 bool jdkHomeExists(const std::string& home) {

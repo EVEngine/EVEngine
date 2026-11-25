@@ -1,4 +1,5 @@
 #include "stylize/Stylize.h"
+#include "stylize/pixelfx/PixelFxBindings.h"
 
 #include "stylize/AttackVfxRuntime.h"
 #include "stylize/ImageStylize.h"
@@ -108,6 +109,7 @@ std::unique_ptr<AttackVfxRuntime> Stylize::createAttackVfxRuntime() {
 }
 
 void Stylize::expose(ssq::Table &table) {
+    exposePixelFx(table);
     auto cls = table.addClass(name, Stylize::create, false);
     expose(cls);
 

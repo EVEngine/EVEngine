@@ -72,6 +72,23 @@ class WorkflowLayoutTests(unittest.TestCase):
         self.assertLess(workflow.index("name: Verify browser audio playback"),
                         workflow.index("name: Upload verified WebGPU SDK"))
 
+    def test_browser_dependencies_refresh_strict_indexes_before_install(self):
+        action = (ROOT / ".github/actions/setup-webgpu-browser/action.yml").read_text(encoding="utf-8")
+        configure = action.index("sudo bash .github/scripts/configure-ubuntu-mirror.sh")
+        refresh = action.index("sudo apt-get update --error-on=any")
+        install = action.index("sudo apt-get install")
+        self.assertLess(configure, refresh)
+        self.assertLess(refresh, install)
+        self.assertNotIn("|| true", action[refresh:install])
+
+    def test_linux_consumer_keeps_the_sdk_android_toolchain(self):
+        workflow = (WORKFLOWS / "sdk-release.yml").read_text(encoding="utf-8")
+        consumer = workflow.split("  consumer-linux:\n", 1)[1].split("\n  consumer-", 1)[0]
+        self.assertIn('java-version: "17"', consumer)
+        self.assertLess(consumer.index("unset GRADLE_HOME"),
+                        consumer.index('xvfb-run -a bash .github/scripts/consumer-test.sh'))
+        self.assertNotIn("-x lint", consumer)
+
     def test_intel_probe_runs_before_the_expensive_build(self):
         workflow = (WORKFLOWS / "release-ci.yml").read_text(encoding="utf-8")
         intel = workflow.split("  macos-x86_64:\n", 1)[1].split("  windows-arm64:\n", 1)[0]

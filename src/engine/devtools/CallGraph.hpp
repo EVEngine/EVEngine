@@ -90,6 +90,9 @@ public:
     void setMaxEvents(size_t n);
     size_t maxEvents() const { return maxEvents_; }
     size_t eventCount() const { return count_; }
+    /** @brief Count scopes in the live reaching-definition index, including global scope zero when present.
+     * @note Recording-thread only; constant-time observation with no allocation or callbacks. */
+    [[nodiscard]] size_t definitionScopeCount() const noexcept { return lastDef_.size(); }
 
     // --- recording ---------------------------------------------------------
     uint32_t onCall(const SourceLoc& loc, const std::string& funcName = {});

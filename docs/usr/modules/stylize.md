@@ -7,6 +7,10 @@ NPR / 风格化后处理与网格着色：卡通、手绘水彩、水墨、像�
 Canvas；3D 网格着色用 `newMeshShader`；另有纯 CPU 的 `processImage` 供离线
 工具与测试使用。
 
+独立的原生程序化像素特效使用 `eve.PixelFx`，输出可组合的色彩与光照平面，
+支持参数配置、固定 tick 仿真及回放。API、示例和上游像素对照见
+[程序化 PixelFX](stylize-pixelfx.md)。
+
 风格定义由模块统一注册，运行时通过 `StyleInstance` 保存参数覆盖；shader
 仍由 Graphics 管理并可在多个实例之间复用。参数 schema 提供默认值和有效范围，
 `setFloat` 会自动限制到范围内。

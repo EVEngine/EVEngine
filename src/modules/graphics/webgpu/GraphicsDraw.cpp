@@ -885,6 +885,8 @@ void Graphics::beginGBufferPass(int width, int height) {
     if (!device) return;
     if (!caps.supportsFiveTargetGBuffer())
         throw Exception("WebGPU: five-target GBuffer requires 40 color attachment bytes per sample");
+    // Hybrid binds PBR materials here, before the forward frame begins.
+    ensureFileTexturesReady();
     createGbufferResources(width, height);
     gbufferPassActive  = true;
     gbufferPassPending = true;

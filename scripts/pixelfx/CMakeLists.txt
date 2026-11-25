@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.21)
+project(EVEnginePixelFxReferenceProbe LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+get_filename_component(EVE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+file(GLOB_RECURSE PIXELFX_SOURCES CONFIGURE_DEPENDS "${EVE_ROOT}/src/modules/stylize/pixelfx/*.cpp")
+list(FILTER PIXELFX_SOURCES EXCLUDE REGEX "Bindings\\.cpp$")
+list(APPEND PIXELFX_SOURCES "${EVE_ROOT}/src/modules/stylize/PixelFx.cpp")
+add_library(pixelfx_cpu STATIC ${PIXELFX_SOURCES})
+target_include_directories(pixelfx_cpu PUBLIC "${EVE_ROOT}/src/modules" "${EVE_ROOT}/src/engine")
+add_executable(pixelfx_probe native_probe.cpp)
+add_executable(pixelfx_act_probe act_probe.cpp)
+target_link_libraries(pixelfx_act_probe PRIVATE pixelfx_cpu)
+target_link_libraries(pixelfx_probe PRIVATE pixelfx_cpu)
+add_executable(pixelfx_rig_probe rig_probe.cpp)
+target_link_libraries(pixelfx_rig_probe PRIVATE pixelfx_cpu)
+add_subdirectory("${EVE_ROOT}/external/zeroerr" zeroerr EXCLUDE_FROM_ALL)
+# Match the engine link-group contract for the same canonical archive.
+set_property(TARGET zeroerr PROPERTY POSITION_INDEPENDENT_CODE ON)
+set(PIXELFX_COMMON_SOURCES
+    "${EVE_ROOT}/src/engine/common/Utf8Validation.cpp"
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
+    "${EVE_ROOT}/src/engine/common/Value.cpp"
+    "${EVE_ROOT}/src/engine/common/Json.cpp"
+    "${EVE_ROOT}/src/engine/common/StringMapInstances.cpp")
+add_library(pixelfx_common STATIC ${PIXELFX_COMMON_SOURCES})
+target_include_directories(pixelfx_common PUBLIC "${EVE_ROOT}/src/engine")
+target_link_libraries(pixelfx_common PUBLIC zeroerr)
+add_library(pixelfx_common_dll SHARED ${PIXELFX_COMMON_SOURCES})
+target_include_directories(pixelfx_common_dll PUBLIC "${EVE_ROOT}/src/engine")
+target_compile_definitions(pixelfx_common_dll PRIVATE EVENGINE_MODULE_DLL EVENGINE_EXPORTS_FOUNDATION)
+target_link_libraries(pixelfx_common_dll PUBLIC zeroerr)
+target_link_libraries(pixelfx_cpu PUBLIC pixelfx_common)
+file(GLOB PIXELFX_FAMILY_TESTS CONFIGURE_DEPENDS "${EVE_ROOT}/test/unit/stylize/pixelfx_*_tests.cpp")
+set(PIXELFX_TESTS "${EVE_ROOT}/test/unit/stylize/stylize_tests.cpp" ${PIXELFX_FAMILY_TESTS})
+add_executable(pixelfx_contracts ${PIXELFX_TESTS})
+target_link_libraries(pixelfx_contracts PRIVATE pixelfx_cpu zeroerr)
+target_compile_definitions(pixelfx_contracts PRIVATE EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_pixelfx EVE_TEST_ORIGIN_pixelfx_core EVE_TEST_ORIGIN_pixelfx_fire)
+add_library(pixelfx_cpu_dll SHARED ${PIXELFX_SOURCES})
+target_include_directories(pixelfx_cpu_dll PUBLIC "${EVE_ROOT}/src/modules" "${EVE_ROOT}/src/engine")
+target_link_libraries(pixelfx_cpu_dll PUBLIC pixelfx_common_dll)
+target_compile_definitions(pixelfx_cpu_dll PRIVATE EVENGINE_MODULE_DLL EVENGINE_EXPORTS_WORLD)
+add_executable(pixelfx_dll_contracts ${PIXELFX_TESTS})
+target_compile_definitions(pixelfx_dll_contracts PRIVATE EVENGINE_MODULE_DLL EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_pixelfx EVE_TEST_ORIGIN_pixelfx_core EVE_TEST_ORIGIN_pixelfx_fire)
+target_link_libraries(pixelfx_dll_contracts PRIVATE pixelfx_cpu_dll zeroerr)
+if(MSVC)
+    foreach(t pixelfx_act_probe pixelfx_rig_probe pixelfx_cpu pixelfx_probe pixelfx_contracts pixelfx_cpu_dll pixelfx_dll_contracts pixelfx_common pixelfx_common_dll)
+        target_compile_options(${t} PRIVATE /utf-8 /W4 /WX /wd4100 /wd4251 /wd4275)
+    endforeach()
+endif()
+include("${EVE_ROOT}/src/modules/stylize/pixelfx/NumericContract.cmake")
+eve_pixelfx_preserve_binary64_order(${PIXELFX_SOURCES} ${PIXELFX_TESTS}
+    native_probe.cpp rig_probe.cpp act_probe.cpp)
+
+# Match cmake/link_groups.cmake: static archive state is owned by each ELF image.
+if(UNIX AND NOT APPLE)
+    target_link_options(pixelfx_common_dll PRIVATE "LINKER:-Bsymbolic")
+    target_link_options(pixelfx_cpu_dll PRIVATE "LINKER:-Bsymbolic")
+endif()
+
+enable_testing()
+add_test(NAME pixelfx.static COMMAND pixelfx_contracts)
+add_test(NAME pixelfx.dll COMMAND pixelfx_dll_contracts)

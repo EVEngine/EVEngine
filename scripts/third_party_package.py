@@ -4,13 +4,16 @@
 from __future__ import annotations
 
 import argparse
+from email.utils import parsedate_to_datetime
 import hashlib
 import http.client
 import json
 import os
 import platform
 import re
+import ssl
 import tempfile
+import time
 import urllib.parse
 import urllib.error
 import urllib.request
@@ -105,6 +108,55 @@ def unpack(archive: Path, destination: Path, target: str, configuration: str, ta
             tree.rename(destination)
 
 
+def download(url: str, destination: Path) -> None:
+    """Retry transient transfer failures three times on the same official URL."""
+    waited = 0.0
+    for attempt in range(3):
+        try:
+            # Opening anew discards any partial transfer before a retry.
+            with destination.open("wb") as stream:
+                with urllib.request.urlopen(url, timeout=30) as response:
+                    while True:
+                        try:
+                            block = response.read(1024 * 1024)
+                        except OSError as error:
+                            raise urllib.error.URLError(error) from error
+                        if not block:
+                            return
+                        stream.write(block)
+        except urllib.error.HTTPError as error:
+            error.close()
+            if error.code in (401, 403, 429):
+                # Access/rate denial is fatal even in AUTO: do not fall back to
+                # another route, credentials, or a source download.
+                raise ValueError(f"Dependency download refused: HTTP {error.code}") from error
+            if not 500 <= error.code < 600 or attempt == 2:
+                raise DownloadUnavailable(f"{destination.name}: {error}") from error
+            delay = float(2 * (attempt + 1))
+            if retry_after := error.headers.get("Retry-After"):
+                try:
+                    server_delay = float(retry_after)
+                except ValueError:
+                    try:
+                        server_delay = parsedate_to_datetime(retry_after).timestamp() - time.time()
+                    except (ValueError, TypeError, OverflowError) as invalid:
+                        raise DownloadUnavailable("Invalid server retry time; stopping requests") from invalid
+                delay = max(delay, server_delay)
+            if not 0 <= delay <= 60 - waited:
+                raise DownloadUnavailable("Server retry time exceeds bounded wait budget") from error
+        except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as error:
+            if isinstance(getattr(error, "reason", error), ssl.SSLCertVerificationError):
+                raise ValueError("Dependency TLS certificate verification failed") from error
+            if attempt == 2:
+                raise DownloadUnavailable(f"{destination.name}: {error}") from error
+            delay = float(2 * (attempt + 1))
+        if delay > 60 - waited:
+            raise DownloadUnavailable("Dependency retry wait budget exhausted")
+        print(f"Transient dependency download failure; retry {attempt + 2}/3 in {delay:g}s", flush=True)
+        time.sleep(delay)
+        waited += delay
+
+
 def fetch(repo: str, tag: str, target: str, configuration: str, destination: Path, architecture: str) -> None:
     # Match third_party_build.cmake: only Windows compiles Debug dependency libs.
     if target != "win32":
@@ -122,19 +174,7 @@ def fetch(repo: str, tag: str, target: str, configuration: str, destination: Pat
         archive = Path(temporary) / name
         for filename, path in (("SHA256SUMS", sums), (name, archive)):
             print(f"Downloading third-party release: {base + filename}", flush=True)
-            with path.open("wb") as stream:
-                try:
-                    with urllib.request.urlopen(base + filename, timeout=30) as response:
-                        while True:
-                            try:
-                                block = response.read(1024 * 1024)
-                            except (OSError, http.client.HTTPException) as error:
-                                raise DownloadUnavailable(f"{filename}: {error}") from error
-                            if not block:
-                                break
-                            stream.write(block)
-                except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as error:
-                    raise DownloadUnavailable(f"{filename}: {error}") from error
+            download(base + filename, path)
         entries = dict((parts[1].lstrip("*"), parts[0]) for line in sums.read_text(encoding="utf-8").splitlines()
                        if len(parts := line.split()) == 2)
         with archive.open("rb") as stream:

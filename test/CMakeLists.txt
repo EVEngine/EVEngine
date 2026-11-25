@@ -47,6 +47,12 @@ endif()
 list(REMOVE_ITEM all_test_cpp
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
+include("${CMAKE_SOURCE_DIR}/src/modules/stylize/pixelfx/NumericContract.cmake")
+file(GLOB _eve_pixelfx_test_sources "${CMAKE_CURRENT_SOURCE_DIR}/unit/stylize/pixelfx_*.cpp")
+list(APPEND _eve_pixelfx_test_sources "${CMAKE_CURRENT_SOURCE_DIR}/unit/stylize/stylize_tests.cpp")
+# These TUs instantiate the same inline arithmetic as EVStylize. Mixed FP
+# contraction modes change geometry and can interpose fused inline definitions.
+eve_pixelfx_preserve_binary64_order(${_eve_pixelfx_test_sources})
 # Canonical sources are deduplicated by eve_resolve_test_sources below. Former
 # basename exclusions would silently omit the newly separated workflows.
 eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
