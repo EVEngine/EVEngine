@@ -2323,6 +2323,17 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
         undoResult <- biomeEditor.undo();
         restored <- biomeEditor.getPointCount();
         densityReject <- biomeEditor.setLayerDensity(2.0);
+        bound <- biomeEditor.bindRegion("south", "asset://preview/forest.spatial", 42);
+        region <- bound.value;
+        linked <- biomeEditor.setScheme("weather", "project://weather/rain");
+        followed <- region.configuration();
+        savedBinding <- region.snapshotValue();
+        restoredBinding <- biomeEditor.restoreRegion(savedBinding.value);
+        schemeUndo <- biomeEditor.undo();
+        afterSchemeUndo <- restoredBinding.value.configuration();
+        schemeRedo <- biomeEditor.redo();
+        afterSchemeRedo <- region.configuration();
+        invalidScheme <- biomeEditor.setScheme("fog", "file://invalid");
     )"));
 
     CHECK(vm.find("created").toTable().get<bool>("ok"));
@@ -2339,6 +2350,28 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK(vm.find("undoResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("restored").toInt(), vm.find("beforePoints").toInt());
     CHECK(!vm.find("densityReject").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("bound").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("linked").toTable().get<bool>("ok"));
+    auto followed = vm.find("followed").toTable();
+    REQUIRE(followed.get<bool>("ok"));
+    CHECK_EQ(followed.get<ssq::Table>("value").get<ssq::Table>("schemes").get<std::string>("weather"),
+             std::string("project://weather/rain"));
+    REQUIRE(vm.find("restoredBinding").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("schemeUndo").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterSchemeUndo")
+                 .toTable()
+                 .get<ssq::Table>("value")
+                 .get<ssq::Table>("schemes")
+                 .get<std::string>("weather"),
+             std::string{});
+    REQUIRE(vm.find("schemeRedo").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterSchemeRedo")
+                 .toTable()
+                 .get<ssq::Table>("value")
+                 .get<ssq::Table>("schemes")
+                 .get<std::string>("weather"),
+             std::string("project://weather/rain"));
+    CHECK(!vm.find("invalidScheme").toTable().get<bool>("ok"));
 }
 }  // namespace test_editor
 

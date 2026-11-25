@@ -1,0 +1,20 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/biome-region-tour",
+  "entry": "main.nut",
+  "smoke": { "scene": "default", "seed": 4100, "maxHostFrames": 180, "mustReach": ["tour-state"] },
+  "clock": { "defaultStep": "frame" },
+  "observations": [{ "id": "tour-state", "kind": "script-root", "path": "tour_state", "fields": ["ready", "region", "visited", "paused", "revision", "trees", "objects", "weather", "cameraX"] }],
+  "actions": { "source": "script-map", "map": [
+    { "id": "meadow", "script": "tourJump(0)" },
+    { "id": "marsh", "script": "tourJump(1)" },
+    { "id": "amber", "script": "tourJump(2)" },
+    { "id": "frost", "script": "tourJump(3)" },
+    { "id": "pause", "script": "tourPause()" },
+    { "id": "storm", "script": "tourStorm()" },
+    { "id": "undo", "script": "tourUndo()" }
+  ] },
+  "capture": { "requiredFor": ["visual"], "backend": "engine-readback" },
+  "tolerances": { "screenshot": "human-or-vlm", "numericAbs": 0.0001 }
+}
