@@ -361,6 +361,21 @@ Fresh builds of both linkage routes and the final `make check` pass. Hosted
 validation is pending; previous-head CI success does not count as validation of
 the new repair. No new numerical tolerance is added.
 
+The first hosted repair run produced all nine SDKs successfully. Two consumer
+environment failures required follow-up: the shared browser setup installed from
+stale package indexes, and the Ubuntu26 consumer inherited JDK25/Gradle9.9 instead
+of the supported Android toolchain. Browser provisioning now refreshes indexes
+with `--error-on=any` before installing. An isolated signed Noble refresh and
+actual Mesa download selected25.2.8-0ubuntu0.24.04.5 instead of the removed `.4`
+package; unavailable-index injection still exits100. The Linux consumer selects
+the same JDK17 used by the Android producer and clears inherited `GRADLE_HOME` so
+the SDK-installed Gradle8.5 applies. This follows the Android
+[JDK selection contract](https://developer.android.com/build/jdks).
+The actual current Linux/Android SDK artifacts passed local Release APK assembly,
+including `lintVitalAnalyzeRelease`, and APK engine/game content checks. Seven
+workflow contracts, eight real-Bash mirror contracts and `make check` pass. These
+changes preserve all consumer, browser/audio and Android emulator gates.
+
 Run against the final PR base/head:
 
 1. `make check` for source quality, binding/example/API and architecture contracts.
